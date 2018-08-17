@@ -47,7 +47,7 @@ class MgNode(metaclass=abc.ABCMeta):
                 The implementation of this method is specific to each class, but it is
                 expected that a node will respect the traversable flag of a child when
                 deciding whether to expose it for visitation."""
-                return [child for child in self.children if child.isTraversable()]
+                raise NotImplemented
     
         @abc.abstractmethod
         def unparseToString(self):
