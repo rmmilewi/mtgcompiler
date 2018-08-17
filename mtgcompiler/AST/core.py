@@ -3,34 +3,34 @@ import abc
 class MgNode(metaclass=abc.ABCMeta):
         """This is the abstract base class for all AST classes."""
         
-        @property
-        def parent(self):
-                """The parent node is the ancestor of a given node."""
-                return self._parent
+        #@property
+        #def parent(self):
+        #        """The parent node is the ancestor of a given node."""
+        #        return self._parent
 
-        @parent.setter
+        #@parent.setter
         def setParent(self, parent):
                 """Setter method for the parent node."""
                 self._parent=parent
         
-        @parent.getter
+        #@parent.getter
         def getParent(self):
                 """Access method for the parent node."""
                 return self._parent
         
-        @property
-        def traversable(self):
-                """The traversable flag indicates whether the given node can be visited by
-                visitors. Each class is expected to provide a default value for this flag
-                in their constructor(s)."""
-                return self._traversable
+        #@property
+        #def traversable(self):
+        #        """The traversable flag indicates whether the given node can be visited by
+        #        visitors. Each class is expected to provide a default value for this flag
+        #        in their constructor(s)."""
+        #        return self._traversable
         
-        @traversable.setter
+        #@traversable.setter
         def setTraversable(self,traversable):
                 """Setter method for the traversable flag."""
                 self._traversable = traversable
         
-        @traversable.getter
+        #@traversable.getter
         def isTraversable(self):
                 """Getter method for the traversable flag."""
                 return self._traversable
@@ -60,3 +60,4 @@ class MgNode(metaclass=abc.ABCMeta):
         def accept(self,visitor):
                 """This is the accept operation for the Visitor pattern."""
                 visitor.visit(self)
+        

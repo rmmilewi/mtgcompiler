@@ -5,10 +5,6 @@ class MgAbstractExpression(core.MgNode):
         types, and mana costs. This class is not instantiated, but provides common
         functionalities for all of these kinds of expressions."""
         pass
-        #@abc.abstractmethod
-        #def getValues():
-        #        """Get all the child values"""
-        #        raise NotImplemented
     
 class MgManaExpression(MgAbstractExpression):
         """This node represents mana expressions, sequences of 
@@ -31,14 +27,18 @@ class MgTypeExpression(MgAbstractExpression):
         
         def __init__(self,*args):
                 """The constructor accepts a list of (sub|super)*types in any order."""
-                self._tlist = args
+                super(MgAbstractExpression,self).__init__()
                 self._traversable = True
-        
+                self._tlist = args
+
         def isChild(self,child):
                 return child in self._tlist
         
         def getTraversalSuccessors(self):
                 return [t for t in self._tlist if t.isTraversable()]
+                
+        def addType(self,t):
+                self._tlist.append(t)
                 
         def unparseToString(self):
                 """This method unparses the (sub|super)*types in the order given by the list, which

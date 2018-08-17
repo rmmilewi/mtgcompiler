@@ -5,11 +5,11 @@ from enum import Enum
 class MgAbstractType(core.MgNode):
         """MgAbstractType is an uninstantiable parent class for types, subtypes, and supertypes. 
         It provides the functionalities common to all (sub|super)*type objects."""
-        
-        def __init__(self):
-                """(sub|super)*types can be visited by a visitor, 
-                through they have no children of their own."""
-                self._traversable = True
+        pass
+        #def __init__(self):
+        #        """(sub|super)*types can be visited by a visitor, 
+        #        through they have no children of their own."""
+        #        self.traversable = True
         
         @property
         def value():
@@ -63,7 +63,8 @@ class MgType(MgAbstractType):
                 Vanguard = "Vanguard"
 
         def __init__(self,value):
-                super(MgAbstractType,self).__init__()
+                #super(MgAbstractType,self).__init__()
+                self._traversable = True
                 self._value = value
                 
         def isPermanentType(self):
@@ -411,12 +412,89 @@ class MgSubtype(MgAbstractType):
                 Yeti = "Yeti"
                 Zombie = "Zombie"
                 Zubera = "Zubera"
+                
+        class PlanarSubtypeEnum(Enum):
+                """Planes have their own unique set of subtypes; these subtypes are called planar types."""
+                Alara = "Alara"
+                Arkhos = "Arkhos"
+                Azgol = "Azgol"
+                Belenon = "Belenon"
+                BolassMeditationRealm = "Bolas’s Meditation Realm"
+                Dominaria = "Dominaria"
+                Equilor = "Equilor"
+                Ergamon = "Ergamon"
+                Fabacin = "Fabacin"
+                Innistrad = "Innistrad"
+                Iquatana = "Iquatana"
+                Ir = "Ir"
+                Kaldheim = "Kaldheim"
+                Kamigawa = "Kamigawa"
+                Karsus = "Karsus"
+                Kephalai = "Kephalai"
+                Kinshala = "Kinshala"
+                Kolbahan = "Kolbahan"
+                Kyneth = "Kyneth"
+                Lorwyn = "Lorwyn"
+                Luvion = "Luvion"
+                Mercadia = "Mercadia"
+                Mirrodin = "Mirrodin"
+                Moag = "Moag"
+                Mongseng = "Mongseng"
+                Muraganda = "Muraganda"
+                NewPhyrexia = "New Phyrexia"
+                Phyrexia = "Phyrexia"
+                Pyrulea = "Pyrulea"
+                Rabiah = "Rabiah"
+                Rath = "Rath"
+                Ravnica = "Ravnica"
+                Regatha = "Regatha"
+                Segovia = "Segovia"
+                SerrasRealm = "Serra’s Realm"
+                Shadowmoor = "Shadowmoor"
+                Shandalar = "Shandalar"
+                Ulgrotha = "Ulgrotha"
+                Valla = "Valla"
+                Vryn = "Vryn"
+                Wildfire = "Wildfire"
+                Xerex = "Xerex"
+                Zendikar = "Zendikar"
         
         def __init__(self,value):
-                super(MgAbstractType,self).__init__()
+                #super(MgAbstractType,self).__init__()
+                self._traversable = True
                 self._value = value
 
+        def isSpellSubtype(self):
+                return type(self._value) is MgSubtype.SpellSubtypeEnum
+
+        def isArtifactSubtype(self):
+                return type(self._value) is MgSubtype.ArtifactSubtypeEnum
+
+        def isLandSubtype(self):
+                return type(self._value) is MgSubtype.LandSubtypeEnum
+
+        def isEnchantmentSubtype(self):
+                return type(self._value) is MgSubtype.EnchantmentSubtypeEnum
+
+        def isPlaneswalkerSubtype(self):
+                return type(self._value) is MgSubtype.PlaneswalkerSubtypeEnum
+
+        def isCreatureSubtype(self):
+                return type(self._value) is MgSubtype.CreatureSubtypeEnum
+
+        def isPlanarSubtype(self):
+                return type(self._value) is MgSubtype.PlanarSubtypeEnum
 
 class MgSupertype(MgAbstractType):
         """This class represents Magic supertypes, such as Snow or World."""
-        pass
+        class SupertypeEnum(Enum):
+                Basic = "Basic"
+                Legendary = "Legendary"
+                Ongoing = "Ongoing"
+                Snow = "Snow"
+                World = "World"
+
+        def __init__(self,value):
+                #super(MgAbstractType,self).__init__()
+                self._traversable = True
+                self._value = value
