@@ -18,15 +18,21 @@ class MgTypeLine(core.MgNode):
                 """Default constructor for an empty type line."""
                 self._traversable = True
                 self._supertypes = expressions.MgTypeExpression()
+                self._supertypes.setParent(self)
                 self._types = expressions.MgTypeExpression()
+                self._types.setParent(self)
                 self._subtypes = expressions.MgTypeExpression()
+                self._subtypes.setParent(self)
         
         def __init__(self,supertypes,types,subtypes):
                 """Constructor that allows you to supply MgTypeExpression objects."""
                 self._traversable = True
                 self._supertypes = supertypes
+                self._supertypes.setParent(self)
                 self._types = types
+                self._types.setParent(self)
                 self._subtypes = subtypes
+                self._subtypes.setParent(self)
 
         def hasSupertype(self,t):
             """Checks whether a supertype is on the type line."""
@@ -38,7 +44,7 @@ class MgTypeLine(core.MgNode):
         
         def hasSubtype(self,t):
             """Checks whether a subtype is on the type line."""
-            return t in self._subtypes.isChild(t)
+            return self._subtypes.isChild(t)
             
         def isChild(self,child):
                 return child in {self._supertypes,self._types,self._subtypes}
