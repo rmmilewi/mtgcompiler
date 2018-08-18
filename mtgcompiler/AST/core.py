@@ -2,37 +2,25 @@ import abc
 
 class MgNode(metaclass=abc.ABCMeta):
         """This is the abstract base class for all AST classes."""
-        
-        #@property
-        #def parent(self):
-        #        """The parent node is the ancestor of a given node."""
-        #        return self._parent
 
-        #@parent.setter
         def setParent(self, parent):
-                """Setter method for the parent node."""
+                """Setter method for the parent node. The parent node is the ancestor of a given node."""
                 self._parent=parent
-        
-        #@parent.getter
+
         def getParent(self):
-                """Access method for the parent node."""
+                """Access method for the parent node. The parent node is the ancestor of a given node."""
                 return self._parent
         
-        #@property
-        #def traversable(self):
-        #        """The traversable flag indicates whether the given node can be visited by
-        #        visitors. Each class is expected to provide a default value for this flag
-        #        in their constructor(s)."""
-        #        return self._traversable
-        
-        #@traversable.setter
         def setTraversable(self,traversable):
-                """Setter method for the traversable flag."""
+                """Setter method for the traversable flag.The traversable flag indicates whether
+                the given node can be visited by visitors. Each class is expected to provide a 
+                default value for this flag in their constructor(s)."""
                 self._traversable = traversable
-        
-        #@traversable.getter
+
         def isTraversable(self):
-                """Getter method for the traversable flag."""
+                """Getter method for the traversable flag. The traversable flag indicates whether
+                the given node can be visited by visitors. Each class is expected to provide a 
+                default value for this flag in their constructor(s)."""
                 return self._traversable
                 
         @abc.abstractmethod

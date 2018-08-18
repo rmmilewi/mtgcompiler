@@ -1,4 +1,5 @@
-import core,expressions
+import mtgcompiler.AST.core as core
+import mtgcompiler.AST.expressions as expressions
 
 class MgFlavorText(core.MgNode):
         """This node holds the flavor text for a card."""

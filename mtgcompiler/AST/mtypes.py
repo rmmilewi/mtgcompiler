@@ -1,30 +1,25 @@
-import core,abc
+import abc
+import mtgcompiler.AST.core as core
 from enum import Enum
 
 #@functools.total_ordering
 class MgAbstractType(core.MgNode):
         """MgAbstractType is an uninstantiable parent class for types, subtypes, and supertypes. 
         It provides the functionalities common to all (sub|super)*type objects."""
-        pass
+        
         #def __init__(self):
         #        """(sub|super)*types can be visited by a visitor, 
         #        through they have no children of their own."""
         #        self.traversable = True
         
-        @property
-        def value():
-                """This is the value held by the type object. It can either be a pre-defined Enum type,
-                or a string in the case of a custom (sub|super)*type."""
-                return self._value
-        
-        @value.setter
         def setValue(self, value):
-                """Setter method for the value attribute."""
+                """Setter method for the value attribute. This is the value held by the type object. 
+                It can either be a pre-defined Enum type, or a string in the case of a custom (sub|super)*type."""
                 self._value=value
         
-        @value.getter
         def getValue(self):
-                """Access method for the parent node."""
+                """Access method for the value attribute. This is the value held by the type object. 
+                It can either be a pre-defined Enum type, or a string in the case of a custom (sub|super)*type."""
                 return self._value
                 
         def isCustomType(self):
@@ -69,15 +64,15 @@ class MgType(MgAbstractType):
                 
         def isPermanentType(self):
                 """Checks whether the given type is a recognized permanent type."""
-                return self._value in {TypeEnum.Artifact, TypeEnum.Creature, TypeEnum.Enchantment, TypeEnum.Land, TypeEnum.Planeswalker}
+                return self._value in {MgType.TypeEnum.Artifact, MgType.TypeEnum.Creature, MgType.TypeEnum.Enchantment, MgType.TypeEnum.Land, MgType.TypeEnum.Planeswalker}
                 
         def isSupplementaryType(self):
                 """Checks whether a type is one used in supplemental products like Planechase or Conspiracy."""
-                return self._value in {TypeEnum.Conspiracy,TypeEnum.Phenomenon,TypeEnum.Plane,TypeEnum.Scheme,TypeEnum.Vanguard}
+                return self._value in {MgType.TypeEnum.Conspiracy,MgType.TypeEnum.Phenomenon,MgType.TypeEnum.Plane,MgType.TypeEnum.Scheme,MgType.TypeEnum.Vanguard}
                 
         def isInstantOrSorceryType(self):
                 """Checks whether a type is an instant or sorcery."""
-                return self._value in {TypeEnum.Instant,TypeEnum.Sorcery}
+                return self._value in {MgType.TypeEnum.Instant,MgType.TypeEnum.Sorcery}
     
 class MgSubtype(MgAbstractType):
         """This class represents Magic subtypes, such as Arcane or Elephant."""
@@ -169,7 +164,7 @@ class MgSubtype(MgAbstractType):
                 Yanggu = "Yanggu"
                 Yanling = "Yanling"
                 
-        class CreatureSubtypeEnum(object):
+        class CreatureSubtypeEnum(Enum):
                 """Creatures and tribals share their lists of subtypes; these subtypes are called creature types."""
                 Advisor = "Advisor"
                 Aetherborn = "Aetherborn"
@@ -460,7 +455,6 @@ class MgSubtype(MgAbstractType):
                 Zendikar = "Zendikar"
         
         def __init__(self,value):
-                #super(MgAbstractType,self).__init__()
                 self._traversable = True
                 self._value = value
 

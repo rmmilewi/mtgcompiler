@@ -1,4 +1,5 @@
-import core,abc
+import mtgcompiler.AST.core as core
+import abc
 
 class MgAbstractExpression(core.MgNode):
         """This is the parent class for all expressions such as power/toughness, 
