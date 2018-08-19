@@ -96,6 +96,30 @@ class TestMagicTypes(unittest.TestCase):
                 self.assertEqual(len(t_creature.getTraversalSuccessors()),0)
                 self.assertEqual(len(t_ferret.getTraversalSuccessors()),0)
                 
+        def test_TypeEquivalence(self):
+                
+                t_elf_0 = mtgcompiler.AST.mtypes.MgSubtype(mtgcompiler.AST.mtypes.MgSubtype.CreatureSubtypeEnum.Elf)
+                t_elf_1 = mtgcompiler.AST.mtypes.MgSubtype(mtgcompiler.AST.mtypes.MgSubtype.CreatureSubtypeEnum.Elf)
+                
+                #These two are not the same objects.
+                self.assertNotEqual(t_elf_0, t_elf_1)
+                #But both are equivalent 'elf' creature types.
+                self.assertTrue(t_elf_0.isEquivalentType(t_elf_1))
+                self.assertTrue(t_elf_1.isEquivalentType(t_elf_0))
+                
+                #Custom-defined types are not equivalent to Enum-defined types.
+                t_elf_2 = mtgcompiler.AST.mtypes.MgSubtype("Elf")
+                self.assertFalse(t_elf_1.isEquivalentType(t_elf_2))
+                
+                #Types objects must share both the same class and the same value to be considered equivalent.
+                t_cleric = mtgcompiler.AST.mtypes.MgSubtype(mtgcompiler.AST.mtypes.MgSubtype.CreatureSubtypeEnum.Cleric)
+                self.assertFalse(t_elf_0.isEquivalentType(t_cleric))
+                
+                #Custom-defined types can, however, be compared to each other.
+                t_planetouched_0 = mtgcompiler.AST.mtypes.MgSupertype("Planetouched")
+                t_planetouched_1 = mtgcompiler.AST.mtypes.MgSupertype("Planetouched")
+                self.assertTrue(t_planetouched_0.isEquivalentType(t_planetouched_1))
+                
                 
         
 if __name__ == '__main__':

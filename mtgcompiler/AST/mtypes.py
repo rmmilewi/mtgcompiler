@@ -7,11 +7,6 @@ class MgAbstractType(core.MgNode):
         """MgAbstractType is an uninstantiable parent class for types, subtypes, and supertypes. 
         It provides the functionalities common to all (sub|super)*type objects."""
         
-        #def __init__(self):
-        #        """(sub|super)*types can be visited by a visitor, 
-        #        through they have no children of their own."""
-        #        self.traversable = True
-        
         def setValue(self, value):
                 """Setter method for the value attribute. This is the value held by the type object. 
                 It can either be a pre-defined Enum type, or a string in the case of a custom (sub|super)*type."""
@@ -21,6 +16,11 @@ class MgAbstractType(core.MgNode):
                 """Access method for the value attribute. This is the value held by the type object. 
                 It can either be a pre-defined Enum type, or a string in the case of a custom (sub|super)*type."""
                 return self._value
+                
+        def isEquivalentType(self,otherType):
+                """Type equivalence method. Two types are considered equivalent if they
+                share the same class and have have equal values."""
+                return type(self) == type(otherType) and self._value == otherType.getValue()
                 
         def isCustomType(self):
                 """Checks whether a type is a user-defined custom type, which must be a string."""
