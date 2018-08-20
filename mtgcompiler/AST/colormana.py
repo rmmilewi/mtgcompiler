@@ -105,5 +105,5 @@ class MgManaSymbol(core.MgNode):
                 return "{{{0}}}".format(output)
 
 class MgColorTerm(core.MgNode):
-        """This node represents a color term, such as 'non-white','green', or 'multicolored'."""
+        """This node represents a color term, such as 'green', or 'multicolored'."""
         pass

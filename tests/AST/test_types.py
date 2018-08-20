@@ -14,17 +14,17 @@ class TestMagicTypes(unittest.TestCase):
                 self.assertTrue(t2.isCustomType())
                 
                 #They are stored as strings, just as they are provided.
-                self.assertEqual(t0.getValue(),"Planetouched")
+                self.assertEqual(t0.getValue().lower(),"planetouched")
                 self.assertEqual(type(t0.getValue()),str)
-                self.assertEqual(t1.getValue(),"Origami")
+                self.assertEqual(t1.getValue().lower(),"origami")
                 self.assertEqual(type(t1.getValue()),str)
-                self.assertEqual(t2.getValue(),"Crane")
+                self.assertEqual(t2.getValue().lower(),"crane")
                 self.assertEqual(type(t2.getValue()),str)
                 
                 #They are unparsed as-is.
-                self.assertEqual(t0.unparseToString(),"Planetouched")
-                self.assertEqual(t1.unparseToString(),"Origami")
-                self.assertEqual(t2.unparseToString(),"Crane")
+                self.assertEqual(t0.unparseToString().lower(),"planetouched")
+                self.assertEqual(t1.unparseToString().lower(),"origami")
+                self.assertEqual(t2.unparseToString().lower(),"crane")
                 
         def test_MgTypeEnums(self):
                 t_creature = mtgcompiler.AST.mtypes.MgType(mtgcompiler.AST.mtypes.MgType.TypeEnum.Creature)
@@ -42,13 +42,13 @@ class TestMagicTypes(unittest.TestCase):
                 self.assertEqual(type(t_instant.getValue()),mtgcompiler.AST.mtypes.MgType.TypeEnum)
                 
                 #During unparsing, they are converted into an equivalent String representation.
-                self.assertEqual(t_creature.unparseToString(),"Creature")
-                self.assertEqual(t_instant.unparseToString(),"Instant")
+                self.assertEqual(t_creature.unparseToString().lower(),"creature")
+                self.assertEqual(t_instant.unparseToString().lower(),"instant")
                 
         def test_MgSupertypeEnums(self):
                 t_legendary = mtgcompiler.AST.mtypes.MgSupertype(mtgcompiler.AST.mtypes.MgSupertype.SupertypeEnum.Legendary)
                 self.assertEqual(t_legendary.getValue(),mtgcompiler.AST.mtypes.MgSupertype.SupertypeEnum.Legendary)
-                self.assertEqual(t_legendary.unparseToString(),"Legendary")
+                self.assertEqual(t_legendary.unparseToString().lower(),"legendary")
                 
         def test_MgSubtypeEnums(self):
                 t_ferret = mtgcompiler.AST.mtypes.MgSubtype(mtgcompiler.AST.mtypes.MgSubtype.CreatureSubtypeEnum.Ferret)

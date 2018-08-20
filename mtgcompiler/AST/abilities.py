@@ -19,6 +19,7 @@ class MgActivatedAbility(MgAbility):
                 instructions: one or more effects/instructions that follow from
                 activating the ability.
                 """
+                self._traversable = True
                 self._cost = cost
                 self._instructions = instructions
                 

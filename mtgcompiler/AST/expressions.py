@@ -51,6 +51,8 @@ class MgTypeExpression(MgAbstractExpression):
                 """The constructor accepts a list of (sub|super)*types in any order."""
                 self._traversable = True
                 self._tlist = args
+                self._plural = False
+                self._commaDelimited = False
                 for t in self._tlist:
                         t.setParent(self)
 
@@ -64,26 +66,172 @@ class MgTypeExpression(MgAbstractExpression):
                 self._tlist.append(t)
                 t.setParent(self)
                 
+        def isPlural(self):
+                """If the plural flag is set, then the type expression will be unparsed as plural
+                (e.g. 'artifact creatures' vs. 'artifact creature')."""
+                return self._plural
+                
+        def setPlural(self,plural):
+                """Changes the plural flag."""
+                self._plural = plural
+                
+        def isCommaDelimited(self):
+                """If the comma delimited flag is set, then the type expression will have its terms
+                separated by commas, as in 'non-vampire, non-werewolf, non-zombie creature' in Victim of Night."""
+                return self._commaDelimited
+                
+        def setCommaDelimited(self,commaDelimited):
+                self._commaDelimited = commaDelimited
+                
         def unparseToString(self):
                 """This method unparses the (sub|super)*types in the order given by the list, which
                 may or may not be the canonical order of supertypes -> types -> subtypes."""
-                return ' '.join(t.unparseToString() for t in self._tlist)
                 
+                """TODO: The plural solution here is just a hacky workaround until we can come up with something
+                more robust. For example, the plural of sorcery is sorceries, not sorcerys (though that word
+                has yet to occur in Magic English.).
+                However, I do think that the decision for the final entry in a type expression
+                to be plural should be decided at the level of the expression as we have it. We may specify
+                singular and plural variants for each element in the enums, and force users to supply both
+                variants for custom-defined types."""
                 
-class MgTargetExpression(MgAbstractExpression):
+                if self._commaDelimited is True:
+                        result = ' ,'.join(t.unparseToString() for t in self._tlist)
+                else:
+                        result = ' '.join(t.unparseToString() for t in self._tlist)
+                if self._plural is True:
+                        return result+'s'
+                else:
+                        return result
+                        
+class MgCommaExpression(MgAbstractExpression):
+        """This node represents a series of terms/expressions separated by a comma. 
+        'one, two, or three target creatures with flying' in Aerial Volley. This expression can
+        optionally be terminated with an 'and' or 'or'"""
+        pass
+        
+        
+class MgModalExpression(MgAbstractExpression):
+        """This node represents a series of modal choices, as is seen in cards like Abzan Charm or
+        Citadel Siege"""
+
+class MgUnaryOp(MgAbstractExpression):
+        """An uninstantiated parent class for all unary operators, like 'target X' or 'non-Y'."""
+        def __init__(self,operand):
+                self._traversable = True #All unary operators are traversable by default.
+                self._operand = operand
+                self._operand.setParent(self)
+                
+        def getOperand(self):
+                return self._operand
+                
+        def setOperand(self,operand):
+                self._operand = operand
+                operand.setParent(self)
+                
+        def isChild(self,child):
+                return child is self._operand
+                
+        def getTraversalSuccessors(self):
+                return [node for node in {self._operand} if node.isTraversable()]
+                
+class MgTargetExpression(MgUnaryOp):
         """A target expression is used whenever card text involves the word 'target'.
         For example, 'destroy target creature' or 'target player gains 5 life.'"""
-        pass
         
-class MgEachExpression(MgAbstractExpression):
+        def __init__(self,operand):
+                super().__init__(operand)
+        
+        def unparseToString(self):
+                return "target {0}".format(self._operand.unparseToString())
+                
+                
+class MgAllExpression(MgUnaryOp):
+        """An each expression is used whenever card text involves the word 'all'.
+        For example, 'destroy all creatures'."""
+        
+        def __init__(self,operand):
+                super().__init__(operand)
+                
+        def unparseToString(self):
+                return "all {0}".format(self._operand.unparseToString())  
+
+class MgEachExpression(MgUnaryOp):
         """An each expression is used whenever card text involves the word 'each'.
         For example, 'each player draws a card'."""
-        pass
         
-class MgChoiceExpression(MgAbstractExpression):
+        def __init__(self,operand):
+                super().__init__(operand)
+                
+        def unparseToString(self):
+                return "each {0}".format(self._operand.unparseToString())        
+        
+class MgChoiceExpression(MgUnaryOp):
         """A choice expression is used whenever card text involves the word 'choose'.
         For example, 'choose a color' or 'choose two:[...]'."""
-        pass
+
+        def __init__(self,operand):
+                super().__init__(operand)
+        
+        def unparseToString(self):
+                """TODO: 'choose a color' vs 'choose three colors' will require knowing the
+                plurality of the operand."""
+                return "choose {0}".format(self._operand.unparseToString())
+        
+class MgNonExpression(MgUnaryOp):
+        """Adds 'non-' to an underlying term/expression, such as 'non-vampire creatures'
+        or 'non-green'."""
+        def __init__(self,operand):
+                super().__init__(operand)
+        
+        def unparseToString(self):
+                return "non-{0}".format(self._operand.unparseToString())
+        
+class MgWithExpression(MgUnaryOp):
+        """This node represents a 'with' clause, as in 'target creature with power greater than 4'."""
+        
+        def __init__(self,operand):
+                super().__init__(operand)
+        
+        def unparseToString(self):
+                return "with {0}".format(self._operand.unparseToString())
+        
+class MgEffectExpression(MgAbstractExpression):
+        """This is the parent class for all effect expressions, such as destroying things, creating tokens, or gaining life.
+        It is not instantiated directly, but instead provides common functionalities for effects."""
+        def __init__(self):
+                self._traversable = True #All effects are traversable by default.
+                
+        
+class MgDestroyExpression(MgEffectExpression):
+        
+        def __init__(self,subject):
+                super().__init__()
+                self._subject = subject
+                self._subject.setParent(self)
+                
+        def getSubject(self):
+                """Get the subject of the destroy effect."""
+                return self._subject
+                
+        def setSubject(self,subject):
+                """Set the subject of the destroy effect."""
+                self._subject = subject
+                self._subject.setParent(self)
+                
+        def isChild(self,child):
+                return child is self._subject
+                
+        def getTraversalSuccessors(self):
+                return [node for node in {self._subject} if node.isTraversable()]
+                
+        def unparseToString(self):
+                return "destroy {0}".format(self._subject.unparseToString())
+                
+                
+        
+        
+
                 
                 
         

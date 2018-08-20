@@ -58,7 +58,6 @@ class MgType(MgAbstractType):
                 Vanguard = "Vanguard"
 
         def __init__(self,value):
-                #super(MgAbstractType,self).__init__()
                 self._traversable = True
                 self._value = value
                 
