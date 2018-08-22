@@ -36,7 +36,31 @@ class MgManaExpression(MgAbstractExpression):
 class MgPTExpression(MgAbstractExpression):
         """This node represents power/toughness expressions
         such as 5/5, */*, or X/X."""
-        pass
+        def __init__(self,power,toughness):
+                self._traversable = True
+                self._power = power
+                self._toughness = toughness
+        
+        def getPower(self):
+                return self._power
+        
+        def setPower(self,power):
+                self._power = power
+        
+        def getToughness(self):
+                return self._toughness
+        
+        def setToughness(self,toughness):
+                return self._toughness
+                
+        def isChild(self,child):
+                return child in {self._power,self._toughness}
+                
+        def getTraversalSuccessors(self):
+                return [n for n in {self._power,self._toughness} if n is not None and n.isTraversable()]
+                
+        def unparseToString(self):
+                return "{0}/{1}".format(self._power.unparseToString(),self._toughness.unparseToString)
     
 class MgColorExpression(MgAbstractExpression):
         """This node represents color expressions, such as
@@ -96,7 +120,7 @@ class MgTypeExpression(MgAbstractExpression):
                 variants for custom-defined types."""
                 
                 if self._commaDelimited is True:
-                        result = ' ,'.join(t.unparseToString() for t in self._tlist)
+                        result = ', '.join(t.unparseToString() for t in self._tlist[0:len(self._tlist)-1]) + ' ' + self._tlist[len(self._tlist)-1].unparseToString()
                 else:
                         result = ' '.join(t.unparseToString() for t in self._tlist)
                 if self._plural is True:
@@ -114,6 +138,11 @@ class MgCommaExpression(MgAbstractExpression):
 class MgModalExpression(MgAbstractExpression):
         """This node represents a series of modal choices, as is seen in cards like Abzan Charm or
         Citadel Siege"""
+        pass
+        
+class MgReminderText(MgAbstractExpression):
+        pass
+        
 
 class MgUnaryOp(MgAbstractExpression):
         """An uninstantiated parent class for all unary operators, like 'target X' or 'non-Y'."""
@@ -195,7 +224,19 @@ class MgWithExpression(MgUnaryOp):
         
         def unparseToString(self):
                 return "with {0}".format(self._operand.unparseToString())
+                
+
+class MgNamedExpression(MgUnaryOp):
+        """This node represents a 'named' clause, as in 'creature token named 'Cloud Sprite''."""
         
+        def __init__(self,operand):
+                super().__init__(operand)
+        
+        def unparseToString(self):
+                return "named {0}".format(self._operand.unparseToString())
+        
+
+
 class MgEffectExpression(MgAbstractExpression):
         """This is the parent class for all effect expressions, such as destroying things, creating tokens, or gaining life.
         It is not instantiated directly, but instead provides common functionalities for effects."""
@@ -204,7 +245,7 @@ class MgEffectExpression(MgAbstractExpression):
                 
         
 class MgDestroyExpression(MgEffectExpression):
-        
+        """Represents a destroy effect, as in 'destroy target non-white creature.'."""
         def __init__(self,subject):
                 super().__init__()
                 self._subject = subject
@@ -227,6 +268,133 @@ class MgDestroyExpression(MgEffectExpression):
                 
         def unparseToString(self):
                 return "destroy {0}".format(self._subject.unparseToString())
+                
+class MgExileExpression(MgEffectExpression):
+        """Represents an exile effect, as in 'exile all enchantments'."""
+        def __init__(self,subject):
+                super().__init__()
+                self._subject = subject
+                self._subject.setParent(self)
+                
+        def getSubject(self):
+                """Get the subject of the exile effect."""
+                return self._subject
+                
+        def setSubject(self,subject):
+                """Set the subject of the exile effect."""
+                self._subject = subject
+                self._subject.setParent(self)
+                
+        def isChild(self,child):
+                return child is self._subject
+                
+        def getTraversalSuccessors(self):
+                return [node for node in {self._subject} if node.isTraversable()]
+                
+        def unparseToString(self):
+                return "exile {0}".format(self._subject.unparseToString())
+                
+
+class MgTapUntapExpression(MgEffectExpression):
+        """Represents a tap or an untap effect, as in 'untap target permanent'.
+        Note that if both flags for tap and untap or set, the effect reads as
+        'tap or untap'"""
+        def __init__(self,subject,tap=True,untap=False):
+                super().__init__()
+                self._subject = subject
+                self._tap = tap
+                self._untap = untap
+                self._subject.setParent(self)
+                
+        def getSubject(self):
+                """Get the subject of the tap/untap effect."""
+                return self._subject
+                
+        def setSubject(self,subject):
+                """Set the subject of the tap/untap effect."""
+                self._subject = subject
+                self._subject.setParent(self)
+                
+        def isTap(self):
+                """Checks whether this effect taps the subject."""
+                return self._tap
+                
+        def setTap(self,tap):
+                """Changes whether this effect untaps the subject."""
+                self._tap = tap
+                
+        def isUntap(self):
+                """Checks whether this effect taps the subject."""
+                return self._untap
+                
+        def setUntap(self,untap):
+                """Changes whether this effect taps the subject."""
+                self._untap = untap
+                
+        def isChild(self,child):
+                return child is self._subject
+                
+        def getTraversalSuccessors(self):
+                return [node for node in {self._subject} if node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._tap is True and self._untap is True:
+                        return "tap or untap {0}".format(self._subject.unparseToString())
+                elif self._untap is True:
+                        return "untap {0}".format(self._subject.unparseToString())
+                else:
+                        #self._tap is True, or someone forgot to set a flag.
+                        return "tap {0}".format(self._subject.unparseToString())
+                        
+                        
+class MgCounterExpression(MgEffectExpression):
+        """Represents an counterspell effect, as in 'counter target non-creature spell'."""
+        pass
+
+class MgGainLoseExpression(MgEffectExpression):
+        def __init__(self,subject,):
+                pass
+                
+class MgLifeLossGainExpression(MgEffectExpression):
+        pass
+        
+        
+class MgTokenDescriptor(MgAbstractExpression):
+        """Represents the description of a token."""
+        pass
+
+class MgCreateTokenExpression(MgEffectExpression):
+        def __init__(self,descriptor,quantity=None):
+                 """quantity: A term/expression denoting how many tokens are made. If quantity is None, it is assumed only one token
+                 is made.
+                 descriptor: A token descriptor node."""
+                 self._quantity =  quantity
+                 self._descriptor = descriptor
+        
+        def getQuantity(self):
+                return self._quantity
+                
+        def setQuantity(self,quantity):
+                self._quantity = quantity
+        
+        def getDescriptor(self):
+                return self._descriptor
+                
+        def setDescriptor(self):
+                return 
+                 
+        def unparseToString(self):
+                if self._quantity is None:
+                        return "create a {0}".format(self._descriptor.unparseToString())
+                else:
+                        return "create {0} {1}".format(self._quantity.unparseToString(),self._descriptor.unparseToString())
+
+class MgSearchLibraryExpression(MgEffectExpression):
+        pass
+        
+class MgShuffleLibraryExpression(MgEffectExpression):
+        pass
+        
                 
                 
         

@@ -1,20 +1,20 @@
 import unittest
-import mtgcompiler.AST.card
-import mtgcompiler.AST.expressions
-import mtgcompiler.AST.mtypes
+from mtgcompiler.AST.card import MgTypeLine,MgFlavorText
+from mtgcompiler.AST.expressions import MgTypeExpression
+from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
 
 class TestMagicCardComponents(unittest.TestCase):
         def test_TypeLine(self):
-                t_legendary = mtgcompiler.AST.mtypes.MgSupertype(mtgcompiler.AST.mtypes.MgSupertype.SupertypeEnum.Legendary)
-                t_creature = mtgcompiler.AST.mtypes.MgType(mtgcompiler.AST.mtypes.MgType.TypeEnum.Creature)
-                t_human = mtgcompiler.AST.mtypes.MgSubtype(mtgcompiler.AST.mtypes.MgSubtype.CreatureSubtypeEnum.Human)
-                t_cleric = mtgcompiler.AST.mtypes.MgSubtype(mtgcompiler.AST.mtypes.MgSubtype.CreatureSubtypeEnum.Cleric)
+                t_legendary = MgSupertype(MgSupertype.SupertypeEnum.Legendary)
+                t_creature = MgType(MgType.TypeEnum.Creature)
+                t_human = MgSubtype(MgSubtype.CreatureSubtypeEnum.Human)
+                t_cleric = MgSubtype(MgSubtype.CreatureSubtypeEnum.Cleric)
                 
-                texpr_supertypes = mtgcompiler.AST.expressions.MgTypeExpression(t_legendary)
-                texpr_types = mtgcompiler.AST.expressions.MgTypeExpression(t_creature)
-                texpr_subtypes = mtgcompiler.AST.expressions.MgTypeExpression(t_human,t_cleric)
+                texpr_supertypes = MgTypeExpression(t_legendary)
+                texpr_types = MgTypeExpression(t_creature)
+                texpr_subtypes = MgTypeExpression(t_human,t_cleric)
                 
-                typeline = mtgcompiler.AST.card.MgTypeLine(supertypes=texpr_supertypes,types=texpr_types,subtypes=texpr_subtypes)
+                typeline = MgTypeLine(supertypes=texpr_supertypes,types=texpr_types,subtypes=texpr_subtypes)
                 
                 self.assertTrue(typeline.isTraversable())
                 self.assertEqual(len(typeline.getTraversalSuccessors()),3)
@@ -26,7 +26,19 @@ class TestMagicCardComponents(unittest.TestCase):
                 self.assertTrue(typeline.hasType(t_creature))
                 self.assertTrue(typeline.hasSubtype(t_human))
                 
-                self.assertEqual(typeline.unparseToString(),"Legendary Creature — Human Cleric")
+                self.assertEqual(typeline.unparseToString().lower(),"legendary creature — human cleric")
+                
+        def testFlavorText(self):
+                flavor = "My family protects all families."
+                ftext = MgFlavorText(flavor)
+                
+                self.assertTrue(ftext.isTraversable())
+                self.assertEqual(len(ftext.getTraversalSuccessors()),0)
+                self.assertEqual(ftext.getFlavor(),flavor)
+                
+                flavor2 = "It dodges waves of water to prepare for waves of magic."
+                ftext.setFlavor(flavor2)
+                self.assertEqual(ftext.unparseToString(),flavor2)
                 
 if __name__ == '__main__':
         unittest.main()
