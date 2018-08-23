@@ -1,5 +1,5 @@
 import mtgcompiler.AST.core as core
-from enum import Flag,auto
+from enum import Enum,Flag,auto
 
 class MgManaSymbol(core.MgNode):
         """This node represents a mana symbol, such as {G\P} or {U/W}."""
@@ -106,4 +106,79 @@ class MgManaSymbol(core.MgNode):
 
 class MgColorTerm(core.MgNode):
         """This node represents a color term, such as 'green', or 'multicolored'."""
-        pass
+        
+        class ColorTermEnum(Enum):
+                """
+                105.1. There are five colors in the Magic game: white, blue, black, red, and green.
+                105.2a A monocolored object is exactly one of the five colors.
+                105.2b A multicolored object is two or more of the five colors.
+                105.2c A colorless object has no color."""
+                White = "White"
+                Blue = "Blue"
+                Black = "Black"
+                Red = "Red"
+                Green = "Green"
+                Monocolored = "Monocolored"
+                Multicolored = "Multicolored"
+                Colorless = "Colorless"
+        
+        def __init__(self,value):
+                """value: an instance of the ColorTermEnum, or, 
+                optionally, a custom-defined color term string (e.g. purple)."""
+                self._traversable = True
+                self._value = value
+                
+        def setValue(self, value):
+                """Setter method for the value attribute. This is the value held by the color term object. 
+                It can either be the pre-defined Enum type, or a string in the case of a custom color term."""
+                self._value=value
+        
+        def getValue(self):
+                """Access method for the value attribute. This is the value held by the color term object. 
+                It can either be a pre-defined Enum type, or a string in the case of a custom color term."""
+                return self._value
+
+        def isCustomTerm(self):
+                """Checks whether a color term is user-defined, which must be a string."""
+                return type(self._value) is str
+                
+        def isWhite(self):
+                return self._value == MgColorTerm.ColorTermEnum.White
+                
+        def isBlue(self):
+                return self._value == MgColorTerm.ColorTermEnum.Blue
+                
+        def isBlack(self):
+                return self._value == MgColorTerm.ColorTermEnum.Black
+                
+        def isRed(self):
+                return self._value == MgColorTerm.ColorTermEnum.Red
+
+        def isGreen(self):
+                return self._value == MgColorTerm.ColorTermEnum.Green
+                
+        def isMonocolored(self):
+                return self._value == MgColorTerm.ColorTermEnum.Monocolored
+                
+        def isMulticolored(self):
+                return self._value == MgColorTerm.ColorTermEnum.Multicolored
+                
+        def isColorless(self):
+                return self._value == MgColorTerm.ColorTermEnum.Colorless
+                
+        def isChild(self,child):
+                """Color terms have no children."""
+                return False
+        
+        def getTraversalSuccessors(self):
+                """Color terms are traversable, but have no successors."""
+                return []
+                
+        def unparseToString(self):
+                if type(self._value) is str:
+                        return self._value
+                else:
+                        return self._value.value
+                
+        
+                
