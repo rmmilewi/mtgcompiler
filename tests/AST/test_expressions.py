@@ -1,10 +1,35 @@
 import unittest
 import mtgcompiler.AST.expressions
 from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
-from mtgcompiler.AST.colormana import MgManaSymbol
-from mtgcompiler.AST.expressions import MgTypeExpression,MgManaExpression,MgPTExpression,MgNonExpression,MgTargetExpression,MgAllExpression,MgEachExpression,MgChoiceExpression,MgTapUntapExpression,MgDestroyExpression
+from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
+from mtgcompiler.AST.expressions import MgColorExpression,MgTypeExpression,MgManaExpression,MgPTExpression,MgNonExpression,MgAndExpression,MgOrExpression,MgTargetExpression,MgAllExpression,MgEachExpression,MgChoiceExpression,MgTapUntapExpression,MgDestroyExpression
 
 class TestMagicExpressions(unittest.TestCase):
+        
+        def test_ColorExpressions(self):
+                multicolored = MgColorTerm(MgColorTerm.ColorTermEnum.Multicolored)
+                multicoloredExpr = MgColorExpression(multicolored)
+                self.assertEqual(multicoloredExpr.unparseToString().lower(),"multicolored")
+                
+                red = MgColorTerm(MgColorTerm.ColorTermEnum.Red)
+                green = MgColorTerm(MgColorTerm.ColorTermEnum.Green)
+                andExpr = MgAndExpression(red,green)
+                rgExpr = MgColorExpression(andExpr)
+                self.assertEqual(rgExpr.unparseToString().lower(),"red and green")
+                
+                self.assertTrue(rgExpr.isTraversable())
+                self.assertEqual(len(rgExpr.getTraversalSuccessors()),1)
+                
+                self.assertTrue(rgExpr.isChild(andExpr))
+                self.assertEqual(andExpr.getParent(),rgExpr)
+                
+                white = MgColorTerm(MgColorTerm.ColorTermEnum.White)
+                andThenWhite = MgAndExpression(andExpr,white)
+                rgExpr.setValue(andThenWhite)
+                self.assertEqual(rgExpr.getValue(),andThenWhite)
+                self.assertEqual(rgExpr.unparseToString().lower(),"red and green and white")
+                
+                
         
         def test_TypeExpressions(self):
                 t_legendary = MgSupertype(MgSupertype.SupertypeEnum.Legendary)

@@ -57,7 +57,7 @@ class MgPTExpression(MgAbstractExpression):
                 return child in {self._power,self._toughness}
                 
         def getTraversalSuccessors(self):
-                return [n for n in {self._power,self._toughness} if n is not None and n.isTraversable()]
+                return [node for node in {self._power,self._toughness} if node is not None and node.isTraversable()]
                 
         def unparseToString(self):
                 return "{0}/{1}".format(self._power.unparseToString(),self._toughness.unparseToString)
@@ -65,8 +65,36 @@ class MgPTExpression(MgAbstractExpression):
 class MgColorExpression(MgAbstractExpression):
         """This node represents color expressions, such as
         'White' or 'Red and Green'."""
-        pass
-         
+        
+        def __init__(self,termOrExpr):
+                """Unlike MgTypeExpression, the constructor for MgColorExpression accepts a single child
+                that can be a composite (e.g. an 'and' expression or a comma-separated series. You have to say
+                'red and white and green', you can't say 'red white green'.)"""
+                self._traversable = True
+                self._value = termOrExpr
+                self._value.setParent(self)
+                
+        def isChild(self,child):
+                return child is self._value
+                
+        def getTraversalSuccessors(self):
+                """By default, the value held by the node should be traversable, unless
+                traversal was disabled for that child node."""
+                return [v for v in {self._value} if v.isTraversable()]
+                
+        def getValue(self):
+                """Returns the term or expression held by the MgColorExpression node."""
+                return self._value
+                
+        def setValue(self,value):
+                """Sets the term or expression held by the MgColorExpression node."""
+                self._value = value
+                self._value.setParent(self)
+                
+        def unparseToString(self):
+                return self._value.unparseToString()
+                
+
 class MgTypeExpression(MgAbstractExpression):
         """A type expression is a sequence of subtypes,types, or
         supertypes. For example, Snow Artifact or Human Cleric."""
@@ -92,11 +120,11 @@ class MgTypeExpression(MgAbstractExpression):
                 
         def isPlural(self):
                 """If the plural flag is set, then the type expression will be unparsed as plural
-                (e.g. 'artifact creatures' vs. 'artifact creature')."""
+                (e.g. 'artifact creatures' vs. 'artifact creature'). TODO: This may be subject to change."""
                 return self._plural
                 
         def setPlural(self,plural):
-                """Changes the plural flag."""
+                """Changes the plural flag. TODO: This may be subject to change."""
                 self._plural = plural
                 
         def isCommaDelimited(self):
@@ -140,9 +168,62 @@ class MgModalExpression(MgAbstractExpression):
         Citadel Siege"""
         pass
         
-class MgReminderText(MgAbstractExpression):
+class MgReminderExpression(MgAbstractExpression):
+        """This node represents reminder text contained in parentheses."""
         pass
         
+class MgBinaryOp(MgAbstractExpression):
+        """An uninstantiated parent class for all binary operators, namely logical operators like 'and', 'or', etc."""
+        def __init__(self,lhs,rhs):
+                """
+                lhs: left-hand side of the operator.
+                rhs: right-hand side of the operator.
+                """
+                self._traversable = True #All binary operators are traversable by default.
+                self._lhs = lhs
+                self._rhs = rhs
+                self._lhs.setParent(self)
+                self._rhs.setParent(self)
+                
+        def getLhs(self):
+                """Gets the left-hand side."""
+                return self._lhs
+                
+        def setLhs(self,lhs):
+                """Sets the left-hand side."""
+                self._lhs = lhs
+                self._lhs.setParent(self)
+        
+        def getRhs(self):
+                """Gets the left-hand side."""
+                return self._rhs
+                
+        def setRhs(self,rhs):
+                """Sets the left-hand side."""
+                self._rhs = rhs
+                self._rhs.setParent(self)
+                
+        def isChild(self,child):
+                return child in {self._lhs,self._rhs}
+                
+        def getTraversalSuccessors(self):
+                return [node for node in {self._lhs,self._rhs} if node.isTraversable()]
+                
+class MgAndExpression(MgBinaryOp):
+        """Represents an 'and', such as 'red and green' or 'target creature and target enchantment'"""
+        def __init__(self,lhs,rhs):
+                super().__init__(lhs,rhs)
+                
+        def unparseToString(self):
+                return "{0} and {1}".format(self._lhs.unparseToString(),self._rhs.unparseToString())
+                
+class MgOrExpression(MgBinaryOp):
+        """Represents an 'or', such as 'white or black' or 'target creature or player'"""
+        def __init__(self,lhs,rhs):
+                super().__init__(lhs,rhs)
+                
+        def unparseToString(self):
+                return "{0} or {1}".format(self._lhs.unparseToString(),self._rhs.unparseToString())
 
 class MgUnaryOp(MgAbstractExpression):
         """An uninstantiated parent class for all unary operators, like 'target X' or 'non-Y'."""
@@ -268,7 +349,7 @@ class MgDestroyExpression(MgEffectExpression):
                 
         def unparseToString(self):
                 return "destroy {0}".format(self._subject.unparseToString())
-                
+
 class MgExileExpression(MgEffectExpression):
         """Represents an exile effect, as in 'exile all enchantments'."""
         def __init__(self,subject):
