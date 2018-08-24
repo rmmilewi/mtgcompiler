@@ -488,6 +488,5 @@ class MgSupertype(MgAbstractType):
                 World = "World"
 
         def __init__(self,value):
-                #super(MgAbstractType,self).__init__()
                 self._traversable = True
                 self._value = value

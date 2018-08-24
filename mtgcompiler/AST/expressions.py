@@ -1,11 +1,136 @@
 import mtgcompiler.AST.core as core
 import abc
+from enum import Enum
 
 class MgAbstractExpression(core.MgNode):
         """This is the parent class for all expressions such as power/toughness, 
         types, and mana costs. This class is not instantiated, but provides common
         functionalities for all of these kinds of expressions."""
         pass
+        
+        
+class MgValueExpression(MgAbstractExpression):
+        """An uninstantiated parent class for value expressions, such as... 
+                - '1+*' in '1+*/1+*'
+                - 'six' in 'destroy six target creatures'
+                - 'twice X' in 'you gain twice X life'
+        """
+        pass
+
+class MgNumberValue(MgValueExpression):
+        """Represents a number value, which can be unparsed in one of three ways,
+        depending on which flag is selected:
+                - Literal value: 1,2,3...
+                - Magic English quantity - one, two, three...
+                - Magic English frequency - once, twice, three times...
+        """
+        
+        class NumberTypeEnum(Enum):
+                """Indicates how the number value should be unparsed."""
+                Literal = auto() #1, 2, 3
+                Quantity = auto() #one, two, three
+                Frequency = auto() #once, twice, three times
+        
+        def __init__(self,value,ntype=MgNumberValue.NumberTypeEnum.Literal):
+                self._traversable = True
+                self._value = value
+                self._ntype = ntype
+        
+        def isLiteral(self):
+                """Checks if the number type is a literal."""
+                return self._ntype == MgNumberValue.NumberType.Literal
+                
+        def setLiteral(self):
+                """Makes the number type a literal."""
+                self._ntype = MgNumberValue.NumberType.Literal
+                
+        def isQuantity(self):
+                """Checks if the number type is a quantity."""
+                return self._ntype == MgNumberValue.NumberType.Quantity
+                
+        def setQuantity(self):
+                """Makes the number type a quantity."""
+                self._ntype = MgNumberValue.NumberType.Quantity
+                
+        def isFrequency(self):
+                """Checks if the number type is a frequency."""
+                return self._ntype == MgNumberValue.NumberType.Frequency
+                
+        def setFrequency(self):
+                """Makes the number type a frequency."""
+                self._ntype = MgNumberValue.NumberType.Frequency
+                
+        def getValue(self):
+                """Gets the underlying integer value."""
+                return self._value
+                
+        def setValue(self,value):
+                """Sets the underlying integer value."""
+                self._value = value
+                
+        def isChild(self,child):
+                """A number value node has no children."""
+                return False
+        
+        def getTraversalSuccessors(self):
+                """A number value node has no traversal successors."""
+                return []
+        
+        def unparseToString(self):
+                if self._ntype == MgNumberValue.NumberType.Literal:
+                        return str(self._value)
+                
+                if self._ntype == MgNumberValue.NumberType.Frequency and self._value == 1:
+                        return "once"
+                if self._ntype == MgNumberValue.NumberType.Frequency and self._value == 2:
+                        return "twice"
+                            
+                quantity = ""
+                
+                #Conversion scheme here lovingly borrowed from kamyu104/LeetCode
+                
+                lookup = {0: "zero", 1:"one", 2: "two", 3: "three", 4: "four", \
+                          5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", \
+                          10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen", 14: "fourteen", \
+                          15: "fifteen", 16: "sixteen", 17: "seventeen", 18: "eighteen", 19: "nineteen", \
+                          20: "twenty", 30: "thirty", 40: "forty", 50: "fifty", 60: "sixty", \
+                          70: "seventy", 80: "eighty", 90: "ninety"}
+                unit = ["", "thousand", "million", "billion"]
+                          
+                def threeDigits(self, num, lookup, unit):
+                    res = []
+                    if num / 100:
+                        res = [lookup[num / 100] + " " + "hundred"]
+                    if num % 100:
+                        res.append(self.twoDigits(num % 100, lookup))
+                    if unit != "":
+                        res.append(unit)
+                    return " ".join(res)
+
+                def twoDigits(self, num, lookup):
+                    if num in lookup:
+                        return lookup[num]
+                    return lookup[(num / 10) * 10] + " " + lookup[num % 10]
+                    
+                if num == 0:
+                        quantity = lookup[0]
+                else:
+                        res, i = [], 0
+                        while num:
+                                cur = num % 1000
+                                if num % 1000:
+                                        res.append(self.threeDigits(cur, lookup, unit[i]))
+                                num //= 1000
+                                i += 1
+                        quantity = " ".join(res[::-1])
+                
+                if self._ntype == MgNumberValue.NumberType.Quantity:
+                        return quantity
+                elif self._ntype == MgNumberValue.NumberType.Frequency:
+                        return "{0} times".format(quantity)
+                else:
+                        raise ValueError("Number type is unspecified or unrecognizable.")
+                
     
 class MgManaExpression(MgAbstractExpression):
         """This node represents mana expressions, sequences of 
@@ -168,10 +293,6 @@ class MgModalExpression(MgAbstractExpression):
         Citadel Siege"""
         pass
         
-class MgReminderExpression(MgAbstractExpression):
-        """This node represents reminder text contained in parentheses."""
-        pass
-        
 class MgBinaryOp(MgAbstractExpression):
         """An uninstantiated parent class for all binary operators, namely logical operators like 'and', 'or', etc."""
         def __init__(self,lhs,rhs):
@@ -316,8 +437,6 @@ class MgNamedExpression(MgUnaryOp):
         def unparseToString(self):
                 return "named {0}".format(self._operand.unparseToString())
         
-
-
 class MgEffectExpression(MgAbstractExpression):
         """This is the parent class for all effect expressions, such as destroying things, creating tokens, or gaining life.
         It is not instantiated directly, but instead provides common functionalities for effects."""
@@ -427,18 +546,24 @@ class MgTapUntapExpression(MgEffectExpression):
                         #self._tap is True, or someone forgot to set a flag.
                         return "tap {0}".format(self._subject.unparseToString())
                         
-                        
+class MgReturnExpression(MgEffectExpression):
+        """Represents a return effect, as in 'return target creature to its owners hand'."""
+        pass
+                     
 class MgCounterExpression(MgEffectExpression):
         """Represents an counterspell effect, as in 'counter target non-creature spell'."""
         pass
 
 class MgGainLoseExpression(MgEffectExpression):
-        def __init__(self,subject,):
+        """Represents the act of gaining or losing something, like 'target creature gains flying until end of turn'
+        or 'you lose three life'."""
+        def __init__(self,subject):
                 pass
                 
-class MgLifeLossGainExpression(MgEffectExpression):
-        pass
         
+class MgAddRemoveExpression(MgEffectExpressions):
+        """Represents adding or removing something from something else, like 'remove X storage counters from Mage Ring Network'."""
+        pass
         
 class MgTokenDescriptor(MgAbstractExpression):
         """Represents the description of a token."""
