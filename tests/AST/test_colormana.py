@@ -19,7 +19,7 @@ class TestColorsAndManaSymbols(unittest.TestCase):
                 greenSymbol = MgManaSymbol(colorv=MgManaSymbol.ManaType.Green)
                 self.assertEqual(greenSymbol.unparseToString(),"{G}")
         
-        def testGenericManaSymbols(self):
+        def test_GenericManaSymbols(self):
                 zeroSymbol = MgManaSymbol(colorv=None,modifiers=None,cvalue=0)
                 self.assertEqual(zeroSymbol.unparseToString(),"{0}")
                 
@@ -33,7 +33,7 @@ class TestColorsAndManaSymbols(unittest.TestCase):
                 self.assertEqual(infinitySymbol.unparseToString(),"{∞}")
         
         @unittest.expectedFailure        
-        def testHybridManaSymbols(self):
+        def test_HybridManaSymbols(self):
                 #This test is currently failing. I'm not fully understanding why the canonical order
                 #for hybrid mana symbols is the way that it is.
                 
@@ -69,7 +69,7 @@ class TestColorsAndManaSymbols(unittest.TestCase):
                 rwSymbol = MgManaSymbol(colorv=MgManaSymbol.ManaType.Red | MgManaSymbol.ManaType.White)
                 self.assertEqual(bgSymbol.unparseToString(),"{R/W}")
                 
-        def testModifiedSymbols(self):
+        def test_ModifiedSymbols(self):
                 snowSymbol = MgManaSymbol(modifiers=MgManaSymbol.ManaModifier.Snow)
                 self.assertEqual(snowSymbol.unparseToString(),"{S}")
                 
@@ -83,7 +83,7 @@ class TestColorsAndManaSymbols(unittest.TestCase):
                 self.assertEqual(redAlternateTwoSymbol.unparseToString(),"{R/2}")
                 
                 
-        def testColorTerms(self):
+        def test_ColorTerms(self):
                 whiteTerm = MgColorTerm(MgColorTerm.ColorTermEnum.White)
                 self.assertEqual(whiteTerm.unparseToString().lower(),"white")
                 self.assertTrue(whiteTerm.isWhite())

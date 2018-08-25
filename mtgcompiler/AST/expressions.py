@@ -1,6 +1,6 @@
 import mtgcompiler.AST.core as core
 import abc
-from enum import Enum
+from enum import Enum,auto
 
 class MgAbstractExpression(core.MgNode):
         """This is the parent class for all expressions such as power/toughness, 
@@ -31,7 +31,7 @@ class MgNumberValue(MgValueExpression):
                 Quantity = auto() #one, two, three
                 Frequency = auto() #once, twice, three times
         
-        def __init__(self,value,ntype=MgNumberValue.NumberTypeEnum.Literal):
+        def __init__(self,value,ntype):
                 self._traversable = True
                 self._value = value
                 self._ntype = ntype
@@ -157,6 +157,30 @@ class MgManaExpression(MgAbstractExpression):
         def addManaSymbol(self,sym):
                 self._symlist.append(sym)
                 sym.setParent(self)
+
+
+class MgDescriptionExpression(core.MgNode):
+        """A description expression is a sequence of sub-expressions/terms that describe some object.
+        For example, in 'destroy target non-black creature', 'non-black' is in a MgColorExpression
+        and 'creature' is in an MgTypeExpression. The description expression strings these together.
+        """
+        def __init__(self,*args):
+                """The constructor accepts a list of descriptors in any order."""
+                self._traversable = True
+                self._dlist = args
+                for d in self._dlist:
+                        d.setParent(self)
+                        
+        def isChild(self,child):
+                return child in self._dlist
+        
+        def getTraversalSuccessors(self):
+                return [d for d in self._dlist if d.isTraversable()]
+                
+        def unparseToString(self):
+                return ' '.join(d.unparseToString() for d in self._dlist)
+
+
     
 class MgPTExpression(MgAbstractExpression):
         """This node represents power/toughness expressions
@@ -561,7 +585,7 @@ class MgGainLoseExpression(MgEffectExpression):
                 pass
                 
         
-class MgAddRemoveExpression(MgEffectExpressions):
+class MgAddRemoveExpression(MgEffectExpression):
         """Represents adding or removing something from something else, like 'remove X storage counters from Mage Ring Network'."""
         pass
         
@@ -576,18 +600,22 @@ class MgCreateTokenExpression(MgEffectExpression):
                  descriptor: A token descriptor node."""
                  self._quantity =  quantity
                  self._descriptor = descriptor
+                 self._quantity.setParent(self)
+                 self._descriptor.setParent(self)
         
         def getQuantity(self):
                 return self._quantity
                 
         def setQuantity(self,quantity):
                 self._quantity = quantity
+                self._quantity.setParent(self)
         
         def getDescriptor(self):
                 return self._descriptor
                 
-        def setDescriptor(self):
-                return 
+        def setDescriptor(self,descriptor):
+                self._descriptor = descriptor 
+                self._descriptor.setParent(self)
                  
         def unparseToString(self):
                 if self._quantity is None:

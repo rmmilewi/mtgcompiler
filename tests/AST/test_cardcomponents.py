@@ -28,7 +28,7 @@ class TestMagicCardComponents(unittest.TestCase):
                 
                 self.assertEqual(typeline.unparseToString().lower(),"legendary creature — human cleric")
                 
-        def testFlavorText(self):
+        def test_FlavorText(self):
                 flavor = "My family protects all families."
                 ftext = MgFlavorText(flavor)
                 

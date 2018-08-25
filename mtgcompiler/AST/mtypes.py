@@ -2,7 +2,8 @@ import abc
 import mtgcompiler.AST.core as core
 from enum import Enum
 
-#@functools.total_ordering
+
+
 class MgAbstractType(core.MgNode):
         """MgAbstractType is an uninstantiable parent class for types, subtypes, and supertypes. 
         It provides the functionalities common to all (sub|super)*type objects."""

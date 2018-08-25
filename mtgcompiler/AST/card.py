@@ -85,14 +85,23 @@ class MgTypeLine(core.MgNode):
                 self._subtypes = MgTypeExpression()
                 self._subtypes.setParent(self)
         
-        def __init__(self,supertypes,types,subtypes):
+        def __init__(self,supertypes=None,types=None,subtypes=None):
                 """Constructor that allows you to supply MgTypeExpression objects."""
                 self._traversable = True
-                self._supertypes = supertypes
+                if supertypes is not None:
+                        self._supertypes = supertypes
+                else:
+                        self._supertypes = MgTypeExpression()
                 self._supertypes.setParent(self)
-                self._types = types
+                if types is not None:
+                        self._types = types
+                else:
+                        self._types = MgTypeExpression()
                 self._types.setParent(self)
-                self._subtypes = subtypes
+                if subtypes is not None:
+                        self._subtypes = subtypes
+                else:
+                        self._subtypes = MgTypeExpression()
                 self._subtypes.setParent(self)
 
         def hasSupertype(self,t):
@@ -132,52 +141,52 @@ class MgCard(core.MgNode):
                 most of which are optional."""
                 
                 if "name" in kwargs:
-                        self._name = name
+                        self._name = kwargs["name"]
                 else:
                         self._name = MgName()
                         
                 if "manaCost" in kwargs:
-                        self._manaCost = manaCost
+                        self._manaCost = kwargs["manaCost"]
                 else:
                         self._manaCost = MgManaExpression()
                         
                 if "colorIndicator" in kwargs:
-                        self._colorIndicator = colorIndicator
+                        self._colorIndicator = kwargs["colorIndicator"]
                 else:
                         self._colorIndicator = None
                         
                 if "typeLine" in kwargs:
-                        self._typeLine = typeLine
+                        self._typeLine = kwargs["typeLine"]
                 else:
                         self._typeLine = MgTypeLine()
                         
                 if "loyalty" in kwargs:
-                        self._loyalty = loyalty
+                        self._loyalty = kwargs["loyalty"]
                 else:
                         self._loyalty = None
                         
                 if "expansionSymbol" in kwargs:
-                        self._expansionSymbol = expansionSymbol
+                        self._expansionSymbol = kwargs["expansionSymbol"]
                 else:
                         self._expansionSymbol = None
                         
                 if "textBox" in kwargs:
-                        self._textBox = textBox
+                        self._textBox = kwargs["textBox"]
                 else:
                         self._textBox = MgTextBox()
                         
                 if "powerToughness" in kwargs:
-                        self._powerToughness = powerToughness
+                        self._powerToughness = kwargs["powerToughness"]
                 else:
                         self._powerToughness = None
                         
                 if "handModifier" in kwargs:
-                        self._handModifier = handModifier
+                        self._handModifier = kwargs["handModifier"]
                 else:
                         self._handModifier = None
                         
                 if "lifeModifier" in kwargs:
-                        self._lifeModifier = lifeModifier
+                        self._lifeModifier = kwargs["lifeModifier"]
                 else:
                         self._lifeModifier = None
                         
@@ -196,10 +205,10 @@ class MgCard(core.MgNode):
                 self._manacost = manacost
                 
         def getColorIndicator(self):
-                return self._colorindicator
+                return self._colorIndicator
 
-        def setColorIndicator(self,colorindicator):
-                self._colorindicator = colorindicator
+        def setColorIndicator(self,colorIndicator):
+                self._colorIndicator = colorIndicator
         
         def getTypeLine(self):
                 return self._typeLine
@@ -248,8 +257,37 @@ class MgCard(core.MgNode):
                 self._lifeModifier = lifeModifier
                 
         def isChild(self,child):
-                return child in {self._name,self._manacost,self._colorindicator,self._typeline,self._loyalty,self._expansionSymbol,self._textBox,self._powerToughness,self._handModifier,self._lifeModifier}
+                return child in {self._name,self._manaCost,self._colorIndicator,self._typeLine,self._loyalty,self._expansionSymbol,self._textBox,self._powerToughness,self._handModifier,self._lifeModifier}
                 
         def getTraversalSuccessors(self):
-                return [ts for ts in {self._name,self._manacost,self._colorindicator,self._typeline,self._loyalty,self._expansionSymbol,self._textBox,self._powerToughness,self._handModifier,self._lifeModifier} if ts is not None and ts.isTraversable()]               
+                return [ts for ts in {self._name,self._manaCost,self._colorIndicator,self._typeLine,self._loyalty,self._expansionSymbol,self._textBox,self._powerToughness,self._handModifier,self._lifeModifier} if ts is not None and ts.isTraversable()]               
+        
+        def unparseToString(self):
+                output = ""
+                if self._name is not None:
+                        output += "{0}".format(self._name.unparseToString())
+                if self._manaCost is not None:
+                        output += " {0}\n".format(self._manaCost.unparseToString())
+                else:
+                        output += "\n"
+                if self._colorIndicator is not None:
+                        output += "Color Indicator: {0}\n".format(self._colorIndicator)
+                if self._typeLine is not None:
+                        output += "{0}".format(self._typeLine.unparseToString())
+                if self._expansionSymbol is not None:
+                        output += "     {0}\n".format(self._typeline.unparseToString())
+                else:
+                        output += "\n"
+                if self._textBox is not None:
+                        output += "{0}\n".format(self._textBox.unparseToString())
+                if self._loyalty is not None:
+                        output += "{0}\n".format(self._loyalty.unparseToString())
+                if self._powerToughness is not None:
+                        output += "{0}\n".format(self._powerToughness.unparseToString())
+                if self._handModifier is not None:
+                        output += "{0}\n".format(self._lifeModifier.unparseToString())
+                if self._lifeModifier is not None:
+                        output += "{0}\n".format(self._lifeModifier.unparseToString())
+                return output
+                
                 

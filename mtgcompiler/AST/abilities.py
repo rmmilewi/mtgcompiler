@@ -57,8 +57,30 @@ class MgAbilityWord(core.MgNode):
                 
         def unparseToString(self):
                 return "{0} —".format(self._abilityWord)
+                
 
-class MgAbility(core.MgNode):
+                
+class MgInstructionSequence(core.MgNode):
+        """Represents a sequence of statements that make up a single ability."""
+        
+        def __init__(self,*args):
+                """The constructor accepts a list of descriptors in any order."""
+                self._traversable = True
+                self._ilist = args
+                for instruction in self._ilist:
+                        instruction.setParent(self)
+                        
+        def isChild(self,child):
+                return child in self._ilist
+        
+        def getTraversalSuccessors(self):
+                return [inst for inst in self._ilist if inst.isTraversable()]
+                
+        def unparseToString(self):
+                return '. '.join(i.unparseToString() for i in self._ilist)
+        
+
+class MgAbstractAbility(core.MgNode):
         """Ability nodes represent abilities on Magic cards, such as
         static abilities, triggered abilities, and activated abilities. 
         On a card, aside from certain defined abilities that may be strung together 
@@ -67,7 +89,7 @@ class MgAbility(core.MgNode):
         This class is not instantiated directly, but is the parent class
         to different kinds of ability nodes."""
         
-        def __init__(abilityWord=None,reminderText=None):
+        def __init__(self,abilityWord=None,reminderText=None):
                 """All constructors in subclasses of MgAbility use super() to call this constructor first
                 in order to store ability words and reminder text, if necessary.
                  
@@ -76,6 +98,7 @@ class MgAbility(core.MgNode):
                 reminderText: An option MgReminderText object, corresponding to the reminder text
                 that decorates the text of the ability.
                 """
+                self._traversable = True
                 self._abilityWord = abilityWord
                 self._reminderText = reminderText
                 if self._abilityWord is not None:
@@ -111,7 +134,45 @@ class MgAbility(core.MgNode):
                 self._reminderText = reminderText
                 self._reminderText.setParent(self)
 
-class MgActivatedAbility(MgAbility):
+class MgSpellAbility(MgAbstractAbility):
+        """Spell abilities are abilities that are followed as instructions while an instant or sorcery spell is resolving. 
+        Any text on an instant or sorcery spell is a spell ability unless it’s an activated ability, a triggered ability, 
+        or a static ability that fits the criteria described in rule 112.6."""
+        
+        def __init__(self,instructions,abilityWord=None,reminderText=None):
+                """
+                instructions: one or more effects/instructions that follow from carrying out the ability.
+                """
+                super().__init__(abilityWord,reminderText)
+                self._instructions = instructions
+                self._instructions.setParent(self)
+                
+        def isChild(self,child):
+                """A spell ability has only one child, the instruction sequence."""
+                return child is self._instructions
+                
+        def getTraversalSuccessors(self):
+                """A spell ability has only one child, the instruction sequence."""
+                return [node for node in {self._instructions} if node.isTraversable()]
+                
+        def getInstructions(self):
+                """Get the instruction sequence held by the ability."""
+                return self._instructions
+                
+        def setInstructions(self,instructions):
+                """Set the instruction sequence held by the ability."""
+                self._instructions = instructions
+                
+        def unparseToString(self):
+                output = "{0}".format(self._instructions.unparseToString())
+                if self.hasAbilityWord():
+                        output = "{0} {1}".format(self._abilityWord.unparseToString(),output)
+                if self.hasReminderText():
+                        output = "{0} {1}".format(output,self._reminderText.unparseToString())
+                return output   
+                
+
+class MgActivatedAbility(MgAbstractAbility):
         """Activated abilities have a cost and an effect. 
         They are written as '[Cost]: [Effect.] [Activation instructions (if any).]'."""
         def __init__(self,cost,instructions,abilityWord=None,reminderText=None):
@@ -121,9 +182,10 @@ class MgActivatedAbility(MgAbility):
                 activating the ability.
                 """
                 super().__init__(abilityWord,reminderText)
-                self._traversable = True
                 self._cost = cost
                 self._instructions = instructions
+                self._cost.setParent(self)
+                self._instructions.setParent(self)
                 
         def isChild(self,child):
                 return child is self._cost or child is self._instructions
@@ -132,19 +194,23 @@ class MgActivatedAbility(MgAbility):
                 return [node for node in {self._cost,self._instructions} if node.isTraversable()]
                 
         def unparseToString(self):
-                output = "{0}: {1}".format(self._cost,self._instructions)
+                output = "{0}: {1}".format(self._cost.unparseToString(),self._instructions.unparseToString())
                 if self.hasAbilityWord():
                         output = "{0} {1}".format(self._abilityWord.unparseToString(),output)
                 if self.hasReminderText():
                         output = "{0} {1}".format(output,self._reminderText.unparseToString())
                 return output
 
-class MgTriggeredAbility(MgAbility):
+class MgTriggeredAbility(MgAbstractAbility):
         """ Triggered abilities have a trigger condition and an effect. 
         They are written as '[Trigger condition], [effect],' and include 
         (and usually begin with) the word 'when,' 'whenever,' or 'at.'"""
         pass
         
-class MgStaticAbility(MgAbility):
+class MgKeywordAbilitySequence(core.MgNode):
+        """Represents a comma-separated sequence of keyword abilities, like 'flying, haste, first strike'."""
+        pass
+        
+class MgStaticAbility(MgAbstractAbility):
         """Static abilities are written as statements. They’re simply true."""
         pass

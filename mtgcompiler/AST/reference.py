@@ -1,5 +1,9 @@
 import mtgcompiler.AST.core as core
 
+class MgSelfReference(core.MgNode):
+        """A stand-in used when a card refers to itself in its text."""
+        pass
+
 class MgName(core.MgNode):
         """This node represents a name, such as the name of a card."""
         def __init__(self,name=""):
@@ -31,3 +35,8 @@ class MgZone(core.MgNode):
     """This node represents a zone in the game, such as
     the battlefield, graveyard, or the command zone."""
     pass
+    
+
+#class MgPossessiveModifier(core.MgNode):
+#        """A decorator for possessives like 'your' and 'its owner's'... maybe"""
+#        pass
