@@ -1,10 +1,47 @@
 import unittest
 import mtgcompiler.AST.expressions
-from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
+from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType,MgQualifier
 from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
-from mtgcompiler.AST.expressions import MgColorExpression,MgTypeExpression,MgManaExpression,MgPTExpression,MgNonExpression,MgAndExpression,MgOrExpression,MgTargetExpression,MgAllExpression,MgEachExpression,MgChoiceExpression,MgTapUntapExpression,MgDestroyExpression
+from mtgcompiler.AST.expressions import MgNumberValue,MgColorExpression,MgTypeExpression,MgModalExpression
+from mtgcompiler.AST.expressions import MgManaExpression,MgPTExpression,MgNonExpression,MgAndExpression
+from mtgcompiler.AST.expressions import MgOrExpression,MgTargetExpression,MgAllExpression,MgEachExpression
+from mtgcompiler.AST.expressions import MgChoiceExpression,MgTapUntapExpression,MgDestroyExpression
 
 class TestCommonExpressions(unittest.TestCase):
+        
+        def test_ValueExpressions(self):
+                five_literal = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
+                self.assertTrue(five_literal.isLiteral())
+                self.assertTrue(five_literal.isTraversable())
+                self.assertEqual(len(five_literal.getTraversalSuccessors()),0)
+                self.assertEqual(five_literal.unparseToString().lower(),"5")
+                
+                seventytwo_quantity = MgNumberValue(72,MgNumberValue.NumberTypeEnum.Quantity)
+                self.assertTrue(seventytwo_quantity.isQuantity())
+                self.assertEqual(seventytwo_quantity.unparseToString().lower(),"seventy-two")
+                
+                one_frequency = MgNumberValue(1,MgNumberValue.NumberTypeEnum.Frequency)
+                self.assertTrue(one_frequency.isFrequency())
+                self.assertEqual(one_frequency.unparseToString().lower(),"once")
+                
+                two_frequency = MgNumberValue(2,MgNumberValue.NumberTypeEnum.Frequency)
+                self.assertTrue(two_frequency.isFrequency())
+                self.assertEqual(two_frequency.unparseToString().lower(),"twice")
+                
+                three_frequency = MgNumberValue(3,MgNumberValue.NumberTypeEnum.Frequency)
+                self.assertTrue(three_frequency.isFrequency())
+                self.assertEqual(three_frequency.unparseToString().lower(),"three times")
+                
+                four_ordinal = MgNumberValue(4,MgNumberValue.NumberTypeEnum.Ordinal)
+                self.assertTrue(four_ordinal.isOrdinal())
+                self.assertEqual(four_ordinal.unparseToString().lower(),"fourth")
+                
+                seventytwo_quantity.setFrequency()
+                self.assertTrue(seventytwo_quantity.isFrequency())
+                self.assertEqual(seventytwo_quantity.getValue(),72)
+                seventytwo_quantity.setValue(73)
+                self.assertEqual(seventytwo_quantity.unparseToString().lower(),"seventy-three times")
+                
         
         def test_ColorExpressions(self):
                 multicolored = MgColorTerm(MgColorTerm.ColorTermEnum.Multicolored)
@@ -60,6 +97,8 @@ class TestCommonExpressions(unittest.TestCase):
                 commaExpr.setCommaDelimited(True)
                 self.assertEqual(commaExpr.unparseToString().lower(),"non-vampire, non-werewolf, non-zombie creature")
                 
+        #def test_ModalExpressions(self):
+        #        modalexpr = MgModalExpression()
                 
                 
         def test_ManaExpressions(self):

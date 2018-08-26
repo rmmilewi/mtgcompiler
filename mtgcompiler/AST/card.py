@@ -189,8 +189,6 @@ class MgCard(core.MgNode):
                         self._lifeModifier = kwargs["lifeModifier"]
                 else:
                         self._lifeModifier = None
-                        
-             
         
         def getName(self):
                 return self._name

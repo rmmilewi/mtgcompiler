@@ -1,9 +1,11 @@
 import unittest
-import mtgcompiler.AST.expressions
+from mtgcompiler.AST.reference import MgQualifier
 from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
 from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
-from mtgcompiler.AST.expressions import MgColorExpression,MgTypeExpression,MgManaExpression,MgPTExpression,MgNonExpression,MgAndExpression,MgOrExpression,MgTargetExpression,MgAllExpression,MgEachExpression,MgChoiceExpression,MgTapUntapExpression,MgDestroyExpression
-
+from mtgcompiler.AST.expressions import MgDescriptionExpression,MgNumberValue,MgColorExpression,MgTypeExpression,MgModalExpression
+from mtgcompiler.AST.expressions import MgManaExpression,MgPTExpression,MgNonExpression,MgAndExpression
+from mtgcompiler.AST.expressions import MgOrExpression,MgTargetExpression,MgAllExpression,MgEachExpression
+from mtgcompiler.AST.expressions import MgChoiceExpression,MgTapUntapExpression,MgDestroyExpression,MgUncastExpression
 class TestMagicExpressions(unittest.TestCase):
         
         def test_DestroyExpressions(self):
@@ -45,4 +47,23 @@ class TestMagicExpressions(unittest.TestCase):
                 
                 tapExpr.setTap(True)
                 self.assertEqual(tapExpr.unparseToString().lower(),"tap or untap target creature")
+                
+        def test_UncastExpressions(self):
+                
+                t_nonenchantment =  MgTypeExpression(MgNonExpression(MgType(MgType.TypeEnum.Enchantment)))
+                q_spell = MgQualifier(MgQualifier.QualifierEnum.Spell)
+                description = MgDescriptionExpression(t_nonenchantment,q_spell)
+                targetExpr = MgTargetExpression(description)
+                
+                uncastExpr = MgUncastExpression(targetExpr)
+                
+                self.assertTrue(uncastExpr.isTraversable())
+                self.assertEqual(len(uncastExpr.getTraversalSuccessors()),1)
+                self.assertTrue(uncastExpr.isChild(targetExpr))
+                self.assertEqual(targetExpr.getParent(),uncastExpr)
+                
+                self.assertEqual(uncastExpr.unparseToString().lower(),"counter target non-enchantment spell")
+                
+if __name__ == '__main__':
+    unittest.main()
         

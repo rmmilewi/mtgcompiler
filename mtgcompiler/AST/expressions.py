@@ -1,6 +1,7 @@
 import mtgcompiler.AST.core as core
 import abc
 from enum import Enum,auto
+from num2words import num2words
 
 class MgAbstractExpression(core.MgNode):
         """This is the parent class for all expressions such as power/toughness, 
@@ -30,6 +31,7 @@ class MgNumberValue(MgValueExpression):
                 Literal = auto() #1, 2, 3
                 Quantity = auto() #one, two, three
                 Frequency = auto() #once, twice, three times
+                Ordinal = auto() #first, second, third
         
         def __init__(self,value,ntype):
                 self._traversable = True
@@ -38,27 +40,35 @@ class MgNumberValue(MgValueExpression):
         
         def isLiteral(self):
                 """Checks if the number type is a literal."""
-                return self._ntype == MgNumberValue.NumberType.Literal
+                return self._ntype == MgNumberValue.NumberTypeEnum.Literal
                 
         def setLiteral(self):
                 """Makes the number type a literal."""
-                self._ntype = MgNumberValue.NumberType.Literal
+                self._ntype = MgNumberValue.NumberTypeEnum.Literal
                 
         def isQuantity(self):
                 """Checks if the number type is a quantity."""
-                return self._ntype == MgNumberValue.NumberType.Quantity
+                return self._ntype == MgNumberValue.NumberTypeEnum.Quantity
                 
         def setQuantity(self):
                 """Makes the number type a quantity."""
-                self._ntype = MgNumberValue.NumberType.Quantity
+                self._ntype = MgNumberValue.NumberTypeEnum.Quantity
                 
         def isFrequency(self):
                 """Checks if the number type is a frequency."""
-                return self._ntype == MgNumberValue.NumberType.Frequency
+                return self._ntype == MgNumberValue.NumberTypeEnum.Frequency
                 
         def setFrequency(self):
                 """Makes the number type a frequency."""
-                self._ntype = MgNumberValue.NumberType.Frequency
+                self._ntype = MgNumberValue.NumberTypeEnum.Frequency
+                
+        def isOrdinal(self):
+                """Checks if the number type is a frequency."""
+                return self._ntype == MgNumberValue.NumberTypeEnum.Ordinal
+                
+        def setOrdinal(self):
+                """Makes the number type a frequency."""
+                self._ntype = MgNumberValue.NumberTypeEnum.Ordinal
                 
         def getValue(self):
                 """Gets the underlying integer value."""
@@ -77,57 +87,23 @@ class MgNumberValue(MgValueExpression):
                 return []
         
         def unparseToString(self):
-                if self._ntype == MgNumberValue.NumberType.Literal:
+                if self._ntype == MgNumberValue.NumberTypeEnum.Literal:
                         return str(self._value)
                 
-                if self._ntype == MgNumberValue.NumberType.Frequency and self._value == 1:
+                if self._ntype == MgNumberValue.NumberTypeEnum.Frequency and self._value == 1:
                         return "once"
-                if self._ntype == MgNumberValue.NumberType.Frequency and self._value == 2:
+                if self._ntype == MgNumberValue.NumberTypeEnum.Frequency and self._value == 2:
                         return "twice"
                             
-                quantity = ""
-                
-                #Conversion scheme here lovingly borrowed from kamyu104/LeetCode
-                
-                lookup = {0: "zero", 1:"one", 2: "two", 3: "three", 4: "four", \
-                          5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", \
-                          10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen", 14: "fourteen", \
-                          15: "fifteen", 16: "sixteen", 17: "seventeen", 18: "eighteen", 19: "nineteen", \
-                          20: "twenty", 30: "thirty", 40: "forty", 50: "fifty", 60: "sixty", \
-                          70: "seventy", 80: "eighty", 90: "ninety"}
-                unit = ["", "thousand", "million", "billion"]
-                          
-                def threeDigits(self, num, lookup, unit):
-                    res = []
-                    if num / 100:
-                        res = [lookup[num / 100] + " " + "hundred"]
-                    if num % 100:
-                        res.append(self.twoDigits(num % 100, lookup))
-                    if unit != "":
-                        res.append(unit)
-                    return " ".join(res)
-
-                def twoDigits(self, num, lookup):
-                    if num in lookup:
-                        return lookup[num]
-                    return lookup[(num / 10) * 10] + " " + lookup[num % 10]
-                    
-                if num == 0:
-                        quantity = lookup[0]
-                else:
-                        res, i = [], 0
-                        while num:
-                                cur = num % 1000
-                                if num % 1000:
-                                        res.append(self.threeDigits(cur, lookup, unit[i]))
-                                num //= 1000
-                                i += 1
-                        quantity = " ".join(res[::-1])
-                
-                if self._ntype == MgNumberValue.NumberType.Quantity:
-                        return quantity
-                elif self._ntype == MgNumberValue.NumberType.Frequency:
-                        return "{0} times".format(quantity)
+                if self._ntype == MgNumberValue.NumberTypeEnum.Quantity or self._ntype == MgNumberValue.NumberTypeEnum.Frequency:
+                        quantityRepresentation = num2words(self._value)
+                        if self._ntype == MgNumberValue.NumberTypeEnum.Quantity:
+                                return quantityRepresentation
+                        else: #ntype is frequency
+                                return "{0} times".format(quantityRepresentation)
+                elif self._ntype == MgNumberValue.NumberTypeEnum.Ordinal:
+                        ordinalRepresentation = num2words(self._value, to='ordinal')
+                        return ordinalRepresentation
                 else:
                         raise ValueError("Number type is unspecified or unrecognizable.")
                 
@@ -304,6 +280,77 @@ class MgTypeExpression(MgAbstractExpression):
                         return result+'s'
                 else:
                         return result
+
+class MgControlExpression(MgAbstractExpression):
+        """An expression that indicates control, like 'all creatures your opponents control' or 'target enchantment you control'.
+        TODO: This implementation is not final. Still working this and the possessive expressions out. Need an abstract for players,
+        then we can come back and change this."""
+        def __init__(self,controller):
+                """
+                controller: The party that has the control.
+                """
+                self._traversable = True
+                self._controller = controller
+                
+        def getController(self):
+                """Get the controller."""
+                return self._controller
+                
+        def setController(self,controller):
+                """Set the controller."""
+                self._controller = controller
+                
+        def isChild(self,child):
+                return False
+                
+        def getTraversalSuccessors(self):
+                """This class is a leaf node. It has no children."""
+                return []
+                
+        def unparseToString(self):
+                return "{0} control".format(self._controller)
+                        
+class MgPossessiveExpression(MgAbstractExpression):
+        """Represents a phrase that indicates who owns something, such as 'your graveyard' or 'its owner's hand'"""
+        class PossessiveEnum(Enum):
+                """TODO: What if possessives are plural? We haven't decided whose responsibility it is to get that right.
+                I might end up re-doing this later to refer to a MgPlayer object of some kind."""
+                Your = "Your"
+                Owner = "Owner's"
+                Opponent = "Opponent's"
+                Player = "Player's"
+                HisOrHer = "His or Her"
+
+        def __init__(self,possessive,owned):
+                """
+                possessive: a PossessiveEnum.
+                owned: An expression describing the thing that is owned.
+                """
+                self._traversable = True
+                self._possessive = possessive
+                self._owned = owned
+                self._owned.setParent(owned)
+                
+        def getOwned(self):
+                """Access method for the owned attribute."""
+                return self._owned
+                
+        def setOwned(self, value):
+                """Setter method for the owned attribute."""
+                self._owned=owned
+                self._owned.setParent(owned)
+                
+        def isChild(self,child):
+                return child is self._owned
+                
+        def getTraversalSuccessors(self):
+                """This class is a leaf node. It has no children."""
+                return [node for node in {self._owned} if node.isTraversable()]
+                
+        def unparseToString(self):
+                return "{0} {1}".format(self._possessive.value,self._owned.unparseToString())
+                
+        
                         
 class MgCommaExpression(MgAbstractExpression):
         """This node represents a series of terms/expressions separated by a comma. 
@@ -315,7 +362,44 @@ class MgCommaExpression(MgAbstractExpression):
 class MgModalExpression(MgAbstractExpression):
         """This node represents a series of modal choices, as is seen in cards like Abzan Charm or
         Citadel Siege"""
-        pass
+        def __init__(self,numberOfChoices,*options):
+                """
+                numberOfChoices: The number of times that the caster can choose different modes for the spell/ability.
+                options: A list containing the different modes of the spell/ability.
+                """
+                self._traversable = True
+                self._options = list(options)
+                self._numberOfChoices = numberOfChoices
+                for option in self._options:
+                        option.setParent(self)
+                        
+        def getNumberOfChoices(self):
+                """Get the number of choices."""
+                return self._numberOfChoices
+                
+        def setNumberOfChoices(self,numberOfChoices):
+                """Set the number of choices."""
+                self._numberOfChoices = numberOfChoices
+                
+        def getOptions(self):
+                return self._options
+                
+        def setOptions(self,options):
+                options = self._options
+                for option in self._options:
+                        option.setParent(self)
+
+        def isChild(self,child):
+                return child in self._options
+        
+        def getTraversalSuccessors(self):
+                return [node for node in self._options+[self._numberOfChoices] if node.isTraversable()]
+                
+        def unparseToString(self):
+                output = "Choose {0} —\n".format(self._numberOfChoices.unparseToString())
+                for option in self._options:
+                        output += "• {0}\n".format(option.unparseToString())
+                return output
         
 class MgBinaryOp(MgAbstractExpression):
         """An uninstantiated parent class for all binary operators, namely logical operators like 'and', 'or', etc."""
@@ -572,11 +656,71 @@ class MgTapUntapExpression(MgEffectExpression):
                         
 class MgReturnExpression(MgEffectExpression):
         """Represents a return effect, as in 'return target creature to its owners hand'."""
-        pass
+        def __init__(self,subject,destination):
+                """
+                subject: The recipient of the return effect.
+                destination: An expression detailing where the subject is going.
+                """
+                super().__init__()
+                self._subject = subject
+                self._destination = destination
+                self._subject.setParent(self)
+                self._destination.setParent(self)
+                
+        def getSubject(self):
+                """Get the subject of the return effect."""
+                return self._subject
+                
+        def setSubject(self,subject):
+                """Set the subject of the return effect."""
+                self._subject = subject
+                self._subject.setParent(self)
+                
+        def getDestination(self):
+                """Get the subject of the return effect."""
+                return self._destination
+                
+        def setDestination(self,subject):
+                """Set the subject of the return effect."""
+                self._destination = destination
+                self._destination.setParent(self)
+                
+        def isChild(self,child):
+                return child is self._subject
+                
+        def getTraversalSuccessors(self):
+                return [node for node in {self._subject,self._destination} if node.isTraversable()]
+                
+        def unparseToString(self):
+                return "return {0} to {1}".format(self._subject.unparseToString(),self._destination.unparseToString())
                      
-class MgCounterExpression(MgEffectExpression):
-        """Represents an counterspell effect, as in 'counter target non-creature spell'."""
-        pass
+class MgUncastExpression(MgEffectExpression):
+        """Represents an counterspell effect, as in 'counter target non-creature spell'.
+        Internally we call this an 'uncast' effect so as to avoid confusion with counters
+        in the sense of +1/+1 counters.
+        """
+        def __init__(self,subject):
+                super().__init__()
+                self._subject = subject
+                self._subject.setParent(self)
+                
+        def getSubject(self):
+                """Get the subject of the uncast effect."""
+                return self._subject
+                
+        def setSubject(self,subject):
+                """Set the subject of the uncast effect."""
+                self._subject = subject
+                self._subject.setParent(self)
+                
+        def isChild(self,child):
+                return child is self._subject
+                
+        def getTraversalSuccessors(self):
+                return [node for node in {self._subject} if node.isTraversable()]
+                
+        def unparseToString(self):
+                return "counter {0}".format(self._subject.unparseToString())
 
 class MgGainLoseExpression(MgEffectExpression):
         """Represents the act of gaining or losing something, like 'target creature gains flying until end of turn'
@@ -598,6 +742,7 @@ class MgCreateTokenExpression(MgEffectExpression):
                  """quantity: A term/expression denoting how many tokens are made. If quantity is None, it is assumed only one token
                  is made.
                  descriptor: A token descriptor node."""
+                 super().__init__()
                  self._quantity =  quantity
                  self._descriptor = descriptor
                  self._quantity.setParent(self)
@@ -622,6 +767,41 @@ class MgCreateTokenExpression(MgEffectExpression):
                         return "create a {0}".format(self._descriptor.unparseToString())
                 else:
                         return "create {0} {1}".format(self._quantity.unparseToString(),self._descriptor.unparseToString())
+                        
+class MgCardDrawExpression(MgEffectExpression):
+        """Represents a card draw effect, like 'draw a card', 'draw three cards', or
+        'draw a card for each creature your opponents control'."""
+        def __init__(self,quantity):
+                """
+                quantity: A term or expression indicating how many cards to draw.
+                """
+                super().__init__()
+                self._quantity = quantity
+                self._quantity.setParent(self)
+        
+        def getQuantity(self):
+                """Get the expression for the number of cards to draw."""
+                return self._quantity
+                
+        def setQuantity(self,quantity):
+                """Set the expression for the number of cards to draw."""
+                self._quantity = quantity
+                self._quantity.setParent(self)
+              
+        def isChild(self,child):
+                return child is self._quantity
+                
+        def getTraversalSuccessors(self):
+                return [node for node in {self._quantity} if node.isTraversable()]
+                
+        def unparseToString(self):
+                if isinstance(self._quantity,MgNumberValue) and self._quantity.getValue() == 1:
+                        return "draw a card"
+                elif isinstance(self._quantity,MgValueExpression):
+                        return "draw {0} cards".format(self._quantity.unparseToString())
+                else:
+                        return "draw a card for {0}".format(self._quantity.unparseToString())
+        
 
 class MgSearchLibraryExpression(MgEffectExpression):
         pass
