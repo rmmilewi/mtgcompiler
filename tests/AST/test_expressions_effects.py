@@ -6,6 +6,7 @@ from mtgcompiler.AST.expressions import MgDescriptionExpression,MgNumberValue,Mg
 from mtgcompiler.AST.expressions import MgManaExpression,MgPTExpression,MgNonExpression,MgAndExpression
 from mtgcompiler.AST.expressions import MgOrExpression,MgTargetExpression,MgAllExpression,MgEachExpression
 from mtgcompiler.AST.expressions import MgChoiceExpression,MgTapUntapExpression,MgDestroyExpression,MgUncastExpression
+from  mtgcompiler.AST.expressions import MgCreateTokenExpression
 class TestMagicExpressions(unittest.TestCase):
         
         def test_DestroyExpressions(self):
@@ -63,6 +64,30 @@ class TestMagicExpressions(unittest.TestCase):
                 self.assertEqual(targetExpr.getParent(),uncastExpr)
                 
                 self.assertEqual(uncastExpr.unparseToString().lower(),"counter target non-enchantment spell")
+                
+        def test_CreateTokenExpressions(self):
+                
+                saproling_description = MgDescriptionExpression(
+                        MgPTExpression(MgNumberValue(1,MgNumberValue.NumberTypeEnum.Literal),MgNumberValue(1,MgNumberValue.NumberTypeEnum.Literal)), #1/1
+                        MgColorExpression(MgColorTerm(MgColorTerm.ColorTermEnum.Green)), #green
+                        MgTypeExpression(MgSubtype(MgSubtype.CreatureSubtypeEnum.Saproling),MgType(MgType.TypeEnum.Creature)), #saproling creature
+                        MgQualifier(MgQualifier.QualifierEnum.Token) #token
+                )
+                three_of_them = MgNumberValue(3,MgNumberValue.NumberTypeEnum.Quantity)
+                create_three_saprolings = MgCreateTokenExpression(descriptor=saproling_description,quantity=three_of_them)
+                
+                self.assertTrue(create_three_saprolings.isTraversable())
+                self.assertEqual(len(create_three_saprolings.getTraversalSuccessors()),2)
+                self.assertTrue(create_three_saprolings.isChild(saproling_description))
+                self.assertEqual(saproling_description.getParent(),create_three_saprolings)
+                self.assertTrue(create_three_saprolings.isChild(three_of_them))
+                self.assertEqual(three_of_them.getParent(),create_three_saprolings)
+                
+                self.assertEqual(uncastExpr.unparseToString().lower(),"create three 1/1 green saproling creature token")
+                
+                
+                
+                
                 
 if __name__ == '__main__':
     unittest.main()

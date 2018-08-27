@@ -1,19 +1,55 @@
 import unittest
-from mtgcompiler.AST.reference import MgName,MgZone,MgQualifier
+from mtgcompiler.AST.reference import MgName,MgZone,MgQualifier,MgNameReference
 from mtgcompiler.AST.card import MgTypeLine,MgFlavorText,MgTextBox,MgCard
 from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
 from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
-from mtgcompiler.AST.expressions import MgDescriptionExpression,MgNumberValue,MgColorExpression
+from mtgcompiler.AST.expressions import MgDescriptionExpression,MgNumberValue,MgColorExpression,MgEntersLeavesBattlefieldExpression
 from mtgcompiler.AST.expressions import MgPossessiveExpression,MgTypeExpression,MgModalExpression,MgControlExpression
 from mtgcompiler.AST.expressions import MgManaExpression,MgPTExpression,MgNonExpression,MgAndExpression
 from mtgcompiler.AST.expressions import MgOrExpression,MgTargetExpression,MgAllExpression,MgEachExpression,MgChoiceExpression
 from mtgcompiler.AST.expressions import MgTapUntapExpression,MgDestroyExpression,MgUncastExpression,MgReturnExpression,MgCardDrawExpression
 
 
-from mtgcompiler.AST.abilities import MgInstructionSequence,MgSpellAbility
+from mtgcompiler.AST.abilities import MgStatement,MgStatementSequence,MgSpellAbility
 from mtgcompiler.AST.visitors import SimpleGraphingVisitor
 
 class TestMagicCardAssembly(unittest.TestCase):
+        
+        def test_BanisherPriest(self):
+                #Card name: Banisher Priest
+                cardName = MgName("Banisher Priest")
+                
+                #Mana cost: 1WW.
+                s0 = MgManaSymbol(cvalue=1)
+                s1 = MgManaSymbol(colorv=MgManaSymbol.ManaType.White)
+                s2 = MgManaSymbol(colorv=MgManaSymbol.ManaType.White)
+                manaExpr = MgManaExpression(s0,s1,s2)
+                
+                #Creature - Human Cleric
+                t_creature = MgTypeExpression(MgType(MgType.TypeEnum.Creature))
+                t_human = MgTypeExpression(MgType(MgType.SubtypeEnum.Human))
+                t_cleric = MgTypeExpression(MgType(MgType.SubtypeEnum.Cleric))
+                typeLine = MgTypeLine(types=MgTypeLine(t_creature),subtypes=MgTypeLine(t_human,t_cleric))
+                
+                
+                #exile target creature an opponent controls
+                exileEffect = MgExileEffectExpression(
+                        subject = MgTargetExpression(MgDescriptionExpression(
+                                MgTypeExpression(MgType(MgType.TypeEnum.Creature)),
+                                MgControlExpression("an opponent")))                        
+                )
+                
+                #[...] until Banisher Priest leaves the battlefield.
+                untilCondition = MgUntilExpression(MgEntersLeavesBattlefieldExpression(MgNameReference(),entering=False))
+                
+                #when Banisher Priest enters the battlefield, [...]
+                entersTheBattlefield = MgEntersLeavesBattlefieldExpression(MgNameReference,entering=True)
+                
+                
+                
+                
+                
+                
         
         def test_CrypticCommand(self):
                 #Card name: Cryptic Command
@@ -31,24 +67,24 @@ class TestMagicCardAssembly(unittest.TestCase):
                 typeLine = MgTypeLine(types=t_instant)
                 
                 #counter target spell
-                choice_counterspell = MgUncastExpression(MgTargetExpression(MgDescriptionExpression(
+                choice_counterspell = MgStatementSequence(MgStatement(MgUncastExpression(MgTargetExpression(MgDescriptionExpression(
                         MgQualifier(MgQualifier.QualifierEnum.Spell)
-                )))
+                )))))
                 
                 #Return target permanent to its owner's hand.
-                choice_bounce = MgReturnExpression(
+                choice_bounce = MgStatementSequence(MgStatement(MgReturnExpression(
                         subject = MgTargetExpression(MgDescriptionExpression(MgQualifier(MgQualifier.QualifierEnum.Permanent))),
                         destination = MgPossessiveExpression(possessive=MgPossessiveExpression.PossessiveEnum.Owner,owned=MgZone(MgZone.ZoneEnum.Hand))
-                )
+                )))
                 
                 #Tap all creatures your opponents control.
-                choice_tap = MgTapUntapExpression(
+                choice_tap = MgStatementSequence(MgStatement(MgTapUntapExpression(
                         MgAllExpression(MgDescriptionExpression(MgTypeExpression(MgType(MgType.TypeEnum.Creature)),MgControlExpression("your opponents")))
                         ,tap=True
-                )
+                )))
                 
                 #Draw a card.
-                choice_draw = MgCardDrawExpression(MgNumberValue(value=1,ntype=MgNumberValue.NumberTypeEnum.Quantity))
+                choice_draw = MgStatementSequence(MgStatement(MgCardDrawExpression(MgNumberValue(value=1,ntype=MgNumberValue.NumberTypeEnum.Quantity))))
                 
                 #Choose two
                 modalExpr = MgModalExpression(
@@ -56,7 +92,7 @@ class TestMagicCardAssembly(unittest.TestCase):
                         choice_counterspell,choice_bounce,choice_tap,choice_draw
                 )
                 
-                instructions = MgInstructionSequence(modalExpr)
+                instructions = MgStatementSequence(MgStatement(modalExpr,periodTerminated=False))
                 ability = MgSpellAbility(instructions)
                 textBox = MgTextBox(ability)
                 
@@ -91,7 +127,7 @@ class TestMagicCardAssembly(unittest.TestCase):
                 description = MgDescriptionExpression(c_nonblack,t_creature)
                 targetExpr = MgTargetExpression(description)
                 destroyExpr = MgDestroyExpression(targetExpr)
-                instructions = MgInstructionSequence(destroyExpr)
+                instructions = MgStatementSequence(MgStatement(destroyExpr))
                 ability = MgSpellAbility(instructions)
                 textBox = MgTextBox(ability)
                 

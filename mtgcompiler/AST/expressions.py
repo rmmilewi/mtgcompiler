@@ -400,6 +400,50 @@ class MgModalExpression(MgAbstractExpression):
                 for option in self._options:
                         output += "• {0}\n".format(option.unparseToString())
                 return output
+                
+def MgEntersLeavesBattlefieldExpression(MgAbstractExpression):
+        """Represents the notion of entering or leaving the battlefield.
+        Takes the form of '____ enters the battlefield' or '____ leaves the battlefield.'
+        """
+        
+        def __init__(self,subject,entering=True):
+                """
+                subject: The thing that is entering or leaving the battlefield.
+                entering: is the subject entering the battlefield?
+                """
+                self._subject = subject
+                self._entering = entering
+                self._subject.setParent(this)
+                
+        def isEntering(self):
+                """Check whether the subject is entering the battlefield."""
+                return self._entering == True
+                
+        def setEntering(self):
+                """Make it so that the subject is entering the battlefield."""
+                self._entering = True
+                
+        def isLeaving(self):
+                """Check whether the subject is leaving the battlefield."""
+                return self._entering == False
+                
+        def setLeaving(self):
+                """Make it so that the subject is leaving the battlefield."""
+                self._entering = False
+                
+        def isChild(self,child):
+                return child in self._subject
+        
+        def getTraversalSuccessors(self):
+                return [node for node in {self._subject} if node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._entering is True:
+                        return "{0} enters the battlefield".format(self._subject.unparseToString())
+                else:
+                        return "{0} leaves the battlefield".format(self._subject.unparseToString())
+                 
+        
         
 class MgBinaryOp(MgAbstractExpression):
         """An uninstantiated parent class for all binary operators, namely logical operators like 'and', 'or', etc."""
@@ -484,6 +528,16 @@ class MgTargetExpression(MgUnaryOp):
         def unparseToString(self):
                 return "target {0}".format(self._operand.unparseToString())
                 
+                
+class MgUntilExpression(MgUnaryOp):
+        """An until expression is used whenever card text says that an effect happens until
+        a condition is met, like 'until end of turn' or 'until THIS leaves the battlefield'"""
+        def __init__(self,operand):
+                super().__init__(operand)
+                
+        def unparseToString(self):
+                return "until {0}".format(self._operand.unparseToString())
+                        
                 
 class MgAllExpression(MgUnaryOp):
         """An each expression is used whenever card text involves the word 'all'.
@@ -656,14 +710,18 @@ class MgTapUntapExpression(MgEffectExpression):
                         
 class MgReturnExpression(MgEffectExpression):
         """Represents a return effect, as in 'return target creature to its owners hand'."""
-        def __init__(self,subject,destination):
+        def __init__(self,subject,destination,origin=None):
                 """
                 subject: The recipient of the return effect.
+                origin: An optional expression detailing where the subject is coming from.
                 destination: An expression detailing where the subject is going.
                 """
                 super().__init__()
                 self._subject = subject
                 self._destination = destination
+                self._origin = origin
+                if self._origin is not None:
+                        self._origin.setParent(self)
                 self._subject.setParent(self)
                 self._destination.setParent(self)
                 
@@ -733,15 +791,11 @@ class MgAddRemoveExpression(MgEffectExpression):
         """Represents adding or removing something from something else, like 'remove X storage counters from Mage Ring Network'."""
         pass
         
-class MgTokenDescriptor(MgAbstractExpression):
-        """Represents the description of a token."""
-        pass
-
 class MgCreateTokenExpression(MgEffectExpression):
         def __init__(self,descriptor,quantity=None):
                  """quantity: A term/expression denoting how many tokens are made. If quantity is None, it is assumed only one token
                  is made.
-                 descriptor: A token descriptor node."""
+                 descriptor: A description expression node."""
                  super().__init__()
                  self._quantity =  quantity
                  self._descriptor = descriptor

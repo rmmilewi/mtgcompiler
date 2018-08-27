@@ -97,8 +97,8 @@ class TestCommonExpressions(unittest.TestCase):
                 commaExpr.setCommaDelimited(True)
                 self.assertEqual(commaExpr.unparseToString().lower(),"non-vampire, non-werewolf, non-zombie creature")
                 
-        #def test_ModalExpressions(self):
-        #        modalexpr = MgModalExpression()
+        def test_ModalExpressions(self):
+                pass
                 
                 
         def test_ManaExpressions(self):

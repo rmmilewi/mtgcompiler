@@ -103,6 +103,19 @@ class MgTypeLine(core.MgNode):
                 else:
                         self._subtypes = MgTypeExpression()
                 self._subtypes.setParent(self)
+                
+                
+        def getSupertypes(self):
+                """Gets the type expression for supertypes."""
+                return self._supertypes
+                
+        def getTypes(self):
+                """Gets the type expression for types."""
+                return self._types
+                
+        def getSubtypes(self):
+                """Gets the type expression for subtypes."""
+                return self._subtypes
 
         def hasSupertype(self,t):
             """Checks whether a supertype is on the type line."""
@@ -193,35 +206,57 @@ class MgCard(core.MgNode):
         def getName(self):
                 return self._name
                 
+        def hasName(self):
+                return self._name is not None
+                
         def setName(self,name):
                 self._name = name
+                self._name.setParent(self)
                 
         def getManaCost(self):
-                return self._manacost
+                return self._manaCost
                 
-        def setManaCost(self,manacost):
-                self._manacost = manacost
+        def hasManaCost(self):
+                return self._manaCost is not None
+                
+        def setManaCost(self,manaCost):
+                self._manaCost = manaCost
+                self._manaCost.setParent(self)
                 
         def getColorIndicator(self):
                 return self._colorIndicator
+                
+        def hasColorIndicator(self):
+                return self._colorIndicator is not None
 
         def setColorIndicator(self,colorIndicator):
                 self._colorIndicator = colorIndicator
         
         def getTypeLine(self):
                 return self._typeLine
-        
-        def setTypeLine(self,typeline):
-                self._typeLine = typeLine
+                
+        def hasTypeLine(self):
+                return self._typeLine is not None
+                
+        def setTypeLine(self):
+                return self._typeLine
+                self._typeline.setParent(self)
                 
         def getLoyalty(self):
                 return self._loyalty
+                
+        def hasLoyalty(self):
+                return self._loyalty is not None
         
         def setLoyalty(self,loyalty):
                 self._loyalty = loyalty
+                self._loyalty.setParent(self)
                 
         def getExpansionSymbol(self):
                 return self._expansionSymbol
+                
+        def hasExpansionSymbol(self):
+                return self._expansionSymbol is not None
                 
         def setExpansionSymbol(self,expansionSymbol):
                 self._expansionSymbol = expansionSymbol
@@ -229,30 +264,48 @@ class MgCard(core.MgNode):
         def getTextBox(self):
                 return self._textBox
                 
+        def hasTextBox(self):
+                return self._textBox is not None
+                
         def setTextBox(self,textBox):
                 self._textBox = textBox
+                self._textBox.setParent(self)
                 
         def getPowerToughness(self):
                 return self._powerToughness
                 
+        def hasPowerToughness(self):
+                return self._powerToughness is not None
+                
         def setPowerToughness(self,powerToughness):
                 self._powerToughness = powerToughness
+                self._powerToughness.setParent(self)
                 
         def getHandModifier(self):
                 """Note: This only matters for Vanguard cards."""
                 return self._handModifier
                 
+        def hasHandModifier(self):
+                """Note: This only matters for Vanguard cards."""
+                return self._handModifier is not None
+                
         def setHandModifier(self,handModifier):
                 """Note: This only matters for Vanguard cards."""
                 self._handModifier = handModifier
+                self._handModifier.setParent(self)
                 
         def getLifeModifier(self):
                 """Note: This only matters for Vanguard cards."""
                 return self._lifeModifier
                 
+        def hasLifeModifier(self):
+                """Note: This only matters for Vanguard cards."""
+                return self._lifeModifier is not None
+                
         def setLifeModifier(self,lifeModifier):
                 """Note: This only matters for Vanguard cards."""
                 self._lifeModifier = lifeModifier
+                self._lifeModifier.setParent(self)
                 
         def isChild(self,child):
                 return child in {self._name,self._manaCost,self._colorIndicator,self._typeLine,self._loyalty,self._expansionSymbol,self._textBox,self._powerToughness,self._handModifier,self._lifeModifier}
