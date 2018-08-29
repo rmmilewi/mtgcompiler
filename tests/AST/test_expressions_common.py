@@ -1,11 +1,12 @@
 import unittest
 import mtgcompiler.AST.expressions
-from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType,MgQualifier
+from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
 from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
 from mtgcompiler.AST.expressions import MgNumberValue,MgColorExpression,MgTypeExpression,MgModalExpression
 from mtgcompiler.AST.expressions import MgManaExpression,MgPTExpression,MgNonExpression,MgAndExpression
 from mtgcompiler.AST.expressions import MgOrExpression,MgTargetExpression,MgAllExpression,MgEachExpression
 from mtgcompiler.AST.expressions import MgChoiceExpression,MgTapUntapExpression,MgDestroyExpression
+from mtgcompiler.AST.reference import MgQualifier
 
 class TestCommonExpressions(unittest.TestCase):
         
@@ -66,8 +67,6 @@ class TestCommonExpressions(unittest.TestCase):
                 self.assertEqual(rgExpr.getValue(),andThenWhite)
                 self.assertEqual(rgExpr.unparseToString().lower(),"red and green and white")
                 
-                
-        
         def test_TypeExpressions(self):
                 t_legendary = MgSupertype(MgSupertype.SupertypeEnum.Legendary)
                 t_human = MgSubtype(MgSubtype.CreatureSubtypeEnum.Human)
@@ -97,9 +96,6 @@ class TestCommonExpressions(unittest.TestCase):
                 commaExpr.setCommaDelimited(True)
                 self.assertEqual(commaExpr.unparseToString().lower(),"non-vampire, non-werewolf, non-zombie creature")
                 
-        def test_ModalExpressions(self):
-                pass
-                
                 
         def test_ManaExpressions(self):
                 s0 = MgManaSymbol(cvalue=1)
@@ -117,7 +113,15 @@ class TestCommonExpressions(unittest.TestCase):
                 self.assertEqual(mexpr.unparseToString(),"{1}{R}{G}{W}")
                 
         def test_PowerToughnessExpressions(self):
-                pass
+                one_power = MgNumberValue(1,MgNumberValue.NumberTypeEnum.Literal)
+                three_toughness = MgNumberValue(3,MgNumberValue.NumberTypeEnum.Literal)
+                one_three = MgPTExpression(one_power,three_toughness)
+                
+                self.assertTrue(one_three.isTraversable())
+                self.assertEqual(len(one_three.getTraversalSuccessors()),2)
+                self.assertTrue(one_three.isChild(one_power))
+                self.assertEqual(three_toughness.getParent(),one_three)
+                self.assertEqual(one_three.unparseToString().lower(),"1/3")
                 
         def test_NonExpressions(self):
                 t_ferret = mtgcompiler.AST.mtypes.MgSubtype(mtgcompiler.AST.mtypes.MgSubtype.CreatureSubtypeEnum.Ferret)
@@ -143,6 +147,12 @@ class TestCommonExpressions(unittest.TestCase):
                 targetExpr = MgTargetExpression(typeexpr)
                 
                 self.assertEqual(targetExpr.unparseToString().lower(),"target artifact creature")
+                
+        def test_ModalExpressions(self):
+                pass
+                
+        def test_UntilExpressions(self):
+                pass
                 
         def test_AllExpressions(self):
                 pass

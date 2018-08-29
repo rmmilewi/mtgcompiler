@@ -46,7 +46,7 @@ class TestMagicCardAssembly(unittest.TestCase):
                 entersTheBattlefield = MgEntersLeavesBattlefieldExpression(MgNameReference,entering=True)
                 
                 
-                
+                #TODO: NOT DONE
                 
                 
                 
@@ -146,7 +146,7 @@ class TestMagicCardAssembly(unittest.TestCase):
                 
                 
 if __name__ == '__main__':
-    unittest.main()
+        unittest.main()
                 
                 
                 

@@ -68,7 +68,10 @@ class TestMagicExpressions(unittest.TestCase):
         def test_CreateTokenExpressions(self):
                 
                 saproling_description = MgDescriptionExpression(
-                        MgPTExpression(MgNumberValue(1,MgNumberValue.NumberTypeEnum.Literal),MgNumberValue(1,MgNumberValue.NumberTypeEnum.Literal)), #1/1
+                        MgPTExpression(
+                                MgNumberValue(1,MgNumberValue.NumberTypeEnum.Literal),
+                                MgNumberValue(1,MgNumberValue.NumberTypeEnum.Literal)
+                        ), #1/1
                         MgColorExpression(MgColorTerm(MgColorTerm.ColorTermEnum.Green)), #green
                         MgTypeExpression(MgSubtype(MgSubtype.CreatureSubtypeEnum.Saproling),MgType(MgType.TypeEnum.Creature)), #saproling creature
                         MgQualifier(MgQualifier.QualifierEnum.Token) #token

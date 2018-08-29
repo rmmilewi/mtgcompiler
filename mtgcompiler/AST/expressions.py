@@ -165,18 +165,22 @@ class MgPTExpression(MgAbstractExpression):
                 self._traversable = True
                 self._power = power
                 self._toughness = toughness
+                self._power.setParent(self)
+                self._toughness.setParent(self)
         
         def getPower(self):
                 return self._power
         
         def setPower(self,power):
                 self._power = power
+                self._power.setParent(self)
         
         def getToughness(self):
                 return self._toughness
         
         def setToughness(self,toughness):
-                return self._toughness
+                self._toughness = toughness
+                self._toughness.setParent(self)
                 
         def isChild(self,child):
                 return child in {self._power,self._toughness}
@@ -185,7 +189,7 @@ class MgPTExpression(MgAbstractExpression):
                 return [node for node in {self._power,self._toughness} if node is not None and node.isTraversable()]
                 
         def unparseToString(self):
-                return "{0}/{1}".format(self._power.unparseToString(),self._toughness.unparseToString)
+                return "{0}/{1}".format(self._power.unparseToString(),self._toughness.unparseToString())
     
 class MgColorExpression(MgAbstractExpression):
         """This node represents color expressions, such as
@@ -356,7 +360,7 @@ class MgCommaExpression(MgAbstractExpression):
         """This node represents a series of terms/expressions separated by a comma. 
         'one, two, or three target creatures with flying' in Aerial Volley. This expression can
         optionally be terminated with an 'and' or 'or'"""
-        pass
+        pass 
         
         
 class MgModalExpression(MgAbstractExpression):
@@ -560,8 +564,8 @@ class MgEachExpression(MgUnaryOp):
                 return "each {0}".format(self._operand.unparseToString())        
         
 class MgChoiceExpression(MgUnaryOp):
-        """A choice expression is used whenever card text involves the word 'choose'.
-        For example, 'choose a color' or 'choose two:[...]'."""
+        """A choice expression is used whenever card text involve a non-modal choice.
+        For example, 'choose a color'."""
 
         def __init__(self,operand):
                 super().__init__(operand)
