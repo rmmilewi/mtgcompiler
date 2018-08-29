@@ -2,6 +2,48 @@ import abc
 
 class MgNode(metaclass=abc.ABCMeta):
         """This is the abstract base class for all AST classes."""
+        
+        def getAttribute(self,handle):
+                """Attributes are arbitrary objects that can be attached to nodes. Attributes can be used by
+                an (un)parser or analysis routine to decorate nodes with relevant information. Attributes
+                are stored in a dictionary that maps strings to attributes. This dictionary initially undefined, but
+                if the user calls any attribute-related method, then an empty dictionary is created.
+                
+                This method attempts to fetch an attribute with the given lookup key. This method will raise an
+                exception if no such handle exists.
+                """
+                if not hasattr(self, '_attributes'):
+                        self._attributes = {}
+                
+                return self._attributes[handle]
+                
+        def hasAttribute(self,handle):
+                """Attributes are arbitrary objects that can be attached to nodes. Attributes can be used by
+                an (un)parser or analysis routine to decorate nodes with relevant information. Attributes
+                are stored in a dictionary that maps strings to attributes. This dictionary initially undefined, but
+                if the user calls any attribute-related method, then an empty dictionary is created.
+                
+                This method checks to see whether the given lookup key is in the attribute dictionary.
+                """
+                
+                if not hasattr(self, '_attributes'):
+                        self._attributes = {}
+                
+                return handle in self._attributes
+                
+        def setAttribute(self,handle,attr):
+                """Attributes are arbitrary objects that can be attached to nodes. Attributes can be used by
+                an (un)parser or analysis routine to decorate nodes with relevant information. Attributes
+                are stored in a dictionary that maps strings to attributes. This dictionary initially undefined, but
+                if the user calls any attribute-related method, then an empty dictionary is created.
+                
+                This method stores the given object in the dictionary with the handle as the key.
+                """
+                
+                if not hasattr(self, '_attributes'):
+                        self._attributes = {}
+                        
+                self._attributes[handle] = attr
 
         def setParent(self, parent):
                 """Setter method for the parent node. The parent node is the ancestor of a given node."""
