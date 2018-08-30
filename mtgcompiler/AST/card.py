@@ -155,29 +155,43 @@ class MgCard(core.MgNode):
                 
                 if "name" in kwargs:
                         self._name = kwargs["name"]
+                        if self._name is not None:
+                                self._name.setParent(self)
                 else:
                         self._name = MgName()
+                        self._name.setParent(self)
                         
                 if "manaCost" in kwargs:
                         self._manaCost = kwargs["manaCost"]
+                        if self._manaCost is not None:
+                                self._manaCost.setParent(self)
                 else:
                         self._manaCost = MgManaExpression()
+                        self._manaCost.setParent(self)
                         
                 if "colorIndicator" in kwargs:
                         self._colorIndicator = kwargs["colorIndicator"]
+                        if self._colorIndicator is not None:
+                                self._colorIndicator.setParent(self)
                 else:
                         self._colorIndicator = None
                         
                 if "typeLine" in kwargs:
                         self._typeLine = kwargs["typeLine"]
+                        if self._typeLine is not None:
+                                self._typeLine.setParent(self)
                 else:
                         self._typeLine = MgTypeLine()
                         
                 if "loyalty" in kwargs:
                         self._loyalty = kwargs["loyalty"]
+                        if self._loyalty is not None:
+                                self._loyalty.setParent(self)
                 else:
                         self._loyalty = None
-                        
+                 
+                #TODO: The expansion symbol is going into some kind of 'card details' data structure,
+                #along with info like artist name.
                 if "expansionSymbol" in kwargs:
                         self._expansionSymbol = kwargs["expansionSymbol"]
                 else:
@@ -185,23 +199,39 @@ class MgCard(core.MgNode):
                         
                 if "textBox" in kwargs:
                         self._textBox = kwargs["textBox"]
+                        if self._textBox is not None:
+                                self._textBox.setParent(self)
                 else:
                         self._textBox = MgTextBox()
+                        self._textBox.setParent(self)
                         
                 if "powerToughness" in kwargs:
                         self._powerToughness = kwargs["powerToughness"]
+                        if self._powerToughness is not None:
+                                self._powerToughness.setParent(self)
                 else:
                         self._powerToughness = None
                         
                 if "handModifier" in kwargs:
                         self._handModifier = kwargs["handModifier"]
+                        if self._handModifier is not None:
+                                self._handModifier.setParent(self)
                 else:
                         self._handModifier = None
                         
                 if "lifeModifier" in kwargs:
                         self._lifeModifier = kwargs["lifeModifier"]
+                        if self._lifeModifier is not None:
+                                self._lifeModifier.setParent(self)
                 else:
                         self._lifeModifier = None
+                        
+                if "flavor" in kwargs:
+                        self._flavor = kwargs["flavor"]
+                        if self._flavor is not None:
+                                self._flavor.setParent(self)
+                else:
+                        self._flavor = None
         
         def getName(self):
                 return self._name
@@ -306,6 +336,16 @@ class MgCard(core.MgNode):
                 """Note: This only matters for Vanguard cards."""
                 self._lifeModifier = lifeModifier
                 self._lifeModifier.setParent(self)
+                
+        def getFlavor(self):
+                return self._flavor
+        
+        def hasFlavor(self):
+                return self._flavor is not None
+        
+        def setFlavor(self,flavor):
+                self._flavor = flavor
+                self._flavor.setParent(self)
                 
         def isChild(self,child):
                 return child in {self._name,self._manaCost,self._colorIndicator,self._typeLine,self._loyalty,self._expansionSymbol,self._textBox,self._powerToughness,self._handModifier,self._lifeModifier}
