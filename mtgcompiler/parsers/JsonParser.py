@@ -4,37 +4,104 @@ from mtgcompiler.AST.card import MgTypeLine,MgFlavorText,MgTextBox,MgCard
 from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
 from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
 from mtgcompiler.AST.expressions import MgNumberValue,MgPTExpression,MgManaExpression,MgTypeExpression
-from lark import Lark
+
+from lark import Lark #Lexing and parsing!
+from lark import Transformer #Converting the parse tree into something useful.
+from lark.tree import pydot__tree_to_png #For rendering the parse tree.
+from lark.lexer import Token
 
 class JsonParser(BaseParser):
 
         def __init__(self):
-                self._lp = self.define_grammar()
+                """Calling this constructor causes the Lark parser and the parse-to-AST transformer
+                to be instantiated."""
+                self._lp,self._tf = self.define_grammar()
+                
+                
+        class JsonTransformer(Transformer):
+                def manaexpression(self,items):
+                        manaExpr = MgManaExpression(*items)
+                        manaExpr.unparseToString()
+                        return manaExpr
+                def manasymbol(self,items):
+                        subtree = items[0]
+                        
+                        
+                        colorEnum = None #The flags indicating color/colorlessness
+                        modifierEnum = None #modifiers like phyrexian, snow, etc.
+                        cvalue = -1 #The value of the symbol. This is used when the mana is generic or variable (e.g. 5, X).
+                        
+                        #Here we apply any modifier flags that the AST cares about.
+                        if subtree.data == "halfmanasymbol":
+                                modifier = MgManaSymbol.ManaModifier.Half
+                        elif subtree.data == "phyrexianmanasymbol": 
+                                modifier = MgManaSymbol.ManaModifier.Phyrexian
+                        elif subtree.data == "alternate2manasymbol":
+                                modifier = MgManaSymbol.ManaModifier.AlternateTwo
+                        elif subtree.data == "snowmanasymbol": 
+                                modifier = MgManaSymbol.ManaModifier.Snow
+                        elif subtree.data == "xmanasymbol":
+                                cvalue = "X" #TODO: This doesn't cover the infinity symbol.
+                                
+                                
+                        def updateColorEnum(colorEnum,flag):
+                                #Updates the color enum with an additional flag.
+                                #It's easier to write this once in an inner function
+                                #than to spell it out every single time.
+                                if colorEnum is None:
+                                        colorEnum = flag
+                                else:
+                                        colorEnum = colorEnum | flag
+                                
+                                return colorEnum #Return the updated version.
+                                
+                                
+                        for child in subtree.children:
+                                if type(child) == Token and child.type == "NUMBER":
+                                        cvalue = int(child.value) #This is a generic mana symbol
+                                else:
+                                        childAlias = child.data
+                                        if childAlias == "whitemarker":
+                                                colorEnum = updateColorEnum(colorEnum,MgManaSymbol.ManaType.White)
+                                        elif childAlias == "bluemarker":
+                                                colorEnum = updateColorEnum(colorEnum,MgManaSymbol.ManaType.Blue)
+                                        elif childAlias == "blackmarker":
+                                                colorEnum = updateColorEnum(colorEnum,MgManaSymbol.ManaType.Black)
+                                        elif childAlias == "redmarker":
+                                                colorEnum = updateColorEnum(colorEnum,MgManaSymbol.ManaType.Red)
+                                        elif childAlias == "greenmarker":
+                                                colorEnum = updateColorEnum(colorEnum,MgManaSymbol.ManaType.Green)
+                                        elif childAlias == "colorlessmarker":
+                                                colorEnum = updateColorEnum(colorEnum,MgManaSymbol.ManaType.Colorless)
+                        
+                        return MgManaSymbol(colorv=colorEnum,modifiers=modifierEnum,cvalue=cvalue)
                 
                 
         def define_grammar(self):
                 larkparser = Lark(r"""
                 
                         manaexpression: manasymbol+ 
-                        manasymbol: "{" markerseq "}"
-                        markerseq: [manamarker_halfmana] manamarker_color 
-                        | manamarker_color "/" manamarker_phyrexian
-                        | manamarker_color "/" manamarker_color
-                        | NUMBER "/" manamarker_color
-                        | manamarker_colorless
-                        | manamarker_x
-                        | NUMBER
+                        manasymbol: "{" manamarkerseq "}"
+                        manamarkerseq: manamarker_color -> regularmanasymbol
+                        | manamarker_halfmana manamarker_color -> halfmanasymbol
+                        | manamarker_color "/" manamarker_phyrexian -> phyrexianmanasymbol
+                        | manamarker_color "/" manamarker_color -> hybridmanasymbol
+                        | "2" "/" manamarker_color -> alternate2manasymbol
+                        | manamarker_snow -> snowmanasymbol
+                        | manamarker_colorless -> colorlessmanasymbol
+                        | manamarker_x -> xmanasymbol
+                        | NUMBER -> genericmanasymbol
                         
-                        manamarker_halfmana: "H" -> h
-                        manamarker_color: "W" -> w
-                        | "U" -> u
-                        | "B" -> b
-                        | "R" -> r
-                        | "G" -> g
-                        manamarker_snow: "S" -> s
-                        manamarker_phyrexian: "P" -> p
-                        manamarker_colorless: "C" -> c
-                        manamarker_x: "X" -> x
+                        manamarker_halfmana: "H" -> halfmarker
+                        manamarker_color: "W" -> whitemarker
+                        | "U" -> bluemarker
+                        | "B" -> blackmarker
+                        | "R" -> redmarker
+                        | "G" -> greenmarker
+                        manamarker_snow: "S" -> snowmarker
+                        manamarker_phyrexian: "P" -> phyrexianmarker
+                        manamarker_colorless: "C" -> colorlessmarker
+                        manamarker_x: "X" -> xmarker
                         
                         
                         %import common.SIGNED_NUMBER -> NUMBER
@@ -42,11 +109,17 @@ class JsonParser(BaseParser):
                         %ignore WS
                 """, start='manaexpression')
                 
-                #print(larkparser.parse("{W}{U}{U/P}{HR}{5}"))
+                transformer = JsonParser.JsonTransformer()
+                
+                #tree = larkparser.parse("{W}{U}{U/P}{HR}{5}{2/G}{X}{R/G}")
+                #print(tree)
+                #pydot__tree_to_png(tree, "lark_manaexpression.png")
+                #out = transformer.transform(tree)
+                #print(out)
                 #quit()
                 
                 
-                return larkparser
+                return larkparser,transformer
                 
         
         def parse(self,cardinput):
@@ -83,8 +156,7 @@ class JsonParser(BaseParser):
                         cardName = MgName()
                         
                 if 'manaCost' in cardinput:
-                        self._lp.parse(cardinput['manaCost'])
-                        manaCost = MgManaExpression() #TODO
+                        manaCost = self._tf.transform(self._lp.parse(cardinput['manaCost']))
                 else:
                         manaCost = MgManaExpression()
                         
