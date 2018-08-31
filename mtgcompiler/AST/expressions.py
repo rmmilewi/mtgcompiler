@@ -17,6 +17,9 @@ class MgValueExpression(MgAbstractExpression):
                 - 'twice X' in 'you gain twice X life'
         """
         pass
+        
+
+
 
 class MgNumberValue(MgValueExpression):
         """Represents a number value, which can be unparsed in one of three ways,
@@ -24,6 +27,7 @@ class MgNumberValue(MgValueExpression):
                 - Literal value: 1,2,3...
                 - Magic English quantity - one, two, three...
                 - Magic English frequency - once, twice, three times...
+                - Custom values: *, 1+*, etc.
         """
         
         class NumberTypeEnum(Enum):
@@ -32,6 +36,7 @@ class MgNumberValue(MgValueExpression):
                 Quantity = auto() #one, two, three
                 Frequency = auto() #once, twice, three times
                 Ordinal = auto() #first, second, third
+                Custom = auto() #*,1+*
         
         def __init__(self,value,ntype):
                 self._traversable = True
@@ -70,6 +75,14 @@ class MgNumberValue(MgValueExpression):
                 """Makes the number type a frequency."""
                 self._ntype = MgNumberValue.NumberTypeEnum.Ordinal
                 
+        def isCustom(self):
+                """Checks if the number type is a frequency."""
+                return self._ntype == MgNumberValue.NumberTypeEnum.Ordinal
+                
+        def setCustom(self):
+                """Makes the number type a frequency."""
+                self._ntype = MgNumberValue.NumberTypeEnum.Ordinal
+                
         def getValue(self):
                 """Gets the underlying integer value."""
                 return self._value
@@ -87,6 +100,8 @@ class MgNumberValue(MgValueExpression):
                 return []
         
         def unparseToString(self):
+                if self._ntype == MgNumberValue.NumberTypeEnum.Custom:
+                        return self._value
                 if self._ntype == MgNumberValue.NumberTypeEnum.Literal:
                         return str(self._value)
                 

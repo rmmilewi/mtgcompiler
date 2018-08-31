@@ -43,6 +43,10 @@ class TestCommonExpressions(unittest.TestCase):
                 seventytwo_quantity.setValue(73)
                 self.assertEqual(seventytwo_quantity.unparseToString().lower(),"seventy-three times")
                 
+                star_custom = MgNumberValue("*",MgNumberValue.NumberTypeEnum.Custom)
+                self.assertTrue(star_custom.isCustom())
+                self.assertEqual(star_custom.unparseToString().lower(),"*")
+                
         
         def test_ColorExpressions(self):
                 multicolored = MgColorTerm(MgColorTerm.ColorTermEnum.Multicolored)
@@ -82,9 +86,9 @@ class TestCommonExpressions(unittest.TestCase):
                 
                 self.assertEqual(texpr.unparseToString().lower(),"legendary human cleric")
                 
-                #test pluralization
-                texpr.setPlural(True)
-                self.assertEqual(texpr.unparseToString().lower(),"legendary human clerics")
+                ##test pluralization
+                #texpr.setPlural(True)
+                #self.assertEqual(texpr.unparseToString().lower(),"legendary human clerics")
                 
                 #test comma delimitation.
                 nonvampire = MgNonExpression(MgSubtype(MgSubtype.CreatureSubtypeEnum.Vampire))
