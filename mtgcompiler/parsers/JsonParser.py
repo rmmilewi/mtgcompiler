@@ -4,11 +4,50 @@ from mtgcompiler.AST.card import MgTypeLine,MgFlavorText,MgTextBox,MgCard
 from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
 from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
 from mtgcompiler.AST.expressions import MgNumberValue,MgPTExpression,MgManaExpression,MgTypeExpression
+from lark import Lark
 
 class JsonParser(BaseParser):
 
         def __init__(self):
-                pass
+                self._lp = self.define_grammar()
+                
+                
+        def define_grammar(self):
+                larkparser = Lark(r"""
+                
+                        manaexpression: manasymbol+ 
+                        manasymbol: "{" markerseq "}"
+                        markerseq: [manamarker_halfmana] manamarker_color 
+                        | manamarker_color "/" manamarker_phyrexian
+                        | manamarker_color "/" manamarker_color
+                        | NUMBER "/" manamarker_color
+                        | manamarker_colorless
+                        | manamarker_x
+                        | NUMBER
+                        
+                        manamarker_halfmana: "H" -> h
+                        manamarker_color: "W" -> w
+                        | "U" -> u
+                        | "B" -> b
+                        | "R" -> r
+                        | "G" -> g
+                        manamarker_snow: "S" -> s
+                        manamarker_phyrexian: "P" -> p
+                        manamarker_colorless: "C" -> c
+                        manamarker_x: "X" -> x
+                        
+                        
+                        %import common.SIGNED_NUMBER -> NUMBER
+                        %import common.WS
+                        %ignore WS
+                """, start='manaexpression')
+                
+                #print(larkparser.parse("{W}{U}{U/P}{HR}{5}"))
+                #quit()
+                
+                
+                return larkparser
+                
         
         def parse(self,cardinput):
                 """The parse method for JsonParser takes a Json dict in MtgJson format.
@@ -44,6 +83,7 @@ class JsonParser(BaseParser):
                         cardName = MgName()
                         
                 if 'manaCost' in cardinput:
+                        self._lp.parse(cardinput['manaCost'])
                         manaCost = MgManaExpression() #TODO
                 else:
                         manaCost = MgManaExpression()
@@ -75,11 +115,14 @@ class JsonParser(BaseParser):
                         loyalty = None
                         
                 if 'power' in cardinput or 'toughness' in cardinput:
-                        #I think it's reasonable to expect both to be there.
-                        #TODO: This will fail for non-integer power/toughness values, like 1+*.
-                        #I'll fix this later.
-                        power = MgNumberValue(int(cardinput['power']),MgNumberValue.NumberTypeEnum.Literal)
-                        toughness = MgNumberValue(int(cardinput['toughness']),MgNumberValue.NumberTypeEnum.Literal)
+                        try:
+                                power = MgNumberValue(int(cardinput['power']),MgNumberValue.NumberTypeEnum.Literal)
+                        except ValueError:
+                                power = MgNumberValue(cardinput['power'],MgNumberValue.NumberTypeEnum.Custom)
+                        try:
+                                toughness = MgNumberValue(int(cardinput['toughness']),MgNumberValue.NumberTypeEnum.Literal)
+                        except ValueError:
+                                toughness = MgNumberValue(cardinput['toughness'],MgNumberValue.NumberTypeEnum.Custom)
                         powerToughness = MgPTExpression(power,toughness)
                 else:
                         powerToughness = None
