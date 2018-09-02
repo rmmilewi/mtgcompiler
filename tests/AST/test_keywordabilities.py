@@ -18,8 +18,254 @@ from mtgcompiler.AST.abilities import MgRippleAbility, MgVanishingAbility, MgAbs
 from mtgcompiler.AST.abilities import MgPoisonousAbility, MgDevourAbility, MgAnnihilatorAbility, MgTributeAbility
 from mtgcompiler.AST.abilities import MgRenownAbility, MgCrewAbility, MgFabricateAbility, MgAfflictAbility, MgSurveilAbility
 
+from mtgcompiler.AST.abilities import MgCumulativeUpkeepAbility, MgBuybackAbility, MgCyclingAbility, MgKickerAbility
+from mtgcompiler.AST.abilities import MgMorphAbility, MgNinjutsuAbility, MgTransmuteAbility, MgRecoverAbility
+from mtgcompiler.AST.abilities import MgAuraSwapAbility, MgTransfigureAbility, MgEvokeAbility, MgMiracleAbility
+from mtgcompiler.AST.abilities import MgOverloadAbility, MgScavengeAbility, MgOutlastAbility, MgSurgeAbility
+from mtgcompiler.AST.abilities import MgEmergeAbility, MgEscalateAbility, MgEnbalmAbility, MgEternalizeAbility, MgJumpStartAbility
 
 class TestKeywordAbilities(unittest.TestCase):
+        
+        
+        def test_CumulativeUpkeep(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgCumulativeUpkeepAbility(cost=threegeneric)
+        
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"cumulative upkeep {3}")
+        
+
+        def test_Buyback(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgBuybackAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"buyback {3}")
+
+        def test_Cycling(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgCyclingAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"cycling {3}")
+
+        def test_Kicker(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgKickerAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"kicker {3}")
+                
+                self.assertFalse(ability.isMultikickerAbility())
+                ability.setIsMultikickerAbility(True)
+                self.assertEqual(ability.unparseToString().lower(),"multikicker {3}")
+
+        def test_Morph(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgMorphAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"morph {3}")
+                
+                self.assertFalse(ability.isMegamorphAbility())
+                ability.setIsMegamorphAbility(True)
+                self.assertEqual(ability.unparseToString().lower(),"megamorph {3}")
+
+        def test_Ninjutsu(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgNinjutsuAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"ninjutsu {3}")
+
+        def test_Transmute(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgTransmuteAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"transmute {3}")
+
+        def test_Recover(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgRecoverAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"recover {3}")
+
+        def test_AuraSwap(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgAuraSwapAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"aura swap {3}")
+
+        def test_Transfigure(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgTransfigureAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"transfigure {3}")
+
+        def test_Evoke(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgEvokeAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"evoke {3}")
+
+        def test_Miracle(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgMiracleAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"miracle {3}")
+
+        def test_Overload(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgOverloadAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"overload {3}")
+
+        def test_Scavenge(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgScavengeAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"scavenge {3}")
+
+        def test_Outlast(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgOutlastAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"outlast {3}")
+
+        def test_Surge(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgSurgeAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"surge {3}")
+
+        def test_Emerge(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgEmergeAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"emerge {3}")
+
+        def test_Escalate(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgEscalateAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"escalate {3}")
+
+        def test_Enbalm(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgEnbalmAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"enbalm {3}")
+
+        def test_Eternalize(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgEternalizeAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"eternalize {3}")
+
+        def test_JumpStart(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgJumpStartAbility(cost=threegeneric)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"jump-start {3}")
         
         def test_Rampage(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
@@ -38,7 +284,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Rampage.isChild(four))
                 self.assertEqual(four.getParent(),Rampage)
                 self.assertEqual(Rampage.unparseToString().lower(),"rampage 4")
-        
+
         def test_Fading(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Fading = MgFadingAbility(five)
@@ -56,6 +302,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Fading.isChild(four))
                 self.assertEqual(four.getParent(),Fading)
                 self.assertEqual(Fading.unparseToString().lower(),"fading 4")
+
         
         def test_Amplify(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
@@ -74,6 +321,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Amplify.isChild(four))
                 self.assertEqual(four.getParent(),Amplify)
                 self.assertEqual(Amplify.unparseToString().lower(),"amplify 4")
+
         def test_Modular(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Modular = MgModularAbility(five)
@@ -91,6 +339,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Modular.isChild(four))
                 self.assertEqual(four.getParent(),Modular)
                 self.assertEqual(Modular.unparseToString().lower(),"modular 4")
+
         def test_Bushido(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Bushido = MgBushidoAbility(five)
@@ -108,6 +357,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Bushido.isChild(four))
                 self.assertEqual(four.getParent(),Bushido)
                 self.assertEqual(Bushido.unparseToString().lower(),"bushido 4")
+
         def test_Soulshift(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Soulshift = MgSoulshiftAbility(five)
@@ -125,6 +375,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Soulshift.isChild(four))
                 self.assertEqual(four.getParent(),Soulshift)
                 self.assertEqual(Soulshift.unparseToString().lower(),"soulshift 4")
+
         def test_Dredge(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Dredge = MgDredgeAbility(five)
@@ -142,6 +393,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Dredge.isChild(four))
                 self.assertEqual(four.getParent(),Dredge)
                 self.assertEqual(Dredge.unparseToString().lower(),"dredge 4")
+
         def test_Bloodthirst(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Bloodthirst = MgBloodthirstAbility(five)
@@ -159,6 +411,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Bloodthirst.isChild(four))
                 self.assertEqual(four.getParent(),Bloodthirst)
                 self.assertEqual(Bloodthirst.unparseToString().lower(),"bloodthirst 4")
+
         def test_Graft(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Graft = MgGraftAbility(five)
@@ -176,6 +429,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Graft.isChild(four))
                 self.assertEqual(four.getParent(),Graft)
                 self.assertEqual(Graft.unparseToString().lower(),"graft 4")
+
         def test_Ripple(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Ripple = MgRippleAbility(five)
@@ -193,6 +447,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Ripple.isChild(four))
                 self.assertEqual(four.getParent(),Ripple)
                 self.assertEqual(Ripple.unparseToString().lower(),"ripple 4")
+
         def test_Vanishing(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Vanishing = MgVanishingAbility(five)
@@ -210,6 +465,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Vanishing.isChild(four))
                 self.assertEqual(four.getParent(),Vanishing)
                 self.assertEqual(Vanishing.unparseToString().lower(),"vanishing 4")
+
         def test_Absorb(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Absorb = MgAbsorbAbility(five)
@@ -227,6 +483,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Absorb.isChild(four))
                 self.assertEqual(four.getParent(),Absorb)
                 self.assertEqual(Absorb.unparseToString().lower(),"absorb 4")
+
         def test_Frenzy(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Frenzy = MgFrenzyAbility(five)
@@ -244,6 +501,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Frenzy.isChild(four))
                 self.assertEqual(four.getParent(),Frenzy)
                 self.assertEqual(Frenzy.unparseToString().lower(),"frenzy 4")
+
         def test_Poisonous(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Poisonous = MgPoisonousAbility(five)
@@ -261,6 +519,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Poisonous.isChild(four))
                 self.assertEqual(four.getParent(),Poisonous)
                 self.assertEqual(Poisonous.unparseToString().lower(),"poisonous 4")
+
         def test_Devour(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Devour = MgDevourAbility(five)
@@ -278,6 +537,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Devour.isChild(four))
                 self.assertEqual(four.getParent(),Devour)
                 self.assertEqual(Devour.unparseToString().lower(),"devour 4")
+
         def test_Annihilator(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Annihilator = MgAnnihilatorAbility(five)
@@ -295,6 +555,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Annihilator.isChild(four))
                 self.assertEqual(four.getParent(),Annihilator)
                 self.assertEqual(Annihilator.unparseToString().lower(),"annihilator 4")
+
         def test_Tribute(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Tribute = MgTributeAbility(five)
@@ -312,6 +573,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Tribute.isChild(four))
                 self.assertEqual(four.getParent(),Tribute)
                 self.assertEqual(Tribute.unparseToString().lower(),"tribute 4")
+
         def test_Renown(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Renown = MgRenownAbility(five)
@@ -329,6 +591,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Renown.isChild(four))
                 self.assertEqual(four.getParent(),Renown)
                 self.assertEqual(Renown.unparseToString().lower(),"renown 4")
+
         def test_Crew(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Crew = MgCrewAbility(five)
@@ -346,6 +609,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Crew.isChild(four))
                 self.assertEqual(four.getParent(),Crew)
                 self.assertEqual(Crew.unparseToString().lower(),"crew 4")
+
         def test_Fabricate(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Fabricate = MgFabricateAbility(five)
@@ -363,6 +627,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Fabricate.isChild(four))
                 self.assertEqual(four.getParent(),Fabricate)
                 self.assertEqual(Fabricate.unparseToString().lower(),"fabricate 4")
+
         def test_Afflict(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Afflict = MgAfflictAbility(five)
@@ -380,6 +645,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Afflict.isChild(four))
                 self.assertEqual(four.getParent(),Afflict)
                 self.assertEqual(Afflict.unparseToString().lower(),"afflict 4")
+
         def test_Surveil(self):
                 five = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 Surveil = MgSurveilAbility(five)
@@ -397,6 +663,7 @@ class TestKeywordAbilities(unittest.TestCase):
                 self.assertTrue(Surveil.isChild(four))
                 self.assertEqual(four.getParent(),Surveil)
                 self.assertEqual(Surveil.unparseToString().lower(),"surveil 4")
+
         
         
         def test_Protection(self):

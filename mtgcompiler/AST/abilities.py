@@ -728,7 +728,36 @@ class MgCumulativeUpkeepAbility(MgKeywordAbility):
         If you don’t, sacrifice it.” If [cost] has choices associated with it, each choice is made separately
         for each age counter, then either the entire set of costs is paid, or none of them is paid. 
         Partial payments aren’t allowed."""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "cumulative upkeep {0}".format(self._cost.unparseToString())
+                else:
+                        return "cumulative upkeep"
         
 class MgPhasingAbility(MgKeywordAbility):
         def __init__(self):
@@ -751,7 +780,36 @@ class MgBuybackAbility(MgKeywordAbility):
         “Buyback [cost]” means “You may pay an additional [cost] as you cast this spell” 
         and “If the buyback cost was paid, put this spell into its owner’s hand instead
         of into that player’s graveyard as it resolves.”"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "buyback {0}".format(self._cost.unparseToString())
+                else:
+                        return "buyback"
 
 class MgShadowAbility(MgKeywordAbility):
         def __init__(self):
@@ -776,13 +834,94 @@ class MgCyclingAbility(MgKeywordAbility):
         “[Cost], Discard this card: Search your library for a [type] card,reveal it, and put it
         into your hand. Then shuffle your library.” This type is usually a subtype (as in “mountaincycling”)
         but can be any card type, subtype, supertype, or combination thereof (as in “basic landcycling”)."""
-        pass
+        def __init__(self,cost,cyclingType = None):
+                """cost: The cost associated with this ability.
+                cyclingType: A type expression used to specify type-specific cycling. Usually this is None.
+                """
+                super().__init__()
+                self._cost = cost
+                self._cyclingType = cyclingType
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                if self._cyclingType is not None:
+                        self._cyclingType.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def hasCyclingType(self):
+                """Checks to see whether this instance of cycling is restricted to a particular type of card."""
+                return self._cyclingType is not None
+                
+        def getCyclingType(self):
+                """Gets the cycling type expression for this instance of cycling, if it has one."""
+                return self._cyclingType
+                
+        def setCyclingType(self,cyclingType):
+                """Sets the cycling type expression for this instance of cycling."""
+                self._cyclingType = cyclingType
+                if self._cyclingType is not None:
+                        self._cyclingType.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to two children, the cost and the cycling type."""
+                return child is not None and child in {self._cost,self._cyclingType}
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to two successors, its cost and its cycling type."""
+                return [node for node in {self._cost,self._cyclingType} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cyclingType is not None:
+                        abilityName = "{0}cycling".format(self._cyclingType.unparseToString())
+                else:
+                        abilityName = "cycling"
+                if self._cost is not None:
+                        return "{0} {1}".format(abilityName,self._cost.unparseToString())
+                else:
+                        return "{0}".format(abilityName)
         
 class MgEchoAbility(MgKeywordAbility):
         """702.29a Echo is a triggered ability. “Echo [cost]” means “At the beginning of your upkeep, 
         if this permanent came under your control since the beginning of your last upkeep, 
         sacrifice it unless you pay [cost].”"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "echo {0}".format(self._cost.unparseToString())
+                else:
+                        return "echo"
         
 class MgHorsemanshipAbility(MgKeywordAbility):
         def __init__(self):
@@ -846,7 +985,51 @@ class MgKickerAbility(MgKeywordAbility):
         means “You may pay an additional [cost] any number of times as you cast this spell.” 
         A multikicker cost is a kicker cost.
         """
-        pass
+        def __init__(self,cost,isMulti=False):
+                """cost: The cost associated with this ability.
+                isMulti: A flag that indicates that this kicker ability is a multikicker variant.
+                """
+                super().__init__()
+                self._cost = cost
+                self._isMulti = isMulti
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isMultikickerAbility(self):
+                """Checks whether this instance of kicker is a multikicker variant."""
+                return self._isMulti
+        
+        def setIsMultikickerAbility(self,isMulti):
+                """Sets the flag indicating whether or not this instance of kicker is a multikicker variant."""
+                self._isMulti = isMulti
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._isMulti is True:
+                        abilityName = "multikicker"
+                else:
+                        abilityName = "kicker"
+                if self._cost is not None:
+                        return "{0} {1}".format(abilityName,self._cost.unparseToString())
+                else:
+                        return "{0}".format(abilityName)
         
 class MgFlashbackAbility(MgKeywordAbility):
         """702.33a Flashback appears on some instants and sorceries. 
@@ -857,7 +1040,36 @@ class MgFlashbackAbility(MgKeywordAbility):
         by paying [cost] rather than paying its mana cost” 
         and “If the flashback cost was paid, exile this card instead of 
         putting it anywhere else any time it would leave the stack.”"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "flashback {0}".format(self._cost.unparseToString())
+                else:
+                        return "flashback"
         
 class MgMadnessAbility(MgKeywordAbility):
         """702.34a Madness is a keyword that represents two abilities. 
@@ -896,7 +1108,51 @@ class MgMorphAbility(MgKeywordAbility):
         and no mana cost by paying {3} rather than paying its mana cost” and 
         “As this permanent is turned face up, put a +1/+1 counter on it if its megamorph cost
          was paid to turn it face up.” A megamorph cost is a morph cost."""
-        pass
+        def __init__(self,cost,isMega=False):
+                """cost: The cost associated with this ability.
+                isMega: A flag that indicates that this morph ability is a megamorph variant.
+                """
+                super().__init__()
+                self._cost = cost
+                self._isMega = isMega
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isMegamorphAbility(self):
+                """Checks whether this instance of morph is a megamorph variant."""
+                return self._isMega
+        
+        def setIsMegamorphAbility(self,isMega):
+                """Sets the flag indicating whether or not this instance of morph is a megamorph variant."""
+                self._isMega = isMega
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._isMega is True:
+                        abilityName = "megamorph"
+                else:
+                        abilityName = "morph"
+                if self._cost is not None:
+                        return "{0} {1}".format(abilityName,self._cost.unparseToString())
+                else:
+                        return "{0}".format(abilityName)
         
 class MgAmplifyAbility(MgKeywordAbility):
         """702.37a Amplify is a static ability. “Amplify N” means “As this object enters the battlefield,
@@ -979,7 +1235,36 @@ class MgEntwineAbility(MgKeywordAbility):
         that functions while the spell is on the stack.
         “Entwine [cost]” means “You may choose all modes of this spell instead of just one. 
         If you do, you pay an additional [cost].”"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "entwine {0}".format(self._cost.unparseToString())
+                else:
+                        return "entwine"
         
 class MgModularAbility(MgKeywordAbility):
         """702.42a Modular represents both a static ability and a triggered ability. 
@@ -1101,15 +1386,89 @@ class MgSoulshiftAbility(MgKeywordAbility):
         
 class MgSpliceAbility(MgKeywordAbility):
         """“Splice onto [subtype] [cost]”"""
-        pass
+        def __init__(self,cost,spliceType):
+                """
+                cost: The cost associated with this ability.
+                spliceType: The subtype (type expression) to which this splice ability applies.
+                """
+                super().__init__()
+                self._cost = cost
+                self._spliceType = spliceType
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                if self._spliceType is not None:
+                        self._spliceType.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def getSpliceType(self):
+                """Get the subtype (type expression) to which this splice ability applies."""
+                return self._spliceType
+                
+        def setSpliceType(self,spliceType):
+                """Get the subtype (type expression) to which this splice ability applies."""
+                self._spliceType = spliceType
+                if self._spliceType is not None:
+                        self._spliceType.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None and self._spliceType is not None:
+                        return "splice onto {0} {1}".format(self._cost.unparseToString(),self._spliceType.unparseToString())
+                else:
+                        return "splice"
 
 class MgOfferingAbility(MgKeywordAbility):
         """“[Subtype] offering”"""
         pass
         
-class MgNinjitsuAbility(MgKeywordAbility):
+class MgNinjutsuAbility(MgKeywordAbility):
         """“Ninjutsu [cost]”"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "ninjutsu {0}".format(self._cost.unparseToString())
+                else:
+                        return "ninjutsu"
         
 class MgEpicAbility(MgKeywordAbility):
         def __init__(self):
@@ -1140,6 +1499,12 @@ class MgConvokeAbility(MgKeywordAbility):
                 
         def unparseToString(self):
                 return "convoke"
+                
+class MgForecastAbility(MgKeywordAbility):
+        """Forecast is weird in that it looks like an ability word but is in fact a keyword ability.
+        It's written as 'Forecast — [activated ability]'.
+        """
+        pass
         
 class MgDredgeAbility(MgKeywordAbility):
         """“Dredge N”"""
@@ -1176,7 +1541,36 @@ class MgDredgeAbility(MgKeywordAbility):
         
 class MgTransmuteAbility(MgKeywordAbility):
         """“Transmute [cost]”"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "transmute {0}".format(self._cost.unparseToString())
+                else:
+                        return "transmute"
         
 class MgBloodthirstAbility(MgKeywordAbility):
         """Bloodthirst N"""
@@ -1228,12 +1622,36 @@ class MgHauntAbility(MgKeywordAbility):
         
 class MgReplicateAbility(MgKeywordAbility):
         """“Replicate [cost]”"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
         
-class MgForecastAbility(MgKeywordAbility):
-        """702.56a A forecast ability is a special kind of activated ability that
-        can be activated only from a player’s hand. It’s written “Forecast — [Activated ability].”"""
-        pass
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "replicate {0}".format(self._cost.unparseToString())
+                else:
+                        return "replicate"
         
 class MgGraftAbility(MgKeywordAbility):
         """“Graft N”"""
@@ -1270,7 +1688,36 @@ class MgGraftAbility(MgKeywordAbility):
         
 class MgRecoverAbility(MgKeywordAbility):
         """“Recover [cost]”"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "recover {0}".format(self._cost.unparseToString())
+                else:
+                        return "recover"
         
 class MgRippleAbility(MgKeywordAbility):
         """“Ripple N”"""
@@ -1393,7 +1840,36 @@ class MgAbsorbAbility(MgKeywordAbility):
         
 class MgAuraSwapAbility(MgKeywordAbility):
         """“Aura swap [cost]”"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "aura swap {0}".format(self._cost.unparseToString())
+                else:
+                        return "aura swap"
         
 class MgDelveAbility(MgKeywordAbility):
         def __init__(self):
@@ -1412,7 +1888,36 @@ class MgDelveAbility(MgKeywordAbility):
         
 class MgFortifyAbility(MgKeywordAbility):
         """“Fortify [cost]”"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "fortify {0}".format(self._cost.unparseToString())
+                else:
+                        return "fortify"
         
 class MgFrenzyAbility(MgKeywordAbility):
         """“Frenzy N”"""
@@ -1497,7 +2002,36 @@ class MgPoisonousAbility(MgKeywordAbility):
         
 class MgTransfigureAbility(MgKeywordAbility):
         """“Transfigure [cost]”"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "transfigure {0}".format(self._cost.unparseToString())
+                else:
+                        return "transfigure"
         
 class MgChampionAbility(MgKeywordAbility):
         """“Champion an [object]”"""
@@ -1520,7 +2054,36 @@ class MgChangelingAbility(MgKeywordAbility):
         
 class MgEvokeAbility(MgKeywordAbility):
         """“Evoke [cost]”"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "evoke {0}".format(self._cost.unparseToString())
+                else:
+                        return "evoke"
         
 class MgHideawayAbility(MgKeywordAbility):
         def __init__(self):
@@ -1539,7 +2102,36 @@ class MgHideawayAbility(MgKeywordAbility):
         
 class MgProwlAbility(MgKeywordAbility):
         """“Prowl [cost]”"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "prowl {0}".format(self._cost.unparseToString())
+                else:
+                        return "prowl"
         
 class MgReinforceAbility(MgKeywordAbility):
         """“Reinforce N—[cost]”"""
@@ -1655,7 +2247,36 @@ class MgExaltedAbility(MgKeywordAbility):
         
 class MgUnearthAbility(MgKeywordAbility):
         """“Unearth [cost]” """
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "unearth {0}".format(self._cost.unparseToString())
+                else:
+                        return "unearth"
         
 class MgCascadeAbility(MgKeywordAbility):
         def __init__(self):
@@ -1707,7 +2328,36 @@ class MgAnnihilatorAbility(MgKeywordAbility):
         
 class MgLevelUpAbility(MgKeywordAbility):
         """Level up [cost]"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "level up {0}".format(self._cost.unparseToString())
+                else:
+                        return "level up"
         
 class MgReboundAbility(MgKeywordAbility):
         def __init__(self):
@@ -1801,7 +2451,36 @@ class MgUndyingAbility(MgKeywordAbility):
         
 class MgMiracleAbility(MgKeywordAbility):
         """“Miracle [cost]”"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "miracle {0}".format(self._cost.unparseToString())
+                else:
+                        return "miracle"
                 
 class MgSoulbondAbility(MgKeywordAbility):
         def __init__(self):
@@ -1820,11 +2499,69 @@ class MgSoulbondAbility(MgKeywordAbility):
         
 class MgOverloadAbility(MgKeywordAbility):
         """Overload [cost]"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "overload {0}".format(self._cost.unparseToString())
+                else:
+                        return "overload"
         
 class MgScavengeAbility(MgKeywordAbility):
         """Scavenge [cost]"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "scavenge {0}".format(self._cost.unparseToString())
+                else:
+                        return "scavenge"
         
 class MgUnleashAbility(MgKeywordAbility):
         def __init__(self):
@@ -1903,7 +2640,36 @@ class MgFuseAbility(MgKeywordAbility):
         
 class MgBestowAbility(MgKeywordAbility):
         """Bestow [cost]"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "bestow {0}".format(self._cost.unparseToString())
+                else:
+                        return "bestow"
         
 class MgTributeAbility(MgKeywordAbility):
         """“Tribute N”"""
@@ -1959,7 +2725,36 @@ class MgHiddenAgendaAbility(MgKeywordAbility):
         
 class MgOutlastAbility(MgKeywordAbility):
         """Outlast [cost]"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "outlast {0}".format(self._cost.unparseToString())
+                else:
+                        return "outlast"
         
 class MgProwessAbility(MgKeywordAbility):
         def __init__(self):
@@ -1978,7 +2773,36 @@ class MgProwessAbility(MgKeywordAbility):
         
 class MgDashAbility(MgKeywordAbility):
         """“Dash [cost]”"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "dash {0}".format(self._cost.unparseToString())
+                else:
+                        return "dash"
         
 class MgExploitAbility(MgKeywordAbility):
         def __init__(self):
@@ -2094,7 +2918,36 @@ class MgMyriadAbility(MgKeywordAbility):
         
 class MgSurgeAbility(MgKeywordAbility):
         """Surge [cost]"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "surge {0}".format(self._cost.unparseToString())
+                else:
+                        return "surge"
         
 class MgSkulkAbility(MgKeywordAbility):
         def __init__(self):
@@ -2113,11 +2966,69 @@ class MgSkulkAbility(MgKeywordAbility):
         
 class MgEmergeAbility(MgKeywordAbility):
         """Emerge [cost]"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "emerge {0}".format(self._cost.unparseToString())
+                else:
+                        return "emerge"
         
 class MgEscalateAbility(MgKeywordAbility):
         """Escalate [cost]"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "escalate {0}".format(self._cost.unparseToString())
+                else:
+                        return "escalate"
         
 class MgMeleeAbility(MgKeywordAbility):
         def __init__(self):
@@ -2236,11 +3147,69 @@ class MgAftermathAbility(MgKeywordAbility):
         
 class MgEnbalmAbility(MgKeywordAbility):
         """Embalm [cost]"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "enbalm {0}".format(self._cost.unparseToString())
+                else:
+                        return "enbalm"
         
 class MgEternalizeAbility(MgKeywordAbility):
         """Eternalize [cost]"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "eternalize {0}".format(self._cost.unparseToString())
+                else:
+                        return "eternalize"
         
 class MgAfflictAbility(MgKeywordAbility):
         """Afflict N"""
@@ -2355,5 +3324,34 @@ class MgSurveilAbility(MgKeywordAbility):
         
 class MgJumpStartAbility(MgKeywordAbility):
         """'Jump-Start [cost]'"""
-        pass
+        def __init__(self,cost):
+                """cost: The cost associated with this ability."""
+                super().__init__()
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+        
+        def getCost(self):
+                """Get the cost associated with this ability."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this ability."""
+                self._cost = cost
+                if self._cost is not None:
+                        self._cost.setParent(self)
+                        
+        def isChild(self,child):
+                """This node can have up to one child, the cost."""
+                return child is not None and child == self._cost
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its cost."""
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._cost is not None:
+                        return "jump-start {0}".format(self._cost.unparseToString())
+                else:
+                        return "jump-start"
 
