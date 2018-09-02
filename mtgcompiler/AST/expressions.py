@@ -17,9 +17,6 @@ class MgValueExpression(MgAbstractExpression):
                 - 'twice X' in 'you gain twice X life'
         """
         pass
-        
-
-
 
 class MgNumberValue(MgValueExpression):
         """Represents a number value, which can be unparsed in one of three ways,
@@ -148,6 +145,15 @@ class MgManaExpression(MgAbstractExpression):
         def addManaSymbol(self,sym):
                 self._symlist.append(sym)
                 sym.setParent(self)
+                
+                
+                
+class MgDashCostExpression(core.MgNode):
+        """Sometimes a cost of a keyword ability is more than, say, just a simple mana expression.
+        For example, in Braid of Fire, we see 'Cumulative upkeep—Add {R}.' In these situations,
+        we use a dash cost expression that decorates the underlying expression.
+        """
+        pass
 
 
 class MgDescriptionExpression(core.MgNode):

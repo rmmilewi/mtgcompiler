@@ -303,7 +303,7 @@ class MgDeathtouchAbility(MgKeywordAbility):
         """
         
         def __init__(self):
-                pass
+                super().__init__()
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -319,11 +319,35 @@ class MgDeathtouchAbility(MgKeywordAbility):
         
                 
 class MgDefenderAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "defender"
         
         
 class MgDoubleStrikeAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "double strike"
         
         
 class MgEnchantAbility(MgKeywordAbility):
@@ -345,17 +369,65 @@ class MgEquipAbility(MgKeywordAbility):
         pass
         
 class MgFirstStrikeAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "first strike"
         
         
 class MgFlashAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "flash"
         
 class MgFlyingAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "flying"
         
 class MgHasteAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "haste"
         
         
 class MgHexproofAbility(MgKeywordAbility):
@@ -363,13 +435,76 @@ class MgHexproofAbility(MgKeywordAbility):
         “Hexproof from [quality]” on a permanent means “This permanent can’t be the target of [quality] spells
         your opponents control or abilities your opponents control from [quality] sources.”
         A “hexproof from [quality]” ability is a hexproof ability."""
-        pass
+        def __init__(self,quality=None):
+                """quality: An optional quality that specifies what hexproof guards the object against, as opposed
+                to all sources, which is the default."""
+                super().__init__()
+                self._quality = quality
+                if self._quality is not None:
+                        self._quality.setParent(self)
+                
+        def hasQualitySpecifier(self):
+                """Checks whether the instance of hexproof has a quality specifier (e.g. hexproof from black)."""
+                return self._quality is not None
+                
+        def getQualitySpecifier(self):
+                """Gets the quality specifier."""
+                return self._quality
+                
+        def setQualitySpecifier(self,quality):
+                """Sets the quality specifier."""
+                self._quality = quality
+                if self._quality is not None:
+                        self._quality.setParent(self)
+                
+        def hasQualitySpecifier(self):
+                """Checks whether the instance of hexproof has a quality specifier (e.g. hexproof from black)."""
+                return self._quality is not None
+                
+        def isChild(self,child):
+                """This node has one optional child."""
+                return self._quality is not None and child == self._quality 
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor."""
+                return [node for node in {self._quality} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._quality is not None:
+                        return "hexproof from {0}".format(self._quality.unparseToString())
+                else:
+                        return "hexproof"
+                        
         
 class MgIndestructibleAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "indestructible"
         
 class MgIntimidateAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "intimidate"
         
 class MgLandwalkAbility(MgKeywordAbility):
         """702.14a Landwalk is a generic term that appears within an object’s rules text as “[type]walk,” where [type] is 
@@ -379,9 +514,63 @@ class MgLandwalkAbility(MgKeywordAbility):
         with the specified supertype (as in “legendary landwalk”), without the specified supertype (as in “nonbasic landwalk”),
         or with both the specified supertype and the specified subtype (as in “snow swampwalk”). (See rule 509, “Declare Blockers Step.”)
         """
+        def __init__(self,landtype=None):
+                """landtype: A type expression describing the kind of land for which the landwalk is relevant,
+                such as 'island' or 'legendary land'. If landtype is None, then this node refers to landtype generically,
+                in the sense of 'landwalk of the chosen type'.
+                """
+                super().__init__()
+                self._landtype = landtype
+                if self._landtype is not None:
+                        self._landtype.setParent(self)
+                        
+        def hasLandType(self):
+                """Checks whether this instance of landwalk specifies a land type.
+                If it doesn't, then it's referring to landwalk in a generic sense.
+                """
+                return self._landtype is not None
+                
+        def getLandType(self):
+                """Gets the land type expression."""
+                return self._landtype
+                
+        def setLandType(self,landtype):
+                """Sets the land type expression."""
+                self._landtype = landtype
+                if self._landtype is not None:
+                        self._landtype.setParent(self)
+                
+                
+        def isChild(self,child):
+                """This node has one optional child, the land type expression."""
+                return self._landtype is not None and child == self._landtype 
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor."""
+                return [node for node in {self._landtype} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._landtype is not None:
+                        return "{0}walk".format(self._landtype.unparseToString())
+                else:
+                        return "landwalk"
+                
+                
         
 class MgLifelinkAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "lifelink"
         
 class MgProtectionAbility(MgKeywordAbility):
         """702.16a Protection is a static ability, written “Protection from [quality].” 
@@ -431,16 +620,64 @@ class MgProtectionAbility(MgKeywordAbility):
                 return "protection {0}".format(quals)
         
 class MgReachAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "reach"
         
 class MgShroudAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "shroud"
         
 class MgTrampleAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "trample"
         
 class MgVigilanceAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "vigilance"
         
 class MgBandingAbility(MgKeywordAbility):
         """702.21b “Bands with other” is a special form of banding.""" 
@@ -450,7 +687,39 @@ class MgRampageAbility(MgKeywordAbility):
         """702.22a Rampage is a triggered ability. “Rampage N” means 
         “Whenever this creature becomes blocked, it gets +N/+N until end of turn
         for each creature blocking it beyond the first.”"""
-        pass
+        
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "rampage {0}".format(self._caliber.unparseToString())
+                else:
+                        return "rampage"
+                
+        
 
 class MgCumulativeUpkeepAbility(MgKeywordAbility):
         """702.23a Cumulative upkeep is a triggered ability that imposes an increasing cost on a permanent. 
@@ -461,11 +730,20 @@ class MgCumulativeUpkeepAbility(MgKeywordAbility):
         Partial payments aren’t allowed."""
         pass
         
-class MgVigilanceAbility(MgKeywordAbility):
-        pass
-        
 class MgPhasingAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "phasing"
         
 class MgBuybackAbility(MgKeywordAbility):
         """702.26a Buyback appears on some instants and sorceries. 
@@ -476,7 +754,19 @@ class MgBuybackAbility(MgKeywordAbility):
         pass
 
 class MgShadowAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "shadow"
         
 class MgCyclingAbility(MgKeywordAbility):
         """702.28a Cycling is an activated ability that functions only while the card with cycling 
@@ -495,7 +785,19 @@ class MgEchoAbility(MgKeywordAbility):
         pass
         
 class MgHorsemanshipAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "horsemanship"
         
         
 class MgFadingAbility(MgKeywordAbility):
@@ -504,7 +806,36 @@ class MgFadingAbility(MgKeywordAbility):
         and “At the beginning of your upkeep, remove a fade counter from this permanent. 
         If you can’t, sacrifice the permanent.”
         """
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "fading {0}".format(self._caliber.unparseToString())
+                else:
+                        return "fading"
         
 
 class MgKickerAbility(MgKeywordAbility):
@@ -542,7 +873,19 @@ class MgMadnessAbility(MgKeywordAbility):
         pass
         
 class MgFearAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "fear"
         
 class MgMorphAbility(MgKeywordAbility):
         """“Morph [cost]” means “You may cast this card as a 2/2 face-down creature with no text,
@@ -561,15 +904,68 @@ class MgAmplifyAbility(MgKeywordAbility):
         enters the battlefield with N +1/+1 counters on it for each card revealed this way.
         You can’t reveal this card or any other cards that are entering the battlefield 
         at the same time as this card.”"""
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "amplify {0}".format(self._caliber.unparseToString())
+                else:
+                        return "amplify"
         
 
 class MgProvokeAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "provoke"
         
         
 class MgStormAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "storm"
         
         
 class MgAffinityAbility(MgKeywordAbility):
@@ -590,19 +986,118 @@ class MgModularAbility(MgKeywordAbility):
         “Modular N” means “This permanent enters the battlefield with N +1/+1 counters on it” 
         and “When this permanent is put into a graveyard from the battlefield, you may put a +1/+1 counter
         on target artifact creature for each +1/+1 counter on this permanent.”"""
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "modular {0}".format(self._caliber.unparseToString())
+                else:
+                        return "modular"
         
 class MgSunburstAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "sunburst"
         
 class MgBushidoAbility(MgKeywordAbility):
         """702.44a Bushido is a triggered ability. “Bushido N” means “Whenever this creature blocks or
          becomes blocked, it gets +N/+N until end of turn.” (See rule 509, “Declare Blockers Step.”)."""
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "bushido {0}".format(self._caliber.unparseToString())
+                else:
+                        return "bushido"
         
 class MgSoulshiftAbility(MgKeywordAbility):
         """Soulshift N, where N is the CMC value."""
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "soulshift {0}".format(self._caliber.unparseToString())
+                else:
+                        return "soulshift"
         
 class MgSpliceAbility(MgKeywordAbility):
         """“Splice onto [subtype] [cost]”"""
@@ -617,14 +1112,67 @@ class MgNinjitsuAbility(MgKeywordAbility):
         pass
         
 class MgEpicAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "epic"
         
 class MgConvokeAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "convoke"
         
 class MgDredgeAbility(MgKeywordAbility):
         """“Dredge N”"""
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "dredge {0}".format(self._caliber.unparseToString())
+                else:
+                        return "dredge"
         
 class MgTransmuteAbility(MgKeywordAbility):
         """“Transmute [cost]”"""
@@ -632,10 +1180,51 @@ class MgTransmuteAbility(MgKeywordAbility):
         
 class MgBloodthirstAbility(MgKeywordAbility):
         """Bloodthirst N"""
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "bloodthirst {0}".format(self._caliber.unparseToString())
+                else:
+                        return "bloodthirst"
         
 class MgHauntAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "haunt"
         
 class MgReplicateAbility(MgKeywordAbility):
         """“Replicate [cost]”"""
@@ -648,7 +1237,36 @@ class MgForecastAbility(MgKeywordAbility):
         
 class MgGraftAbility(MgKeywordAbility):
         """“Graft N”"""
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "graft {0}".format(self._caliber.unparseToString())
+                else:
+                        return "graft"
         
 class MgRecoverAbility(MgKeywordAbility):
         """“Recover [cost]”"""
@@ -656,9 +1274,51 @@ class MgRecoverAbility(MgKeywordAbility):
         
 class MgRippleAbility(MgKeywordAbility):
         """“Ripple N”"""
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "ripple {0}".format(self._caliber.unparseToString())
+                else:
+                        return "ripple"
         
 class MgSplitSecondAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "split second"
         
 class MgSuspendAbility(MgKeywordAbility):
         """“Suspend N—[cost]”"""
@@ -667,18 +1327,88 @@ class MgSuspendAbility(MgKeywordAbility):
 class MgVanishingAbility(MgKeywordAbility):
         """“Vanishing N”"""
         """Vanishing without a number means..."""
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "vanishing {0}".format(self._caliber.unparseToString())
+                else:
+                        return "vanishing"
         
 class MgAbsorbAbility(MgKeywordAbility):
         """“Absorb N”"""
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "absorb {0}".format(self._caliber.unparseToString())
+                else:
+                        return "absorb"
         
 class MgAuraSwapAbility(MgKeywordAbility):
         """“Aura swap [cost]”"""
         pass
         
 class MgDelveAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "delve"
         
 class MgFortifyAbility(MgKeywordAbility):
         """“Fortify [cost]”"""
@@ -686,14 +1416,84 @@ class MgFortifyAbility(MgKeywordAbility):
         
 class MgFrenzyAbility(MgKeywordAbility):
         """“Frenzy N”"""
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "frenzy {0}".format(self._caliber.unparseToString())
+                else:
+                        return "frenzy"
         
 class MgGravestormAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "gravestorm"
         
 class MgPoisonousAbility(MgKeywordAbility):
         """“Poisonous N”"""
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "poisonous {0}".format(self._caliber.unparseToString())
+                else:
+                        return "poisonous"
         
 class MgTransfigureAbility(MgKeywordAbility):
         """“Transfigure [cost]”"""
@@ -704,13 +1504,38 @@ class MgChampionAbility(MgKeywordAbility):
         pass
         
 class MgChangelingAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "changeling"
         
 class MgEvokeAbility(MgKeywordAbility):
+        """“Evoke [cost]”"""
         pass
         
 class MgHideawayAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "hideaway"
         
 class MgProwlAbility(MgKeywordAbility):
         """“Prowl [cost]”"""
@@ -720,70 +1545,278 @@ class MgReinforceAbility(MgKeywordAbility):
         """“Reinforce N—[cost]”"""
         pass
         
-class MgProwlAbility(MgKeywordAbility):
-        pass
-        
 class MgConspireAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "conspire"
         
 class MgPersistAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "persist"
         
 class MgWitherAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "wither"
         
 class MgRetraceAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "retrace"
         
 class MgDevourAbility(MgKeywordAbility):
         """“Devour N”"""
-        pass
-        
-class MgPersistAbility(MgKeywordAbility):
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "devour {0}".format(self._caliber.unparseToString())
+                else:
+                        return "devour"
 
 class MgExaltedAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "exalted"
         
 class MgUnearthAbility(MgKeywordAbility):
         """“Unearth [cost]” """
         pass
         
 class MgCascadeAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "cascade"
         
 class MgAnnihilatorAbility(MgKeywordAbility):
         """“Annihilator N”"""
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "annihilator {0}".format(self._caliber.unparseToString())
+                else:
+                        return "annihilator"
         
 class MgLevelUpAbility(MgKeywordAbility):
         """Level up [cost]"""
         pass
         
 class MgReboundAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "rebound"
         
 class MgTotemArmorAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "totem armor"
         
 class MgInfectAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "infect"
         
 class MgBattleCryAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "battle cry"
         
 class MgLivingWeaponAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "living weapon"
         
 class MgUndyingAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "undying"
         
 class MgMiracleAbility(MgKeywordAbility):
         """“Miracle [cost]”"""
         pass
                 
 class MgSoulbondAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "soulbond"
         
 class MgOverloadAbility(MgKeywordAbility):
         """Overload [cost]"""
@@ -794,19 +1827,79 @@ class MgScavengeAbility(MgKeywordAbility):
         pass
         
 class MgUnleashAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "unleash"
         
 class MgCipherAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "cipher"
         
 class MgEvolveAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "evolve"
         
 class MgExtortAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "extort"
         
 class MgFuseAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "fuse"
         
 class MgBestowAbility(MgKeywordAbility):
         """Bestow [cost]"""
@@ -814,13 +1907,51 @@ class MgBestowAbility(MgKeywordAbility):
         
 class MgTributeAbility(MgKeywordAbility):
         """“Tribute N”"""
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "tribute {0}".format(self._caliber.unparseToString())
+                else:
+                        return "tribute"
         
 class MgDethroneAbility(MgKeywordAbility):
-        pass
-        
-class MgFuseAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "dethrone"
         
 class MgHiddenAgendaAbility(MgKeywordAbility):
         """Double agenda is a variant of the hidden agenda ability."""
@@ -831,47 +1962,154 @@ class MgOutlastAbility(MgKeywordAbility):
         pass
         
 class MgProwessAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "prowess"
         
 class MgDashAbility(MgKeywordAbility):
         """“Dash [cost]”"""
         pass
         
-class MgProwessAbility(MgKeywordAbility):
-        pass
-        
 class MgExploitAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "exploit"
         
 class MgMenaceAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "menace"
         
 class MgRenownAbility(MgKeywordAbility):
         """“Renown N”"""
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "renown {0}".format(self._caliber.unparseToString())
+                else:
+                        return "renown"
         
 class MgAwakenAbility(MgKeywordAbility):
         """Awaken N—[cost]"""
         pass
         
-class MgProwessAbility(MgKeywordAbility):
-        pass
-        
 class MgDevoidAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "devoid"
         
 class MgIngestAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "ingest"
         
 class MgMyriadAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "myriad"
         
 class MgSurgeAbility(MgKeywordAbility):
         """Surge [cost]"""
         pass
         
 class MgSkulkAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "skulk"
         
 class MgEmergeAbility(MgKeywordAbility):
         """Emerge [cost]"""
@@ -882,25 +2120,119 @@ class MgEscalateAbility(MgKeywordAbility):
         pass
         
 class MgMeleeAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "melee"
         
 class MgCrewAbility(MgKeywordAbility):
         """Crew N"""
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "crew {0}".format(self._caliber.unparseToString())
+                else:
+                        return "crew"
         
 class MgFabricateAbility(MgKeywordAbility):
         """Fabricate N"""
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "fabricate {0}".format(self._caliber.unparseToString())
+                else:
+                        return "fabricate"
         
 class MgPartnerAbility(MgKeywordAbility):
         """Partner or Partner with [name]"""
         pass
         
 class MgImproviseAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "improvise"
         
 class MgAftermathAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "aftermath"
         
 class MgEnbalmAbility(MgKeywordAbility):
         """Embalm [cost]"""
@@ -912,11 +2244,116 @@ class MgEternalizeAbility(MgKeywordAbility):
         
 class MgAfflictAbility(MgKeywordAbility):
         """Afflict N"""
-        pass
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "afflict {0}".format(self._caliber.unparseToString())
+                else:
+                        return "afflict"
         
 class MgAscendAbility(MgKeywordAbility):
-        pass
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "ascend"
         
 class MgAssistAbility(MgKeywordAbility):
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "assist"
+                
+class MgMentorAbility(MgKeywordAbility):
+        def __init__(self):
+                super().__init__()
+                
+        def isChild(self,child):
+                """This node has no children."""
+                False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                return "mentor"
+                
+class MgSurveilAbility(MgKeywordAbility):
+        """'surveil N'"""
+        def __init__(self,caliber):
+                """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
+                super().__init__()
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def getCaliber(self):
+                """Get the caliber of this ability. This is the number value (N) associated with the card."""
+                return self._caliber
+                
+        def setCaliber(self,caliber):
+                """Set the caliber of this ability. This is the number value (N) associated with the card."""
+                self._caliber = caliber
+                if self._caliber is not None:
+                        self._caliber.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, its caliber."""
+                return child is not None and child == self._caliber
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its caliber."""
+                return [node for node in {self._caliber} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._caliber is not None:
+                        return "surveil {0}".format(self._caliber.unparseToString())
+                else:
+                        return "surveil"
+        
+class MgJumpStartAbility(MgKeywordAbility):
+        """'Jump-Start [cost]'"""
         pass
 
