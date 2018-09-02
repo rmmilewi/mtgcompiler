@@ -18,14 +18,103 @@ from mtgcompiler.AST.abilities import MgRippleAbility, MgVanishingAbility, MgAbs
 from mtgcompiler.AST.abilities import MgPoisonousAbility, MgDevourAbility, MgAnnihilatorAbility, MgTributeAbility
 from mtgcompiler.AST.abilities import MgRenownAbility, MgCrewAbility, MgFabricateAbility, MgAfflictAbility, MgSurveilAbility
 
-from mtgcompiler.AST.abilities import MgCumulativeUpkeepAbility, MgBuybackAbility, MgCyclingAbility, MgKickerAbility
+from mtgcompiler.AST.abilities import MgCumulativeUpkeepAbility, MgBuybackAbility, MgCyclingAbility, MgKickerAbility, MgMadnessAbility
 from mtgcompiler.AST.abilities import MgMorphAbility, MgNinjutsuAbility, MgTransmuteAbility, MgRecoverAbility
 from mtgcompiler.AST.abilities import MgAuraSwapAbility, MgTransfigureAbility, MgEvokeAbility, MgMiracleAbility
 from mtgcompiler.AST.abilities import MgOverloadAbility, MgScavengeAbility, MgOutlastAbility, MgSurgeAbility
 from mtgcompiler.AST.abilities import MgEmergeAbility, MgEscalateAbility, MgEnbalmAbility, MgEternalizeAbility, MgJumpStartAbility
 
+from mtgcompiler.AST.abilities import MgSpliceAbility,MgEnchantAbility,MgEquipAbility,MgBandingAbility,MgAffinityAbility
+from mtgcompiler.AST.abilities import MgOfferingAbility,MgForecastAbility,MgSuspendAbility,MgChampionAbility,MgReinforceAbility
+from mtgcompiler.AST.abilities import MgHiddenAgendaAbility,MgAwakenAbility,MgPartnerAbility
+
 class TestKeywordAbilities(unittest.TestCase):
         
+        def test_Splice(self):
+                t_arcane = MgTypeExpression(MgSubtype(MgSubtype.SpellSubtypeEnum.Arcane))
+                s0 = MgManaSymbol(cvalue=1)
+                s1 = MgManaSymbol(colorv=MgManaSymbol.ManaType.White)
+                s2 = MgManaSymbol(colorv=MgManaSymbol.ManaType.White)
+                manaExpr = MgManaExpression(s0,s1,s2)
+                
+                ability = MgSpliceAbility(cost=manaExpr,spliceType=t_arcane)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),2)
+                self.assertTrue(ability.isChild(t_arcane))
+                self.assertEqual(manaExpr.getParent(),ability)
+                self.assertEqual(ability.getCost(),manaExpr)
+                self.assertEqual(ability.unparseToString().lower(),"splice onto arcane {1}{w}{w}")
+                
+        def test_Enchant(self):
+                t_creature = MgTypeExpression(MgType(MgType.TypeEnum.Creature))
+                ability = MgEnchantAbility(t_creature)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(t_creature))
+                self.assertEqual(t_creature.getParent(),ability)
+                self.assertEqual(ability.unparseToString().lower(),"enchant creature")
+                
+        def test_Equip(self):
+                manaExpr = MgManaExpression(MgManaSymbol(cvalue=4))
+                ability = MgEquipAbility(cost=manaExpr)
+                
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(manaExpr))
+                self.assertEqual(manaExpr.getParent(),ability)
+                self.assertEqual(ability.unparseToString().lower(),"equip {4}")
+                
+                t_planetouched = MgTypeExpression(MgSupertype("Planetouched"))
+                equip_planetouched = MgEquipAbility(cost=manaExpr,quality=t_planetouched)
+                self.assertEqual(len(equip_planetouched.getTraversalSuccessors()),2)
+                self.assertEqual(equip_planetouched.unparseToString().lower(),"equip planetouched {4}")
+                
+        def test_Banding(self):
+                ability = MgBandingAbility()
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),0)
+                self.assertEqual(ability.unparseToString().lower(),"banding")
+                
+                
+        def test_Affinity(self):
+                pass
+                
+        def test_Offering(self):
+                pass
+        
+        def test_Forecast(self):
+                pass
+        
+        def test_Suspend(self):
+                pass
+                
+        def test_Champion(self):
+                pass
+                
+        def test_Reinforce(self):
+                pass
+                
+        def test_HiddenAgenda(self):
+                pass
+                
+        def test_Awaken(self):
+                pass
+                
+        def test_Partner(self):
+                pass
+        
+        def test_Madness(self):
+                threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
+                ability = MgMadnessAbility(cost=threegeneric)
+        
+                self.assertTrue(ability.isTraversable())
+                self.assertEqual(len(ability.getTraversalSuccessors()),1)
+                self.assertTrue(ability.isChild(threegeneric))
+                self.assertEqual(threegeneric.getParent(),ability)
+                self.assertEqual(ability.getCost(),threegeneric)
+                self.assertEqual(ability.unparseToString().lower(),"madness {3}")
         
         def test_CumulativeUpkeep(self):
                 threegeneric = MgManaExpression(MgManaSymbol(colorv=None,modifiers=None,cvalue=3))
