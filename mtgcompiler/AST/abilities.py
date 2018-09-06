@@ -109,7 +109,7 @@ class MgStatementSequence(core.MgNode):
         """Represents a sequence of statements that make up a single ability."""
         
         def __init__(self,*args):
-                """The constructor accepts a list of descriptors in any order."""
+                """The constructor accepts a list of statements in any order."""
                 self._traversable = True
                 self._ilist = args
                 for statement in self._ilist:
@@ -124,25 +124,6 @@ class MgStatementSequence(core.MgNode):
         def unparseToString(self):
                 return ' '.join(statement.unparseToString() for statement in self._ilist)
                 
-                
-                
-class MgKeywordAbilityDeclarationList(core.MgNode):
-        """Represents a comma-separated sequence of keyword abilities, like 'flying, haste, first strike'."""
-        def __init__(self,*kwability):
-                """The constructor accepts a list of keyword abilities."""
-                self._traversable = True
-                self._abilitylist = kwability
-                for ability in self._abilitylist:
-                        ability.setParent(self)
-                        
-        def isChild(self,child):
-                return child in self._abilitylist
-        
-        def getTraversalSuccessors(self):
-                return [ability for ability in self._abilitylist if ability.isTraversable()]
-                
-        def unparseToString(self):
-                return ', '.join(ability.unparseToString() for ability in self._abilitylist)
         
 
 class MgAbstractAbility(core.MgNode):
@@ -199,87 +180,89 @@ class MgAbstractAbility(core.MgNode):
                 self._reminderText = reminderText
                 self._reminderText.setParent(self)
 
-class MgSpellAbility(MgAbstractAbility):
-        """Spell abilities are abilities that are followed as instructions while an instant or sorcery spell is resolving. 
-        Any text on an instant or sorcery spell is a spell ability unless it’s an activated ability, a triggered ability, 
-        or a static ability that fits the criteria described in rule 112.6."""
-        
-        def __init__(self,instructions,abilityWord=None,reminderText=None):
-                """
-                instructions: one or more effects/instructions that follow from carrying out the ability.
-                """
-                super().__init__(abilityWord,reminderText)
-                self._instructions = instructions
-                self._instructions.setParent(self)
-                
-        def isChild(self,child):
-                """A spell ability has only one child, the instruction sequence."""
-                return child is self._instructions
-                
-        def getTraversalSuccessors(self):
-                """A spell ability has only one child, the instruction sequence."""
-                return [node for node in {self._instructions} if node.isTraversable()]
-                
-        def getInstructions(self):
-                """Get the instruction sequence held by the ability."""
-                return self._instructions
-                
-        def setInstructions(self,instructions):
-                """Set the instruction sequence held by the ability."""
-                self._instructions = instructions
-                self._instructions.setParent(self)
-                
-        def unparseToString(self):
-                output = "{0}".format(self._instructions.unparseToString())
-                if self.hasAbilityWord():
-                        output = "{0} {1}".format(self._abilityWord.unparseToString(),output)
-                if self.hasReminderText():
-                        output = "{0} {1}".format(output,self._reminderText.unparseToString())
-                return output   
+# class MgSpellAbility(MgAbstractAbility):
+#         """Spell abilities are abilities that are followed as instructions while an instant or sorcery spell is resolving.
+#         Any text on an instant or sorcery spell is a spell ability unless it’s an activated ability, a triggered ability,
+#         or a static ability that fits the criteria described in rule 112.6."""
+#
+#         def __init__(self,instructions,abilityWord=None,reminderText=None):
+#                 """
+#                 instructions: one or more effects/instructions that follow from carrying out the ability.
+#                 """
+#                 super().__init__(abilityWord,reminderText)
+#                 self._instructions = instructions
+#                 self._instructions.setParent(self)
+#
+#         def isChild(self,child):
+#                 """A spell ability has only one child, the instruction sequence."""
+#                 return child is self._instructions
+#
+#         def getTraversalSuccessors(self):
+#                 """A spell ability has only one child, the instruction sequence."""
+#                 return [node for node in {self._instructions} if node.isTraversable()]
+#
+#         def getInstructions(self):
+#                 """Get the instruction sequence held by the ability."""
+#                 return self._instructions
+#
+#         def setInstructions(self,instructions):
+#                 """Set the instruction sequence held by the ability."""
+#                 self._instructions = instructions
+#                 self._instructions.setParent(self)
+#
+#         def unparseToString(self):
+#                 output = "{0}".format(self._instructions.unparseToString())
+#                 if self.hasAbilityWord():
+#                         output = "{0} {1}".format(self._abilityWord.unparseToString(),output)
+#                 if self.hasReminderText():
+#                         output = "{0} {1}".format(output,self._reminderText.unparseToString())
+#                 return output   
                 
 
-class MgActivatedAbility(MgAbstractAbility):
-        """Activated abilities have a cost and an effect. 
-        They are written as '[Cost]: [Effect.] [Activation instructions (if any).]'."""
-        def __init__(self,cost,instructions,abilityWord=None,reminderText=None):
-                """
-                cost: The cost of the ability that must be paid.
-                instructions: one or more effects/instructions that follow from
-                activating the ability.
-                """
-                super().__init__(abilityWord,reminderText)
-                self._cost = cost
-                self._instructions = instructions
-                self._cost.setParent(self)
-                self._instructions.setParent(self)
-                
-        def isChild(self,child):
-                return child is self._cost or child is self._instructions
-                
-        def getTraversalSuccessors(self):
-                return [node for node in {self._cost,self._instructions} if node.isTraversable()]
-                
-        def unparseToString(self):
-                output = "{0}: {1}".format(self._cost.unparseToString(),self._instructions.unparseToString())
-                if self.hasAbilityWord():
-                        output = "{0} {1}".format(self._abilityWord.unparseToString(),output)
-                if self.hasReminderText():
-                        output = "{0} {1}".format(output,self._reminderText.unparseToString())
-                return output
+# class MgActivatedAbility(MgAbstractAbility):
+#         """Activated abilities have a cost and an effect.
+#         They are written as '[Cost]: [Effect.] [Activation instructions (if any).]'."""
+#         def __init__(self,cost,instructions,abilityWord=None,reminderText=None):
+#                 """
+#                 cost: The cost of the ability that must be paid.
+#                 instructions: one or more effects/instructions that follow from
+#                 activating the ability.
+#                 """
+#                 super().__init__(abilityWord,reminderText)
+#                 self._cost = cost
+#                 self._instructions = instructions
+#                 self._cost.setParent(self)
+#                 self._instructions.setParent(self)
+#
+#         def isChild(self,child):
+#                 return child is self._cost or child is self._instructions
+#
+#         def getTraversalSuccessors(self):
+#                 return [node for node in {self._cost,self._instructions} if node.isTraversable()]
+#
+#         def unparseToString(self):
+#                 output = "{0}: {1}".format(self._cost.unparseToString(),self._instructions.unparseToString())
+#                 if self.hasAbilityWord():
+#                         output = "{0} {1}".format(self._abilityWord.unparseToString(),output)
+#                 if self.hasReminderText():
+#                         output = "{0} {1}".format(output,self._reminderText.unparseToString())
+#                 return output
+#
+# class MgTriggeredAbility(MgAbstractAbility):
+#         """ Triggered abilities have a trigger condition and an effect.
+#         They are written as '[Trigger condition], [effect],' and include
+#         (and usually begin with) the word 'when,' 'whenever,' or 'at.'"""
+#         def __init__(self,condition,outcome,abilityWord=None,reminderText=None):
+#                 super().__init__(abilityWord,reminderText)
+#                 self._condition = condition
+#                 self._outcome = outcome
+#
+#
+# class MgStaticAbility(MgAbstractAbility):
+#         """Static abilities are written as statements. They’re simply true."""
+#         pass
 
-class MgTriggeredAbility(MgAbstractAbility):
-        """ Triggered abilities have a trigger condition and an effect. 
-        They are written as '[Trigger condition], [effect],' and include 
-        (and usually begin with) the word 'when,' 'whenever,' or 'at.'"""
-        def __init__(self,condition,outcome,abilityWord=None,reminderText=None):
-                super().__init__(abilityWord,reminderText)
-                self._condition = condition
-                self._outcome = outcome
 
-        
-class MgStaticAbility(MgAbstractAbility):
-        """Static abilities are written as statements. They’re simply true."""
-        pass
         
         
 class MgKeywordAbility(MgAbstractAbility):
@@ -287,8 +270,9 @@ class MgKeywordAbility(MgAbstractAbility):
         static/triggered/spell/activated ability classes because they can be any combination of these
         things. A keyword instead is a stand-in for more verbose abilities or series of abilities."""
         
-        def __init__(self):
-                self._traversable = True #All keyword abilities are traversable by default.
+        def __init__(self,abilityWord=None, reminderText=None):
+                super().__init__(abilityWord,reminderText)
+                #self._traversable = True #All keyword abilities are traversable by default.
         
         #def getCanonicalName(self):
         #        """Get a string representing the canonical name for an ability."""
@@ -302,8 +286,8 @@ class MgDeathtouchAbility(MgKeywordAbility):
         since the last time state-based actions were checked is destroyed as a state-based action. See rule 704.
         """
         
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -319,8 +303,8 @@ class MgDeathtouchAbility(MgKeywordAbility):
         
                 
 class MgDefenderAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -335,8 +319,8 @@ class MgDefenderAbility(MgKeywordAbility):
         
         
 class MgDoubleStrikeAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -354,11 +338,11 @@ class MgEnchantAbility(MgKeywordAbility):
         """702.5a Enchant is a static ability, written “Enchant [object or player].” 
         The enchant ability restricts what an Aura spell can target and what an Aura can enchant."""
         
-        def __init__(self,descriptor):
+        def __init__(self,descriptor,reminderText=None):
                 """
                 descriptor: An expression that explains what the owner of this ability can legally enchant.
                 """
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._descriptor = descriptor
                 if self._descriptor is not None:
                         self._descriptor.setParent(self)
@@ -398,13 +382,13 @@ class MgEquipAbility(MgKeywordAbility):
         Activate this ability only any time you could cast a sorcery.” 
         This ability doesn’t restrict what the Equipment may be attached to.
         """
-        def __init__(self,cost,quality=None):
+        def __init__(self,cost,quality=None,reminderText=None):
                 """
                 cost: The cost associated with this ability. 
                 quality: An expression that explains what the owner of this ability can legally equip. This is
                 normally None except in the case of the 'equip [quality] creature' variant.
                 """
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 self._quality = quality
                 if self._cost is not None:
@@ -454,8 +438,8 @@ class MgEquipAbility(MgKeywordAbility):
                 
         
 class MgFirstStrikeAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -470,8 +454,8 @@ class MgFirstStrikeAbility(MgKeywordAbility):
         
         
 class MgFlashAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -485,8 +469,8 @@ class MgFlashAbility(MgKeywordAbility):
                 return "flash"
         
 class MgFlyingAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -500,8 +484,8 @@ class MgFlyingAbility(MgKeywordAbility):
                 return "flying"
         
 class MgHasteAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -520,10 +504,10 @@ class MgHexproofAbility(MgKeywordAbility):
         “Hexproof from [quality]” on a permanent means “This permanent can’t be the target of [quality] spells
         your opponents control or abilities your opponents control from [quality] sources.”
         A “hexproof from [quality]” ability is a hexproof ability."""
-        def __init__(self,quality=None):
+        def __init__(self,quality=None,reminderText=None):
                 """quality: An optional quality that specifies what hexproof guards the object against, as opposed
                 to all sources, which is the default."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._quality = quality
                 if self._quality is not None:
                         self._quality.setParent(self)
@@ -562,8 +546,8 @@ class MgHexproofAbility(MgKeywordAbility):
                         
         
 class MgIndestructibleAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -577,8 +561,8 @@ class MgIndestructibleAbility(MgKeywordAbility):
                 return "indestructible"
         
 class MgIntimidateAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -599,12 +583,12 @@ class MgLandwalkAbility(MgKeywordAbility):
         with the specified supertype (as in “legendary landwalk”), without the specified supertype (as in “nonbasic landwalk”),
         or with both the specified supertype and the specified subtype (as in “snow swampwalk”). (See rule 509, “Declare Blockers Step.”)
         """
-        def __init__(self,landtype=None):
+        def __init__(self,landtype=None,reminderText=None):
                 """landtype: A type expression describing the kind of land for which the landwalk is relevant,
                 such as 'island' or 'legendary land'. If landtype is None, then this node refers to landtype generically,
                 in the sense of 'landwalk of the chosen type'.
                 """
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._landtype = landtype
                 if self._landtype is not None:
                         self._landtype.setParent(self)
@@ -643,8 +627,8 @@ class MgLandwalkAbility(MgKeywordAbility):
                 
         
 class MgLifelinkAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -662,14 +646,14 @@ class MgProtectionAbility(MgKeywordAbility):
         This quality is usually a color (as in “protection from black”) 
         but can be any characteristic value or information."""
         
-        def __init__(self,*qualities):
+        def __init__(self,*qualities,reminderText=None):
                 """
                 qualities*: Typically this is just one child, 'Protection from [quality]'.
                 However, arguments get passed as a list because you can have a protection ability
                 declaring protection from more than one thing at a time, such as 
                 'protection from green and from blue'.
                 """
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._qualities = qualities
                 for quality in self._qualities:
                         quality.setParent(self)
@@ -705,8 +689,8 @@ class MgProtectionAbility(MgKeywordAbility):
                 return "protection {0}".format(quals)
         
 class MgReachAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -720,8 +704,8 @@ class MgReachAbility(MgKeywordAbility):
                 return "reach"
         
 class MgShroudAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -735,8 +719,8 @@ class MgShroudAbility(MgKeywordAbility):
                 return "shroud"
         
 class MgTrampleAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -750,8 +734,8 @@ class MgTrampleAbility(MgKeywordAbility):
                 return "trample"
         
 class MgVigilanceAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -766,10 +750,11 @@ class MgVigilanceAbility(MgKeywordAbility):
         
 class MgBandingAbility(MgKeywordAbility):
         """702.21b “Bands with other” is a special form of banding.""" 
-        def __init__(self,quality=None):
+        def __init__(self,quality=None,reminderText=None):
                 """
                 quality: An optional quality specifier for the 'bands with other [quality]' variant.
                 """
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._quality = quality
                 if self._quality is not None:
                         self._quality.setParent(self)
@@ -794,11 +779,11 @@ class MgBandingAbility(MgKeywordAbility):
                 
         def getTraversalSuccessors(self):
                 """This node can have up to one successor, the quality specifier."""
-                return [node for node in {self._quality}  if node is not None and node.isTraversable()]
+                return [node for node in {self._quality} if node is not None and node.isTraversable()]
                 
         def unparseToString(self):
                 if self._quality is not None:
-                        return "bands with other {0}".format(self._quality)
+                        return "bands with other {0}".format(self._quality.unparseToString())
                 else:
                         return "banding"
         
@@ -807,9 +792,9 @@ class MgRampageAbility(MgKeywordAbility):
         “Whenever this creature becomes blocked, it gets +N/+N until end of turn
         for each creature blocking it beyond the first.”"""
         
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -847,9 +832,9 @@ class MgCumulativeUpkeepAbility(MgKeywordAbility):
         If you don’t, sacrifice it.” If [cost] has choices associated with it, each choice is made separately
         for each age counter, then either the entire set of costs is paid, or none of them is paid. 
         Partial payments aren’t allowed."""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -879,8 +864,8 @@ class MgCumulativeUpkeepAbility(MgKeywordAbility):
                         return "cumulative upkeep"
         
 class MgPhasingAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -899,9 +884,9 @@ class MgBuybackAbility(MgKeywordAbility):
         “Buyback [cost]” means “You may pay an additional [cost] as you cast this spell” 
         and “If the buyback cost was paid, put this spell into its owner’s hand instead
         of into that player’s graveyard as it resolves.”"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -931,8 +916,8 @@ class MgBuybackAbility(MgKeywordAbility):
                         return "buyback"
 
 class MgShadowAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -953,11 +938,11 @@ class MgCyclingAbility(MgKeywordAbility):
         “[Cost], Discard this card: Search your library for a [type] card,reveal it, and put it
         into your hand. Then shuffle your library.” This type is usually a subtype (as in “mountaincycling”)
         but can be any card type, subtype, supertype, or combination thereof (as in “basic landcycling”)."""
-        def __init__(self,cost,cyclingType = None):
+        def __init__(self,cost,cyclingType = None,reminderText=None):
                 """cost: The cost associated with this ability.
                 cyclingType: A type expression used to specify type-specific cycling. Usually this is None.
                 """
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 self._cyclingType = cyclingType
                 if self._cost is not None:
@@ -1011,9 +996,9 @@ class MgEchoAbility(MgKeywordAbility):
         """702.29a Echo is a triggered ability. “Echo [cost]” means “At the beginning of your upkeep, 
         if this permanent came under your control since the beginning of your last upkeep, 
         sacrifice it unless you pay [cost].”"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -1043,8 +1028,8 @@ class MgEchoAbility(MgKeywordAbility):
                         return "echo"
         
 class MgHorsemanshipAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -1064,9 +1049,9 @@ class MgFadingAbility(MgKeywordAbility):
         and “At the beginning of your upkeep, remove a fade counter from this permanent. 
         If you can’t, sacrifice the permanent.”
         """
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -1104,11 +1089,11 @@ class MgKickerAbility(MgKeywordAbility):
         means “You may pay an additional [cost] any number of times as you cast this spell.” 
         A multikicker cost is a kicker cost.
         """
-        def __init__(self,cost,isMulti=False):
+        def __init__(self,cost,isMulti=False,reminderText=None):
                 """cost: The cost associated with this ability.
                 isMulti: A flag that indicates that this kicker ability is a multikicker variant.
                 """
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 self._isMulti = isMulti
                 if self._cost is not None:
@@ -1159,9 +1144,9 @@ class MgFlashbackAbility(MgKeywordAbility):
         by paying [cost] rather than paying its mana cost” 
         and “If the flashback cost was paid, exile this card instead of 
         putting it anywhere else any time it would leave the stack.”"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -1201,9 +1186,9 @@ class MgMadnessAbility(MgKeywordAbility):
         and “When this card is exiled this way, its owner may cast it
         by paying [cost] rather than paying its mana cost. 
         If that player doesn’t, they put this card into their graveyard.”"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -1233,8 +1218,8 @@ class MgMadnessAbility(MgKeywordAbility):
                         return "madness"
         
 class MgFearAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -1256,11 +1241,11 @@ class MgMorphAbility(MgKeywordAbility):
         and no mana cost by paying {3} rather than paying its mana cost” and 
         “As this permanent is turned face up, put a +1/+1 counter on it if its megamorph cost
          was paid to turn it face up.” A megamorph cost is a morph cost."""
-        def __init__(self,cost,isMega=False):
+        def __init__(self,cost,isMega=False,reminderText=None):
                 """cost: The cost associated with this ability.
                 isMega: A flag that indicates that this morph ability is a megamorph variant.
                 """
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 self._isMega = isMega
                 if self._cost is not None:
@@ -1308,9 +1293,9 @@ class MgAmplifyAbility(MgKeywordAbility):
         enters the battlefield with N +1/+1 counters on it for each card revealed this way.
         You can’t reveal this card or any other cards that are entering the battlefield 
         at the same time as this card.”"""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -1341,8 +1326,8 @@ class MgAmplifyAbility(MgKeywordAbility):
         
 
 class MgProvokeAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -1357,8 +1342,8 @@ class MgProvokeAbility(MgKeywordAbility):
         
         
 class MgStormAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -1376,22 +1361,22 @@ class MgAffinityAbility(MgKeywordAbility):
         """702.40a Affinity is a static ability that functions while the spell with affinity is on the stack. 
         “Affinity for [text]” means “This spell costs you {1} less to cast for each [text] you control.”"""
         
-        def __init__(self,descriptor):
+        def __init__(self,descriptor,reminderText=None):
                 """
                 descriptor: An expression that explains what the owner of this ability has an affinity for
                 (e.g. artifacts, plains, cheesecake).
                 """
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._descriptor = descriptor
                 if self._descriptor is not None:
                         self._descriptor.setParent(self)
                         
         def getDescriptor(self):
-                """Get the descriptor for the enchant ability."""
-                return descriptor
+                """Get the descriptor for the affinity ability."""
+                return self._descriptor
         
         def setDescriptor(self,descriptor):
-                """Set the descriptor for the enchant ability."""
+                """Set the descriptor for the affinity ability."""
                 self._descriptor = descriptor
                 if self._descriptor is not None:
                         self._descriptor.setParent(self)
@@ -1416,9 +1401,9 @@ class MgEntwineAbility(MgKeywordAbility):
         that functions while the spell is on the stack.
         “Entwine [cost]” means “You may choose all modes of this spell instead of just one. 
         If you do, you pay an additional [cost].”"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -1452,9 +1437,9 @@ class MgModularAbility(MgKeywordAbility):
         “Modular N” means “This permanent enters the battlefield with N +1/+1 counters on it” 
         and “When this permanent is put into a graveyard from the battlefield, you may put a +1/+1 counter
         on target artifact creature for each +1/+1 counter on this permanent.”"""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -1484,8 +1469,8 @@ class MgModularAbility(MgKeywordAbility):
                         return "modular"
         
 class MgSunburstAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -1501,9 +1486,9 @@ class MgSunburstAbility(MgKeywordAbility):
 class MgBushidoAbility(MgKeywordAbility):
         """702.44a Bushido is a triggered ability. “Bushido N” means “Whenever this creature blocks or
          becomes blocked, it gets +N/+N until end of turn.” (See rule 509, “Declare Blockers Step.”)."""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -1534,9 +1519,9 @@ class MgBushidoAbility(MgKeywordAbility):
         
 class MgSoulshiftAbility(MgKeywordAbility):
         """Soulshift N, where N is the CMC value."""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -1567,12 +1552,12 @@ class MgSoulshiftAbility(MgKeywordAbility):
         
 class MgSpliceAbility(MgKeywordAbility):
         """“Splice onto [subtype] [cost]”"""
-        def __init__(self,cost,spliceType):
+        def __init__(self,cost,spliceType,reminderText=None):
                 """
                 cost: The cost associated with this ability.
                 spliceType: The subtype (type expression) to which this splice ability applies.
                 """
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 self._spliceType = spliceType
                 if self._cost is not None:
@@ -1616,42 +1601,42 @@ class MgSpliceAbility(MgKeywordAbility):
 
 class MgOfferingAbility(MgKeywordAbility):
         """“[Subtype] offering”"""
-        def __init__(self,offeringType):
-                """offeringType: A type expression that explains what a suitable offering is."""
-                super().__init__()
-                self._offeringType = offeringType
-                if self._offeringType is not None:
-                        self._offeringType.setParent(self)
+        def __init__(self,descriptor,reminderText=None):
+                """descriptor: A type expression that explains what a suitable offering is."""
+                super().__init__(abilityWord=None,reminderText=reminderText)
+                self._descriptor = descriptor
+                if self._descriptor is not None:
+                        self._descriptor.setParent(self)
         
-        def getOfferingType(self):
+        def getDescriptor(self):
                 """Gets the offering type demanded by the ability."""
-                return self._offeringType
+                return self._descriptor
                 
-        def setOfferingType(self,offeringType):
+        def setDescriptor(self,descriptor):
                 """Sets the offering type demanded by the ability."""
-                self._offeringType = offeringType
-                if self._offeringType is not None:
-                        self._offeringType.setParent(self)
+                self._descriptor = descriptor
+                if self._descriptor is not None:
+                        self._descriptor.setParent(self)
                 
         def isChild(self,child):
                 """This node can have up to one child, the offering expression."""
-                return child is not None and child == self._offeringType
+                return child is not None and child == self._descriptor
                 
         def getTraversalSuccessors(self):
                 """This node can have up to one successor, the offering expression."""
-                return [node for node in {self._offeringType} if node is not None and node.isTraversable()]
+                return [node for node in {self._descriptor} if node is not None and node.isTraversable()]
                 
         def unparseToString(self):
-                if self._cost is not None:
-                        return "{0} offering".format(self._offeringType.unparseToString())
+                if self._descriptor is not None:
+                        return "{0} offering".format(self._descriptor.unparseToString())
                 else:
                         return "offering"
         
 class MgNinjutsuAbility(MgKeywordAbility):
         """“Ninjutsu [cost]”"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -1681,8 +1666,8 @@ class MgNinjutsuAbility(MgKeywordAbility):
                         return "ninjutsu"
         
 class MgEpicAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -1696,8 +1681,8 @@ class MgEpicAbility(MgKeywordAbility):
                 return "epic"
         
 class MgConvokeAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -1712,10 +1697,11 @@ class MgConvokeAbility(MgKeywordAbility):
                 
 class MgForecastAbility(MgKeywordAbility):
         """Forecast is weird in that it looks like an ability word but is in fact a keyword ability.
-        It's written as 'Forecast — [activated ability]'.
+        It's written as 'Forecast — [activated ability]'. It's sorta like cumulative upkeep or buyback
+        when they use a dash before a cost, except its the definition of an ability underneath, not a cost.
         """
-        def __init__(self,activatedAbility):
-                super().__init__()
+        def __init__(self,activatedAbility,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._activatedAbility = activatedAbility
                 if self._activatedAbility is not None:
                         self._activatedAbility.setParent(self)
@@ -1732,7 +1718,7 @@ class MgForecastAbility(MgKeywordAbility):
                         
         def isChild(self,child):
                 """This node can have up to one child, its activated ability."""
-                return child is not None and child == self._activatedAbilityd
+                return child is not None and child == self._activatedAbility
                 
         def getTraversalSuccessors(self):
                 """This node can have up to one successor, its activated ability."""
@@ -1747,9 +1733,9 @@ class MgForecastAbility(MgKeywordAbility):
         
 class MgDredgeAbility(MgKeywordAbility):
         """“Dredge N”"""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -1780,9 +1766,9 @@ class MgDredgeAbility(MgKeywordAbility):
         
 class MgTransmuteAbility(MgKeywordAbility):
         """“Transmute [cost]”"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -1813,9 +1799,9 @@ class MgTransmuteAbility(MgKeywordAbility):
         
 class MgBloodthirstAbility(MgKeywordAbility):
         """Bloodthirst N"""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -1845,8 +1831,8 @@ class MgBloodthirstAbility(MgKeywordAbility):
                         return "bloodthirst"
         
 class MgHauntAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -1861,9 +1847,9 @@ class MgHauntAbility(MgKeywordAbility):
         
 class MgReplicateAbility(MgKeywordAbility):
         """“Replicate [cost]”"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -1894,9 +1880,9 @@ class MgReplicateAbility(MgKeywordAbility):
         
 class MgGraftAbility(MgKeywordAbility):
         """“Graft N”"""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -1927,9 +1913,9 @@ class MgGraftAbility(MgKeywordAbility):
         
 class MgRecoverAbility(MgKeywordAbility):
         """“Recover [cost]”"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -1960,9 +1946,9 @@ class MgRecoverAbility(MgKeywordAbility):
         
 class MgRippleAbility(MgKeywordAbility):
         """“Ripple N”"""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -1992,8 +1978,8 @@ class MgRippleAbility(MgKeywordAbility):
                         return "ripple"
         
 class MgSplitSecondAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2009,11 +1995,11 @@ class MgSplitSecondAbility(MgKeywordAbility):
 class MgSuspendAbility(MgKeywordAbility):
         """“Suspend N—[cost]”"""
         
-        def __init__(self,caliber,cost):
+        def __init__(self,caliber,cost,reminderText=None):
                 """caliber: The number value (N) associated with this ability, as in 'AbilityName N'.
                 cost: the cost associated with this ability.
                 """
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -2058,9 +2044,9 @@ class MgSuspendAbility(MgKeywordAbility):
 class MgVanishingAbility(MgKeywordAbility):
         """“Vanishing N”"""
         """Vanishing without a number means..."""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -2091,9 +2077,9 @@ class MgVanishingAbility(MgKeywordAbility):
         
 class MgAbsorbAbility(MgKeywordAbility):
         """“Absorb N”"""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -2124,9 +2110,9 @@ class MgAbsorbAbility(MgKeywordAbility):
         
 class MgAuraSwapAbility(MgKeywordAbility):
         """“Aura swap [cost]”"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -2156,8 +2142,8 @@ class MgAuraSwapAbility(MgKeywordAbility):
                         return "aura swap"
         
 class MgDelveAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2172,9 +2158,9 @@ class MgDelveAbility(MgKeywordAbility):
         
 class MgFortifyAbility(MgKeywordAbility):
         """“Fortify [cost]”"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -2205,9 +2191,9 @@ class MgFortifyAbility(MgKeywordAbility):
         
 class MgFrenzyAbility(MgKeywordAbility):
         """“Frenzy N”"""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -2237,8 +2223,8 @@ class MgFrenzyAbility(MgKeywordAbility):
                         return "frenzy"
         
 class MgGravestormAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2253,9 +2239,9 @@ class MgGravestormAbility(MgKeywordAbility):
         
 class MgPoisonousAbility(MgKeywordAbility):
         """“Poisonous N”"""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -2286,9 +2272,9 @@ class MgPoisonousAbility(MgKeywordAbility):
         
 class MgTransfigureAbility(MgKeywordAbility):
         """“Transfigure [cost]”"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -2319,11 +2305,11 @@ class MgTransfigureAbility(MgKeywordAbility):
         
 class MgChampionAbility(MgKeywordAbility):
         """“Champion an [object]”"""
-        def __init__(self,descriptor):
+        def __init__(self,descriptor,reminderText=None):
                 """
                 descriptor: An expression that explains what can be championed.
                 """
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._descriptor = descriptor
                 if self._descriptor is not None:
                         self._descriptor.setParent(self)
@@ -2353,8 +2339,8 @@ class MgChampionAbility(MgKeywordAbility):
                         return "champion"
         
 class MgChangelingAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2369,9 +2355,9 @@ class MgChangelingAbility(MgKeywordAbility):
         
 class MgEvokeAbility(MgKeywordAbility):
         """“Evoke [cost]”"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -2401,8 +2387,8 @@ class MgEvokeAbility(MgKeywordAbility):
                         return "evoke"
         
 class MgHideawayAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2417,9 +2403,9 @@ class MgHideawayAbility(MgKeywordAbility):
         
 class MgProwlAbility(MgKeywordAbility):
         """“Prowl [cost]”"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -2450,11 +2436,11 @@ class MgProwlAbility(MgKeywordAbility):
         
 class MgReinforceAbility(MgKeywordAbility):
         """“Reinforce N—[cost]”"""
-        def __init__(self,caliber,cost):
+        def __init__(self,caliber,cost,reminderText=None):
                 """caliber: The number value (N) associated with this ability, as in 'AbilityName N'.
                 cost: the cost associated with this ability.
                 """
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -2497,8 +2483,8 @@ class MgReinforceAbility(MgKeywordAbility):
                         return "reinforce"
         
 class MgConspireAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2512,8 +2498,8 @@ class MgConspireAbility(MgKeywordAbility):
                 return "conspire"
         
 class MgPersistAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2527,8 +2513,8 @@ class MgPersistAbility(MgKeywordAbility):
                 return "persist"
         
 class MgWitherAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2542,8 +2528,8 @@ class MgWitherAbility(MgKeywordAbility):
                 return "wither"
         
 class MgRetraceAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2558,9 +2544,9 @@ class MgRetraceAbility(MgKeywordAbility):
         
 class MgDevourAbility(MgKeywordAbility):
         """“Devour N”"""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -2590,8 +2576,8 @@ class MgDevourAbility(MgKeywordAbility):
                         return "devour"
 
 class MgExaltedAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2606,9 +2592,9 @@ class MgExaltedAbility(MgKeywordAbility):
         
 class MgUnearthAbility(MgKeywordAbility):
         """“Unearth [cost]” """
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -2638,8 +2624,8 @@ class MgUnearthAbility(MgKeywordAbility):
                         return "unearth"
         
 class MgCascadeAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2654,9 +2640,9 @@ class MgCascadeAbility(MgKeywordAbility):
         
 class MgAnnihilatorAbility(MgKeywordAbility):
         """“Annihilator N”"""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -2687,9 +2673,9 @@ class MgAnnihilatorAbility(MgKeywordAbility):
         
 class MgLevelUpAbility(MgKeywordAbility):
         """Level up [cost]"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -2719,8 +2705,8 @@ class MgLevelUpAbility(MgKeywordAbility):
                         return "level up"
         
 class MgReboundAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2734,8 +2720,8 @@ class MgReboundAbility(MgKeywordAbility):
                 return "rebound"
         
 class MgTotemArmorAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2749,8 +2735,8 @@ class MgTotemArmorAbility(MgKeywordAbility):
                 return "totem armor"
         
 class MgInfectAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2764,8 +2750,8 @@ class MgInfectAbility(MgKeywordAbility):
                 return "infect"
         
 class MgBattleCryAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2779,8 +2765,8 @@ class MgBattleCryAbility(MgKeywordAbility):
                 return "battle cry"
         
 class MgLivingWeaponAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2794,8 +2780,8 @@ class MgLivingWeaponAbility(MgKeywordAbility):
                 return "living weapon"
         
 class MgUndyingAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2810,9 +2796,9 @@ class MgUndyingAbility(MgKeywordAbility):
         
 class MgMiracleAbility(MgKeywordAbility):
         """“Miracle [cost]”"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -2842,8 +2828,8 @@ class MgMiracleAbility(MgKeywordAbility):
                         return "miracle"
                 
 class MgSoulbondAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2858,9 +2844,9 @@ class MgSoulbondAbility(MgKeywordAbility):
         
 class MgOverloadAbility(MgKeywordAbility):
         """Overload [cost]"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -2891,9 +2877,9 @@ class MgOverloadAbility(MgKeywordAbility):
         
 class MgScavengeAbility(MgKeywordAbility):
         """Scavenge [cost]"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -2923,8 +2909,8 @@ class MgScavengeAbility(MgKeywordAbility):
                         return "scavenge"
         
 class MgUnleashAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2938,8 +2924,8 @@ class MgUnleashAbility(MgKeywordAbility):
                 return "unleash"
         
 class MgCipherAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2953,8 +2939,8 @@ class MgCipherAbility(MgKeywordAbility):
                 return "cipher"
         
 class MgEvolveAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2968,8 +2954,8 @@ class MgEvolveAbility(MgKeywordAbility):
                 return "evolve"
         
 class MgExtortAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2983,8 +2969,8 @@ class MgExtortAbility(MgKeywordAbility):
                 return "extort"
         
 class MgFuseAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -2999,9 +2985,9 @@ class MgFuseAbility(MgKeywordAbility):
         
 class MgBestowAbility(MgKeywordAbility):
         """Bestow [cost]"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -3032,9 +3018,9 @@ class MgBestowAbility(MgKeywordAbility):
         
 class MgTributeAbility(MgKeywordAbility):
         """“Tribute N”"""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -3064,8 +3050,8 @@ class MgTributeAbility(MgKeywordAbility):
                         return "tribute"
         
 class MgDethroneAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -3080,9 +3066,9 @@ class MgDethroneAbility(MgKeywordAbility):
         
 class MgHiddenAgendaAbility(MgKeywordAbility):
         """Double agenda is a variant of the hidden agenda ability."""
-        def __init__(self,isDoubleAgenda=False):
+        def __init__(self,isDoubleAgenda=False,reminderText=None):
                 """isDoubleAgenda: a flag indicating whether this hidden agenda is a double agenda."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._isDoubleAgenda = isDoubleAgenda
         
         def isDoubleAgenda(self):
@@ -3108,9 +3094,9 @@ class MgHiddenAgendaAbility(MgKeywordAbility):
         
 class MgOutlastAbility(MgKeywordAbility):
         """Outlast [cost]"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -3140,8 +3126,8 @@ class MgOutlastAbility(MgKeywordAbility):
                         return "outlast"
         
 class MgProwessAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -3156,9 +3142,9 @@ class MgProwessAbility(MgKeywordAbility):
         
 class MgDashAbility(MgKeywordAbility):
         """“Dash [cost]”"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -3188,8 +3174,8 @@ class MgDashAbility(MgKeywordAbility):
                         return "dash"
         
 class MgExploitAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -3203,8 +3189,8 @@ class MgExploitAbility(MgKeywordAbility):
                 return "exploit"
         
 class MgMenaceAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -3219,9 +3205,9 @@ class MgMenaceAbility(MgKeywordAbility):
         
 class MgRenownAbility(MgKeywordAbility):
         """“Renown N”"""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -3252,11 +3238,11 @@ class MgRenownAbility(MgKeywordAbility):
         
 class MgAwakenAbility(MgKeywordAbility):
         """Awaken N—[cost]"""
-        def __init__(self,caliber,cost):
+        def __init__(self,caliber,cost,reminderText=None):
                 """caliber: The number value (N) associated with this ability, as in 'AbilityName N'.
                 cost: the cost associated with this ability.
                 """
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -3299,8 +3285,8 @@ class MgAwakenAbility(MgKeywordAbility):
                         return "awaken"
         
 class MgDevoidAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -3314,8 +3300,8 @@ class MgDevoidAbility(MgKeywordAbility):
                 return "devoid"
         
 class MgIngestAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -3329,8 +3315,8 @@ class MgIngestAbility(MgKeywordAbility):
                 return "ingest"
         
 class MgMyriadAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -3345,9 +3331,9 @@ class MgMyriadAbility(MgKeywordAbility):
         
 class MgSurgeAbility(MgKeywordAbility):
         """Surge [cost]"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -3377,8 +3363,8 @@ class MgSurgeAbility(MgKeywordAbility):
                         return "surge"
         
 class MgSkulkAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -3393,9 +3379,9 @@ class MgSkulkAbility(MgKeywordAbility):
         
 class MgEmergeAbility(MgKeywordAbility):
         """Emerge [cost]"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -3426,9 +3412,9 @@ class MgEmergeAbility(MgKeywordAbility):
         
 class MgEscalateAbility(MgKeywordAbility):
         """Escalate [cost]"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -3458,8 +3444,8 @@ class MgEscalateAbility(MgKeywordAbility):
                         return "escalate"
         
 class MgMeleeAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -3474,9 +3460,9 @@ class MgMeleeAbility(MgKeywordAbility):
         
 class MgCrewAbility(MgKeywordAbility):
         """Crew N"""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -3507,9 +3493,9 @@ class MgCrewAbility(MgKeywordAbility):
         
 class MgFabricateAbility(MgKeywordAbility):
         """Fabricate N"""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -3540,9 +3526,9 @@ class MgFabricateAbility(MgKeywordAbility):
         
 class MgPartnerAbility(MgKeywordAbility):
         """Partner or Partner with [name]"""
-        def __init__(self,partnerName=None):
+        def __init__(self,partnerName=None,reminderText=None):
                 """partnerName: For the 'partner with [name]' variant, the name."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._partnerName = partnerName
                 if self._partnerName is not None:
                         self._partnerName.setParent(self)
@@ -3574,8 +3560,8 @@ class MgPartnerAbility(MgKeywordAbility):
         
         
 class MgImproviseAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -3589,8 +3575,8 @@ class MgImproviseAbility(MgKeywordAbility):
                 return "improvise"
         
 class MgAftermathAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -3605,9 +3591,9 @@ class MgAftermathAbility(MgKeywordAbility):
         
 class MgEnbalmAbility(MgKeywordAbility):
         """Embalm [cost]"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -3638,9 +3624,9 @@ class MgEnbalmAbility(MgKeywordAbility):
         
 class MgEternalizeAbility(MgKeywordAbility):
         """Eternalize [cost]"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)
@@ -3671,9 +3657,9 @@ class MgEternalizeAbility(MgKeywordAbility):
         
 class MgAfflictAbility(MgKeywordAbility):
         """Afflict N"""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -3703,8 +3689,8 @@ class MgAfflictAbility(MgKeywordAbility):
                         return "afflict"
         
 class MgAscendAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -3718,8 +3704,8 @@ class MgAscendAbility(MgKeywordAbility):
                 return "ascend"
         
 class MgAssistAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -3733,8 +3719,8 @@ class MgAssistAbility(MgKeywordAbility):
                 return "assist"
                 
 class MgMentorAbility(MgKeywordAbility):
-        def __init__(self):
-                super().__init__()
+        def __init__(self,reminderText=None):
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 
         def isChild(self,child):
                 """This node has no children."""
@@ -3749,9 +3735,9 @@ class MgMentorAbility(MgKeywordAbility):
                 
 class MgSurveilAbility(MgKeywordAbility):
         """'surveil N'"""
-        def __init__(self,caliber):
+        def __init__(self,caliber,reminderText=None):
                 """caliber: The number value (N) associated with this card, as in 'AbilityName N'."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._caliber = caliber
                 if self._caliber is not None:
                         self._caliber.setParent(self)
@@ -3782,9 +3768,9 @@ class MgSurveilAbility(MgKeywordAbility):
         
 class MgJumpStartAbility(MgKeywordAbility):
         """'Jump-Start [cost]'"""
-        def __init__(self,cost):
+        def __init__(self,cost,reminderText=None):
                 """cost: The cost associated with this ability."""
-                super().__init__()
+                super().__init__(abilityWord=None,reminderText=reminderText)
                 self._cost = cost
                 if self._cost is not None:
                         self._cost.setParent(self)

@@ -153,7 +153,7 @@ class MgDashCostExpression(core.MgNode):
         For example, in Braid of Fire, we see 'Cumulative upkeep—Add {R}.' In these situations,
         we use a dash cost expression that decorates the underlying expression.
         """
-        pass
+        pass 
 
 
 class MgDescriptionExpression(core.MgNode):
@@ -382,12 +382,12 @@ class MgCommaExpression(MgAbstractExpression):
         """This node represents a series of terms/expressions separated by a comma. 
         'one, two, or three target creatures with flying' in Aerial Volley. This expression can
         optionally be terminated with an 'and' or 'or'"""
-        pass 
+        pass
         
         
 class MgModalExpression(MgAbstractExpression):
         """This node represents a series of modal choices, as is seen in cards like Abzan Charm or
-        Citadel Siege"""
+        Citadel Siege. TODO: numberOfChoices is going to be replaced a by a 'choose' subexpression."""
         def __init__(self,numberOfChoices,*options):
                 """
                 numberOfChoices: The number of times that the caster can choose different modes for the spell/ability.
@@ -887,6 +887,9 @@ class MgSearchLibraryExpression(MgEffectExpression):
         pass
         
 class MgShuffleLibraryExpression(MgEffectExpression):
+        pass
+        
+class MgRevealExpression(MgEffectExpression):
         pass
         
                 

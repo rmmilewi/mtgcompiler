@@ -3,47 +3,47 @@ import abc
 class MgNode(metaclass=abc.ABCMeta):
         """This is the abstract base class for all AST classes."""
         
-        def getAttribute(self,handle):
-                """Attributes are arbitrary objects that can be attached to nodes. Attributes can be used by
-                an (un)parser or analysis routine to decorate nodes with relevant information. Attributes
-                are stored in a dictionary that maps strings to attributes. This dictionary initially undefined, but
-                if the user calls any attribute-related method, then an empty dictionary is created.
+        def getAnnotation(self,handle):
+                """Annotations are arbitrary objects that can be attached to nodes. annotations can be used by
+                an (un)parser or analysis routine to decorate nodes with relevant information. Annotations
+                are stored in a dictionary that maps strings to annotations. This dictionary initially undefined, but
+                if the user calls any annotation-related method, then an empty dictionary is created.
                 
-                This method attempts to fetch an attribute with the given lookup key. This method will raise an
+                This method attempts to fetch an annotation with the given lookup key. This method will raise an
                 exception if no such handle exists.
                 """
-                if not hasattr(self, '_attributes'):
-                        self._attributes = {}
+                if not hasattr(self, '_annotations'):
+                        self._annotations = {}
                 
-                return self._attributes[handle]
+                return self._annotations[handle]
                 
-        def hasAttribute(self,handle):
-                """Attributes are arbitrary objects that can be attached to nodes. Attributes can be used by
-                an (un)parser or analysis routine to decorate nodes with relevant information. Attributes
-                are stored in a dictionary that maps strings to attributes. This dictionary initially undefined, but
-                if the user calls any attribute-related method, then an empty dictionary is created.
+        def hasAnnotation(self,handle):
+                """Annotations are arbitrary objects that can be attached to nodes. annotations can be used by
+                an (un)parser or analysis routine to decorate nodes with relevant information. annotations
+                are stored in a dictionary that maps strings to annotations. This dictionary initially undefined, but
+                if the user calls any annotation-related method, then an empty dictionary is created.
                 
-                This method checks to see whether the given lookup key is in the attribute dictionary.
+                This method checks to see whether the given lookup key is in the annotation dictionary.
                 """
                 
-                if not hasattr(self, '_attributes'):
-                        self._attributes = {}
+                if not hasattr(self, '_annotations'):
+                        self._annotations = {}
                 
-                return handle in self._attributes
+                return handle in self._annotations
                 
-        def setAttribute(self,handle,attr):
-                """Attributes are arbitrary objects that can be attached to nodes. Attributes can be used by
-                an (un)parser or analysis routine to decorate nodes with relevant information. Attributes
-                are stored in a dictionary that maps strings to attributes. This dictionary initially undefined, but
-                if the user calls any attribute-related method, then an empty dictionary is created.
+        def setAnnotation(self,handle,annotation):
+                """Annotations are arbitrary objects that can be attached to nodes. annotations can be used by
+                an (un)parser or analysis routine to decorate nodes with relevant information. Annotations
+                are stored in a dictionary that maps strings to annotations. This dictionary initially undefined, but
+                if the user calls any annotation-related method, then an empty dictionary is created.
                 
                 This method stores the given object in the dictionary with the handle as the key.
                 """
                 
-                if not hasattr(self, '_attributes'):
-                        self._attributes = {}
+                if not hasattr(self, '_annotations'):
+                        self._annotations = {}
                         
-                self._attributes[handle] = attr
+                self._annotations[handle] = attr
 
         def setParent(self, parent):
                 """Setter method for the parent node. The parent node is the ancestor of a given node."""
