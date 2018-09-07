@@ -6,22 +6,33 @@ def loadAllSets(fname="tests/parsing/AllSets.json"):
                 data = json.load(f)
                 return data
 
+totalCardsParsed = 0
+totalCardsAttempted = 0
 
 class TestSetParsing(unittest.TestCase):
         @classmethod
         def setUpClass(cls):
                 cls._sets = loadAllSets()
                 cls._parser = JsonParser()
+        
+        @classmethod
+        def tearDownClass(cls):
+                global totalCardsParsed,totalCardsAttempted
+                print("Total JsonParser support for Magic cards: {0} / {1} ({2}%)".format(totalCardsParsed,totalCardsAttempted,totalCardsParsed/totalCardsAttempted))
                 
         def parseCards(self,mset):
+                global totalCardsParsed,totalCardsAttempted
                 numberOfCards = len(mset["cards"])
                 cardsParsed = 0
                 for cardDict in mset["cards"]:
                         try:
                                 card = self._parser.parse(cardDict)
                                 cardsParsed += 1
+                                totalCardsParsed += 1
+                                totalCardsAttempted += 1
                         except Exception as e:
-                                print(e)
+                                #print(e)
+                                totalCardsAttempted += 1
                                 continue
                 return cardsParsed,numberOfCards
                 
