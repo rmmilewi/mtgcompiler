@@ -73,10 +73,13 @@ class MgCompoundStatement(MgAbstractStatement):
                 Then = "then"
                 And = "and"
         
-        def __init__(self,terminator=MgCompoundStatement.CompoundTerminator.Then,*statements):
+        def __init__(self,terminator=None,*statements):
                 super().__init__()
                 self._statements = statements
-                self._terminator = terminator
+                if terminator == None:
+                        self._terminator = MgCompoundStatement.CompoundTerminator.Then
+                else:
+                        self._terminator = terminator
                 for statement in self._statements:
                         statement.setParent(self)
                         

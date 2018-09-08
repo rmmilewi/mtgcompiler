@@ -18,6 +18,13 @@ class TestReferences(unittest.TestCase):
                 self.assertEqual(nameref.getAntecedent(),name)
                 self.assertEqual(nameref.unparseToString().lower(),name.unparseToString().lower())
                 
+                name = MgName("Arashi, the Sky Asunder")
+                nameref = MgNameReference(nameref=name,firstNameOnly=True)
+                self.assertTrue(nameref.isFirstNameOnly())
+                self.assertEqual(nameref.unparseToString().lower(),"arashi")
+                nameref.setFirstNameOnly(False)
+                self.assertFalse(nameref.isFirstNameOnly())
+                self.assertTrue(nameref.unparseToString().lower(),"arashi, the sky asunder")
         
         def test_selfReferences(self):
                 creature_description = MgDescriptionExpression(MgTypeExpression(MgType(MgType.TypeEnum.Creature)))

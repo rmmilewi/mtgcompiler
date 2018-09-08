@@ -57,54 +57,7 @@ class MgAbilityWord(core.MgNode):
                 
         def unparseToString(self):
                 return "{0} —".format(self._abilityWord)
-                
 
-class MgStatement(core.MgNode):
-        """An ability is made of one or more statements, organized into an instruction sequence.
-        A statement encapsulates a subtree of expressions, usually terminated by a period."""
-        
-        def __init__(self,root,periodTerminated=True):
-                """
-                root: a single expression/term underneath the statement.
-                periodTerminated: Is this statement terminated by a period? Some statements, like one holding a modal expression, don't
-                need a period at the end.
-                """
-                self._traversable = True
-                self._root = root
-                self._periodTerminated = periodTerminated
-                self._root.setParent(self)
-                
-        def isChild(self,child):
-                return child is self._root
-        
-        def getTraversalSuccessors(self):
-                return [node for node in {self._root} if node]
-                
-        def getRoot(self):
-                """Get the root expression/term of the statement."""
-                return self._root
-        
-        def setRoot(self,root):
-                """Set the root expression/term of the statement."""
-                self._root = root
-                self._root.setParent(self)
-                
-        def isPeriodTerminated(self):
-                """Checks whether the statement is terminated by a period."""
-                return self._periodTerminated
-                
-        def setPeriodTerminated(self,periodTerminated):
-                """Enables or disables period termination for the statement."""
-                self._periodTerminated = periodTerminated
-        
-                
-        def unparseToString(self):
-                if self._periodTerminated is True:
-                        return "{0}.".format(self._root.unparseToString())
-                else:
-                        return "{0}".format(self._root.unparseToString())
-                        
-                
 class MgStatementSequence(core.MgNode):
         """Represents a sequence of statements that make up a single ability."""
         
@@ -2334,7 +2287,11 @@ class MgChampionAbility(MgKeywordAbility):
                 
         def unparseToString(self):
                 if self._descriptor is not None:
-                        return "champion a {0}".format(self._descriptor.unparseToString())
+                        dstr = self._descriptor.unparseToString()
+                        if len(dstr) > 0 and dstr[0] in {'a','e','i','o','u'}:
+                                return "champion an {0}".format(dstr)
+                        else:
+                                return "champion a {0}".format(dstr)
                 else:
                         return "champion"
         

@@ -3,11 +3,14 @@ from mtgcompiler.AST.reference import MgName
 from mtgcompiler.AST.card import MgTypeLine,MgFlavorText,MgTextBox,MgCard
 from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
 from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
-from mtgcompiler.AST.expressions import MgNumberValue,MgPTExpression,MgManaExpression,MgTypeExpression
+from mtgcompiler.AST.statements import MgKeywordAbilityListStatement
+
+from mtgcompiler.AST.expressions import MgNumberValue,MgPTExpression,MgManaExpression,MgTypeExpression,MgDescriptionExpression,MgNamedExpression
 
 
 from mtgcompiler.AST.abilities import MgDeathtouchAbility,MgDefenderAbility,MgDoubleStrikeAbility,MgFirstStrikeAbility
 from mtgcompiler.AST.abilities import MgFlashAbility,MgFlyingAbility,MgHasteAbility,MgIndestructibleAbility
+
 
 
 from mtgcompiler.AST.abilities import MgHexproofAbility,MgProtectionAbility,MgLandwalkAbility,MgRampageAbility
@@ -48,8 +51,6 @@ class JsonParser(BaseParser):
                 def kwdoublestrike(self,items): 
                         return MgDoubleStrikeAbility()
                 def kwenchant(self,items): 
-                        print("HAI")
-                        print(items)
                         descriptor = items[0].children[0]
                         return MgEnchantAbility(descriptor)
                 def kwequip(self,items):
@@ -61,7 +62,7 @@ class JsonParser(BaseParser):
                                 #Equip <quality> creature <cost>
                                 quality = items[0].children[0]
                                 cost = items[0].children[1]
-                                return MgEquipAbility(quality=quality,cost=cost) #TODO
+                                return MgEquipAbility(quality=quality,cost=cost)
                                 
                 def kwfirststrike(self,items): 
                         return MgFirstStrikeAbility()
@@ -72,14 +73,19 @@ class JsonParser(BaseParser):
                 def kwhaste(self,items): 
                         return MgHasteAbility()
                 def kwhexproof(self,items): 
-                        return MgHexproofAbility()
+                        if len(items) == 1:
+                                #hexproof from quality
+                                return MgHexproofAbility(quality=items[0])
+                        else:
+                                #regular hexproof
+                                return MgHexproofAbility()
                 def kwindestructible(self,items): 
                         return MgIndestructibleAbility()
                 def kwintimidate(self,items): 
                         return MgIntimidateAbility()
                 def kwlandwalk(self,items): 
-                        #TODO
-                        return MgLandwalkAbility()
+                        typeExpr = items[0]
+                        return MgLandwalkAbility(typeExpr)
                 def kwlifelink(self,items): 
                         return MgLifelinkAbility()
                 def kwprotection(self,items): 
@@ -95,338 +101,442 @@ class JsonParser(BaseParser):
                         return MgVigilanceAbility()
                 def kwbanding(self,items): 
                         #: "banding" | "bands" "with" "other" // TODO 
-                        return MgBandingAbility()
+                        if len(items) == 1:
+                                #Bands with other.
+                                return MgBandingAbility(quality=items[0])
+                        else:
+                                #Regular banding
+                                return MgBandingAbility()
                 def kwrampage(self,items): 
                         #: "rampage" NUMBER
-                        return items
+                        caliber = int(items[0].value)
+                        return MgRampageAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwcumulativeupkeep(self,items): 
                         #: "cumulative" "upkeep" costsequence
-                        pass
+                        cost = items[0]
+                        return MgCumulativeUpkeepAbility(cost)
                 def kwflanking(self,items): 
                         #: "flanking"
-                        pass
+                        return MgFlankingAbility()
                 def kwphasing(self,items): 
                         #: "phasing"
-                        pass
+                        return MgPhasingAbility()
                 def kwbuyback(self,items): 
                         #: "buyback" costsequence
-                        pass
+                        cost = items[0]
+                        return MgBuybackAbility(cost)
                 def kwshadow(self,items): 
                         #: "shadow"
-                        pass
+                        return MgShadowAbility()
                 def kwcycling(self,items): 
                         #: "cycling" costsequence
-                        pass
+                        if len(items) == 2:
+                                #typecycling
+                                typeExpr = items[0]
+                                cost = items[1]
+                                return MgCyclingAbility(cost=cost,cyclingType=typeExpr)
+                        else:
+                                #regular cycling
+                                cost = items[0]
+                                return MgCyclingAbility(cost)
                 def kwecho(self,items): 
                         #: "echo" costsequence
-                        pass
+                        cost = items[0]
+                        return MgEchoAbility(cost)
                 def kwhorsemanship(self,items): 
                         #: "horsemanship"
-                        pass
+                        return MgHorsemanshipAbility()
                 def kwfading(self,items): 
                         #: "fading" NUMBER
-                        pass
+                        caliber = int(items[0].value)
+                        return MgFadingAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwkicker(self,items): 
-                        #: "kicker" costsequence
-                        pass
+                        #: "kicker" costsequence, multikicker
+                        cost = items[0]
+                        return MgKickerAbility(cost)
                 def kwflashback(self,items): 
-                        #: "flashback"
-                        pass
+                        #: "flashback" costsequence
+                        cost = items[0]
+                        return MgFlashbackAbility(cost)
                 def kwmadness(self,items): 
-                        #: "madness"
-                        pass
+                        #: "madness" costsequence
+                        cost = items[0]
+                        return MgMadnessAbility(cost)
                 def kwfear(self,items): 
                         #: "fear"
-                        pass
+                        return MgFearAbility()
                 def kwmorph(self,items): 
-                        #: "morph"
-                        pass
+                        #: "morph" costsequence
+                        cost = items[0]
+                        return MgMorphAbility(cost)
+                def kwmegamorph(self,items): 
+                        #: "morph" costsequence
+                        cost = items[0]
+                        return MgMorphAbility(cost,isMega=True)
                 def kwamplify(self,items): 
                         #: "amplify" NUMBER
-                        pass
+                        caliber = int(items[0].value)
+                        return MgAmplifyAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwprovoke(self,items): 
                         #: "provoke"
-                        pass
+                        return MgProvokeAbility()
                 def kwstorm(self,items): 
                         #: "storm"
-                        pass
+                        return MgStormAbility()
                 def kwaffinity(self,items): 
-                        #: "affinity" "for" // TODO
-                        pass
+                        #: "affinity" "for" typeexpression
+                        if len(items) == 1:
+                                return MgAffinityAbility(items[0])
                 def kwentwine(self,items): 
                         #: "entwine" costsequence
-                        pass
+                        cost = items[0]
+                        return MgEntwineAbility(cost)
                 def kwmodular(self,items): 
-                        #: "modular"
-                        pass
+                        #: "modular" NUMBER
+                        caliber = int(items[0].value)
+                        return MgModularAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwsunburst(self,items): 
                         #: "sunburst"
-                        pass
+                        return MgSunburstAbility()
                 def kwbushido(self,items): 
                         #: "bushido" NUMBER
-                        pass
+                        caliber = int(items[0].value)
+                        return MgBushidoAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
+                        
                 def kwsoulshift(self,items): 
                         #: "soulshift" NUMBER
-                        pass
+                        caliber = int(items[0].value)
+                        return MgSoulshiftAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwsplice(self,items): 
-                        #: "splice" "onto" // TODO
-                        pass
+                        #: "splice" "onto" typeexpression cost
+                        return MgSpliceAbility(cost=items[1],spliceType=items[0])
                 def kwoffering(self,items): 
-                        #: "offering" // TODO
-                        pass
+                        #: type "offering"
+                        typeExpr = items[0]
+                        return MgOfferingAbility(typeExpr)
                 def kwninjutsu(self,items): 
                         #: "ninjutsu" costsequence
-                        pass
+                        cost = items[0]
+                        return MgNinjutsuAbility(cost)
                 def kwepic(self,items): 
                         #: "epic"
-                        pass
+                        return MgEpicAbility()
                 def kwconvoke(self,items): 
                         #: "convoke"
-                        pass
+                        return MgConvokeAbility()
                 def kwdredge(self,items): 
                         #: "dredge" NUMBER
-                        pass
+                        caliber = int(items[0].value)
+                        return MgDredgeAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwtransmute(self,items): 
                         #: "transmute" costsequence
-                        pass
+                        cost = items[0]
+                        return MgTransmuteAbility(cost)
                 def kwbloodthirst(self,items): 
                         #: "bloodthirst" NUMBER
-                        pass
+                        caliber = int(items[0].value)
+                        return MgBloodthirstAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwhaunt(self,items): 
                         #: "haunt"
-                        pass
+                        return MgHauntAbility()
                 def kwreplicate(self,items): 
-                        #: "replicate"
-                        pass
+                        #: "replicate" costsequence
+                        cost = items[0]
+                        return MgReplicateAbility(cost)
                 def kwforecast(self,items): 
-                        #: "forecast"
+                        #: "forecast" //TODO
                         pass
                 def kwgraft(self,items): 
                         #: "graft"
-                        pass
+                        return MgGraftAbility()
                 def kwrecover(self,items): 
                         #: "recover" costsequence
-                        pass
+                        cost = items[0]
+                        return MgRecoverAbility(cost)
                 def kwripple(self,items): 
                         #: "ripple" NUMBER
-                        pass
+                        caliber = int(items[0].value)
+                        return MgRippleAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwsplitsecond(self,items): 
                         #: "split" "second"
-                        pass
+                        return MgSplitSecondAbility()
                 def kwsuspend(self,items): 
                         #: "suspend" NUMBER
-                        pass
+                        caliber = int(items[0].value)
+                        return MgSuspendAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwvanishing(self,items): 
                         #: "vanishing" [NUMBER]
-                        pass
+                        if len(items) == 1:
+                                caliber = int(items[0].value)
+                                return MgVanishingAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
+                        else:
+                                return MgVanishingAbility()
                 def kwabsorb(self,items): 
                         #: "absorb" NUMBER
-                        pass
+                        caliber = int(items[0].value)
+                        return MgAbsorbAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwauraswap(self,items): 
                         #: "aura" "swap" costsequence
-                        pass
+                        cost = items[0]
+                        return MgAuraSwapAbility(cost)
                 def kwdelve(self,items): 
                         #: "delve"
-                        pass
+                        return MgDelveAbility()
                 def kwfortify(self,items): 
-                        #: "fortify"
-                        pass
+                        #: "fortify" costsequence
+                        cost = items[0]
+                        return MgFortifyAbility(cost)
                 def kwfrenzy(self,items): 
                         #: "frenzy"
-                        pass
+                        return MgFrenzyAbility()
                 def kwgravestorm(self,items): 
                         #: "gravestorm"
-                        pass
+                        return MgGravestormAbility()
                 def kwpoisonous(self,items): 
                         #: "poisonous" NUMBER
-                        pass
+                        caliber = int(items[0].value)
+                        return MgPoisonousAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwtransfigure(self,items): 
                         #: "transfigure" costsequence
-                        pass
+                        cost = items[0]
+                        return MgTransfigureAbility(cost)
                 def kwchampion(self,items): 
-                        #: "champion" "a"["n"] // TODO
-                        pass
+                        #: "champion" "a"["n"]
+                        typeExpr = items[0]
+                        return MgChampionAbility(typeExpr)
                 def kwchangeling(self,items): 
                         #: "changeling"
-                        pass
+                        return MgChangelingAbility()
                 def kwevoke(self,items): 
                         #: "evoke" costsequence
-                        pass
+                        cost = items[0]
+                        return MgEvokeAbility(cost)
                 def kwhideaway(self,items): 
                         #: "hideaway"
-                        pass
+                        return MgHideawayAbility()
                 def kwprowl(self,items): 
                         #: "prowl" costsequence
-                        pass
+                        cost = items[0]
+                        return MgProwlAbility(cost)
                 def kwreinforce(self,items): 
                         #: "reinforce" costsequence
-                        pass
+                        cost = items[0]
+                        return MgReinforceAbility(cost)
                 def kwconspire(self,items): 
                         #: "conspire"
-                        pass
+                        return MgConspireAbility()
                 def kwpersist(self,items): 
                         #: "persist"
-                        pass
+                        return MgPersistAbility()
                 def kwwither(self,items): 
                         #: "wither"
-                        pass
+                        return MgWitherAbility()
                 def kwretrace(self,items): 
                         #: "retrace" costsequence
-                        pass
+                        cost = items[0]
+                        return MgRetraceAbility(cost)
                 def kwdevour(self,items): 
                         #: "devour" NUMBER
-                        pass
+                        caliber = int(items[0].value)
+                        return MgDevourAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwexalted(self,items): 
                         #: "exalted"
-                        pass
+                        return MgExaltedAbility()
                 def kwunearth(self,items): 
                         #: "unearth" costsequence
-                        pass
+                        cost = items[0]
+                        return MgUnearthAbility(cost)
                 def kwcascade(self,items): 
                         #: "cascade"
-                        pass
+                        return MgCascadeAbility()
                 def kwannihilator(self,items): 
                         #: "annihilator" NUMBER
-                        pass
+                        caliber = int(items[0].value)
+                        return MgAnnihilatorAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwlevelup(self,items): 
-                        #: "level up" // TODO
-                        pass
+                        #: "level up"
+                        cost = items[0]
+                        return MgLevelUpAbility(cost)
                 def kwrebound(self,items): 
                         #: "rebound"
-                        pass
+                        return MgReboundAbility()
                 def kwtotemarmor(self,items): 
                         #: "totem" "armor"
-                        pass
+                        return MgTotemArmorAbility()
                 def kwinfect(self,items): 
                         #: "infect"
-                        pass
+                        return MgInfectAbility()
                 def kwbattlecry(self,items): 
                         #: "battle" "cry"
-                        pass
+                        return MgBattleCryAbility()
                 def kwlivingweapon(self,items): 
                         #: "living" "weapon"
-                        pass
+                        return MgLivingWeaponAbility()
                 def kwundying(self,items): 
                         #: "undying"
-                        pass
+                        return MgUndyingAbility()
                 def kwmiracle(self,items): 
                         #: "miracle" costsequence
-                        pass
+                        cost = items[0]
+                        return MgMiracleAbility(cost)
                 def kwsoulbond(self,items): 
                         #: "soulbond"
-                        pass
+                        return MgSoulbondAbility()
                 def kwoverload(self,items): 
                         #: "overload" costsequence
-                        pass
+                        cost = items[0]
+                        return MgOverloadAbility(cost)
                 def kwscavenge(self,items): 
                         #: "scavenge" costsequence
-                        pass
+                        cost = items[0]
+                        return MgScavengeAbility(cost)
                 def kwunleash(self,items): 
                         #: "unleash"
-                        pass
+                        return MgUnleashAbility()
                 def kwcipher(self,items): 
                         #: "cipher"
-                        pass
+                        return MgCipherAbility()
                 def kwevolve(self,items): 
                         #: "evolve"
-                        pass
+                        return MgEvolveAbility()
                 def kwextort(self,items): 
                         #: "extort"
-                        pass
+                        return MgExtortAbility()
                 def kwfuse(self,items): 
                         #: "fuse"
-                        pass
+                        return MgFuseAbility()
                 def kwbestow(self,items): 
                         #: "bestow" costsequence
-                        pass
+                        cost = items[0]
+                        return MgBestowAbility(cost)
                 def kwtribute(self,items): 
                         #: "tribute" NUMBER
-                        pass
+                        caliber = int(items[0].value)
+                        return MgTributeAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwdethrone(self,items): 
                         #: "dethrone"
-                        pass
+                        return MgDethroneAbility()
                 def kwhiddenagenda(self,items): 
                         #: "hidden" "agenda" | "double" "agenda"
-                        pass
+                       return MgHiddenAgendaAbility(isDoubleAgenda=False)
+                def kwdoubleagenda(self,items): 
+                        #: "hidden" "agenda" | "double" "agenda"
+                       return MgHiddenAgendaAbility(isDoubleAgenda=True)
                 def kwoutlast(self,items): 
                         #: "outlast" costsequence
-                        pass
+                        cost = items[0]
+                        return MgOutlastAbility(cost)
                 def kwprowess(self,items): 
                         #: "prowess"
-                        pass
+                        return MgProwessAbility()
                 def kwdash(self,items): 
                         #: "dash" costsequence
-                        pass
+                        cost = items[0]
+                        return MgDashAbility(cost)
                 def kwexploit(self,items): 
                         #: "exploit"
-                        pass
+                        return MgExploitAbility()
                 def kwmenace(self,items): 
                         #: "menace"
-                        pass
+                        return MgMenaceAbility()
                 def kwrenown(self,items): 
                         #: "renown" NUMBER
-                        pass
+                        caliber = int(items[0].value)
+                        return MgRenownAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwawaken(self,items): 
                         #: "awaken" costsequence
-                        pass
+                        cost = items[0]
+                        return MgAwakenAbility(cost)
                 def kwdevoid(self,items): 
                         #: "devoid"
-                        pass
+                        return MgDevoidAbility()
                 def kwingest(self,items): 
                         #: "ingest"
-                        pass
+                        return MgIngestAbility()
                 def kwmyriad(self,items): 
                         #: "myriad"
-                        pass
+                        return MgMyriadAbility()
                 def kwsurge(self,items): 
                         #: "surge" costsequence
-                        pass
+                        cost = items[0]
+                        return MgSurgeAbility(cost)
                 def kwskulk(self,items): 
                         #: "skulk"
-                        pass
+                        return MgSkulkAbility()
                 def kwemerge(self,items): 
                         #: "emerge" costsequence
-                        pass
+                        cost = items[0]
+                        return MgEmergeAbility(cost)
                 def kwescalate(self,items): 
                         #: "escalate" costsequence
-                        pass
+                        cost = items[0]
+                        return MgEscalateAbility(cost)
                 def kwmelee(self,items): 
                         #: "melee"
-                        pass
+                        return MgMeleeAbility()
                 def kwcrew(self,items): 
                         #: "crew" NUMBER
-                        pass
+                        caliber = int(items[0].value)
+                        return MgCrewAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwfabricate(self,items): 
                         #: "fabricate" NUMBER
-                        pass
+                        caliber = int(items[0].value)
+                        return MgFabricateAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwpartner(self,items): 
-                        #: "partner" | "partner" "with" // TODO
-                        pass
+                        #: "partner" | "partner" "with" name
+                        if len(items) == 1:
+                                return MgPartnerAbility(partnerName=items[0])
+                        else:
+                                return MgPartnerAbility()
                 def kwundaunted(self,items): 
                         #: "undaunted"
-                        pass
+                        return MgUndauntedAbility()
                 def kwimprovise(self,items): 
                         #: "improvise"
-                        pass
+                        return MgImproviseAbility()
                 def kwaftermath(self,items): 
                         #: "aftermath"
-                        pass
+                        return MgAftermathAbility()
                 def kwembalm(self,items): 
                         #: "embalm" costsequence
-                        pass
+                        cost = items[0]
+                        return MgEnbalmAbility(cost)
                 def kweternalize(self,items): 
                         #: "eternalize" costsequence
-                        pass
+                        cost = items[0]
+                        return MgEternalizeAbility(cost)
                 def kwafflict(self,items): 
                         #: "afflict" NUMBER
-                        pass
+                        caliber = int(items[0].value)
+                        return MgRippleAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwascend(self,items): 
                         #: "ascend"
-                        pass
+                        return MgAscendAbility()
                 def kwassist(self,items): 
                         #: "assist"
-                        pass
+                        return MgAssistAbility()
                         
+                        
+                def keywordability(self,items):
+                        return items[0]
+                def keywordsequence(self,items):
+                        return MgKeywordAbilityListStatement(*items)
+                
+                def costsequence(self,items):
+                        return items[0]
+                        
+                def objectname(self,items):
+                        return MgName(items[0].value)
+                        
+                        
+                def expression(self,items):
+                        return items[0]
+                        
+                def descriptionexpression(self,items):
+                        return MgDescriptionExpression(*items)
+                
+                def namedexpression(self,items):
+                        return MgNamedExpression(items[0])
                         
                 def typeexpression(self,items):
                         typeobjects = []
@@ -520,182 +630,82 @@ class JsonParser(BaseParser):
                         keywordsequence: keywordability | keywordability "," keywordsequence
                         
                         keywordability: kwdeathtouch
-                        |kwdefender 
-                        |kwdoublestrike 
-                        |kwenchant 
-                        |kwequip 
-                        |kwfirststrike
-                        |kwflash
-                        |kwflying
-                        |kwhaste
-                        |kwhexproof
-                        |kwindestructible
-                        |kwintimidate
-                        |kwlandwalk
-                        |kwlifelink
-                        |kwprotection
-                        |kwreach
-                        |kwshroud
-                        |kwtrample
-                        |kwvigilance
-                        |kwbanding
-                        |kwrampage
-                        |kwcumulativeupkeep
-                        |kwflanking
-                        |kwphasing
-                        |kwbuyback
-                        |kwshadow
-                        |kwcycling
-                        |kwecho
-                        |kwhorsemanship
-                        |kwfading
-                        |kwkicker
-                        |kwflashback
-                        |kwmadness
-                        |kwfear
-                        |kwmorph
-                        |kwamplify
-                        |kwprovoke
-                        |kwstorm
-                        |kwaffinity
-                        |kwentwine
-                        |kwmodular
-                        |kwsunburst
-                        |kwbushido
-                        |kwsoulshift
-                        |kwsplice
-                        |kwoffering
-                        |kwninjutsu
-                        |kwepic
-                        |kwconvoke
-                        |kwdredge
-                        |kwtransmute
-                        |kwbloodthirst
-                        |kwhaunt
-                        |kwreplicate
-                        |kwforecast
-                        |kwgraft
-                        |kwrecover
-                        |kwripple
-                        |kwsplitsecond
-                        |kwsuspend
-                        |kwvanishing
-                        |kwabsorb
-                        |kwauraswap
-                        |kwdelve
-                        |kwfortify
-                        |kwfrenzy
-                        |kwgravestorm
-                        |kwpoisonous
-                        |kwtransfigure
-                        |kwchampion
-                        |kwchangeling
-                        |kwevoke
-                        |kwhideaway
-                        |kwprowl
-                        |kwreinforce
-                        |kwconspire
-                        |kwpersist
-                        |kwwither
-                        |kwretrace
-                        |kwdevour
-                        |kwexalted
-                        |kwunearth
-                        |kwcascade
-                        |kwannihilator
-                        |kwlevelup
-                        |kwrebound
-                        |kwtotemarmor
-                        |kwinfect
-                        |kwbattlecry
-                        |kwlivingweapon
-                        |kwundying
-                        |kwmiracle
-                        |kwsoulbond
-                        |kwoverload
-                        |kwscavenge
-                        |kwunleash
-                        |kwcipher
-                        |kwevolve
-                        |kwextort
-                        |kwfuse
-                        |kwbestow
-                        |kwtribute
-                        |kwdethrone
-                        |kwhiddenagenda
-                        |kwoutlast
-                        |kwprowess
-                        |kwdash
-                        |kwexploit
-                        |kwmenace
-                        |kwrenown
-                        |kwawaken
-                        |kwdevoid
-                        |kwingest
-                        |kwmyriad
-                        |kwsurge
-                        |kwskulk
-                        |kwemerge
-                        |kwescalate
-                        |kwmelee
-                        |kwcrew
-                        |kwfabricate
-                        |kwpartner
-                        |kwundaunted
-                        |kwimprovise
-                        |kwaftermath
-                        |kwembalm
-                        |kweternalize
-                        |kwafflict
-                        |kwascend
+                        | kwdefender | kwdoublestrike | kwenchant | kwequip | kwfirststrike
+                        | kwflash | kwflying | kwhaste | kwhexproof | kwindestructible
+                        | kwintimidate | kwlandwalk | kwlifelink | kwprotection | kwreach 
+                        | kwshroud | kwtrample | kwvigilance | kwbanding 
+                        | kwrampage | kwcumulativeupkeep | kwflanking | kwphasing
+                        | kwbuyback | kwshadow | kwcycling | kwecho | kwhorsemanship
+                        | kwfading | kwkicker | kwflashback | kwmadness | kwfear
+                        | kwmorph | kwamplify |kwprovoke | kwstorm | kwaffinity
+                        | kwentwine | kwmodular |kwsunburst | kwbushido | kwsoulshift
+                        | kwsplice | kwoffering |kwninjutsu | kwepic | kwconvoke
+                        | kwdredge | kwtransmute | kwbloodthirst | kwhaunt | kwreplicate
+                        | kwforecast | kwgraft | kwrecover | kwripple | kwsplitsecond
+                        | kwsuspend | kwvanishing | kwabsorb | kwauraswap | kwdelve
+                        | kwfortify | kwfrenzy | kwgravestorm | kwpoisonous | kwtransfigure
+                        | kwchampion | kwchangeling | kwevoke | kwhideaway | kwprowl
+                        | kwreinforce | kwconspire | kwpersist | kwwither | kwretrace
+                        | kwdevour | kwexalted | kwunearth | kwcascade | kwannihilator
+                        | kwlevelup | kwrebound | kwtotemarmor | kwinfect | kwbattlecry
+                        | kwlivingweapon | kwundying | kwmiracle | kwsoulbond | kwoverload
+                        | kwscavenge | kwunleash |kwcipher | kwevolve | kwextort
+                        | kwfuse | kwbestow | kwtribute | kwdethrone | kwhiddenagenda
+                        | kwoutlast | kwprowess | kwdash | kwexploit | kwmenace
+                        | kwrenown | kwawaken | kwdevoid | kwingest | kwmyriad
+                        | kwsurge | kwskulk | kwemerge | kwescalate | kwmelee
+                        | kwcrew | kwfabricate | kwpartner | kwundaunted | kwimprovise
+                        | kwaftermath | kwembalm | kweternalize | kwafflict | kwascend
                         |kwassist
                         
                         kwdeathtouch: "deathtouch"
                         kwdefender: "defender"
                         kwdoublestrike: "double" "strike"
                         kwenchant: "enchant" typeexpression // TODO
-                        kwequip: "equip" costsequence  //TODO | "equip" descriptionexpr costsequence
+                        kwequip: "equip" costsequence  //TODO | "equip" descriptionexpression costsequence
                         kwfirststrike: "first strike"
                         kwflash: "flash"
                         kwflying: "flying"
                         kwhaste: "haste"
-                        kwhexproof: "hexproof"
+                        kwhexproof: "hexproof" | "hexproof" "from" descriptionexpression
                         kwindestructible: "indestructible"
                         kwintimidate: "intimidate"
-                        kwlandwalk: "walk" // TODO
+                        kwlandwalk: typeexpression "walk"
                         kwlifelink: "lifelink"
                         kwprotection: "protection" "from" // TODO
                         kwreach: "reach"
                         kwshroud: "shroud"
                         kwtrample: "trample"
                         kwvigilance: "vigilance"
-                        kwbanding: "banding" | "bands" "with" "other" // TODO 
+                        kwbanding: "banding" | "bands" "with" "other" descriptionexpression
                         kwrampage: "rampage" NUMBER
                         kwcumulativeupkeep: "cumulative" "upkeep" costsequence
                         kwflanking: "flanking"
                         kwphasing: "phasing"
                         kwbuyback: "buyback" costsequence
                         kwshadow: "shadow"
-                        kwcycling: "cycling" costsequence
+                        kwcycling: [typeexpression] "cycling" costsequence
                         kwecho: "echo" costsequence
                         kwhorsemanship: "horsemanship"
                         kwfading: "fading" NUMBER
-                        kwkicker: "kicker" costsequence
-                        kwflashback: "flashback"
-                        kwmadness: "madness"
+                        kwkicker: "kicker" costsequence -> kicker
+                        | "multikicker" costsequence -> multikicker
+                        kwflashback: "flashback" costsequence
+                        kwmadness: "madness" costsequence
                         kwfear: "fear"
-                        kwmorph: "morph"
+                        kwmorph: "morph" costsequence -> kwmorph
+                        | "megamorph" costsequence -> kwmegamorph
                         kwamplify: "amplify" NUMBER
                         kwprovoke: "provoke"
                         kwstorm: "storm"
-                        kwaffinity: "affinity" "for" // TODO
+                        kwaffinity: "affinity" "for" typeexpression
                         kwentwine: "entwine" costsequence
-                        kwmodular: "modular"
+                        kwmodular: "modular" NUMBER
                         kwsunburst: "sunburst"
                         kwbushido: "bushido" NUMBER
                         kwsoulshift: "soulshift" NUMBER
-                        kwsplice: "splice" "onto" // TODO
-                        kwoffering: "offering" // TODO
+                        kwsplice: "splice" "onto" typeexpression costsequence
+                        kwoffering: typeexpression "offering"
                         kwninjutsu: "ninjutsu" costsequence
                         kwepic: "epic"
                         kwconvoke: "convoke"
@@ -703,7 +713,7 @@ class JsonParser(BaseParser):
                         kwtransmute: "transmute" costsequence
                         kwbloodthirst: "bloodthirst" NUMBER
                         kwhaunt: "haunt"
-                        kwreplicate: "replicate"
+                        kwreplicate: "replicate" costsequence
                         kwforecast: "forecast"
                         kwgraft: "graft"
                         kwrecover: "recover" costsequence
@@ -714,12 +724,12 @@ class JsonParser(BaseParser):
                         kwabsorb: "absorb" NUMBER
                         kwauraswap: "aura" "swap" costsequence
                         kwdelve: "delve"
-                        kwfortify: "fortify"
+                        kwfortify: "fortify" costsequence
                         kwfrenzy: "frenzy"
                         kwgravestorm: "gravestorm"
                         kwpoisonous: "poisonous" NUMBER
                         kwtransfigure: "transfigure" costsequence
-                        kwchampion: "champion" "a"["n"] // TODO
+                        kwchampion: "champion" "a"["n"] typeexpression
                         kwchangeling: "changeling"
                         kwevoke: "evoke" costsequence
                         kwhideaway: "hideaway"
@@ -734,7 +744,7 @@ class JsonParser(BaseParser):
                         kwunearth: "unearth" costsequence
                         kwcascade: "cascade"
                         kwannihilator: "annihilator" NUMBER
-                        kwlevelup: "level up" // TODO
+                        kwlevelup: "level up" costsequence
                         kwrebound: "rebound"
                         kwtotemarmor: "totem" "armor"
                         kwinfect: "infect"
@@ -753,7 +763,8 @@ class JsonParser(BaseParser):
                         kwbestow: "bestow" costsequence
                         kwtribute: "tribute" NUMBER
                         kwdethrone: "dethrone"
-                        kwhiddenagenda: "hidden" "agenda" | "double" "agenda"
+                        kwhiddenagenda: "hidden" "agenda" -> kwhiddenagenda
+                        | "double" "agenda" -> kwdoubleagenda
                         kwoutlast: "outlast" costsequence
                         kwprowess: "prowess"
                         kwdash: "dash" costsequence
@@ -771,7 +782,7 @@ class JsonParser(BaseParser):
                         kwmelee: "melee"
                         kwcrew: "crew" NUMBER
                         kwfabricate: "fabricate" NUMBER
-                        kwpartner: "partner" | "partner" "with" // TODO
+                        kwpartner: "partner" ["with" objectname]
                         kwundaunted: "undaunted"
                         kwimprovise: "improvise"
                         kwaftermath: "aftermath"
@@ -781,16 +792,29 @@ class JsonParser(BaseParser):
                         kwascend: "ascend"
                         kwassist: "assist"
                         
-                        costsequence: manaexpression | "-" expression // TODO
+                        costsequence: manaexpression | dashcostexpression
                         
                         //TODO: Add as needed.
-                        expression: manaexpression | typeexpression 
-                        typeexpression: (TYPE | SUBTYPESPELL | SUBTYPELAND | SUBTYPEARTIFACT | SUBTYPEPLANESWALKER | SUBTYPECREATUREA
+                        expression: colorexpression | namedexpression | manaexpression | typeexpression
+                        
+                        ptexpression: valueexpression "/" valueexpression
+                        valueexpression: NUMBER //TODO: Need to account for custom values, variables, etc.
+                        dashcostexpression: "—" expression
+                        descriptionexpression: expression+
+                        
+                        namedexpression: "named" objectname
+                        targetexpression: "target" expression
+                        eachexpression: "each" expression
+                        andexpression : expression "and" expression
+                        orexpression : expression "or" expression
+                        
+                        
+                        //TODO: What about comma-delimited type expressions?
+                        typeexpression: (TYPE ["s"] | SUBTYPESPELL ["s"] | SUBTYPELAND ["s"] | SUBTYPEARTIFACT ["s"] | SUBTYPEPLANESWALKER | SUBTYPECREATUREA
                         | SUBTYPECREATUREB | SUBTYPEPLANAR | SUPERTYPE)+
                         
-                        
-                        TYPE: "artifact" | "conspiracy" | "creature" | "enchantment" | "instant"
-                        | "land" | "phenomenon" | "plane" | "planeswalker" | "scheme" | "sorcery"
+                        TYPE: "planeswalker" | "conspiracy" | "creature" | "enchantment" | "instant"
+                        | "land" | "phenomenon" | "plane" | "artifact" | "scheme" | "sorcery"
                         | "tribal" | "vanguard"
                         
                         SUBTYPESPELL : "arcane" | "trap"
@@ -851,6 +875,14 @@ class JsonParser(BaseParser):
                         
                         SUPERTYPE: "basic" | "legendary" | "ongoing" | "snow" | "world"
                         
+                        
+                        colorexpression: COLORTERM 
+                        
+                        COLORTERM: "white" | "blue" | "black" | "red" | "green" | "monocolored" | "multicolored" | "colorless"
+                        
+                        objectname: OBJECTNAME
+                        OBJECTNAME: WORD ((WS | ",") WORD)* //TODO: commas in names? This is problematic.
+                        
                         manaexpression: manasymbol+ 
                         manasymbol: "{" manamarkerseq "}"
                         manamarkerseq: manamarker_color -> regularmanasymbol
@@ -874,9 +906,9 @@ class JsonParser(BaseParser):
                         manamarker_colorless: "C" -> colorlessmarker
                         manamarker_x: "X" -> xmarker
                         
-                        
+                        %import common.WORD -> WORD
                         %import common.SIGNED_NUMBER -> NUMBER
-                        %import common.WS
+                        %import common.WS -> WS
                         %ignore WS
                 """, start=startText)
                 

@@ -153,7 +153,31 @@ class MgDashCostExpression(core.MgNode):
         For example, in Braid of Fire, we see 'Cumulative upkeep—Add {R}.' In these situations,
         we use a dash cost expression that decorates the underlying expression.
         """
-        pass 
+        def __init__(self,cost):
+                """
+                cost: The expression defining the cost of the keyword ability 
+                associated with the dash-cost expresssion.
+                """
+                self._cost = cost
+                self._cost.setParent(self)
+                
+        def getCost(self):
+                """Get the cost associated with this expression."""
+                return self._cost
+        
+        def setCost(self,cost):
+                """Set the cost associated with this expression."""
+                self._cost = cost
+                self._cost.setParent(self)
+                
+        def isChild(self,child):
+                return child is not None and child == cost
+                
+        def getTraversalSuccessors(self):
+                return [node for node in {self._cost} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                return "—{0}".format(self._cost.unparseToString())
 
 
 class MgDescriptionExpression(core.MgNode):

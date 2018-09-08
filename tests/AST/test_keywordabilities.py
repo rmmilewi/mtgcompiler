@@ -10,7 +10,9 @@ from mtgcompiler.AST.expressions import MgOrExpression,MgTargetExpression,MgAllE
 from mtgcompiler.AST.expressions import MgTapUntapExpression,MgDestroyExpression,MgUncastExpression,MgReturnExpression,MgCardDrawExpression
 from mtgcompiler.AST.visitors import SimpleGraphingVisitor
 
-from mtgcompiler.AST.abilities import MgStatement,MgStatementSequence,MgSpellAbility
+from mtgcompiler.AST.abilities import MgActivatedAbility,MgReminderText
+
+#from mtgcompiler.AST.abilities import MgStatement,MgStatementSequence,MgSpellAbility
 from mtgcompiler.AST.abilities import MgHexproofAbility,MgProtectionAbility,MgLandwalkAbility,MgRampageAbility
 from mtgcompiler.AST.abilities import MgFadingAbility, MgAmplifyAbility, MgModularAbility, MgBushidoAbility
 from mtgcompiler.AST.abilities import MgSoulshiftAbility, MgDredgeAbility, MgBloodthirstAbility, MgGraftAbility
@@ -73,19 +75,75 @@ class TestKeywordAbilities(unittest.TestCase):
                 
         def test_Banding(self):
                 ability = MgBandingAbility()
+                
                 self.assertTrue(ability.isTraversable())
                 self.assertEqual(len(ability.getTraversalSuccessors()),0)
+                self.assertFalse(ability.hasQualitySpecifier())
                 self.assertEqual(ability.unparseToString().lower(),"banding")
+                
+                t_barbarian = MgTypeExpression(MgSubtype(MgSubtype.CreatureSubtypeEnum.Barbarian))
+                bandswithother = MgBandingAbility(quality=t_barbarian)
+                
+                self.assertTrue(bandswithother.hasQualitySpecifier())
+                self.assertTrue(bandswithother.isChild(t_barbarian))
+                self.assertEqual(t_barbarian.getParent(),bandswithother)
+                self.assertEqual(len(bandswithother.getTraversalSuccessors()),1)
+                
+                #The default unparser does not perform pluralization.
+                self.assertEqual(bandswithother.unparseToString().lower(),"bands with other barbarian")
                 
                 
         def test_Affinity(self):
-                pass
+                t_artifact = MgTypeExpression(MgType(MgType.TypeEnum.Artifact))
+                affinity = MgAffinityAbility(descriptor=t_artifact)
+                self.assertTrue(affinity.isChild(t_artifact))
+                self.assertEqual(t_artifact.getParent(),affinity)
+                self.assertEqual(affinity.getDescriptor(),t_artifact)
+                self.assertEqual(len(affinity.getTraversalSuccessors()),1)
+                
+                #The default unparser does not perform pluralization.
+                self.assertEqual(affinity.unparseToString().lower(),"affinity for artifact")
+                
+                t_planeswalker = MgTypeExpression(MgType(MgType.TypeEnum.Planeswalker))
+                affinity.setDescriptor(t_planeswalker)
+                self.assertEqual(affinity.getDescriptor(),t_planeswalker)
+                self.assertEqual(affinity.unparseToString().lower(),"affinity for planeswalker")
                 
         def test_Offering(self):
-                pass
-        
+                t_planeswalker = MgTypeExpression(MgType(MgType.TypeEnum.Planeswalker))
+                offering = MgOfferingAbility(descriptor=t_planeswalker)
+                self.assertTrue(offering.isChild(t_planeswalker))
+                self.assertEqual(t_planeswalker.getParent(),offering)
+                self.assertEqual(offering.getDescriptor(),t_planeswalker)
+                self.assertEqual(len(offering.getTraversalSuccessors()),1)
+                self.assertEqual(offering.unparseToString().lower(),"planeswalker offering")
+                
+                t_artifact = MgTypeExpression(MgType(MgType.TypeEnum.Artifact))
+                offering.setDescriptor(t_artifact)
+                self.assertEqual(offering.getDescriptor(),t_artifact)
+                self.assertEqual(offering.unparseToString().lower(),"artifact offering")
+                
         def test_Forecast(self):
-                pass
+                return None #TODO
+                manaCost = MgManaExpression(
+                        MgManaSymbol(cvalue=1),
+                        MgManaSymbol(colorv=MgManaSymbol.ManaType.White)
+                )
+                
+                tap_creature = MgStatementSequence(MgStatement(MgTapUntapExpression(
+                                MgTargetExpression(MgTypeExpression(MgType(MgType.TypeEnum.Creature))),
+                                tap=True)
+                ))
+                
+                activatedAbility = MgActivatedAbility(
+                        cost = None,
+                        instructions = tap_creature,
+                        abilityWord = None, #Forecast is in fact *not* an ability word.
+                        reminderText = None #The reminder text is attached to Forecast, not the underlying ability.
+                )
+                reminder = MgReminderText("Activate this ability only during your upkeep and only once each turn.")
+                
+                forecast = MgForecastAbility(activatedAbility=activatedAbility,reminderText=reminder)
         
         def test_Suspend(self):
                 pass

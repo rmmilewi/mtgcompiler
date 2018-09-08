@@ -1,7 +1,6 @@
 import mtgcompiler.AST.core as core
 from enum import Enum
 
-
 class MgAbstractReference(core.MgNode):
         """The abstract parent class for all reference classes. A reference is a term that is connected back,
         in some way, to a previously defined game entity. All references have one thing in common, an antecedent
@@ -26,14 +25,33 @@ class MgAbstractReference(core.MgNode):
         def setAntecedent(self,antecedent):
                 """Assigns an antecedent to the that-reference."""
                 self._antecedent = antecedent
+                
+                
+class MgAbilityReference(MgAbstractReference):
+        """An ability reference is a generic reference to an ability, like Cairn Wanderer referring to
+        protection in the abstract. TODO: I haven't decided if this is the best way forward or not."""
+        pass
 
 class MgNameReference(MgAbstractReference):
         """A stand-in used when a card refers to its own name in its text."""
-        def __init__(self,nameref):
+        def __init__(self,nameref,firstNameOnly=False):
                 """
                 nameref: The MgName node to which this node refers.
+                firstNameOnly: A flag that indicates that a name reference only uses the first
+                name of a card. This can happen when you have multiple name references of a
+                legendary creature. This flag is False by default. An example would be
+                'Arashi, the Sky Asunder' vs. 'discard Arashi'. 
                 """
                 super().__init__(nameref)
+                self._firstonly = firstNameOnly
+                
+        def isFirstNameOnly(self):
+                """Checks whether this name reference only exposes the first name of a card."""
+                return self._firstonly
+                
+        def setFirstNameOnly(self,firstNameOnly):
+                """Sets whether this name reference only exposes the first name of a card."""
+                self._firstonly = firstNameOnly
                 
         def getNameReference(self):
                 return self._antecedent
@@ -52,7 +70,11 @@ class MgNameReference(MgAbstractReference):
                 return []
                 
         def unparseToString(self):
-                return self._antecedent.unparseToString()
+                if self._firstonly == True:
+                        splitstr = self._antecedent.unparseToString().split(', ')
+                        return splitstr[0]
+                else:
+                        return self._antecedent.unparseToString()
                 
 class MgSelfReference(MgAbstractReference):
         """This node is used when a card refers to itself as 'itself', 'himself', or 'herself'.

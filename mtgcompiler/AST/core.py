@@ -4,7 +4,7 @@ class MgNode(metaclass=abc.ABCMeta):
         """This is the abstract base class for all AST classes."""
         
         def getAnnotation(self,handle):
-                """Annotations are arbitrary objects that can be attached to nodes. annotations can be used by
+                """Annotations are arbitrary objects that can be attached to nodes. Annotations can be used by
                 an (un)parser or analysis routine to decorate nodes with relevant information. Annotations
                 are stored in a dictionary that maps strings to annotations. This dictionary initially undefined, but
                 if the user calls any annotation-related method, then an empty dictionary is created.
