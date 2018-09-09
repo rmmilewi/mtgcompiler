@@ -162,6 +162,9 @@ class MgKeywordAbilityListStatement(MgAbstractStatement):
                 for ability in self._abilitylist:
                         ability.setParent(self)
                         
+        def getAbilityAtIndex(self,index):
+                return self._abilitylist[index]
+        
         def isChild(self,child):
                 return child is not None and child in self._abilitylist
         

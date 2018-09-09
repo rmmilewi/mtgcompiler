@@ -132,6 +132,7 @@ class MgAbstractAbility(core.MgNode):
                 """Set the reminder text node."""
                 self._reminderText = reminderText
                 self._reminderText.setParent(self)
+                
 
 # class MgSpellAbility(MgAbstractAbility):
 #         """Spell abilities are abilities that are followed as instructions while an instant or sorcery spell is resolving.

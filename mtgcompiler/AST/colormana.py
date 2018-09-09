@@ -113,14 +113,14 @@ class MgColorTerm(core.MgNode):
                 105.2a A monocolored object is exactly one of the five colors.
                 105.2b A multicolored object is two or more of the five colors.
                 105.2c A colorless object has no color."""
-                White = "White"
-                Blue = "Blue"
-                Black = "Black"
-                Red = "Red"
-                Green = "Green"
-                Monocolored = "Monocolored"
-                Multicolored = "Multicolored"
-                Colorless = "Colorless"
+                White = "white"
+                Blue = "blue"
+                Black = "black"
+                Red = "red"
+                Green = "green"
+                Monocolored = "monocolored"
+                Multicolored = "multicolored"
+                Colorless = "colorless"
         
         def __init__(self,value):
                 """value: an instance of the ColorTermEnum, or, 

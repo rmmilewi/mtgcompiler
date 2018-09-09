@@ -1,3 +1,4 @@
+import collections
 from mtgcompiler.parsers.baseparser import BaseParser
 from mtgcompiler.AST.reference import MgName
 from mtgcompiler.AST.card import MgTypeLine,MgFlavorText,MgTextBox,MgCard
@@ -6,10 +7,11 @@ from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
 from mtgcompiler.AST.statements import MgKeywordAbilityListStatement
 
 from mtgcompiler.AST.expressions import MgNumberValue,MgPTExpression,MgManaExpression,MgTypeExpression,MgDescriptionExpression,MgNamedExpression
+from mtgcompiler.AST.expressions import MgColorExpression,MgAndExpression,MgOrExpression,MgAndOrExpression
 
-
-from mtgcompiler.AST.abilities import MgDeathtouchAbility,MgDefenderAbility,MgDoubleStrikeAbility,MgFirstStrikeAbility
-from mtgcompiler.AST.abilities import MgFlashAbility,MgFlyingAbility,MgHasteAbility,MgIndestructibleAbility
+from mtgcompiler.AST.abilities import MgReminderText
+from mtgcompiler.AST.abilities import MgDeathtouchAbility,MgDefenderAbility,MgDoubleStrikeAbility,MgFirstStrikeAbility,MgTrampleAbility
+from mtgcompiler.AST.abilities import MgFlashAbility,MgFlyingAbility,MgHasteAbility,MgIndestructibleAbility,MgReachAbility
 
 
 
@@ -35,6 +37,14 @@ from lark import Transformer #Converting the parse tree into something useful.
 from lark.tree import pydot__tree_to_png #For rendering the parse tree.
 from lark.lexer import Token
 
+#Convenience function for flattening lists (of lists)+
+def flatten(l):
+    for el in l:
+        if isinstance(el, collections.Iterable) and not isinstance(el, (str, bytes)):
+            yield from flatten(el)
+        else:
+            yield el
+
 class JsonParser(BaseParser):
 
         def __init__(self,startText='cardtext'):
@@ -44,6 +54,10 @@ class JsonParser(BaseParser):
                 
                 
         class JsonTransformer(Transformer):
+                
+                def cardtext(self,items):
+                        return MgTextBox(*items)
+                
                 def kwdeathtouch(self,items): 
                         return MgDeathtouchAbility()
                 def kwdefender(self,items): 
@@ -88,9 +102,8 @@ class JsonParser(BaseParser):
                         return MgLandwalkAbility(typeExpr)
                 def kwlifelink(self,items): 
                         return MgLifelinkAbility()
-                def kwprotection(self,items): 
-                        #TODO
-                        return MgProtectionAbility()
+                def kwprotection(self,items):
+                        return MgProtectionAbility(*items)
                 def kwreach(self,items): 
                         return MgReachAbility()
                 def kwshroud(self,items): 
@@ -100,7 +113,7 @@ class JsonParser(BaseParser):
                 def kwvigilance(self,items): 
                         return MgVigilanceAbility()
                 def kwbanding(self,items): 
-                        #: "banding" | "bands" "with" "other" // TODO 
+                        #: "banding" | "bands" "with" "other"
                         if len(items) == 1:
                                 #Bands with other.
                                 return MgBandingAbility(quality=items[0])
@@ -516,19 +529,40 @@ class JsonParser(BaseParser):
                         #: "assist"
                         return MgAssistAbility()
                         
+                def ability(self,items):
+                        #Either there is a single node representing an ability or sequence of keyword abilities,
+                        #or there is an additional node for the reminder text.
+                        if len(items) == 1:
+                                return items[0]
+                        else:
+                                abilityOrSeq = items[0]
+                                reminderText = items[1]
+                                if type(abilityOrSeq) == MgKeywordAbilityListStatement:
+                                        #The reminder text is attached to the final keyword ability in a sequence
+                                        #of keyword abilities.
+                                        abilityOrSeq.getAbilityAtIndex(-1).setReminderText(reminderText)
+                                else:
+                                        abilityOrSeq.setReminderText(reminderText)
+                        return abilityOrSeq
+                
+                def remindertext(self,items):
+                        text = items[0].value
+                        return MgReminderText(text)
                         
+                def keywordlist(self,items):
+                        flatlst = flatten(items)
+                        return MgKeywordAbilityListStatement(*flatlst)
+                def keywordsequence(self,items):
+                        return items
                 def keywordability(self,items):
                         return items[0]
-                def keywordsequence(self,items):
-                        return MgKeywordAbilityListStatement(*items)
                 
                 def costsequence(self,items):
                         return items[0]
                         
                 def objectname(self,items):
                         return MgName(items[0].value)
-                        
-                        
+                
                 def expression(self,items):
                         return items[0]
                         
@@ -561,6 +595,45 @@ class JsonParser(BaseParser):
                                         raise ValueError("Unrecognized type token: {0}".format(item))
                         typeExpr = MgTypeExpression(*typeobjects)
                         return typeExpr
+                
+                def colorsingleexpr(self,items):
+                        return MgColorExpression(*items)
+                
+                def colororexpr(self,items):
+                        #Note: Internally, 'red, white, or green' is represented as 'red OR white OR green'
+                        lhs = None
+                        for item in items:
+                                if lhs == None:
+                                        lhs = item
+                                else:
+                                        lhs = MgOrExpression(lhs,item)
+                        return MgColorExpression(lhs)
+                        
+                def colorandexpr(self,items):
+                        #Note: Internally, 'red, white, and green' is represented as 'red AND white AND green'
+                        lhs = None
+                        for item in items:
+                                if lhs == None:
+                                        lhs = item
+                                else:
+                                        lhs = MgAndExpression(lhs,item)
+                        return MgColorExpression(lhs)
+                
+                def colorandorexpr(self,items):
+                        #Note: Internally, 'red, white, and/or green' is represented as 'red AND/OR white AND/OR green'
+                        lhs = None
+                        for item in items:
+                                if lhs == None:
+                                        lhs = item
+                                else:
+                                        lhs = MgAndOrExpression(lhs,item)
+                        return MgColorExpression(lhs)
+                
+                def colorterm(self,items):
+                        return MgColorTerm(MgColorTerm.ColorTermEnum(items[0].value))
+                        
+                def noncolorterm(self,items):
+                        return MgNonExpression(MgColorTerm(MgColorTerm.ColorTermEnum(items[0].value)))
                 
                 def manaexpression(self,items):
                         manaExpr = MgManaExpression(*items)
@@ -623,11 +696,12 @@ class JsonParser(BaseParser):
         def define_grammar(self,startText='cardtext'):                
                 larkparser = Lark(r"""
                 
-                        cardtext : (ability remindertext?)*
-                        remindertext : /\(.*?\)/ -> reminder
+                        cardtext : ability*
+                        remindertext : /\(.*?\)/
                         
-                        ability : keywordsequence
-                        keywordsequence: keywordability | keywordability "," keywordsequence
+                        ability : keywordlist remindertext?
+                        keywordlist: keywordsequence
+                        keywordsequence: keywordability | keywordsequence ("," | ";") keywordability
                         
                         keywordability: kwdeathtouch
                         | kwdefender | kwdoublestrike | kwenchant | kwequip | kwfirststrike
@@ -672,7 +746,7 @@ class JsonParser(BaseParser):
                         kwintimidate: "intimidate"
                         kwlandwalk: typeexpression "walk"
                         kwlifelink: "lifelink"
-                        kwprotection: "protection" "from" // TODO
+                        kwprotection: "protection" "from" descriptionexpression ("and" "from" descriptionexpression)*
                         kwreach: "reach"
                         kwshroud: "shroud"
                         kwtrample: "trample"
@@ -809,6 +883,9 @@ class JsonParser(BaseParser):
                         orexpression : expression "or" expression
                         
                         
+                        namereference: NAMEREFSYMBOL
+                        NAMEREFSYMBOL: "~" //Note: This substitution happens prior to lexing/parsing.
+                        
                         //TODO: What about comma-delimited type expressions?
                         typeexpression: (TYPE ["s"] | SUBTYPESPELL ["s"] | SUBTYPELAND ["s"] | SUBTYPEARTIFACT ["s"] | SUBTYPEPLANESWALKER | SUBTYPECREATUREA
                         | SUBTYPECREATUREB | SUBTYPEPLANAR | SUPERTYPE)+
@@ -876,7 +953,13 @@ class JsonParser(BaseParser):
                         SUPERTYPE: "basic" | "legendary" | "ongoing" | "snow" | "world"
                         
                         
-                        colorexpression: COLORTERM 
+                        colorexpression: colorterm -> colorsingleexpr
+                        | colorterm  ("," colorterm ",")* "or" colorterm -> colororexpr
+                        | colorterm ("," colorterm ",")* "and" colorterm -> colorandexpr
+                        | colorterm ("," colorterm ",")* "and/or" colorterm -> colorandorexpr
+                        
+                        colorterm: COLORTERM
+                        | "non" COLORTERM -> noncolorterm
                         
                         COLORTERM: "white" | "blue" | "black" | "red" | "green" | "monocolored" | "multicolored" | "colorless"
                         
@@ -895,16 +978,16 @@ class JsonParser(BaseParser):
                         | manamarker_x -> xmanasymbol
                         | NUMBER -> genericmanasymbol
                         
-                        manamarker_halfmana: "H" -> halfmarker
-                        manamarker_color: "W" -> whitemarker
-                        | "U" -> bluemarker
-                        | "B" -> blackmarker
-                        | "R" -> redmarker
-                        | "G" -> greenmarker
-                        manamarker_snow: "S" -> snowmarker
-                        manamarker_phyrexian: "P" -> phyrexianmarker
-                        manamarker_colorless: "C" -> colorlessmarker
-                        manamarker_x: "X" -> xmarker
+                        manamarker_halfmana: "H"i -> halfmarker
+                        manamarker_color: "W"i -> whitemarker
+                        | "U"i -> bluemarker
+                        | "B"i -> blackmarker
+                        | "R"i -> redmarker
+                        | "G"i -> greenmarker
+                        manamarker_snow: "S"i -> snowmarker
+                        manamarker_phyrexian: "P"i -> phyrexianmarker
+                        manamarker_colorless: "C"i -> colorlessmarker
+                        manamarker_x: "X"i -> xmarker
                         
                         %import common.WORD -> WORD
                         %import common.SIGNED_NUMBER -> NUMBER
@@ -960,14 +1043,27 @@ class JsonParser(BaseParser):
                 """
                 #TODO: Eventually we'll support non-standard layouts.
                 
+                
+                #Preprocessing step: Replace instances of the card name in the body text
+                #with a ~ symbol.
+                if 'name' in cardinput and 'text' in cardinput:
+                        cardinput['text'] = cardinput['text'].replace(cardinput['name'],'~')
+                
+                #Preprocessing Step: Convert the body of the card to lower case.        
+                if 'text' in cardinput:
+                        cardinput['text'] = cardinput['text'].lower()
+                
                 if 'name' in cardinput:
                         cardName = MgName(cardinput['name'])
                 else:
                         cardName = MgName()
                         
+                        
+                        
                 if 'manaCost' in cardinput:
-                        self._lp.start = "manaexpression"
-                        manaCost = self._tf.transform(self._lp.parse(cardinput['manaCost']))
+                        #TODO: There has to be a better way to handle starting at different rules.
+                        manaparser = JsonParser(startText="manaexpression") 
+                        manaCost = manaparser.getLarkTransformer().transform(manaparser.getLarkParser().parse(cardinput['manaCost']))
                 else:
                         manaCost = MgManaExpression()
                         
@@ -993,7 +1089,10 @@ class JsonParser(BaseParser):
                         
                         
                 if 'loyalty' in cardinput:
-                        loyalty = None #TODO
+                        try:
+                                loyalty = MgNumberValue(int(cardinput['loyalty']),MgNumberValue.NumberTypeEnum.Literal)
+                        except ValueError:
+                                loyalty = MgNumberValue(cardinput['loyalty'],MgNumberValue.NumberTypeEnum.Custom)
                 else:
                         loyalty = None
                         
@@ -1012,25 +1111,32 @@ class JsonParser(BaseParser):
                         
                 if 'text' in cardinput:
                         self._lp.start = "cardtext"
-                        self._lp.parse(cardinput['text'])
-                        textBox = MgTextBox() #TODO
+                        parseTree = self._lp.parse(cardinput['text'])
+                        textBox = self._tf.transform(parseTree)
+                        #textBox = MgTextBox()
                 else:
                         textBox = MgTextBox()
                         
                 if 'life' in cardinput:
-                        lifeModifier = None #TODO
+                        try:
+                                lifeModifier = MgNumberValue(int(cardinput['life']),MgNumberValue.NumberTypeEnum.Literal)
+                        except ValueError:
+                                lifeModifier = MgNumberValue(cardinput['life'],MgNumberValue.NumberTypeEnum.Custom)
                 else:
                         lifeModifier = None
                         
                 if 'hand' in cardinput:
-                        handModifier = None #TODO
+                        try:
+                                handModifier = MgNumberValue(int(cardinput['hand']),MgNumberValue.NumberTypeEnum.Literal)
+                        except ValueError:
+                                handModifier = MgNumberValue(cardinput['hand'],MgNumberValue.NumberTypeEnum.Custom)
                 else:
                         handModifier = None
                         
                 if 'flavor' in cardinput:
                         flavor = MgFlavorText(cardinput['flavor'])
                 else:
-                        flavor = None
+                        flavor = None 
                         
                 card = MgCard(**{
                         "name" : cardName,

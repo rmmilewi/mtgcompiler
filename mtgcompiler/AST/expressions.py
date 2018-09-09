@@ -547,6 +547,14 @@ class MgOrExpression(MgBinaryOp):
                 
         def unparseToString(self):
                 return "{0} or {1}".format(self._lhs.unparseToString(),self._rhs.unparseToString())
+                
+class MgAndOrExpression(MgBinaryOp):
+        """Represents an 'and/or', such as 'library and/or graveyard'."""
+        def __init__(self,lhs,rhs):
+                super().__init__(lhs,rhs)
+                
+        def unparseToString(self):
+                return "{0} and/or {1}".format(self._lhs.unparseToString(),self._rhs.unparseToString())
 
 class MgUnaryOp(MgAbstractExpression):
         """An uninstantiated parent class for all unary operators, like 'target X' or 'non-Y'."""
@@ -571,6 +579,7 @@ class MgUnaryOp(MgAbstractExpression):
 class MgTargetExpression(MgUnaryOp):
         """A target expression is used whenever card text involves the word 'target'.
         For example, 'destroy target creature' or 'target player gains 5 life.'"""
+        #TODO: Support 'any target'.
         
         def __init__(self,operand):
                 super().__init__(operand)

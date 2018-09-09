@@ -1,5 +1,7 @@
 import unittest,json
+from tqdm import tqdm
 from mtgcompiler.parsers.JsonParser import JsonParser
+from multiprocessing import Pool
 
 def loadAllSets(fname="tests/parsing/AllSets.json"):
         with open(fname) as f:
@@ -8,6 +10,17 @@ def loadAllSets(fname="tests/parsing/AllSets.json"):
 
 totalCardsParsed = 0
 totalCardsAttempted = 0
+
+workerParser = None
+def parseWorker(cardDict):
+        global workerParser
+        if workerParser == None:
+                workerParser = JsonParser()
+        try:
+                card = workerParser.parse(cardDict)
+                return True
+        except Exception as e:
+                return False
 
 class TestSetParsing(unittest.TestCase):
         @classmethod
@@ -23,18 +36,30 @@ class TestSetParsing(unittest.TestCase):
         def parseCards(self,mset):
                 global totalCardsParsed,totalCardsAttempted
                 numberOfCards = len(mset["cards"])
+                print(mset["name"])
                 cardsParsed = 0
-                for cardDict in mset["cards"]:
-                        try:
-                                card = self._parser.parse(cardDict)
-                                cardsParsed += 1
-                                totalCardsParsed += 1
-                                totalCardsAttempted += 1
-                        except Exception as e:
-                                #print(e)
-                                totalCardsAttempted += 1
-                                continue
+                with Pool(processes=4) as pool:
+                        for res in tqdm(pool.imap_unordered(parseWorker,mset["cards"])):
+                                if res == True:
+                                        cardsParsed += 1
+                                        totalCardsParsed += 1
+                                        totalCardsAttempted += 1
+                                else:
+                                        totalCardsAttempted += 1
                 return cardsParsed,numberOfCards
+                                
+                #for cardDict in tqdm(mset["cards"]):
+                #        try:
+                #                card = self._parser.parse(cardDict)
+                #                #if "name" in cardDict:
+                #                #        print(cardDict["name"]) #TMP
+                #                cardsParsed += 1
+                #                totalCardsParsed += 1
+                #                totalCardsAttempted += 1
+                #        except Exception as e:
+                #                #print(e)
+                #                totalCardsAttempted += 1
+                #                continue
                 
         #def test_UST(self):
         #        mset = self._sets["UST"]
@@ -956,3 +981,6 @@ class TestSetParsing(unittest.TestCase):
 
 if __name__ == '__main__':
         unittest.main()
+        #t = TestSetParsing()
+        #TestSetParsing.setUpClass()
+        #t.test_10E()
