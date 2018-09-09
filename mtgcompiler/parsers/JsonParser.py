@@ -40,7 +40,7 @@ from lark.lexer import Token
 #Convenience function for flattening lists (of lists)+
 def flatten(l):
     for el in l:
-        if isinstance(el, collections.Iterable) and not isinstance(el, (str, bytes)):
+        if isinstance(el, collections.abc.Iterable) and not isinstance(el, (str, bytes)):
             yield from flatten(el)
         else:
             yield el
@@ -51,9 +51,24 @@ class JsonParser(BaseParser):
                 """Calling this constructor causes the Lark parser and the parse-to-AST transformer
                 to be instantiated."""
                 self._lp,self._tf = self.define_grammar(startText)
-                
+                #TODO: There has to be a better way to set different start rules.
+                self._miniManaParser,self._miniManaTransformer = self.define_grammar("manaexpression")
+                self._miniTypelineParser,self._miniTypelineTransformer = self.define_grammar("typeline")
                 
         class JsonTransformer(Transformer):
+                
+                
+                def typeline(self,items):
+                        return MgTypeLine(supertypes=items[0],types=items[1],subtypes=items[2])
+                
+                def typelinesupert(self,items):
+                        return self.typeexpression(items)
+                
+                def typelinet(self,items):
+                        return self.typeexpression(items)
+                        
+                def typelinesubt(self,items):
+                        return self.typeexpression(items)
                 
                 def cardtext(self,items):
                         return MgTextBox(*items)
@@ -592,7 +607,7 @@ class JsonParser(BaseParser):
                                 elif item.type == "SUPERTYPE":
                                         typeobjects.append(MgSupertype(MgSupertype.SupertypeEnum(item.value)))
                                 else:
-                                        raise ValueError("Unrecognized type token: {0}".format(item))
+                                        raise ValueError("Unrecognized type token: '{0}'".format(item))
                         typeExpr = MgTypeExpression(*typeobjects)
                         return typeExpr
                 
@@ -695,6 +710,12 @@ class JsonParser(BaseParser):
                 
         def define_grammar(self,startText='cardtext'):                
                 larkparser = Lark(r"""
+                
+                        typeline: typelinesupert typelinet "—" typelinesubt
+                        typelinesupert: SUPERTYPE*
+                        typelinet: TYPE*
+                        typelinesubt: (SUBTYPESPELL ["s"] | SUBTYPELAND ["s"] SUBTYPELAND | SUBTYPEARTIFACT ["s"]
+                        | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR)*
                 
                         cardtext : ability*
                         remindertext : /\(.*?\)/
@@ -887,8 +908,8 @@ class JsonParser(BaseParser):
                         NAMEREFSYMBOL: "~" //Note: This substitution happens prior to lexing/parsing.
                         
                         //TODO: What about comma-delimited type expressions?
-                        typeexpression: (TYPE ["s"] | SUBTYPESPELL ["s"] | SUBTYPELAND ["s"] | SUBTYPEARTIFACT ["s"] | SUBTYPEPLANESWALKER | SUBTYPECREATUREA
-                        | SUBTYPECREATUREB | SUBTYPEPLANAR | SUPERTYPE)+
+                        typeexpression: (TYPE ["s"] | SUBTYPESPELL ["s"] | SUBTYPELAND ["s"] SUBTYPELAND | SUBTYPEARTIFACT ["s"]
+                        | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR | SUPERTYPE)+
                         
                         TYPE: "planeswalker" | "conspiracy" | "creature" | "enchantment" | "instant"
                         | "land" | "phenomenon" | "plane" | "artifact" | "scheme" | "sorcery"
@@ -1049,9 +1070,12 @@ class JsonParser(BaseParser):
                 if 'name' in cardinput and 'text' in cardinput:
                         cardinput['text'] = cardinput['text'].replace(cardinput['name'],'~')
                 
-                #Preprocessing Step: Convert the body of the card to lower case.        
+                #Preprocessing Step: Convert the typeline and body of the card to lower case.        
                 if 'text' in cardinput:
                         cardinput['text'] = cardinput['text'].lower()
+                if 'type' in cardinput:
+                        cardinput['type'] = cardinput['type'].lower()
+                
                 
                 if 'name' in cardinput:
                         cardName = MgName(cardinput['name'])
@@ -1062,8 +1086,7 @@ class JsonParser(BaseParser):
                         
                 if 'manaCost' in cardinput:
                         #TODO: There has to be a better way to handle starting at different rules.
-                        manaparser = JsonParser(startText="manaexpression") 
-                        manaCost = manaparser.getLarkTransformer().transform(manaparser.getLarkParser().parse(cardinput['manaCost']))
+                        manaCost = self._miniManaTransformer.transform(self._miniManaParser.parse(cardinput['manaCost']))
                 else:
                         manaCost = MgManaExpression()
                         
@@ -1071,19 +1094,7 @@ class JsonParser(BaseParser):
                 colorIndicator = None
                 
                 if 'type' in cardinput:
-                        if 'supertypes' in cardinput:
-                                supertypes = MgTypeExpression() #TODO
-                        else:
-                                supertypes = MgTypeExpression()
-                        if 'types' in cardinput:
-                                types = MgTypeExpression() #TODO
-                        else:
-                                types = MgTypeExpression()
-                        if 'subtypes' in cardinput:
-                                subtypes = MgTypeExpression() #TODO
-                        else:
-                                subtypes = MgTypeExpression()
-                        typeLine = MgTypeLine(supertypes=supertypes,types=types,subtypes=subtypes)
+                        typeLine = self._miniTypelineTransformer.transform(self._miniTypelineParser.parse(cardinput['type']))
                 else:
                         typeLine = MgTypeLine()
                         
