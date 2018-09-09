@@ -257,8 +257,89 @@ class MgName(core.MgNode):
                 
 class MgDeclarationModifier(core.MgNode):
         """A parent class for modifiers to players/objects"""
-        pass
+        def __init__(self,modifier):
+                self._modifier = modifier
+                self._traversable = True
                 
+        def getModifier(self):
+                return self._modifier
+                
+        def setModifier(self,modifier):
+                self._modifier = modifier
+                
+        def isChild(self,child):
+                return False
+                
+        def getTraversalSuccessors(self):
+                return []
+                
+        def unparseToString(self):
+                return self._modifier.value
+        
+class MgAbilityModifier(MgDeclarationModifier):
+        """Used when describing what kind an ability is."""
+        class AbilityModifierEnum(Enum):
+                Triggered = "triggered"
+                Activated = "activated"
+                Mana = "mana"
+                
+        def __init__(self,modifier):
+                assert(type(modifier) == MgAbilityModifier.AbilityModifierEnum)
+                super().__init__(modifier)
+                
+                
+class MgCombatStatusModifier(MgDeclarationModifier):
+        class CombatStatusEnum(Enum):
+                Attacking = "attacking"
+                Attacked = "attacked"
+                Defending = "defending"
+                Blocking = "blocking"
+                Blocked = "blocked"
+                
+        def __init__(self,modifier):
+                assert(type(modifier) == MgCombatStatusModifier.CombatStatusEnum)
+                super().__init__(modifier)
+
+class MgKeywordStatusModifier(MgDeclarationModifier):
+        """Keyword-status modifiers indicate that a player/object is affected by a keyword ability in some way,
+        like a creature with soulbond can be paired, or a spell with kicker can be kicked."""
+        class KeywordStatusEnum(Enum):
+                Paired = "paired"
+                Kicked = "kicked"
+                FaceUp = "face-up"
+                FaceDown = "face-down"
+                Transformed = "transformed"
+                Enchanted = "enchanted"
+                Equipped = "equipped"
+                Fortified = "fortified"
+                
+        def __init__(self,modifier):
+                assert(type(modifier) == MgKeywordStatusModifier.KeywordStatusEnum)
+                super().__init__(modifier)
+        
+class MgTapStatusModifier(MgDeclarationModifier):
+        class TapStatusEnum(Enum):
+                Tapped = "tapped"
+                Untapped = "untapped"
+
+        def __init__(self,modifier):
+                assert(type(modifier) == MgTapStatusModifier.TapStatusEnum)
+                super().__init__(modifier)
+                
+class MgEffectStatusModifier(MgDeclarationModifier):
+        class EffectStatusEnum(Enum):
+                Named = "named"
+                Chosen = "chosen"
+                Revealed = "revealed"
+                Returned = "returned"
+                Destroyed = "destroyed"
+                Exiled = "exiled"
+                Died = "died"
+                Countered = "countered"
+                Sacrificed = "sacrificed"
+        def __init__(self,modifier):
+                assert(type(modifier) == MgEffectStatusModifier.EffectStatusEnum)
+                super().__init__(modifier)
 
 class MgQualifier(core.MgNode):
         """A qualifier is a term that specifies the state of an object (see comp rule 109 for objects).

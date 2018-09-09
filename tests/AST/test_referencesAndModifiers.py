@@ -1,5 +1,6 @@
 import unittest
-from mtgcompiler.AST.reference import MgName,MgItReference,MgThatReference,MgSelfReference,MgNameReference
+from mtgcompiler.AST.reference import MgName,MgItReference,MgThatReference,MgSelfReference,MgNameReference,MgQualifier
+from mtgcompiler.AST.reference import MgAbilityModifier,MgCombatStatusModifier,MgKeywordStatusModifier,MgTapStatusModifier,MgEffectStatusModifier
 from mtgcompiler.AST.colormana import MgColorTerm
 from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
 from mtgcompiler.AST.expressions import MgDescriptionExpression,MgTypeExpression,MgTargetExpression,MgColorExpression
@@ -76,7 +77,41 @@ class TestReferences(unittest.TestCase):
                 
         def test_itReferences(self):
                 pass
+                
+                
+        def test_qualifiers(self):
+                pass
         
+        def test_modifiers(self):
+                triggered = MgAbilityModifier(MgAbilityModifier.AbilityModifierEnum.Triggered)
+                ability = MgQualifier(MgQualifier.QualifierEnum.Ability)
+                triggered_ability = MgDescriptionExpression(triggered,ability)
+                
+                self.assertTrue(triggered.isTraversable())
+                self.assertEqual(len(triggered.getTraversalSuccessors()),0)
+                self.assertEqual(triggered.getModifier(),MgAbilityModifier.AbilityModifierEnum.Triggered)
+                self.assertEqual(triggered_ability.unparseToString().lower(),"triggered ability")
+                
+                blocking = MgCombatStatusModifier(MgCombatStatusModifier.CombatStatusEnum.Blocking)
+                creature = MgTypeExpression(MgType(MgType.TypeEnum.Creature))
+                blocking_creature = MgDescriptionExpression(blocking,creature)
+                self.assertEqual(blocking_creature.unparseToString().lower(),"blocking creature")
+                
+                enchanted = MgKeywordStatusModifier(MgKeywordStatusModifier.KeywordStatusEnum.Enchanted)
+                permanent = MgQualifier(MgQualifier.QualifierEnum.Permanent)
+                enchanted_permanent = MgDescriptionExpression(enchanted,permanent)
+                self.assertEqual(enchanted_permanent.unparseToString().lower(),"enchanted permanent")
+                
+                tapped = MgTapStatusModifier(MgTapStatusModifier.TapStatusEnum.Tapped)
+                artifact = MgTypeExpression(MgType(MgType.TypeEnum.Artifact))
+                tapped_artifact = MgDescriptionExpression(tapped,artifact)
+                self.assertEqual(tapped_artifact.unparseToString().lower(),"tapped artifact")
+                
+                chosen = MgEffectStatusModifier(MgEffectStatusModifier.EffectStatusEnum.Chosen)
+                token = MgQualifier(MgQualifier.QualifierEnum.Token)
+                tapped_artifact = MgDescriptionExpression(chosen,token)
+                self.assertEqual(tapped_artifact.unparseToString().lower(),"chosen token")
+                
         
 if __name__ == '__main__':
         unittest.main()
