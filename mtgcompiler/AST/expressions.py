@@ -292,14 +292,9 @@ class MgTypeExpression(MgAbstractExpression):
                 self._tlist.append(t)
                 t.setParent(self)
                 
-        #def isPlural(self):
-        #        """If the plural flag is set, then the type expression will be unparsed as plural
-        #        (e.g. 'artifact creatures' vs. 'artifact creature'). TODO: This may be subject to change."""
-        #        return self._plural
-                
-        #def setPlural(self,plural):
-        #        """Changes the plural flag. TODO: This may be subject to change."""
-        #        self._plural = plural
+        def getLength(self):
+                """Gets the length of the type of the type expression."""
+                return len(self._tlist)
                 
         def isCommaDelimited(self):
                 """If the comma delimited flag is set, then the type expression will have its terms

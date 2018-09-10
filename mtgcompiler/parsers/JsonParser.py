@@ -4,12 +4,13 @@ from mtgcompiler.AST.reference import MgName
 from mtgcompiler.AST.card import MgTypeLine,MgFlavorText,MgTextBox,MgCard
 from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
 from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
-from mtgcompiler.AST.statements import MgKeywordAbilityListStatement
+from mtgcompiler.AST.statements import MgKeywordAbilityListStatement,MgExpressionStatement,MgStatementBlock
 
 from mtgcompiler.AST.expressions import MgNumberValue,MgPTExpression,MgManaExpression,MgTypeExpression,MgDescriptionExpression,MgNamedExpression
-from mtgcompiler.AST.expressions import MgColorExpression,MgAndExpression,MgOrExpression,MgAndOrExpression
+from mtgcompiler.AST.expressions import MgColorExpression,MgAndExpression,MgOrExpression,MgAndOrExpression,MgTargetExpression
+from mtgcompiler.AST.expressions import MgDestroyExpression,MgExileExpression
 
-from mtgcompiler.AST.abilities import MgReminderText
+from mtgcompiler.AST.abilities import MgReminderText,MgAbilityWord,MgRegularAbility
 from mtgcompiler.AST.abilities import MgDeathtouchAbility,MgDefenderAbility,MgDoubleStrikeAbility,MgFirstStrikeAbility,MgTrampleAbility
 from mtgcompiler.AST.abilities import MgFlashAbility,MgFlyingAbility,MgHasteAbility,MgIndestructibleAbility,MgReachAbility
 
@@ -57,21 +58,93 @@ class JsonParser(BaseParser):
                 
         class JsonTransformer(Transformer):
                 
+                #CARDS
                 
                 def typeline(self,items):
-                        return MgTypeLine(supertypes=items[0],types=items[1],subtypes=items[2])
+                        linefeatures = {}
+                        linefeatures["supertypes"] = MgTypeExpression()
+                        linefeatures["types"] = MgTypeExpression()
+                        linefeatures["subtypes"] = MgTypeExpression()
+                        for item in items:
+                                subfield,expr = item
+                                linefeatures[subfield] = expr
+                        
+                        return MgTypeLine(supertypes=linefeatures["supertypes"],types=linefeatures["types"],subtypes=linefeatures["subtypes"])
                 
                 def typelinesupert(self,items):
-                        return self.typeexpression(items)
+                        return ("supertypes",self.typeexpression(items))
                 
                 def typelinet(self,items):
-                        return self.typeexpression(items)
+                        return ("types",self.typeexpression(items))
                         
                 def typelinesubt(self,items):
-                        return self.typeexpression(items)
+                        return ("subtypes",self.typeexpression(items))
                 
                 def cardtext(self,items):
                         return MgTextBox(*items)
+                        
+                #ABILITIES
+                        
+                def ability(self,items):
+                        #Either there is a single node representing an ability or sequence of keyword abilities,
+                        #or there is an additional node for the reminder text.
+                        if len(items) == 1:
+                                return items[0]
+                        else:
+                                abilityOrSeq = items[0]
+                                reminderText = items[1]
+                                if type(abilityOrSeq) == MgKeywordAbilityListStatement:
+                                        #The reminder text is attached to the final keyword ability in a sequence
+                                        #of keyword abilities.
+                                        abilityOrSeq.getAbilityAtIndex(-1).setReminderText(reminderText)
+                                else:
+                                        abilityOrSeq.setReminderText(reminderText)
+                        return abilityOrSeq
+                        
+                def regularability(self,items):
+                        #abilityword? stmtblock remindertext?
+                        abilityWord = None
+                        statementBlock = None
+                        reminderText = None
+                        if len(items) == 3:
+                                #ability word, then statement block, then reminder text
+                                abilityWord = items[0]
+                                statementBlock = items[1]
+                                reminderText = items[2]
+                        elif len(items) == 2:
+                                if type(items[0]) == MgAbilityWord:
+                                        #ability word, then statement block
+                                        abilityWord = items[0]
+                                        statementBlock = items[1]
+                                else:
+                                        #statement block, then reminder text
+                                        statementBlock = items[0]
+                                        reminderText = items[1]
+                        else:
+                                #Just the statement block, no ability word or reminder text.
+                                statementBlock = items[0]
+                                        
+                        return MgRegularAbility(stmtblock=statementBlock,abilityWord=abilityWord,reminderText=reminderText)
+                        
+                def abilityword(self,items):
+                        text = items[0].value
+                        return MgAbilityWord(text)
+                def remindertext(self,items):
+                        text = items[0].value
+                        return MgReminderText(text)
+                        
+                        
+                #ABILITIES - KEYWORD ABILITIES
+                        
+                def keywordlist(self,items):
+                        flatlst = flatten(items)
+                        return MgKeywordAbilityListStatement(*flatlst)
+                def keywordsequence(self,items):
+                        return items
+                def keywordability(self,items):
+                        return items[0]
+                        
+                        
                 
                 def kwdeathtouch(self,items): 
                         return MgDeathtouchAbility()
@@ -140,7 +213,7 @@ class JsonParser(BaseParser):
                         caliber = int(items[0].value)
                         return MgRampageAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwcumulativeupkeep(self,items): 
-                        #: "cumulative" "upkeep" costsequence
+                        #: "cumulative" "upkeep" cost
                         cost = items[0]
                         return MgCumulativeUpkeepAbility(cost)
                 def kwflanking(self,items): 
@@ -150,14 +223,14 @@ class JsonParser(BaseParser):
                         #: "phasing"
                         return MgPhasingAbility()
                 def kwbuyback(self,items): 
-                        #: "buyback" costsequence
+                        #: "buyback" cost
                         cost = items[0]
                         return MgBuybackAbility(cost)
                 def kwshadow(self,items): 
                         #: "shadow"
                         return MgShadowAbility()
                 def kwcycling(self,items): 
-                        #: "cycling" costsequence
+                        #: "cycling" cost
                         if len(items) == 2:
                                 #typecycling
                                 typeExpr = items[0]
@@ -168,7 +241,7 @@ class JsonParser(BaseParser):
                                 cost = items[0]
                                 return MgCyclingAbility(cost)
                 def kwecho(self,items): 
-                        #: "echo" costsequence
+                        #: "echo" cost
                         cost = items[0]
                         return MgEchoAbility(cost)
                 def kwhorsemanship(self,items): 
@@ -179,26 +252,26 @@ class JsonParser(BaseParser):
                         caliber = int(items[0].value)
                         return MgFadingAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwkicker(self,items): 
-                        #: "kicker" costsequence, multikicker
+                        #: "kicker" cost, multikicker
                         cost = items[0]
                         return MgKickerAbility(cost)
                 def kwflashback(self,items): 
-                        #: "flashback" costsequence
+                        #: "flashback" cost
                         cost = items[0]
                         return MgFlashbackAbility(cost)
                 def kwmadness(self,items): 
-                        #: "madness" costsequence
+                        #: "madness" cost
                         cost = items[0]
                         return MgMadnessAbility(cost)
                 def kwfear(self,items): 
                         #: "fear"
                         return MgFearAbility()
                 def kwmorph(self,items): 
-                        #: "morph" costsequence
+                        #: "morph" cost
                         cost = items[0]
                         return MgMorphAbility(cost)
                 def kwmegamorph(self,items): 
-                        #: "morph" costsequence
+                        #: "morph" cost
                         cost = items[0]
                         return MgMorphAbility(cost,isMega=True)
                 def kwamplify(self,items): 
@@ -216,7 +289,7 @@ class JsonParser(BaseParser):
                         if len(items) == 1:
                                 return MgAffinityAbility(items[0])
                 def kwentwine(self,items): 
-                        #: "entwine" costsequence
+                        #: "entwine" cost
                         cost = items[0]
                         return MgEntwineAbility(cost)
                 def kwmodular(self,items): 
@@ -243,7 +316,7 @@ class JsonParser(BaseParser):
                         typeExpr = items[0]
                         return MgOfferingAbility(typeExpr)
                 def kwninjutsu(self,items): 
-                        #: "ninjutsu" costsequence
+                        #: "ninjutsu" cost
                         cost = items[0]
                         return MgNinjutsuAbility(cost)
                 def kwepic(self,items): 
@@ -257,7 +330,7 @@ class JsonParser(BaseParser):
                         caliber = int(items[0].value)
                         return MgDredgeAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwtransmute(self,items): 
-                        #: "transmute" costsequence
+                        #: "transmute" cost
                         cost = items[0]
                         return MgTransmuteAbility(cost)
                 def kwbloodthirst(self,items): 
@@ -268,7 +341,7 @@ class JsonParser(BaseParser):
                         #: "haunt"
                         return MgHauntAbility()
                 def kwreplicate(self,items): 
-                        #: "replicate" costsequence
+                        #: "replicate" cost
                         cost = items[0]
                         return MgReplicateAbility(cost)
                 def kwforecast(self,items): 
@@ -278,7 +351,7 @@ class JsonParser(BaseParser):
                         #: "graft"
                         return MgGraftAbility()
                 def kwrecover(self,items): 
-                        #: "recover" costsequence
+                        #: "recover" cost
                         cost = items[0]
                         return MgRecoverAbility(cost)
                 def kwripple(self,items): 
@@ -304,14 +377,14 @@ class JsonParser(BaseParser):
                         caliber = int(items[0].value)
                         return MgAbsorbAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwauraswap(self,items): 
-                        #: "aura" "swap" costsequence
+                        #: "aura" "swap" cost
                         cost = items[0]
                         return MgAuraSwapAbility(cost)
                 def kwdelve(self,items): 
                         #: "delve"
                         return MgDelveAbility()
                 def kwfortify(self,items): 
-                        #: "fortify" costsequence
+                        #: "fortify" cost
                         cost = items[0]
                         return MgFortifyAbility(cost)
                 def kwfrenzy(self,items): 
@@ -325,7 +398,7 @@ class JsonParser(BaseParser):
                         caliber = int(items[0].value)
                         return MgPoisonousAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwtransfigure(self,items): 
-                        #: "transfigure" costsequence
+                        #: "transfigure" cost
                         cost = items[0]
                         return MgTransfigureAbility(cost)
                 def kwchampion(self,items): 
@@ -336,18 +409,18 @@ class JsonParser(BaseParser):
                         #: "changeling"
                         return MgChangelingAbility()
                 def kwevoke(self,items): 
-                        #: "evoke" costsequence
+                        #: "evoke" cost
                         cost = items[0]
                         return MgEvokeAbility(cost)
                 def kwhideaway(self,items): 
                         #: "hideaway"
                         return MgHideawayAbility()
                 def kwprowl(self,items): 
-                        #: "prowl" costsequence
+                        #: "prowl" cost
                         cost = items[0]
                         return MgProwlAbility(cost)
                 def kwreinforce(self,items): 
-                        #: "reinforce" costsequence
+                        #: "reinforce" cost
                         cost = items[0]
                         return MgReinforceAbility(cost)
                 def kwconspire(self,items): 
@@ -360,7 +433,7 @@ class JsonParser(BaseParser):
                         #: "wither"
                         return MgWitherAbility()
                 def kwretrace(self,items): 
-                        #: "retrace" costsequence
+                        #: "retrace" cost
                         cost = items[0]
                         return MgRetraceAbility(cost)
                 def kwdevour(self,items): 
@@ -371,7 +444,7 @@ class JsonParser(BaseParser):
                         #: "exalted"
                         return MgExaltedAbility()
                 def kwunearth(self,items): 
-                        #: "unearth" costsequence
+                        #: "unearth" cost
                         cost = items[0]
                         return MgUnearthAbility(cost)
                 def kwcascade(self,items): 
@@ -404,18 +477,18 @@ class JsonParser(BaseParser):
                         #: "undying"
                         return MgUndyingAbility()
                 def kwmiracle(self,items): 
-                        #: "miracle" costsequence
+                        #: "miracle" cost
                         cost = items[0]
                         return MgMiracleAbility(cost)
                 def kwsoulbond(self,items): 
                         #: "soulbond"
                         return MgSoulbondAbility()
                 def kwoverload(self,items): 
-                        #: "overload" costsequence
+                        #: "overload" cost
                         cost = items[0]
                         return MgOverloadAbility(cost)
                 def kwscavenge(self,items): 
-                        #: "scavenge" costsequence
+                        #: "scavenge" cost
                         cost = items[0]
                         return MgScavengeAbility(cost)
                 def kwunleash(self,items): 
@@ -434,7 +507,7 @@ class JsonParser(BaseParser):
                         #: "fuse"
                         return MgFuseAbility()
                 def kwbestow(self,items): 
-                        #: "bestow" costsequence
+                        #: "bestow" cost
                         cost = items[0]
                         return MgBestowAbility(cost)
                 def kwtribute(self,items): 
@@ -451,14 +524,14 @@ class JsonParser(BaseParser):
                         #: "hidden" "agenda" | "double" "agenda"
                        return MgHiddenAgendaAbility(isDoubleAgenda=True)
                 def kwoutlast(self,items): 
-                        #: "outlast" costsequence
+                        #: "outlast" cost
                         cost = items[0]
                         return MgOutlastAbility(cost)
                 def kwprowess(self,items): 
                         #: "prowess"
                         return MgProwessAbility()
                 def kwdash(self,items): 
-                        #: "dash" costsequence
+                        #: "dash" cost
                         cost = items[0]
                         return MgDashAbility(cost)
                 def kwexploit(self,items): 
@@ -472,7 +545,7 @@ class JsonParser(BaseParser):
                         caliber = int(items[0].value)
                         return MgRenownAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
                 def kwawaken(self,items): 
-                        #: "awaken" costsequence
+                        #: "awaken" cost
                         cost = items[0]
                         return MgAwakenAbility(cost)
                 def kwdevoid(self,items): 
@@ -485,18 +558,18 @@ class JsonParser(BaseParser):
                         #: "myriad"
                         return MgMyriadAbility()
                 def kwsurge(self,items): 
-                        #: "surge" costsequence
+                        #: "surge" cost
                         cost = items[0]
                         return MgSurgeAbility(cost)
                 def kwskulk(self,items): 
                         #: "skulk"
                         return MgSkulkAbility()
                 def kwemerge(self,items): 
-                        #: "emerge" costsequence
+                        #: "emerge" cost
                         cost = items[0]
                         return MgEmergeAbility(cost)
                 def kwescalate(self,items): 
-                        #: "escalate" costsequence
+                        #: "escalate" cost
                         cost = items[0]
                         return MgEscalateAbility(cost)
                 def kwmelee(self,items): 
@@ -526,11 +599,11 @@ class JsonParser(BaseParser):
                         #: "aftermath"
                         return MgAftermathAbility()
                 def kwembalm(self,items): 
-                        #: "embalm" costsequence
+                        #: "embalm" cost
                         cost = items[0]
                         return MgEnbalmAbility(cost)
                 def kweternalize(self,items): 
-                        #: "eternalize" costsequence
+                        #: "eternalize" cost
                         cost = items[0]
                         return MgEternalizeAbility(cost)
                 def kwafflict(self,items): 
@@ -543,44 +616,40 @@ class JsonParser(BaseParser):
                 def kwassist(self,items): 
                         #: "assist"
                         return MgAssistAbility()
-                        
-                def ability(self,items):
-                        #Either there is a single node representing an ability or sequence of keyword abilities,
-                        #or there is an additional node for the reminder text.
-                        if len(items) == 1:
-                                return items[0]
-                        else:
-                                abilityOrSeq = items[0]
-                                reminderText = items[1]
-                                if type(abilityOrSeq) == MgKeywordAbilityListStatement:
-                                        #The reminder text is attached to the final keyword ability in a sequence
-                                        #of keyword abilities.
-                                        abilityOrSeq.getAbilityAtIndex(-1).setReminderText(reminderText)
-                                else:
-                                        abilityOrSeq.setReminderText(reminderText)
-                        return abilityOrSeq
                 
-                def remindertext(self,items):
-                        text = items[0].value
-                        return MgReminderText(text)
-                        
-                def keywordlist(self,items):
-                        flatlst = flatten(items)
-                        return MgKeywordAbilityListStatement(*flatlst)
-                def keywordsequence(self,items):
-                        return items
-                def keywordability(self,items):
+                #STATEMENTS
+                def statement(self,items):
                         return items[0]
                 
-                def costsequence(self,items):
-                        return items[0]
-                        
-                def objectname(self,items):
-                        return MgName(items[0].value)
+                def statementblock(self,items):
+                        return MgStatementBlock(*items)
                 
+                def expressionstatement(self,items):
+                        expression = items[0]
+                        return MgExpressionStatement(expression)
+                        
+                #EXPRESSIONS
                 def expression(self,items):
                         return items[0]
                         
+                #EXPRESSIONS - UNARY OPERATIONS
+                def unaryop(self,items):
+                        return items[0]
+                def targetexpression(self,items):
+                        subject = items[0]
+                        return MgTargetExpression(subject)
+                        
+                #EXPRESSIONS - EFFECT EXPRESSIONS
+                def effectexpression(self,items):
+                        return items[0]
+                def destroyexpression(self,items):
+                        return MgDestroyExpression(items[0])
+                
+                
+                
+                
+                
+                      
                 def descriptionexpression(self,items):
                         return MgDescriptionExpression(*items)
                 
@@ -598,6 +667,8 @@ class JsonParser(BaseParser):
                                         typeobjects.append(MgSubtype(MgSubtype.LandSubtypeEnum(item.value)))
                                 elif item.type == "SUBTYPEARTIFACT":
                                         typeobjects.append(MgSubtype(MgSubtype.ArtifactSubtypeEnum(item.value)))
+                                elif item.type == "SUBTYPEENCHANTMENT":
+                                        typeobjects.append(MgSubtype(MgSubtype.EnchantmentSubtypeEnum(item.value)))
                                 elif item.type == "SUBTYPEPLANESWALKER":
                                         typeobjects.append(MgSubtype(MgSubtype.PlaneswalkerSubtypeEnum(item.value)))
                                 elif item.type == "SUBTYPECREATUREA" or item.type == "SUBTYPECREATUREB":
@@ -649,6 +720,12 @@ class JsonParser(BaseParser):
                         
                 def noncolorterm(self,items):
                         return MgNonExpression(MgColorTerm(MgColorTerm.ColorTermEnum(items[0].value)))
+                        
+                def cost(self,items):
+                        return items[0]
+                        
+                def objectname(self,items):
+                        return MgName(items[0].value)
                 
                 def manaexpression(self,items):
                         manaExpr = MgManaExpression(*items)
@@ -711,18 +788,61 @@ class JsonParser(BaseParser):
         def define_grammar(self,startText='cardtext'):                
                 larkparser = Lark(r"""
                 
-                        typeline: typelinesupert typelinet "—" typelinesubt
+                        typeline: typelinesupert typelinet ("—" typelinesubt)?
                         typelinesupert: SUPERTYPE*
                         typelinet: TYPE*
-                        typelinesubt: (SUBTYPESPELL ["s"] | SUBTYPELAND ["s"] SUBTYPELAND | SUBTYPEARTIFACT ["s"]
-                        | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR)*
+                        typelinesubt: (SUBTYPESPELL | SUBTYPELAND | SUBTYPEARTIFACT
+                        | SUBTYPEENCHANTMENT | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR)*
                 
                         cardtext : ability*
                         remindertext : /\(.*?\)/
                         
                         ability : keywordlist remindertext?
+                        | abilityword? statementblock remindertext? -> regularability
+                        abilityword: WORD "—"
+                        
                         keywordlist: keywordsequence
                         keywordsequence: keywordability | keywordsequence ("," | ";") keywordability
+                        
+                        statementblock : statement ["."] | statementblock statement ["."]
+                        
+                        statement: expressionstatement 
+                        | compoundstatement 
+                        | conditionalstatement 
+                        | activationstatement
+                        | beingstatement
+                        
+                        beingstatement: expression "is" expression -> isstatement
+                        | expression "isn't" expression -> isntstatement
+                        | "it's" expression -> itsstatement
+                        | "it's" "not" expression -> itsnotstatement
+                        | expression "can" expression -> canstatement
+                        | expression "can't" expression -> cantstatement
+                        
+                        expressionstatement: expression
+                        
+                        compoundstatement: statement  ("," statement ",")* "then" statement -> compoundthenstatement
+                        | statement  ("," statement ",")* "and" statement -> compoundandstatement
+                        
+                        conditionalstatement: "if" statement "," statement -> ifstatement
+                        | statement "if" statement -> ifstatementinv
+                        | "whenever" statement "," statement -> wheneverstatement
+                        | statement "whenever" statement -> wheneverstatementinv
+                        | "when" statement "," statement -> whenstatement
+                        | statement "when" statement -> whenstatementinv
+                        | "at" statement "," statement -> atstatement
+                        | statement "at" statement -> atstatementinv
+                        | "as" "long" "as" statement "," statement -> aslongasstatement
+                        | statement "as" "long" "as" statement -> aslongasstatementinv
+                        | "for" statement "," statement -> forstatement
+                        | statement "for" statement -> forstatementinv
+                        | "otherwise" "," statement -> otherwisestatement
+                        | statement "unless" statement -> unlessstatement
+                        | "while" statement "," statement -> whilestatement
+                        
+                        activationstatement: cost ":" statementblock
+                        
+                        
                         
                         keywordability: kwdeathtouch
                         | kwdefender | kwdoublestrike | kwenchant | kwequip | kwfirststrike
@@ -757,7 +877,7 @@ class JsonParser(BaseParser):
                         kwdefender: "defender"
                         kwdoublestrike: "double" "strike"
                         kwenchant: "enchant" typeexpression // TODO
-                        kwequip: "equip" costsequence  //TODO | "equip" descriptionexpression costsequence
+                        kwequip: "equip" cost  //TODO | "equip" descriptionexpression cost
                         kwfirststrike: "first strike"
                         kwflash: "flash"
                         kwflying: "flying"
@@ -774,106 +894,106 @@ class JsonParser(BaseParser):
                         kwvigilance: "vigilance"
                         kwbanding: "banding" | "bands" "with" "other" descriptionexpression
                         kwrampage: "rampage" NUMBER
-                        kwcumulativeupkeep: "cumulative" "upkeep" costsequence
+                        kwcumulativeupkeep: "cumulative" "upkeep" cost
                         kwflanking: "flanking"
                         kwphasing: "phasing"
-                        kwbuyback: "buyback" costsequence
+                        kwbuyback: "buyback" cost
                         kwshadow: "shadow"
-                        kwcycling: [typeexpression] "cycling" costsequence
-                        kwecho: "echo" costsequence
+                        kwcycling: [typeexpression] "cycling" cost
+                        kwecho: "echo" cost
                         kwhorsemanship: "horsemanship"
                         kwfading: "fading" NUMBER
-                        kwkicker: "kicker" costsequence -> kicker
-                        | "multikicker" costsequence -> multikicker
-                        kwflashback: "flashback" costsequence
-                        kwmadness: "madness" costsequence
+                        kwkicker: "kicker" cost -> kicker
+                        | "multikicker" cost -> multikicker
+                        kwflashback: "flashback" cost
+                        kwmadness: "madness" cost
                         kwfear: "fear"
-                        kwmorph: "morph" costsequence -> kwmorph
-                        | "megamorph" costsequence -> kwmegamorph
+                        kwmorph: "morph" cost -> kwmorph
+                        | "megamorph" cost -> kwmegamorph
                         kwamplify: "amplify" NUMBER
                         kwprovoke: "provoke"
                         kwstorm: "storm"
                         kwaffinity: "affinity" "for" typeexpression
-                        kwentwine: "entwine" costsequence
+                        kwentwine: "entwine" cost
                         kwmodular: "modular" NUMBER
                         kwsunburst: "sunburst"
                         kwbushido: "bushido" NUMBER
                         kwsoulshift: "soulshift" NUMBER
-                        kwsplice: "splice" "onto" typeexpression costsequence
+                        kwsplice: "splice" "onto" typeexpression cost
                         kwoffering: typeexpression "offering"
-                        kwninjutsu: "ninjutsu" costsequence
+                        kwninjutsu: "ninjutsu" cost
                         kwepic: "epic"
                         kwconvoke: "convoke"
                         kwdredge: "dredge" NUMBER
-                        kwtransmute: "transmute" costsequence
+                        kwtransmute: "transmute" cost
                         kwbloodthirst: "bloodthirst" NUMBER
                         kwhaunt: "haunt"
-                        kwreplicate: "replicate" costsequence
+                        kwreplicate: "replicate" cost
                         kwforecast: "forecast"
                         kwgraft: "graft"
-                        kwrecover: "recover" costsequence
+                        kwrecover: "recover" cost
                         kwripple: "ripple" NUMBER
                         kwsplitsecond: "split" "second"
                         kwsuspend: "suspend" NUMBER
                         kwvanishing: "vanishing" [NUMBER]
                         kwabsorb: "absorb" NUMBER
-                        kwauraswap: "aura" "swap" costsequence
+                        kwauraswap: "aura" "swap" cost
                         kwdelve: "delve"
-                        kwfortify: "fortify" costsequence
+                        kwfortify: "fortify" cost
                         kwfrenzy: "frenzy"
                         kwgravestorm: "gravestorm"
                         kwpoisonous: "poisonous" NUMBER
-                        kwtransfigure: "transfigure" costsequence
+                        kwtransfigure: "transfigure" cost
                         kwchampion: "champion" "a"["n"] typeexpression
                         kwchangeling: "changeling"
-                        kwevoke: "evoke" costsequence
+                        kwevoke: "evoke" cost
                         kwhideaway: "hideaway"
-                        kwprowl: "prowl" costsequence
-                        kwreinforce: "reinforce" costsequence
+                        kwprowl: "prowl" cost
+                        kwreinforce: "reinforce" cost
                         kwconspire: "conspire"
                         kwpersist: "persist"
                         kwwither: "wither"
-                        kwretrace: "retrace" costsequence
+                        kwretrace: "retrace" cost
                         kwdevour: "devour" NUMBER
                         kwexalted: "exalted"
-                        kwunearth: "unearth" costsequence
+                        kwunearth: "unearth" cost
                         kwcascade: "cascade"
                         kwannihilator: "annihilator" NUMBER
-                        kwlevelup: "level up" costsequence
+                        kwlevelup: "level up" cost
                         kwrebound: "rebound"
                         kwtotemarmor: "totem" "armor"
                         kwinfect: "infect"
                         kwbattlecry: "battle" "cry"
                         kwlivingweapon: "living" "weapon"
                         kwundying: "undying"
-                        kwmiracle: "miracle" costsequence
+                        kwmiracle: "miracle" cost
                         kwsoulbond: "soulbond"
-                        kwoverload: "overload" costsequence
-                        kwscavenge: "scavenge" costsequence
+                        kwoverload: "overload" cost
+                        kwscavenge: "scavenge" cost
                         kwunleash: "unleash"
                         kwcipher: "cipher"
                         kwevolve: "evolve"
                         kwextort: "extort"
                         kwfuse: "fuse"
-                        kwbestow: "bestow" costsequence
+                        kwbestow: "bestow" cost
                         kwtribute: "tribute" NUMBER
                         kwdethrone: "dethrone"
                         kwhiddenagenda: "hidden" "agenda" -> kwhiddenagenda
                         | "double" "agenda" -> kwdoubleagenda
-                        kwoutlast: "outlast" costsequence
+                        kwoutlast: "outlast" cost
                         kwprowess: "prowess"
-                        kwdash: "dash" costsequence
+                        kwdash: "dash" cost
                         kwexploit: "exploit"
                         kwmenace: "menace"
                         kwrenown: "renown" NUMBER
-                        kwawaken: "awaken" costsequence
+                        kwawaken: "awaken" cost
                         kwdevoid: "devoid"
                         kwingest: "ingest"
                         kwmyriad: "myriad"
-                        kwsurge: "surge" costsequence
+                        kwsurge: "surge" cost
                         kwskulk: "skulk"
-                        kwemerge: "emerge" costsequence
-                        kwescalate: "escalate" costsequence
+                        kwemerge: "emerge" cost
+                        kwescalate: "escalate" cost
                         kwmelee: "melee"
                         kwcrew: "crew" NUMBER
                         kwfabricate: "fabricate" NUMBER
@@ -881,35 +1001,74 @@ class JsonParser(BaseParser):
                         kwundaunted: "undaunted"
                         kwimprovise: "improvise"
                         kwaftermath: "aftermath"
-                        kwembalm: "embalm" costsequence
-                        kweternalize: "eternalize" costsequence
+                        kwembalm: "embalm" cost
+                        kweternalize: "eternalize" cost
                         kwafflict: "afflict" NUMBER
                         kwascend: "ascend"
                         kwassist: "assist"
                         
-                        costsequence: manaexpression | dashcostexpression
+                        cost: costsequence | dashcostexpression //TODO
+                        costsequence: (TAPSYMBOL | UNTAPSYMBOL | manaexpression | effectexpression) 
+                        | costsequence (TAPSYMBOL | UNTAPSYMBOL | manaexpression | effectexpression)
+                        dashcostexpression: "—" expression
+                        valueexpression: NUMBER //TODO: Need to account for custom values, variables, etc.
                         
                         //TODO: Add as needed.
-                        expression: colorexpression | namedexpression | manaexpression | typeexpression
+                        expression: unaryop | binaryop | descriptionexpression | effectexpression | etbexpression
+                        | ltbexpression
                         
-                        ptexpression: valueexpression "/" valueexpression
-                        valueexpression: NUMBER //TODO: Need to account for custom values, variables, etc.
-                        dashcostexpression: "—" expression
-                        descriptionexpression: expression+
+                        //targetexpression | colorexpression | namedexpression | manaexpression | typeexpression
+                        //| etbexpression | ltbexpression 
                         
-                        namedexpression: "named" objectname
-                        targetexpression: "target" expression
+                        unaryop: targetexpression
+                        | eachexpression 
+                        
+                        targetexpression: "target" descriptionexpression
                         eachexpression: "each" expression
-                        andexpression : expression "and" expression
-                        orexpression : expression "or" expression
+                        
+                        binaryop: andexpression 
+                        | orexpression
+                        
+                        andexpression : statement "and" statement
+                        orexpression : statement "or" statement
                         
                         
+                        descriptionorreference: referenceterm | descriptionexpression
+                        //TODO
+                        descriptionexpression: ( colorexpression | namedexpression | manaexpression | typeexpression 
+                        | ptexpression)+
+                        ptexpression: valueexpression "/" valueexpression
+                        namedexpression: "named" objectname
+                        
+                        
+                        
+                        playerdoesexpression: playerreference ("do" | "does") -> playerdoesexpression
+                        | playerreference ("don't" | "doesn't") -> playerdoesnotexpression
+                        
+                        
+                        etbexpression: descriptionorreference "enters" "the" "battlefield"
+                        ltbexpression: descriptionorreference "leaves" "the" "battlefield"
+                        
+                        effectexpression:
+                        | destroyexpression
+                        | exileexpression
+                        | sacrificeexpression
+                        | regenerateexpression
+                        
+                        destroyexpression: "destroy" expression
+                        exileexpression: "exile" expression
+                        sacrificeexpression: "sacrifice" expression //TODO: optional player field
+                        regenerateexpression: "regenerate" expression
+                        
+                        referenceterm: namereference //TODO: that-references, it-references,etc.
+                        
+                        playerreference: "you" //TODO
                         namereference: NAMEREFSYMBOL
                         NAMEREFSYMBOL: "~" //Note: This substitution happens prior to lexing/parsing.
                         
                         //TODO: What about comma-delimited type expressions?
-                        typeexpression: (TYPE ["s"] | SUBTYPESPELL ["s"] | SUBTYPELAND ["s"] SUBTYPELAND | SUBTYPEARTIFACT ["s"]
-                        | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR | SUPERTYPE)+
+                        typeexpression: (TYPE ["s"] | SUBTYPESPELL ["s"] | SUBTYPELAND ["s"] | SUBTYPEARTIFACT ["s"]
+                        | SUBTYPEENCHANTMENT ["s"] | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR | SUPERTYPE)+
                         
                         TYPE: "planeswalker" | "conspiracy" | "creature" | "enchantment" | "instant"
                         | "land" | "phenomenon" | "plane" | "artifact" | "scheme" | "sorcery"
@@ -1010,11 +1169,14 @@ class JsonParser(BaseParser):
                         manamarker_colorless: "C"i -> colorlessmarker
                         manamarker_x: "X"i -> xmarker
                         
+                        TAPSYMBOL: "{T}"
+                        UNTAPSYMBOL: "{Q}"
+                        
                         %import common.WORD -> WORD
                         %import common.SIGNED_NUMBER -> NUMBER
                         %import common.WS -> WS
                         %ignore WS
-                """, start=startText)
+                """, start=startText,debug=True)
                 
                 transformer = JsonParser.JsonTransformer()
                 
@@ -1085,7 +1247,6 @@ class JsonParser(BaseParser):
                         
                         
                 if 'manaCost' in cardinput:
-                        #TODO: There has to be a better way to handle starting at different rules.
                         manaCost = self._miniManaTransformer.transform(self._miniManaParser.parse(cardinput['manaCost']))
                 else:
                         manaCost = MgManaExpression()
@@ -1094,7 +1255,11 @@ class JsonParser(BaseParser):
                 colorIndicator = None
                 
                 if 'type' in cardinput:
-                        typeLine = self._miniTypelineTransformer.transform(self._miniTypelineParser.parse(cardinput['type']))
+                        try:
+                                typeLine = self._miniTypelineTransformer.transform(self._miniTypelineParser.parse(cardinput['type']))
+                        except Exception as e:
+                                print("WTF {0}".format(cardinput['name']))
+                                raise e
                 else:
                         typeLine = MgTypeLine()
                         
@@ -1124,7 +1289,6 @@ class JsonParser(BaseParser):
                         self._lp.start = "cardtext"
                         parseTree = self._lp.parse(cardinput['text'])
                         textBox = self._tf.transform(parseTree)
-                        #textBox = MgTextBox()
                 else:
                         textBox = MgTextBox()
                         

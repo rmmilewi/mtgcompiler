@@ -10,56 +10,52 @@ def loadAllSets(fname="tests/parsing/AllSets.json"):
 
 totalCardsParsed = 0
 totalCardsAttempted = 0
+parsednames = set()
 
 workerParser = None
 def parseWorker(cardDict):
         global workerParser
         if workerParser == None:
                 workerParser = JsonParser()
+        if 'name' in cardDict:
+                name = cardDict['name']
+        else:
+                name = None
         try:
                 card = workerParser.parse(cardDict)
-                return True
+                return name, True
         except Exception as e:
-                return False
+                return name,False
 
 class TestSetParsing(unittest.TestCase):
         @classmethod
         def setUpClass(cls):
                 cls._sets = loadAllSets()
                 cls._parser = JsonParser()
+                cls._parsednames = set()
         
         @classmethod
         def tearDownClass(cls):
-                global totalCardsParsed,totalCardsAttempted
+                global totalCardsParsed,totalCardsAttempted,parsednames
                 print("Total JsonParser support for Magic cards: {0} / {1} ({2}%)".format(totalCardsParsed,totalCardsAttempted,totalCardsParsed/totalCardsAttempted))
-                
+                print("{0} unique cards parsed.".format(len(parsednames)))
         def parseCards(self,mset):
-                global totalCardsParsed,totalCardsAttempted
+                global totalCardsParsed,totalCardsAttempted,parsednames
                 numberOfCards = len(mset["cards"])
                 print(mset["name"])
                 cardsParsed = 0
-                with Pool(processes=4) as pool:
+                with Pool(processes=1) as pool:
                         for res in tqdm(pool.imap_unordered(parseWorker,mset["cards"])):
-                                if res == True:
+                                name,parsed = res
+                                if parsed == True:
+                                        if name not in self._parsednames:
+                                                self._parsednames.add(name)
                                         cardsParsed += 1
                                         totalCardsParsed += 1
                                         totalCardsAttempted += 1
                                 else:
                                         totalCardsAttempted += 1
                 return cardsParsed,numberOfCards
-                                
-                #for cardDict in tqdm(mset["cards"]):
-                #        try:
-                #                card = self._parser.parse(cardDict)
-                #                #if "name" in cardDict:
-                #                #        print(cardDict["name"]) #TMP
-                #                cardsParsed += 1
-                #                totalCardsParsed += 1
-                #                totalCardsAttempted += 1
-                #        except Exception as e:
-                #                #print(e)
-                #                totalCardsAttempted += 1
-                #                continue
                 
         #def test_UST(self):
         #        mset = self._sets["UST"]

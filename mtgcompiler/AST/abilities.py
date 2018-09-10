@@ -133,6 +133,46 @@ class MgAbstractAbility(core.MgNode):
                 self._reminderText = reminderText
                 self._reminderText.setParent(self)
                 
+                
+class MgRegularAbility(MgAbstractAbility):
+        """A regular ability is a non-keyword ability composed of a series of statements. Regular abilities
+        can be triggered abilities, activated abilities, spell abilities, or static abilities."""
+        def __init__(self,stmtblock,abilityWord=None,reminderText=None):
+                """
+                stmtblock: An MgStatementBlock containing the statements that are executed to carry
+                out the ability.
+                """
+                super().__init__(abilityWord,reminderText)
+                self._stmtblock = stmtblock
+                self._stmtblock.setParent(self)
+                
+        def isChild(self,child):
+                """A regular ability has only one child, the instruction sequence."""
+                return child is self._instructions
+        
+        def getTraversalSuccessors(self):
+                """A regular ability has only one child, the instruction sequence."""
+                return [node for node in {self._instructions} if node.isTraversable()]
+                
+        def getInstructions(self):
+                """Get the statement block held by the ability."""
+                return self._stmtblock
+        
+        def setInstructions(self,stmtblock):
+                """Set the statement block held by the ability."""
+                self._stmtblock = stmtblock
+                self._stmtblock.setParent(self)
+                
+        def unparseToString(self):
+                output = "{0}".format(self._stmtblock.unparseToString())
+                if self.hasAbilityWord():
+                        output = "{0} {1}".format(self._abilityWord.unparseToString(),output)
+                if self.hasReminderText():
+                        output = "{0} {1}".format(output,self._reminderText.unparseToString())
+                return output                   
+        
+                         
+                
 
 # class MgSpellAbility(MgAbstractAbility):
 #         """Spell abilities are abilities that are followed as instructions while an instant or sorcery spell is resolving.

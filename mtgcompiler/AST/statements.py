@@ -121,6 +121,10 @@ class MgCompoundStatement(MgAbstractStatement):
                 output = ', '.join(statement.unparseToString() for statement in self._statements[0:len(self._tlist)-1]) 
                 output = output + ", {0} {1}".format(self._terminator.value,self._statements[len(self._statements)-1])
                 return output
+                
+                
+class MgIsStatment(MgAbstractStatement):
+        pass
                       
 class MgThenStatement(MgAbstractStatement):
         """Then [expression or statement].
@@ -267,6 +271,16 @@ class MgAtStatement(MgConditionalStatement):
                         return "at {0}, {1}".format(self._conditional.unparseToString(),self._consequence.unparseToString())
                 else:
                         return "{1} at {0}".format(self._conditional.unparseToString(),self._consequence.unparseToString())
+                        
+class MgAsLongAsStatement(MgConditionalStatement):
+        def __init__(self,conditional,consequence,inverted=False):
+                super().__init__(conditional,consequence,inverted)
+        
+        def unparseToString(self):
+                if self._inverted is False:
+                        return "as long as {0}, {1}".format(self._conditional.unparseToString(),self._consequence.unparseToString())
+                else:
+                        return "{1} as long as {0}".format(self._conditional.unparseToString(),self._consequence.unparseToString())
         
 class MgOtherwiseStatement(MgConditionalStatement):
         def __init__(self,conditional,consequence):
@@ -372,17 +386,5 @@ class MgExpressionStatement(core.MgNode):
                 self._root = root
                 self._root.setParent(self)
                 
-        def isPeriodTerminated(self):
-                """Checks whether the statement is terminated by a period."""
-                return self._periodTerminated
-                
-        def setPeriodTerminated(self,periodTerminated):
-                """Enables or disables period termination for the statement."""
-                self._periodTerminated = periodTerminated
-        
-                
         def unparseToString(self):
-                if self._periodTerminated is True:
-                        return "{0}.".format(self._root.unparseToString())
-                else:
-                        return "{0}".format(self._root.unparseToString())
+                return "{0}".format(self._root.unparseToString())

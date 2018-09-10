@@ -136,7 +136,10 @@ class MgTypeLine(core.MgNode):
                 return [ts for ts in {self._supertypes,self._types,self._subtypes} if ts.isTraversable()]
         
         def unparseToString(self):
-                return "{0} {1} — {2}".format(self._supertypes.unparseToString(),self._types.unparseToString(),self._subtypes.unparseToString())
+                if self._subtypes.getLength() == 0:
+                        return "{0} {1}".format(self._supertypes.unparseToString(),self._types.unparseToString())
+                else:
+                        return "{0} {1} — {2}".format(self._supertypes.unparseToString(),self._types.unparseToString(),self._subtypes.unparseToString())
 
 class MgCard(core.MgNode):
         """This node represents a Magic card. When a card is parsed,

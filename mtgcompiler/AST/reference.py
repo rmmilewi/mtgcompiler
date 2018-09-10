@@ -291,10 +291,11 @@ class MgAbilityModifier(MgDeclarationModifier):
 class MgCombatStatusModifier(MgDeclarationModifier):
         class CombatStatusEnum(Enum):
                 Attacking = "attacking"
-                Attacked = "attacked"
                 Defending = "defending"
+                Attacked = "attacked"
                 Blocking = "blocking"
                 Blocked = "blocked"
+                Active = "active"
                 
         def __init__(self,modifier):
                 assert(type(modifier) == MgCombatStatusModifier.CombatStatusEnum)
