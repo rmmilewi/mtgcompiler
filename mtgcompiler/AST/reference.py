@@ -218,6 +218,15 @@ class MgItReference(MgAbstractReference):
                 
         def unparseToString(self):
                 return "it"
+                
+                
+class MgThisReference(MgAbstractReference):
+        """
+        
+        'Whenever this creature transforms [...]'
+        'Until end of turn, creatures you control gain "Whenever this creature [...]"'
+        """
+        pass
 
         
 
@@ -341,6 +350,46 @@ class MgEffectStatusModifier(MgDeclarationModifier):
         def __init__(self,modifier):
                 assert(type(modifier) == MgEffectStatusModifier.EffectStatusEnum)
                 super().__init__(modifier)
+                
+                
+
+class MgCharacteristicTerm(core.MgNode):
+        """A term used to refer to the characteristic of some previously defined object. From the rules
+        
+        109.3. An object’s characteristics are name, mana cost, color, color indicator, card type, subtype,
+        supertype, rules text, abilities, power, toughness, loyalty, hand modifier, and life modifier.
+        Objects can have some or all of these characteristics. Any other information about an object
+        isn’t a characteristic.
+        """
+        class CharacteristicEnum(Enum):
+                Name = "name"
+                ManaCost = "mana cost"
+                ColorIndicator = "color indicator" #Has never been used.
+                CardType = "card type"
+                Subtype = "subtype"
+                Supertype = "supertype"
+                RulesText = "rules text" #Only used in un-cards so far.
+                Abilities = "abilities"
+                Power = "power"
+                Toughness = "toughness"
+                Loyalty = "loyalty"
+                HandModifier = "hand modifier" #Has never been used.
+                LifeModifier = "life modifier" #Has never been used.
+                
+        def __init__(self,value):
+                """value: a CharacteristicEnum."""
+                self._traversable = True
+                self._value = value
+                
+        def getValue(self):
+                """Access method for the value attribute. This is the value held by the characteristic object. 
+                This must be a pre-defined Enum type."""
+                return self._value
+                
+        def setValue(self, value):
+                """Setter method for the value attribute. This is the value held by the characteristic object. 
+                This must be a pre-defined Enum type."""
+                self._value=value
 
 class MgQualifier(core.MgNode):
         """A qualifier is a term that specifies the state of an object (see comp rule 109 for objects).
@@ -395,13 +444,14 @@ class MgZone(core.MgNode):
         """
         
         class ZoneEnum(Enum):
-                Battlefield = "The Battlefield"
-                Graveyard = "Graveyard"
-                Library = "Library"
-                Hand = "Hand"
-                Stack = "Stack"
-                Exile = "Exile"
-                Command = "Command Zone"
+                Battlefield = "the battlefield"
+                Graveyard = "graveyard"
+                Library = "library"
+                Hand = "hand"
+                Stack = "stack"
+                Exile = "exile"
+                Command = "command zone"
+                Outside = "outside the game"
 
         def __init__(self,value):
                 """value: a ZoneEnum."""
@@ -428,11 +478,3 @@ class MgZone(core.MgNode):
                 
         def unparseToString(self):
                 return self._value.value
-                
-        
-
-    
-
-#class MgPossessiveModifier(core.MgNode):
-#        """A decorator for possessives like 'your' and 'its owner's'... maybe"""
-#        pass

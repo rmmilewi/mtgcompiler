@@ -281,6 +281,16 @@ class MgAsLongAsStatement(MgConditionalStatement):
                         return "as long as {0}, {1}".format(self._conditional.unparseToString(),self._consequence.unparseToString())
                 else:
                         return "{1} as long as {0}".format(self._conditional.unparseToString(),self._consequence.unparseToString())
+                        
+class MgUntilStatement(MgConditionalStatement):
+        def __init__(self,conditional,consequence,inverted=False):
+                super().__init__(conditional,consequence,inverted)
+        
+        def unparseToString(self):
+                if self._inverted is False:
+                        return "until {0}, {1}".format(self._conditional.unparseToString(),self._consequence.unparseToString())
+                else:
+                        return "{1} until {0}".format(self._conditional.unparseToString(),self._consequence.unparseToString())
         
 class MgOtherwiseStatement(MgConditionalStatement):
         def __init__(self,conditional,consequence):
@@ -301,13 +311,7 @@ class MgForStatement(MgConditionalStatement):
 
 
 
-#Whenever you tap a land for mana while you’re the monarch, add an additional one mana of any color.
-#While you’re searching your library, you may cast Panglacial Wurm from your library.
-#While voting, you may vote an additional time. (The votes can be for different choices or for the same choice.)
-#If you would draw a card while you have no cards in hand, instead draw two cards and lose 1 life.
-#If you would draw a card while your library has no cards in it, you win the game instead.
-#While choosing targets as part of casting a spell or activating an ability, your opponents must choose at least one Flagbearer on the battlefield if able.
-#While [state]
+
 class MgWhileStatement(MgConditionalStatement):
         """
         Typical construction: While [state], [consequence]

@@ -7,7 +7,7 @@ class TestParseCards(unittest.TestCase):
         def setUpClass(cls):
                 cls._parser = JsonParser()
         
-        @unittest.expectedFailure        
+        
         def test_parseRodOfRuin(self):
                 rod = {
                 "artist": "Christopher Rush",

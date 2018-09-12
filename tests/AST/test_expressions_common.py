@@ -10,7 +10,10 @@ from mtgcompiler.AST.reference import MgQualifier
 
 class TestCommonExpressions(unittest.TestCase):
         
-        def test_ValueExpressions(self):
+        def test_ValueComparisons(self):
+                pass
+        
+        def test_NumberValues(self):
                 five_literal = MgNumberValue(5,MgNumberValue.NumberTypeEnum.Literal)
                 self.assertTrue(five_literal.isLiteral())
                 self.assertTrue(five_literal.isTraversable())

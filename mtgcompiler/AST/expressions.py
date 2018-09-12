@@ -15,8 +15,185 @@ class MgValueExpression(MgAbstractExpression):
                 - '1+*' in '1+*/1+*'
                 - 'six' in 'destroy six target creatures'
                 - 'twice X' in 'you gain twice X life'
+                - 'greater than' in 'power greater than 4'
         """
-        pass
+        def __init__(self):
+                self._traversable = True
+        
+class MgValueComparisonExpression(MgValueExpression):
+        """A value-comparison expression is a phrase in plain English comparing
+        quantities, such as 'equal to' or 'greater than or equal to'.
+        
+        In some cases, the comparison expression only has a right-hand side. 
+        The left-hand side is assumed to be present but bound to some other node. 
+        For example, in 'deals damage equal to [...]', 'deals damage' is part 
+        of a deals-damage expression, and the value comparison is underneath that
+        expression in the tree.
+        """
+        def __init__(self,lhs,rhs):
+                """
+                lhs: (optional) the left-hand side of the expression.
+                rhs: the right-hand side of the expression.
+                """
+                super().__init__()
+                self._lhs = lhs
+                if self._lhs is not None:
+                        lhs.setParent(self)
+                self._rhs = rhs
+                rhs.setParent(self)
+                
+        def hasImplicitLhs(self):
+                """If lhs is None, it is because the left-hand side is implicit."""
+                return self._lhs is not None
+        
+        def getLhs(self):
+                """Get the left-hand side."""
+                return self._lhs
+                
+        def setLhs(self,lhs):
+                """Set the left-hand side."""
+                self._lhs = lhs
+                if self._lhs is not None:
+                        lhs.setParent(self)
+        
+        def getRhs(self):
+                """Get the right-hand side."""
+                return self._lhs
+                
+        def setRhs(self,rhs):
+                """Set the right-hand side."""
+                self._right = rhs
+                rhs.setParent(self)
+                
+        def isChild(self,child):
+                return child is not None and child in {self._lhs,self._rhs}
+                
+        def getTraversalSuccessors(self):
+                return [node for node in {self._lhs,self._rhs} if node is not None and node.isTraversable()]
+        
+class MgValueGtExpression(MgValueComparisonExpression):
+        """This is the 'greater than' value comparison expression."""
+        def __init__(self,lhs,rhs):
+                super().__init__(lhs,rhs)
+                
+        def unparseToString(self):
+                if self._lhs is not None:
+                        return "{0} greater than {1}".format(self._lhs.unparseToString(),self._rhs.unparseToString())
+                else:
+                        return "greater than {0}".format(self._rhs.unparseToString())
+                        
+class MgValueGtEqExpression(MgValueComparisonExpression):
+        """This is the 'greater than or equal to' value comparison expression."""
+        def __init__(self,lhs,rhs,shortVariant=False):
+                """shortVariant: This flag sets whether the wording used is a variant of the following form:
+                'destroy target creature with power greater than or equal to 4'
+                vs. 'destroy target creature with power 4 or greater.'
+                """
+                super().__init__(lhs,rhs)
+                self._shortVariant = shortVariant
+                
+        def isShortVariant(self):
+                """Checks whether this should be unparsed as the short variant of greater-than-or-equal-to."""
+                return self._shortVariant
+                
+        def setShortVariant(self,shortVariant):
+                """Sets whether this should be unparsed as the short variant of greater-than-or-equal-to."""
+                self._shortVariant = shortVariant
+                
+        def unparseToString(self):
+                if shortVariant == True:
+                        if self._lhs is not None:
+                                return "{0} {1} or greater".format(self._lhs.unparseToString(),self._rhs.unparseToString())
+                        else:
+                                return "{0} or greater".format(self._rhs.unparseToString())
+                else:
+                        if self._lhs is not None:
+                                return "{0} greater than or equal to {1}".format(self._lhs.unparseToString(),self._rhs.unparseToString())
+                        else:
+                                return "greater than or equal to {0}".format(self._rhs.unparseToString())
+                        
+class MgValueLtExpression(MgValueComparisonExpression):
+        """This is the 'less than' value comparison expression."""
+        def __init__(self,lhs,rhs):
+                super().__init__(lhs,rhs)
+                
+        def unparseToString(self):
+                if self._lhs is not None:
+                        return "{0} less than {1}".format(self._lhs.unparseToString(),self._rhs.unparseToString())
+                else:
+                        return "less than {0}".format(self._rhs.unparseToString())
+                        
+class MgValueLtEqExpression(MgValueComparisonExpression):
+        """This is the 'less than or equal to' value comparison expression."""
+        def __init__(self,lhs,rhs,shortVariant):
+                super().__init__(lhs,rhs)
+                self._shortVariant = shortVariant
+                
+        def isShortVariant(self):
+                """Checks whether this should be unparsed as the short variant of greater-than-or-equal-to."""
+                return self._shortVariant
+                
+        def setShortVariant(self,shortVariant):
+                """Sets whether this should be unparsed as the short variant of greater-than-or-equal-to."""
+                self._shortVariant = shortVariant
+                
+        def unparseToString(self):
+                if shortVariant == True:
+                        if self._lhs is not None:
+                                return "{0} {1} or less".format(self._lhs.unparseToString(),self._rhs.unparseToString())
+                        else:
+                                return "{0} or less".format(self._rhs.unparseToString())
+                else:
+                        if self._lhs is not None:
+                                return "{0} less than or equal to {1}".format(self._lhs.unparseToString(),self._rhs.unparseToString())
+                        else:
+                                return "less than or equal to {0}".format(self._rhs.unparseToString())
+        
+class MgValueEqExpression(MgValueComparisonExpression):
+        """This is the 'equals to' value comparison expression."""
+        def __init__(self,lhs,rhs):
+                super().__init__(lhs,rhs)
+                
+        def unparseToString(self):
+                if self._lhs is not None:
+                        return "{0} equal to {1}".format(self._lhs.unparseToString(),self._rhs.unparseToString())
+                else:
+                        return "equal to {0}".format(self._rhs.unparseToString())
+                        
+
+class MgNumberOfExpression(MgValueExpression):
+        """A verbal formula for referring to the result of an underlying expression, like
+        'the number of creatures that you control' means 'count the number of creatures you control,
+        then use that number'.
+        """
+
+        def __init__(self,expression):
+                """
+                expression: The underlying expression that is decorated by this expression.
+                """
+                super().__init__()
+                self._expression = expression
+                expression.setParent(self)
+                
+        def getExpression(self):
+                """Get the underlying expression decorated by this expression."""
+                return self._expression
+                
+        def setExpression(self,expression):
+                """Set the underlying expression decorated by this expression."""
+                self._expression = expression
+                expression.setParent(self)
+                
+        def isChild(self,child):
+                return child is not None and child in {self._expression}
+                
+        def getTraversalSuccessors(self):
+                return [node for node in {self._expression} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                return "the number of {0}".format(self._expression.unparseToString())
+                
+         
 
 class MgNumberValue(MgValueExpression):
         """Represents a number value, which can be unparsed in one of three ways,
@@ -36,7 +213,7 @@ class MgNumberValue(MgValueExpression):
                 Custom = auto() #*,1+*
         
         def __init__(self,value,ntype):
-                self._traversable = True
+                super().__init__()
                 self._value = value
                 self._ntype = ntype
         
@@ -574,24 +751,33 @@ class MgUnaryOp(MgAbstractExpression):
 class MgTargetExpression(MgUnaryOp):
         """A target expression is used whenever card text involves the word 'target'.
         For example, 'destroy target creature' or 'target player gains 5 life.'"""
-        #TODO: Support 'any target'.
+        #TODO: Support 'any target'
         
-        def __init__(self,operand):
-                super().__init__(operand)
-        
-        def unparseToString(self):
-                return "target {0}".format(self._operand.unparseToString())
-                
-                
-class MgUntilExpression(MgUnaryOp):
-        """An until expression is used whenever card text says that an effect happens until
-        a condition is met, like 'until end of turn' or 'until THIS leaves the battlefield'"""
-        def __init__(self,operand):
-                super().__init__(operand)
-                
-        def unparseToString(self):
-                return "until {0}".format(self._operand.unparseToString())
+        def __init__(self,operand=None,isAny=False):
+                """isAny: A flag indicating that this target expression refers to 'any target'. If
+                this flag is set, the operand is allowed to be None."""
+                if not isAny:
+                        super().__init__(operand)
+                        self._isAny = isAny
+                else:
+                        self._operand = None
+                        self._isAny = isAny
                         
+        def isAnyTarget(self):
+                """Checks whether this target expression refers to 'any target'"""
+                return self._isAny
+                
+        def setIsAnyTarget(self,isAny):
+                """Sets the flag indicating whether this target expression refers to 'any target'."""
+                self._isAny = isAny
+                        
+        
+        def unparseToString(self):
+                if isAny == True:
+                        return "any target"
+                else:
+                        return "target {0}".format(self._operand.unparseToString())
+                
                 
 class MgAllExpression(MgUnaryOp):
         """An each expression is used whenever card text involves the word 'all'.
@@ -611,12 +797,16 @@ class MgEachExpression(MgUnaryOp):
                 super().__init__(operand)
                 
         def unparseToString(self):
-                return "each {0}".format(self._operand.unparseToString())        
+                return "each {0}".format(self._operand.unparseToString())
+                
+class MgIndefiniteSingularExpression(MgUnaryOp):
+        """Uses 'a'/'an' to refer to a creature in the singular.
+        """
+        pass
         
 class MgChoiceExpression(MgUnaryOp):
         """A choice expression is used whenever card text involve a non-modal choice.
-        For example, 'choose a color'."""
-
+        For example, 'choose a color'. TODO: This is really more like an effect of the card."""
         def __init__(self,operand):
                 super().__init__(operand)
         
@@ -659,6 +849,97 @@ class MgEffectExpression(MgAbstractExpression):
         def __init__(self):
                 self._traversable = True #All effects are traversable by default.
                 
+class MgDealsDamageExpression(MgEffectExpression):
+        """Represents an effect that deals damage, such as
+        'Shock deals 2 damage to any target'
+        'When this creature deals combat damage to a player'
+        'Target creature you control deals damage equal to its power to each other creature and each opponent.'
+        """
+        def __init__(self,origin,damageExpression=None,subject=None,damageQuantityAfter=False):
+                """
+                origin: The entity dealing the damage
+                damageExpression: An expression representing the amount of damage. Optional.
+                subject: The entity receiving the damage. Optional.
+                damageQuantityAfter: A flag indicating that the quantity of damage comes after the word 'damage',
+                as in 'deals damage *equal to X* to any target'.
+                """
+                super().__init__()
+                self._origin = origin
+                self._origin.setParent(self)
+                
+                self._damageExpression = damageExpression
+                if self._damageExpression is not None:
+                        self._damageExpression.setParent(self)
+                
+                self._subject = subject
+                if self._subject is not None:
+                        self._subject.setParent(self)
+                
+                self._damageQuantityAfter = damageQuantityAfter
+                
+        def getOrigin(self):
+                """Get the origin associated with this deals-damage expression."""
+                return self._origin
+                
+        def setOrigin(self,origin):
+                """Set the origin associated with this deals-damage expression."""
+                self._origin = origin
+                if self._origin is not None:
+                        self._origin.setParent(self)
+                
+        def hasDamageExpression(self):
+                """Checks whether this deals-damage expression has a damage expression."""
+                return self._damageExpression is not None
+                
+        def getDamageExpression(self):
+                """Get the damage expression associated with this deals-damage expression, if it exists."""
+                return self._damageExpression
+                
+        def setDamageExpression(self,damageExpression):
+                """Set the damage expression associated with this deals-damage expression"""
+                self._damageExpression = damageExpression
+                if self._damageExpression is not None:
+                        self._damageExpression.setParent(self)
+                        
+        def hasSubject(self):
+                """Checks whether this deals-damage expression has a subject."""
+                return self._subject is not None
+                
+        def getSubject(self):
+                """Get the subject associated with this deals-damage expression, if it exists."""
+                return self._subject
+                
+        def setSubject(self,damageExpression):
+                """Set the subject associated with this deals-damage expression"""
+                self._subject = damageExpression
+                if self._subject is not None:
+                        self._subject.setParent(self)
+                        
+        def isDamageQuantityAfter(self):
+                """Checks whether this deals-damage expression happens after the word 'damage'."""
+                return self._damageQuantityAfter
+                
+        def setDamageQuantityAfter(self,damageQuantityAfter):
+                """Sets the flag indicating whether this deals-damage expression happens after the word 'damage'."""
+                self._damageQuantityAfter = damageQuantityAfter
+                        
+        def isChild(self,child):
+                return child is not None and child in {self._origin,self._damageExpression,self._subject}
+                
+        def getTraversalSuccessors(self):
+                return [node for node in {self._origin,self._damageExpression,self._subject} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                output = "{0} deals".format(self._origin.unparseToString())
+                if self._damageExpression is not None and self._damageQuantityAfter == TRUE:
+                        output = output + " damage {0}".format(self._damageExpression.unparseToString())
+                elif self._damageExpression is not None:
+                        output = output + " {0} damage".format(self._damageExpression.unparseToString())
+                else:
+                        output = output + " damage"
+                if self._subject is not None:
+                        output = output + " to {0}".format(self._subject.unparseToString())
+        
         
 class MgDestroyExpression(MgEffectExpression):
         """Represents a destroy effect, as in 'destroy target non-white creature.'."""
