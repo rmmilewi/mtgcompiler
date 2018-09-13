@@ -1,14 +1,14 @@
 import collections
 from mtgcompiler.parsers.baseparser import BaseParser
-from mtgcompiler.AST.reference import MgName
+from mtgcompiler.AST.reference import MgName,MgNameReference,MgTapUntapSymbol
 from mtgcompiler.AST.card import MgTypeLine,MgFlavorText,MgTextBox,MgCard
 from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
 from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
-from mtgcompiler.AST.statements import MgKeywordAbilityListStatement,MgExpressionStatement,MgStatementBlock
+from mtgcompiler.AST.statements import MgKeywordAbilityListStatement,MgStatementBlock,MgExpressionStatement,MgActivationStatement
 
-from mtgcompiler.AST.expressions import MgNumberValue,MgPTExpression,MgManaExpression,MgTypeExpression,MgDescriptionExpression,MgNamedExpression
+from mtgcompiler.AST.expressions import MgNumberValue,MgPTExpression,MgManaExpression,MgTypeExpression,MgDescriptionExpression,MgNamedExpression,MgCostSequenceExpression
 from mtgcompiler.AST.expressions import MgColorExpression,MgAndExpression,MgOrExpression,MgAndOrExpression,MgTargetExpression
-from mtgcompiler.AST.expressions import MgDestroyExpression,MgExileExpression
+from mtgcompiler.AST.expressions import MgDestroyExpression,MgExileExpression,MgDealsDamageExpression
 
 from mtgcompiler.AST.abilities import MgReminderText,MgAbilityWord,MgRegularAbility
 from mtgcompiler.AST.abilities import MgDeathtouchAbility,MgDefenderAbility,MgDoubleStrikeAbility,MgFirstStrikeAbility,MgTrampleAbility
@@ -622,11 +622,17 @@ class JsonParser(BaseParser):
                         return items[0]
                 
                 def statementblock(self,items):
+                        print("STATEMENT BLOCK",items)
                         return MgStatementBlock(*items)
                 
                 def expressionstatement(self,items):
                         expression = items[0]
                         return MgExpressionStatement(expression)
+                        
+                def activationstatement(self,items):
+                        cost = items[0]
+                        instructions = items[1]
+                        return MgActivationStatement(cost=cost,instructions=instructions)
                         
                 #EXPRESSIONS
                 def expression(self,items):
@@ -638,18 +644,62 @@ class JsonParser(BaseParser):
                 def targetexpression(self,items):
                         subject = items[0]
                         return MgTargetExpression(subject)
+                def anytargetexpression(self,items):
+                        #Nullary variant of target expression
+                        return MgTargetExpression(isAny=True)
+                        
+                        
+                        
+                #EXPRESSIONS - VALUE EXPRESSIONS
+                def valueexpression(self,items):
+                        return items[0]
+                def valueterm(self,items):
+                        return items[0]
+                def valuenumber(self,items):
+                        return MgNumberValue(items[0].value,MgNumberValue.NumberTypeEnum.Literal)
                         
                 #EXPRESSIONS - EFFECT EXPRESSIONS
                 def effectexpression(self,items):
                         return items[0]
                 def destroyexpression(self,items):
                         return MgDestroyExpression(items[0])
+                def dealsdamagevarianta(self,items):
+                        #Example: ~ deals 1 damage to any target.
+                        #The word damage comes after the quantity expression.
+                        origin = items[0]
+                        damageQuantityAfter=False
+                        if len(items) == 2:
+                                subject = items[1]
+                                damageExpression = items[2]
+                        else:
+                                subject = items[1]
+                                damageExpression = None
+                        return MgDealsDamageExpression(origin,damageExpression,subject,damageQuantityAfter)
+                        
+                def dealsdamagevariantb(self,items):
+                        #Example: ~ deals damage equal to X to any target.
+                        #The word damage comes before the quantity expression.
+                        origin = items[0]
+                        damageQuantityAfter=True
+                        if len(items) == 2:
+                                subject = items[1]
+                                damageExpression = items[2]
+                        else:
+                                subject = items[1]
+                                damageExpression = None
+                        return MgDealsDamageExpression(origin,damageExpression,subject,damageQuantityAfter)
                 
                 
                 
+                #REFERENCES
+                def referenceterm(self,items):
+                        return items[0]
+                def namereference(self,items):
+                        #This gets bound to the card name later.
+                        return MgNameReference(None)
                 
                 
-                      
+                #TYPES, DESCRIPTIONS, ETC.      
                 def descriptionexpression(self,items):
                         return MgDescriptionExpression(*items)
                 
@@ -723,6 +773,13 @@ class JsonParser(BaseParser):
                         
                 def cost(self,items):
                         return items[0]
+                def costsequence(self,items):
+                        return MgCostSequenceExpression(*items)
+                def tapuntapsymbol(self,items):
+                        if items[0].type == "TAPSYMBOL":
+                                return MgTapUntapSymbol(isTap=True)
+                        else:
+                                return MgTapUntapSymbol(isTap=False)
                         
                 def objectname(self,items):
                         return MgName(items[0].value)
@@ -804,25 +861,28 @@ class JsonParser(BaseParser):
                         keywordlist: keywordsequence
                         keywordsequence: keywordability | keywordsequence ("," | ";") keywordability
                         
-                        statementblock : statement ["."] | statementblock statement ["."]
+                        //TODO: Where to place compound statements in all this?
+                        statementblock : (compoundstatement | statement) ["."] | statementblock (compoundstatement | statement) ["."]
                         
-                        statement: expressionstatement 
-                        | compoundstatement 
+                        statement: expressionstatement
                         | conditionalstatement 
                         | activationstatement
                         | beingstatement
+                        | thenstatement
                         
-                        beingstatement: expression "is" expression -> isstatement
+                        beingstatement: (expression | referenceterm) "is" (expression|referenceterm) -> isstatement
                         | expression "isn't" expression -> isntstatement
                         | "it's" expression -> itsstatement
                         | "it's" "not" expression -> itsnotstatement
                         | expression "can" expression -> canstatement
                         | expression "can't" expression -> cantstatement
                         
+                        thenstatement: "then" statement
+                        
                         expressionstatement: expression
                         
                         compoundstatement: statement  ("," statement ",")* "then" statement -> compoundthenstatement
-                        | statement  ("," statement ",")* "and" statement -> compoundandstatement
+                        | statement ("," statement ",")* "and" statement -> compoundandstatement
                         
                         conditionalstatement: "if" statement "," statement -> ifstatement
                         | statement "if" statement -> ifstatementinv
@@ -839,6 +899,8 @@ class JsonParser(BaseParser):
                         | "otherwise" "," statement -> otherwisestatement
                         | statement "unless" statement -> unlessstatement
                         | "while" statement "," statement -> whilestatement
+                        | "until" timestepexpression "," statement -> untilstatement
+                        | statement "until" timestepexpression -> untilstatementinv
                         
                         activationstatement: cost ":" statementblock
                         
@@ -876,8 +938,8 @@ class JsonParser(BaseParser):
                         kwdeathtouch: "deathtouch"
                         kwdefender: "defender"
                         kwdoublestrike: "double" "strike"
-                        kwenchant: "enchant" typeexpression // TODO
-                        kwequip: "equip" cost  //TODO | "equip" descriptionexpression cost
+                        kwenchant: "enchant" typeexpression
+                        kwequip: "equip" cost | "equip" descriptionexpression cost
                         kwfirststrike: "first strike"
                         kwflash: "flash"
                         kwflying: "flying"
@@ -1008,23 +1070,34 @@ class JsonParser(BaseParser):
                         kwassist: "assist"
                         
                         cost: costsequence | dashcostexpression //TODO
-                        costsequence: (TAPSYMBOL | UNTAPSYMBOL | manaexpression | effectexpression) 
-                        | costsequence (TAPSYMBOL | UNTAPSYMBOL | manaexpression | effectexpression)
+                        costsequence: ( tapuntapsymbol | manaexpression | effectexpression) ("," (tapuntapsymbol | manaexpression | effectexpression))*
                         dashcostexpression: "—" expression
-                        valueexpression: NUMBER //TODO: Need to account for custom values, variables, etc.
+                        
+                        //TODO: Need to account for custom values, variables, 'equals to' expressions, etc.
+                        valueexpression: valueterm
+                        valueterm: valuenumber | valuequantity | valuefrequency | valuecustom
+                        valuenumber: NUMBER
+                        valuequantity: "one" | "two" | "three" | "four" | "five" | "six" //TODO
+                        //TODO: needs another rule to have different derivation from valuequantity
+                        valuefrequency: "once" | "twice" | valuequantity "times"
+                        valuecustom: "X" | "*"
+                        
+                        
                         
                         //TODO: Add as needed.
-                        expression: unaryop | binaryop | descriptionexpression | effectexpression | etbexpression
+                        expression: binaryop | unaryop | descriptionexpression | effectexpression | etbexpression
                         | ltbexpression
                         
-                        //targetexpression | colorexpression | namedexpression | manaexpression | typeexpression
-                        //| etbexpression | ltbexpression 
-                        
-                        unaryop: targetexpression
-                        | eachexpression 
+                        unaryop: indefinitesingularexpression |
+                        | targetexpression
+                        | eachexpression
+                        | fromexpression
                         
                         targetexpression: "target" descriptionexpression
+                        | "any" "target" -> anytargetexpression
                         eachexpression: "each" expression
+                        indefinitesingularexpression: "a" descriptionexpression | "an" descriptionexpression
+                        fromexpression: "from" descriptionexpression
                         
                         binaryop: andexpression 
                         | orexpression
@@ -1033,34 +1106,53 @@ class JsonParser(BaseParser):
                         orexpression : statement "or" statement
                         
                         
-                        descriptionorreference: referenceterm | descriptionexpression
-                        //TODO
-                        descriptionexpression: ( colorexpression | namedexpression | manaexpression | typeexpression 
-                        | ptexpression)+
-                        ptexpression: valueexpression "/" valueexpression
-                        namedexpression: "named" objectname
+                        descriptionorreference: referenceterm | descriptionexpression //TODO
                         
                         
-                        
-                        playerdoesexpression: playerreference ("do" | "does") -> playerdoesexpression
-                        | playerreference ("don't" | "doesn't") -> playerdoesnotexpression
-                        
-                        
-                        etbexpression: descriptionorreference "enters" "the" "battlefield"
-                        ltbexpression: descriptionorreference "leaves" "the" "battlefield"
+                        descriptionexpression: ( colorexpression | namedexpression | manaexpression | typeexpression
+                        | ptexpression | qualifier | modifier | locationexpression | valuequantity)+
                         
                         effectexpression:
                         | destroyexpression
                         | exileexpression
                         | sacrificeexpression
                         | regenerateexpression
+                        | dealsdamageexpression
+                        | searchlibraryexpression
+                        | putinzoneexpression
+                        | shufflelibraryexpression
+                        | countasexpression
                         
                         destroyexpression: "destroy" expression
                         exileexpression: "exile" expression
-                        sacrificeexpression: "sacrifice" expression //TODO: optional player field
+                        sacrificeexpression: "sacrifice" (unaryop | descriptionorreference) //TODO: optional player field
                         regenerateexpression: "regenerate" expression
+                        dealsdamageexpression:  (referenceterm | targetexpression | eachexpression | descriptionexpression) "deals" valueexpression "damage" "to" (referenceterm | targetexpression | eachexpression) -> dealsdamagevarianta
+                        | (referenceterm | targetexpression | eachexpression | descriptionexpression) "deals" "damage" valueexpression "to" (referenceterm | targetexpression | eachexpression) -> dealsdamagevariantb
+                        searchlibraryexpression: "search" playerpossessiveexpr "library" "for" (unaryop | descriptionexpression)
+                        putinzoneexpression: "put" descriptionorreference ("onto" | "into") playerpossessiveexpr? ZONE descriptionexpression?
+                        shufflelibraryexpression: "shuffle" playerpossessiveexpr "library"
+                        countasexpression: expression "count" "it" "as" expression
                         
-                        referenceterm: namereference //TODO: that-references, it-references,etc.
+                        
+                        playerpossessiveexpr: "your" | "their" //TODO: What about 'that player's'
+                        playerdoesexpression: playerreference ("do" | "does") -> playerdoesexpression
+                        | playerreference ("don't" | "doesn't") -> playerdoesnotexpression
+                        
+                        etbexpression: descriptionorreference "enters" "the" "battlefield"
+                        ltbexpression: descriptionorreference "leaves" "the" "battlefield"
+                        
+                        ptexpression: valueexpression "/" valueexpression
+                        namedexpression: "named" objectname
+                        locationexpression: ("in" | "on") (playerpossessiveexpr | "a"["n"] )? zone 
+                        
+                        timestepexpression: "end of turn" //TODO
+                        
+                        referenceterm: namereference | itreference | thatreference | thisreference | playerreference | selfreference
+                        itreference: "it"
+                        thatreference: "that" descriptionexpression
+                        thisreference: "this" descriptionexpression
+                        selfreference: "itself" | "himself" | "herself"
                         
                         playerreference: "you" //TODO
                         namereference: NAMEREFSYMBOL
@@ -1132,6 +1224,18 @@ class JsonParser(BaseParser):
                         
                         SUPERTYPE: "basic" | "legendary" | "ongoing" | "snow" | "world"
                         
+                        modifier: ABILITYMODIFIER | COMBATSTATUSMODIFIER | KEYWORDSTATUSMODIFIER | TAPPEDSTATUSMODIFIER | EFFECTSTATUSMODIFIER
+                        
+                        ABILITYMODIFIER: "triggered" | "activated" | "mana"
+                        COMBATSTATUSMODIFIER: "attacking" | "defending" | "attacked" | "blocking" | "blocked" | "active"
+                        KEYWORDSTATUSMODIFIER: "paired" | "kicked" | "face-up" | "face-down" | "transformed" | "enchanted" | "equipped" | "fortified"
+                        TAPPEDSTATUSMODIFIER: "tapped" | "untapped"
+                        EFFECTSTATUSMODIFIER: "named" | "chosen" | "revealed" | "returned" | "destroyed" | "exiled" | "died" | "countered" | "sacrificed"
+                        
+                        qualifier: QUALIFIER["s"]
+                        QUALIFIER: ("ability"|"abilities") | "card" | "permanent" | "source" | "spell" | "token" | "effect"
+                        zone: ZONE
+                        ZONE: "the battlefield" | "graveyard" | "library" | "hand" | "stack" | "exile" | "command zone" | "outside the game"
                         
                         colorexpression: colorterm -> colorsingleexpr
                         | colorterm  ("," colorterm ",")* "or" colorterm -> colororexpr
@@ -1143,7 +1247,7 @@ class JsonParser(BaseParser):
                         
                         COLORTERM: "white" | "blue" | "black" | "red" | "green" | "monocolored" | "multicolored" | "colorless"
                         
-                        objectname: OBJECTNAME
+                        objectname: "'" OBJECTNAME "'" //TODO: No demarcations around names is difficult also.
                         OBJECTNAME: WORD ((WS | ",") WORD)* //TODO: commas in names? This is problematic.
                         
                         manaexpression: manasymbol+ 
@@ -1169,8 +1273,9 @@ class JsonParser(BaseParser):
                         manamarker_colorless: "C"i -> colorlessmarker
                         manamarker_x: "X"i -> xmarker
                         
-                        TAPSYMBOL: "{T}"
-                        UNTAPSYMBOL: "{Q}"
+                        tapuntapsymbol: TAPSYMBOL | UNTAPSYMBOL
+                        TAPSYMBOL: "{T}"i
+                        UNTAPSYMBOL: "{Q}"i
                         
                         %import common.WORD -> WORD
                         %import common.SIGNED_NUMBER -> NUMBER
@@ -1288,6 +1393,7 @@ class JsonParser(BaseParser):
                 if 'text' in cardinput:
                         self._lp.start = "cardtext"
                         parseTree = self._lp.parse(cardinput['text'])
+                        pydot__tree_to_png(parseTree, "lark_test.png") #TMP
                         textBox = self._tf.transform(parseTree)
                 else:
                         textBox = MgTextBox()

@@ -309,7 +309,7 @@ class MgManaExpression(MgAbstractExpression):
                         sym.setParent(self)
                         
         def isChild(self,child):
-                return child in self._symlist
+                return child is not None and child in self._symlist
         
         def getTraversalSuccessors(self):
                 return [sym for sym in self._symlist if sym.isTraversable()]
@@ -323,9 +323,35 @@ class MgManaExpression(MgAbstractExpression):
                 self._symlist.append(sym)
                 sym.setParent(self)
                 
+class MgCostSequenceExpression(MgAbstractExpression):
+        """This node represents a series of terms/expressions separated by a comma used in a series of
+        costs, such as those associated with an activated ability."""
+        def __init__(self,*args):
+                """args: Cost expressions in the cost sequence (e.g. a mana expression)"""
+                self._arguments = args
+                for arg in self._arguments:
+                        arg.setParent(self)
+                        
+        def getArguments(self):
+                """Get the list of cost arguments."""
+                return self._arguments
                 
+        def setArguments(self,*args):
+                """Set the list of cost arguments."""
+                self._arguments = args
+                for arg in self._arguments:
+                        arg.setParent(self)
                 
-class MgDashCostExpression(core.MgNode):
+        def isChild(self,child):
+                return child is not None and child in self._arguments
+        
+        def getTraversalSuccessors(self):
+                return [node for node in self._arguments if node.isTraversable()]
+        
+        def unparseToString(self):
+                return ', '.join([arg.unparseToString() for arg in self._arguments])
+                
+class MgDashCostExpression(MgAbstractExpression):
         """Sometimes a cost of a keyword ability is more than, say, just a simple mana expression.
         For example, in Braid of Fire, we see 'Cumulative upkeep—Add {R}.' In these situations,
         we use a dash cost expression that decorates the underlying expression.
@@ -357,7 +383,7 @@ class MgDashCostExpression(core.MgNode):
                 return "—{0}".format(self._cost.unparseToString())
 
 
-class MgDescriptionExpression(core.MgNode):
+class MgDescriptionExpression(MgAbstractExpression):
         """A description expression is a sequence of sub-expressions/terms that describe some object.
         For example, in 'destroy target non-black creature', 'non-black' is in a MgColorExpression
         and 'creature' is in an MgTypeExpression. The description expression strings these together.
@@ -570,15 +596,7 @@ class MgPossessiveExpression(MgAbstractExpression):
                 return [node for node in {self._owned} if node.isTraversable()]
                 
         def unparseToString(self):
-                return "{0} {1}".format(self._possessive.value,self._owned.unparseToString())
-                
-        
-                        
-class MgCommaExpression(MgAbstractExpression):
-        """This node represents a series of terms/expressions separated by a comma. 
-        'one, two, or three target creatures with flying' in Aerial Volley. This expression can
-        optionally be terminated with an 'and' or 'or'"""
-        pass
+                return "{0} {1}".format(self._possessive.value,self._owned.unparseToString()) 
         
         
 class MgModalExpression(MgAbstractExpression):
@@ -773,7 +791,7 @@ class MgTargetExpression(MgUnaryOp):
                         
         
         def unparseToString(self):
-                if isAny == True:
+                if self._isAny == True:
                         return "any target"
                 else:
                         return "target {0}".format(self._operand.unparseToString())
@@ -800,9 +818,12 @@ class MgEachExpression(MgUnaryOp):
                 return "each {0}".format(self._operand.unparseToString())
                 
 class MgIndefiniteSingularExpression(MgUnaryOp):
-        """Uses 'a'/'an' to refer to a creature in the singular.
-        """
-        pass
+        """Uses 'a'/'an' to refer to a player/object in the singular."""
+        def __init__(self,operand):
+                super().__init__(operand)
+                
+        def unparseToString(self):
+                return "a(n) {0}".format(self._operand.unparseToString())
         
 class MgChoiceExpression(MgUnaryOp):
         """A choice expression is used whenever card text involve a non-modal choice.
@@ -1178,7 +1199,7 @@ class MgCardDrawExpression(MgEffectExpression):
                 self._quantity.setParent(self)
               
         def isChild(self,child):
-                return child is self._quantity
+                return child is not None and child in {self._quantity}
                 
         def getTraversalSuccessors(self):
                 return [node for node in {self._quantity} if node.isTraversable()]
@@ -1193,10 +1214,136 @@ class MgCardDrawExpression(MgEffectExpression):
         
 
 class MgSearchLibraryExpression(MgEffectExpression):
-        pass
+        def __init__(self,owner,subject):
+                """
+                owner: A possessive expression referencing the person who owns the library.
+                subject: An expression describing the thing(s) being searched for.
+                """
+                super().__init__()
+                self._owner = owner
+                self._subject = subject
+                self._owner.setParent(self)
+                self._subject.setParent(self)
+                
+        def getLibraryOwner(self):
+                """Get the reference to the owner of the library."""
+                return self._owner
+                
+        def setLibraryOwner(self,owner):
+                """Set the reference to the owner of the library."""
+                self._owner = owner
+                self._owner.setParent(self)
+                
+        def getSubject(self):
+                """Get the subject, the expression that describes the thing(s) being searched for."""
+                return self._subject
+                
+        def setSubject(self,subject):
+                """Set the subject, the expression that describes the thing(s) being searched for."""
+                self._subject = subject
+                self._subject.setParent(self)
+                
+        def isChild(self,child):
+                return child is not None and child in {self._owner,self._subject}
+                
+        def getTraversalSuccessors(self):
+                return [node for node in {self._owner,self._subject} if node.isTraversable()]
+                
+        def unparseToString(self):
+                return "search {0} library for {1}".format(self._owner.unparseToString(),self._subject.unparseToString())
+                
         
 class MgShuffleLibraryExpression(MgEffectExpression):
-        pass
+        def __init__(self,owner):
+                """
+                owner: A possessive expression referencing the person who owns the library.
+                """
+                super().__init__()
+                self._owner = owner
+                self._owner.setParent(self)
+                
+        def getLibraryOwner(self):
+                """Get the reference to the owner of the library."""
+                return self._owner
+                
+        def setLibraryOwner(self,owner):
+                """Set the reference to the owner of the library."""
+                self._owner = owner
+                self._owner.setParent(self)
+                
+        def isChild(self,child):
+                return child is not None and child in {self._owner}
+                
+        def getTraversalSuccessors(self):
+                return [node for node in {self._owner} if node.isTraversable()]
+                
+        def unparseToString(self):
+                return "shuffle {0} library"
+                
+                
+def MgPutInZoneExpression(MgEffectExpression):
+        def __init__(self,subject,zone,conditions=None):
+                """
+                subject: An expression describing the thing that is being put somewhere.
+                zone: An expression describing the zone where the object is being placed. 
+                conditions: An expresssion that describes conditions under which the object
+                is placed in the zone, such as 'tapped and attacking'.
+                
+                Examples:
+                'put that card onto the battlefield tapped'
+                'put all other cards revealed this way into your graveyard'
+                """
+                self._subject = subject
+                self._zone = zone
+                self._conditions = conditions
+                self._subject.setParent(self)
+                self._zone.setParent(self)
+                if self._conditions is not None:
+                        self._conditions.setParent(self)
+                        
+                def getSubject(self):
+                        """Get the subject, the expression that describes the thing(s) being put somewhere."""
+                        return self._subject
+                
+                def setSubject(self,subject):
+                        """Set the subject, the expression that describes the thing(s) being put somewhere."""
+                        self._subject = subject
+                        self._subject.setParent(self)
+                        
+                def getZone(self):
+                        """Get the zone where the subject is going."""
+                        return self._zone
+                
+                def setZone(self,zone):
+                        """Set the zone where the subject is going."""
+                        self._zone = zone
+                        self._zone.setParent(self)
+                
+                def getConditions(self):
+                        """Get the conditions expression, if one exists, that describes the circumstances under which
+                        the subject is being placed in the zone."""
+                        return self._conditions
+                
+                def setConditions(self,conditions):
+                        """Get the conditions expression that describes the circumstances under which
+                        the subject is being placed in the zone."""
+                        self._conditions = conditions
+                        self._conditions.setParent(self)
+                        
+                def isChild(self,child):
+                        return child is not None and child in {self._subject,self._zone,self._conditions}
+                
+                def getTraversalSuccessors(self):
+                        return [node for node in {self._subject,self._zone,self._conditions} if node.isTraversable()]
+                
+                def unparseToString(self):
+                        #Note: the unparser will have to use into for zones like the hand and onto for zones like the battlefield.
+                        if self._conditions is not None:
+                                return "put {0} into {1} {2}".format(self._subject.unparseToString(),self._zone.unparseToString(),self._conditions.unparseToString())
+                        else:
+                                return "put {0} into {1}".format(self._subject.unparseToString(),self._zone.unparseToString())
+                
+        
         
 class MgRevealExpression(MgEffectExpression):
         pass

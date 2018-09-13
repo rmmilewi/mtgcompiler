@@ -5,35 +5,7 @@ class MgAbstractStatement(core.MgNode):
         """An ability is made of one or more statements, organized into an instruction sequence.
         A statement encapsulates a subtree of expressions, usually terminated by a period."""
         def __init__(self):
-                """
-                periodTerminated: Is this statement terminated by a period? Some statements, like an expression statement holding a modal expression, don't
-                need a period at the end.
-                """
                 self._traversable = True
-                #periodTerminated = True
-                pass
-                
-        #def isPeriodTerminated(self):
-        #        """Checks whether the statement is terminated by a period."""
-        #        return self._periodTerminated
-                
-        #def setPeriodTerminated(self,periodTerminated):
-        #        """Enables or disables period termination for the statement."""
-        #        self._periodTerminated = periodTerminated
-        
-                
-        #def unparseToString(self):
-        #        if self._periodTerminated is True:
-        #                return "{0}.".format(self._root.unparseToString())
-        #        else:
-        #                return "{0}".format(self._root.unparseToString())
-        
-
-#Draw a card for each creature you control.
-#For each creature target player controls, create a token that’s a copy of that creature.
-#Deadeye Plunderers gets +1/+1 for each artifact you control.
-#When you cast this spell, copy it for each time you’ve cast your commander from the command zone this game. You may choose new targets for the copies.
-#At the beginning of your upkeep, for each land target player controls in excess of the number you control, choose a land that player controls, then the chosen permanents phase out. Repeat this process for artifacts and creatures.
 
 #Target creature can’t be blocked this turn except by artifact creatures and/or red creatures.
 #You may have Gigantoplasm enter the battlefield as a copy of any creature on the battlefield, except it has [...]
@@ -305,8 +277,17 @@ class MgUnlessStatement(MgConditionalStatement):
         
         def unparseToString(self):
                 return "{1} unless {0}".format(self._conditional.unparseToString(),self._consequence.unparseToString())
-                
+
+            
 class MgForStatement(MgConditionalStatement):
+        """
+        
+        Examples:
+        'For each creature target player controls, create a token that’s a copy of that creature.'
+        'When you cast this spell, copy it for each time you’ve cast your commander from the command zone this game.'
+        'For each land target player controls in excess of the number you control, choose a land that player controls, 
+        then the chosen permanents phase out.'
+        """
         pass
 
 

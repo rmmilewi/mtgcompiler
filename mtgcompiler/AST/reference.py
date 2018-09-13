@@ -396,12 +396,12 @@ class MgQualifier(core.MgNode):
         For example, 'Elf spell','Elf permanent','Elf token', or 'Elf source'.
         """
         class QualifierEnum(Enum):
-                Ability = "Ability"
-                Card = "Card"
-                Permanent = "Permanent"
-                Source = "Source"
-                Spell = "Spell"
-                Token = "Token"
+                Ability = "ability"
+                Card = "card"
+                Permanent = "permanent"
+                Source = "source"
+                Spell = "spell"
+                Token = "token"
                 
         def __init__(self,value):
                 """value: a QualifierEnum."""
@@ -478,3 +478,45 @@ class MgZone(core.MgNode):
                 
         def unparseToString(self):
                 return self._value.value
+                
+
+class MgTapUntapSymbol(core.MgNode):
+        """Represents a tap or untap symbol, used in costs that require something to be tapped."""
+        def __init__(self,isTap):
+                """
+                isTap: A flag indicating that the symbol is a tap symbol. False is an untap symbol.
+                """
+                self._traversable = True
+                self._isTap = isTap
+                
+        def isTap(self):
+                """Checks whether the symbol is a tap symbol."""
+                return self._isTap == True
+                
+        def setTap(self):
+                """Sets this symbol to be a tap symbol."""
+                self._isTap = True
+                
+        def isUntap(self):
+                """Checks whether the symbol is an untap symbol."""
+                return self._isTap == False
+        
+        def setUntap(self):
+                """Sets this symbol to be an untap symbol."""
+                self._isUntap = False
+        
+        def isChild(self,child):
+                """This class is a leaf node. It has no children."""
+                return False
+                
+        def getTraversalSuccessors(self):
+                """This class is a leaf node. It has no children."""
+                return []
+                
+        def unparseToString(self):
+                if self._isTap == True:
+                        return "{T}"
+                else:
+                        return "{Q}"
+                
+        
