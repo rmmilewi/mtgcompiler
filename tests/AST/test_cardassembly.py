@@ -11,7 +11,7 @@ from mtgcompiler.AST.expressions import MgTapUntapExpression,MgDestroyExpression
 
 
 from mtgcompiler.AST.abilities import MgStatement,MgStatementSequence,MgSpellAbility
-from mtgcompiler.AST.visitors import SimpleGraphingVisitor
+from mtgcompiler.support.inspection import SimpleGraphingVisitor
 
 class TestMagicCardAssembly(unittest.TestCase):
         
@@ -104,8 +104,8 @@ class TestMagicCardAssembly(unittest.TestCase):
                 })
                 
                 print(card.unparseToString().lower())
-                visitor = SimpleGraphingVisitor(card)
-                visitor.run()
+                visitor = SimpleGraphingVisitor()
+                visitor.traverse(card)
         
         def test_DoomBlade(self):
                 

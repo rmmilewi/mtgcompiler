@@ -328,6 +328,7 @@ class MgCostSequenceExpression(MgAbstractExpression):
         costs, such as those associated with an activated ability."""
         def __init__(self,*args):
                 """args: Cost expressions in the cost sequence (e.g. a mana expression)"""
+                self._traversable = True
                 self._arguments = args
                 for arg in self._arguments:
                         arg.setParent(self)
@@ -761,19 +762,19 @@ class MgUnaryOp(MgAbstractExpression):
                 operand.setParent(self)
                 
         def isChild(self,child):
-                return child is self._operand
+                return child is not None and child in {self._operand}
                 
         def getTraversalSuccessors(self):
-                return [node for node in {self._operand} if node.isTraversable()]
+                return [node for node in {self._operand} if node is not None and node.isTraversable()]
                 
 class MgTargetExpression(MgUnaryOp):
         """A target expression is used whenever card text involves the word 'target'.
         For example, 'destroy target creature' or 'target player gains 5 life.'"""
-        #TODO: Support 'any target'
         
         def __init__(self,operand=None,isAny=False):
                 """isAny: A flag indicating that this target expression refers to 'any target'. If
                 this flag is set, the operand is allowed to be None."""
+                self._traversable = True
                 if not isAny:
                         super().__init__(operand)
                         self._isAny = isAny
@@ -952,7 +953,7 @@ class MgDealsDamageExpression(MgEffectExpression):
                 
         def unparseToString(self):
                 output = "{0} deals".format(self._origin.unparseToString())
-                if self._damageExpression is not None and self._damageQuantityAfter == TRUE:
+                if self._damageExpression is not None and self._damageQuantityAfter == True:
                         output = output + " damage {0}".format(self._damageExpression.unparseToString())
                 elif self._damageExpression is not None:
                         output = output + " {0} damage".format(self._damageExpression.unparseToString())
@@ -960,6 +961,7 @@ class MgDealsDamageExpression(MgEffectExpression):
                         output = output + " damage"
                 if self._subject is not None:
                         output = output + " to {0}".format(self._subject.unparseToString())
+                return output
         
         
 class MgDestroyExpression(MgEffectExpression):

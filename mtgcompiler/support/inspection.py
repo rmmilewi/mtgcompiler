@@ -1,13 +1,25 @@
 import abc
+"""Here we have all of the routines for inspecting parts of cards, defining visitors, et cetera."""
 
 
 class AbstractVisitor(metaclass=abc.ABCMeta):
         """Abstract parent class for all graph visitors."""
         
         @abc.abstractmethod
-        def run(self):
-                """Launches the visitor, calls visit on the targeted node."""
+        def atTraversalStart(self):
+                """Called when the traversal starts."""
                 raise NotImplemented
+                
+        @abc.abstractmethod        
+        def atTraversalEnd(self):
+                """Called when the traversal terminates."""
+                raise NotImplemented
+                
+        def traverse(self,node):
+                """Launches the visitor, calls visit on the targeted node."""
+                self.atTraversalStart()
+                node.accept(self)
+                self.atTraversalEnd()
         
         def visit(self,node):
                 """The visitor looks to see if a class-specific visit method has been implemented. Otherwise, it
@@ -26,18 +38,49 @@ class AbstractVisitor(metaclass=abc.ABCMeta):
                 successors = node.getTraversalSuccessors()
                 for successor in successors:
                         successor.accept(self)
-
+                        
+def getAllNodesOfType(root,nodeclass):
+        """
+        A primitive traversal method that collects all nodes of a given type and provides them in a container.
+        
+        root: The starting point for the traversal. Usually this is an MgCard object.
+        nodeclass: The class of node that we want to search for.
+        
+        """
+        class NodeAggregator(AbstractVisitor):
+                def __init__(self,nodeclass):
+                        self._nodeclass = nodeclass
+                        self._container = []
+                def atTraversalStart(self):
+                        pass
+                def atTraversalEnd(self):
+                        pass
+                def visit_generic(self,node):
+                        if type(node) == self._nodeclass:
+                                self._container.append(node)
+                        successors = node.getTraversalSuccessors()
+                        for successor in successors:
+                                successor.accept(self)
+                def getContainer(self):
+                        return self._container
+        aggregator = NodeAggregator(nodeclass)
+        aggregator.traverse(root)
+        return aggregator.getContainer()
+                
+        
+        
+        
 
 class SimpleGraphingVisitor(AbstractVisitor):
-        def __init__(self,node,path="card.dot"):
+        def __init__(self,path="card.dot"):
                 self.outputPath = path
                 self.graphFile = None
-                self.startNode = node
                 
-        def run(self):
+        def atTraversalStart(self):
                 self.graphFile = open(self.outputPath,'w')
                 self.graphFile.write("digraph \"g\" {\n")
-                self.startNode.accept(self)
+                
+        def atTraversalEnd(self):
                 self.graphFile.write("}\n")
                 self.graphFile.close()
                 
@@ -104,6 +147,30 @@ class SimpleGraphingVisitor(AbstractVisitor):
                         self.graphFile.write("id{0} -> id{1} [color=red,style=dotted,label=\"Subtypes\",labelfontcolor=red];\n".format(id(node),id(Subtypes)))
                         
                 self.visit_generic(node)
+                
+        def visit_MgActivationStatement(self,node):
+                if node.getCost() is not None:
+                        self.graphFile.write("id{0} -> id{1} [color=red,style=dotted,label=\"activation cost\",labelfontcolor=red];\n".format(id(node),id(node.getCost())))
+                if node.getInstructions() is not None:
+                        self.graphFile.write("id{0} -> id{1} [color=red,style=dotted,label=\"instructions\",labelfontcolor=red];\n".format(id(node),id(node.getInstructions())))
+                
+                self.visit_generic(node)
+                
+        
+        def visit_MgDealsDamageExpression(self,node):
+                if node.getOrigin() is not None:
+                        self.graphFile.write("id{0} -> id{1} [color=red,style=dotted,label=\"Source of damage\",labelfontcolor=red];\n".format(id(node),id(node.getOrigin())))
+                if node.hasDamageExpression():
+                        self.graphFile.write("id{0} -> id{1} [color=red,style=dotted,label=\"Amount of damage\",labelfontcolor=red];\n".format(id(node),id(node.getDamageExpression())))
+                if node.hasSubject():
+                        self.graphFile.write("id{0} -> id{1} [color=red,style=dotted,label=\"Subject of damage\",labelfontcolor=red];\n".format(id(node),id(node.getSubject())))
+                self.visit_generic(node)
+        #def visit_MgNameReference(self,node):
+        #        if node.hasAntecedent():
+        #                antecedent = node.getAntecedent()
+        #                self.graphFile.write("id{0} -> id{1} [color=red,style=dotted,label=\"antecedent\",labelfontcolor=red];\n".format(id(node),id(antecedent)))
+        #        self.visit_generic(node)
+                
         
         def visit_generic(self,node):
                 self.graphFile.write("id{0} [label = \"{1} \n({2})\"];\n".format(id(node),node.__class__.__name__,node.unparseToString().lower()))

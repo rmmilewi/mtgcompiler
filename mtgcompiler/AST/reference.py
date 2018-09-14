@@ -70,6 +70,12 @@ class MgNameReference(MgAbstractReference):
                 return []
                 
         def unparseToString(self):
+                if self._antecedent == None:
+                        #This can happen prior to binding.
+                        if self._firstonly == True:
+                                return "~f"
+                        else:
+                                return "~"
                 if self._firstonly == True:
                         splitstr = self._antecedent.unparseToString().split(', ')
                         return splitstr[0]

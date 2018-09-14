@@ -622,7 +622,6 @@ class JsonParser(BaseParser):
                         return items[0]
                 
                 def statementblock(self,items):
-                        print("STATEMENT BLOCK",items)
                         return MgStatementBlock(*items)
                 
                 def expressionstatement(self,items):
@@ -668,11 +667,14 @@ class JsonParser(BaseParser):
                         #The word damage comes after the quantity expression.
                         origin = items[0]
                         damageQuantityAfter=False
-                        if len(items) == 2:
+                        if len(items) == 3:
+                                subject = items[2]
+                                damageExpression = items[1]
+                        elif len(items) == 2:
                                 subject = items[1]
-                                damageExpression = items[2]
+                                damageExpression = None
                         else:
-                                subject = items[1]
+                                subject = None
                                 damageExpression = None
                         return MgDealsDamageExpression(origin,damageExpression,subject,damageQuantityAfter)
                         
@@ -681,11 +683,14 @@ class JsonParser(BaseParser):
                         #The word damage comes before the quantity expression.
                         origin = items[0]
                         damageQuantityAfter=True
-                        if len(items) == 2:
+                        if len(items) == 3:
+                                subject = items[2]
+                                damageExpression = items[1]
+                        elif len(items) == 2:
                                 subject = items[1]
-                                damageExpression = items[2]
+                                damageExpression = None
                         else:
-                                subject = items[1]
+                                subject = None
                                 damageExpression = None
                         return MgDealsDamageExpression(origin,damageExpression,subject,damageQuantityAfter)
                 

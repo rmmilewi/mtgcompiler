@@ -152,7 +152,7 @@ class MgRegularAbility(MgAbstractAbility):
         
         def getTraversalSuccessors(self):
                 """A regular ability has only one child, the instruction sequence."""
-                return [node for node in {self._instructions} if node.isTraversable()]
+                return [node for node in {self._stmtblock} if node.isTraversable()]
                 
         def getInstructions(self):
                 """Get the statement block held by the ability."""

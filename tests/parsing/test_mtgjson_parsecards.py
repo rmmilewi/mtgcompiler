@@ -1,6 +1,8 @@
 import unittest
 from mtgcompiler.parsers.JsonParser import JsonParser
 from lark.tree import pydot__tree_to_png #For rendering the parse tree.
+import mtgcompiler.support.inspection as inspection
+import mtgcompiler.support.binding as binding
 
 class TestParseCards(unittest.TestCase):
         
@@ -68,7 +70,11 @@ class TestParseCards(unittest.TestCase):
                 ]
                 }
                 card = self._parser.parse(rod)
-                card.unparseToString()
+                print(card.unparseToString())
+                
+                binding.bindNameReferences(card)
+                visitor = inspection.SimpleGraphingVisitor(path="rodOfRuin.dot")
+                visitor.traverse(card)
                 
         def test_parseForest(self):
                 return None
