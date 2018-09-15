@@ -877,13 +877,19 @@ class MgDealsDamageExpression(MgEffectExpression):
         'When this creature deals combat damage to a player'
         'Target creature you control deals damage equal to its power to each other creature and each opponent.'
         """
-        def __init__(self,origin,damageExpression=None,subject=None,damageQuantityAfter=False):
+        
+        class DealsDamageVariantEnum(Enum):
+                VariantA = auto() #<origin> deals <damageExpression>? damage to <subject>?
+                VariantB = auto() #<origin> deals damage <damageExpression> to <subject>
+                VariantC = auto() #<origin> deals damage to <subject> <damageExpression>
+        
+        def __init__(self,origin,damageExpression=None,subject=None,variant=None):
                 """
                 origin: The entity dealing the damage
                 damageExpression: An expression representing the amount of damage. Optional.
                 subject: The entity receiving the damage. Optional.
-                damageQuantityAfter: A flag indicating that the quantity of damage comes after the word 'damage',
-                as in 'deals damage *equal to X* to any target'.
+                variant: An enum that indicates the order in which the card should be unparsed.
+                By default it is variantA.
                 """
                 super().__init__()
                 self._origin = origin
@@ -896,8 +902,10 @@ class MgDealsDamageExpression(MgEffectExpression):
                 self._subject = subject
                 if self._subject is not None:
                         self._subject.setParent(self)
-                
-                self._damageQuantityAfter = damageQuantityAfter
+                if variant is None:
+                        self._variant = MgDealsDamageExpression.DealsDamageVariantEnum.VariantA
+                else:
+                        self._variant = variant
                 
         def getOrigin(self):
                 """Get the origin associated with this deals-damage expression."""
@@ -937,13 +945,13 @@ class MgDealsDamageExpression(MgEffectExpression):
                 if self._subject is not None:
                         self._subject.setParent(self)
                         
-        def isDamageQuantityAfter(self):
-                """Checks whether this deals-damage expression happens after the word 'damage'."""
-                return self._damageQuantityAfter
+        def getVariant(self):
+                """Gets the variant of damage dealing expression that this instance is."""
+                return self._variant
                 
-        def setDamageQuantityAfter(self,damageQuantityAfter):
-                """Sets the flag indicating whether this deals-damage expression happens after the word 'damage'."""
-                self._damageQuantityAfter = damageQuantityAfter
+        def setVariant(self,variant):
+                """Sets the variant of damage dealing expression that this instance is."""
+                self._variant = variant
                         
         def isChild(self,child):
                 return child is not None and child in {self._origin,self._damageExpression,self._subject}
@@ -953,15 +961,28 @@ class MgDealsDamageExpression(MgEffectExpression):
                 
         def unparseToString(self):
                 output = "{0} deals".format(self._origin.unparseToString())
-                if self._damageExpression is not None and self._damageQuantityAfter == True:
-                        output = output + " damage {0}".format(self._damageExpression.unparseToString())
-                elif self._damageExpression is not None:
-                        output = output + " {0} damage".format(self._damageExpression.unparseToString())
+                if self._variant == MgDealsDamageExpression.DealsDamageVariantEnum.VariantA:
+                        #<origin> deals <damageExpression>? damage to <subject>?
+                        if self._damageExpression is not None:
+                                output = output + " {0} damage".format(self._damageExpression.unparseToString())
+                        if self._subject is not None:
+                                output = output + " to {0}".format(self._subject.unparseToString())
+                elif self._variant == MgDealsDamageExpression.DealsDamageVariantEnum.VariantB:
+                        #<origin> deals damage <damageExpression> to <subject>
+                        output = output + "damage {0} to {1}".format(self._damageExpression.unparseToString(),self._subject.unparseToString())
                 else:
-                        output = output + " damage"
-                if self._subject is not None:
-                        output = output + " to {0}".format(self._subject.unparseToString())
+                        #<origin> deals damage to <subject> <damageExpression>
+                        output = output + "damage to {1} {0}".format(self._damageExpression.unparseToString(),self._subject.unparseToString())
                 return output
+                                
+                #if self._damageExpression is not None and self._damageQuantityAfter == True:
+                #        output = output + " damage {0}".format(self._damageExpression.unparseToString())
+                #elif self._damageExpression is not None:
+                #        output = output + " {0} damage".format(self._damageExpression.unparseToString())
+                #else:
+                #        output = output + " damage"
+                #if self._subject is not None:
+                #        output = output + " to {0}".format(self._subject.unparseToString())
         
         
 class MgDestroyExpression(MgEffectExpression):
@@ -1130,7 +1151,7 @@ class MgUncastExpression(MgEffectExpression):
                 self._subject.setParent(self)
                 
         def isChild(self,child):
-                return child is self._subject
+                return child is not None and child in {self._subject}
                 
         def getTraversalSuccessors(self):
                 return [node for node in {self._subject} if node.isTraversable()]
@@ -1173,10 +1194,16 @@ class MgCreateTokenExpression(MgEffectExpression):
         def setDescriptor(self,descriptor):
                 self._descriptor = descriptor 
                 self._descriptor.setParent(self)
+                
+        def isChild(self,child):
+                return child is not None and child in {self._descriptor,self._quantity}
+                
+        def getTraversalSuccessors(self):
+                return [node for node in {self._descriptor,self._quantity} if node.isTraversable()] 
                  
         def unparseToString(self):
                 if self._quantity is None:
-                        return "create a {0}".format(self._descriptor.unparseToString())
+                        return "create {0}".format(self._descriptor.unparseToString())
                 else:
                         return "create {0} {1}".format(self._quantity.unparseToString(),self._descriptor.unparseToString())
                         

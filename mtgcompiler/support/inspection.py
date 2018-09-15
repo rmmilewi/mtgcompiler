@@ -165,6 +165,8 @@ class SimpleGraphingVisitor(AbstractVisitor):
                 if node.hasSubject():
                         self.graphFile.write("id{0} -> id{1} [color=red,style=dotted,label=\"Subject of damage\",labelfontcolor=red];\n".format(id(node),id(node.getSubject())))
                 self.visit_generic(node)
+                
+        
         #def visit_MgNameReference(self,node):
         #        if node.hasAntecedent():
         #                antecedent = node.getAntecedent()

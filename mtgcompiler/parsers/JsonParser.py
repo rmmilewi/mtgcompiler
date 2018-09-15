@@ -72,12 +72,15 @@ class JsonParser(BaseParser):
                         return MgTypeLine(supertypes=linefeatures["supertypes"],types=linefeatures["types"],subtypes=linefeatures["subtypes"])
                 
                 def typelinesupert(self,items):
+                        items = [self.typeterm([item]) for item in items]
                         return ("supertypes",self.typeexpression(items))
                 
                 def typelinet(self,items):
+                        items = [self.typeterm([item]) for item in items]
                         return ("types",self.typeexpression(items))
                         
                 def typelinesubt(self,items):
+                        items = [self.typeterm([item]) for item in items]
                         return ("subtypes",self.typeexpression(items))
                 
                 def cardtext(self,items):
@@ -663,10 +666,9 @@ class JsonParser(BaseParser):
                 def destroyexpression(self,items):
                         return MgDestroyExpression(items[0])
                 def dealsdamagevarianta(self,items):
-                        #Example: ~ deals 1 damage to any target.
-                        #The word damage comes after the quantity expression.
+                        #<origin> deals <damageExpression>? damage to <subject>?
                         origin = items[0]
-                        damageQuantityAfter=False
+                        variant = MgDealsDamageExpression.DealsDamageVariantEnum.VariantA
                         if len(items) == 3:
                                 subject = items[2]
                                 damageExpression = items[1]
@@ -676,25 +678,33 @@ class JsonParser(BaseParser):
                         else:
                                 subject = None
                                 damageExpression = None
-                        return MgDealsDamageExpression(origin,damageExpression,subject,damageQuantityAfter)
+                        return MgDealsDamageExpression(origin,damageExpression,subject,variant)
                         
                 def dealsdamagevariantb(self,items):
-                        #Example: ~ deals damage equal to X to any target.
-                        #The word damage comes before the quantity expression.
+                        #<origin> deals damage <damageExpression> to <subject>
                         origin = items[0]
-                        damageQuantityAfter=True
-                        if len(items) == 3:
-                                subject = items[2]
-                                damageExpression = items[1]
-                        elif len(items) == 2:
-                                subject = items[1]
-                                damageExpression = None
-                        else:
-                                subject = None
-                                damageExpression = None
-                        return MgDealsDamageExpression(origin,damageExpression,subject,damageQuantityAfter)
-                
-                
+                        damageExpression = items[1]
+                        subject = items[2]
+                        variant = MgDealsDamageExpression.DealsDamageVariantEnum.VariantB
+                        
+                        #if len(items) == 3:
+                        #        subject = items[2]
+                        #        damageExpression = items[1]
+                        #elif len(items) == 2:
+                        #        subject = items[1]
+                        #        damageExpression = None
+                        #else:
+                        #        subject = None
+                        #        damageExpression = None
+                        return MgDealsDamageExpression(origin,damageExpression,subject,variant)
+                        
+                def dealsdamagevariantc(self,items):
+                        #<origin> deals damage to <subject> <damageExpression>
+                        variant = MgDealsDamageExpression.DealsDamageVariantEnum.VariantC
+                        origin = items[0]
+                        damageExpression = items[2]
+                        subject = items[1]
+                        return MgDealsDamageExpression(origin,damageExpression,subject,variant)
                 
                 #REFERENCES
                 def referenceterm(self,items):
@@ -712,30 +722,35 @@ class JsonParser(BaseParser):
                         return MgNamedExpression(items[0])
                         
                 def typeexpression(self,items):
-                        typeobjects = []
-                        for item in items:
-                                if item.type == "TYPE":
-                                        typeobjects.append(MgType(MgType.TypeEnum(item.value)))
-                                elif item.type == "SUBTYPESPELL":
-                                        typeobjects.append(MgSubtype(MgSubtype.SpellSubtypeEnum(item.value)))
-                                elif item.type == "SUBTYPELAND":
-                                        typeobjects.append(MgSubtype(MgSubtype.LandSubtypeEnum(item.value)))
-                                elif item.type == "SUBTYPEARTIFACT":
-                                        typeobjects.append(MgSubtype(MgSubtype.ArtifactSubtypeEnum(item.value)))
-                                elif item.type == "SUBTYPEENCHANTMENT":
-                                        typeobjects.append(MgSubtype(MgSubtype.EnchantmentSubtypeEnum(item.value)))
-                                elif item.type == "SUBTYPEPLANESWALKER":
-                                        typeobjects.append(MgSubtype(MgSubtype.PlaneswalkerSubtypeEnum(item.value)))
-                                elif item.type == "SUBTYPECREATUREA" or item.type == "SUBTYPECREATUREB":
-                                        typeobjects.append(MgSubtype(MgSubtype.CreatureSubtypeEnum(item.value)))
-                                elif item.type == "SUBTYPEPLANAR":
-                                        typeobjects.append(MgSubtype(MgSubtype.PlanarSubtypeEnum(item.value)))
-                                elif item.type == "SUPERTYPE":
-                                        typeobjects.append(MgSupertype(MgSupertype.SupertypeEnum(item.value)))
-                                else:
-                                        raise ValueError("Unrecognized type token: '{0}'".format(item))
-                        typeExpr = MgTypeExpression(*typeobjects)
-                        return typeExpr
+                        print("TYPE EXPRESSION",items)
+                        typeExpr = MgTypeExpression(*items)
+                        
+                def typeterm(self,items):
+                        print("TYPETERM",items)
+                        item = items[0]
+                        if item.type == "TYPE":
+                                return MgType(MgType.TypeEnum(item.value))
+                        elif item.type == "SUBTYPESPELL":
+                                return MgSubtype(MgSubtype.SpellSubtypeEnum(item.value))
+                        elif item.type == "SUBTYPELAND":
+                                return MgSubtype(MgSubtype.LandSubtypeEnum(item.value))
+                        elif item.type == "SUBTYPEARTIFACT":
+                                return MgSubtype(MgSubtype.ArtifactSubtypeEnum(item.value))
+                        elif item.type == "SUBTYPEENCHANTMENT":
+                                return MgSubtype(MgSubtype.EnchantmentSubtypeEnum(item.value))
+                        elif item.type == "SUBTYPEPLANESWALKER":
+                                return MgSubtype(MgSubtype.PlaneswalkerSubtypeEnum(item.value))
+                        elif item.type == "SUBTYPECREATUREA" or item.type == "SUBTYPECREATUREB":
+                                return MgSubtype(MgSubtype.CreatureSubtypeEnum(item.value))
+                        elif item.type == "SUBTYPEPLANAR":
+                                return MgSubtype(MgSubtype.PlanarSubtypeEnum(item.value))
+                        elif item.type == "SUPERTYPE":
+                                return MgSupertype(MgSupertype.SupertypeEnum(item.value))
+                        else:
+                                raise ValueError("Unrecognized type token: '{0}'".format(item))
+                def nontypeterm(self,items):
+                        typeterm = items[0]
+                        return MgNonExpression(typeterm)
                 
                 def colorsingleexpr(self,items):
                         return MgColorExpression(*items)
@@ -853,8 +868,7 @@ class JsonParser(BaseParser):
                         typeline: typelinesupert typelinet ("—" typelinesubt)?
                         typelinesupert: SUPERTYPE*
                         typelinet: TYPE*
-                        typelinesubt: (SUBTYPESPELL | SUBTYPELAND | SUBTYPEARTIFACT
-                        | SUBTYPEENCHANTMENT | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR)*
+                        typelinesubt: SUBTYPE*
                 
                         cardtext : ability*
                         remindertext : /\(.*?\)/
@@ -1079,11 +1093,13 @@ class JsonParser(BaseParser):
                         dashcostexpression: "—" expression
                         
                         //TODO: Need to account for custom values, variables, 'equals to' expressions, etc.
-                        valueexpression: valueterm
+                        valueexpression: valueterm | equaltoexpression | numberofexpression
+                        equaltoexpression: expression? "equal" "to" expression
+                        numberofexpression: ("a"|"the") "number" "of" expression
                         valueterm: valuenumber | valuequantity | valuefrequency | valuecustom
                         valuenumber: NUMBER
                         valuequantity: "one" | "two" | "three" | "four" | "five" | "six" //TODO
-                        //TODO: needs another rule to have different derivation from valuequantity
+                        //TODO: needs another rule to have a different derivation from valuequantity
                         valuefrequency: "once" | "twice" | valuequantity "times"
                         valuecustom: "X" | "*"
                         
@@ -1091,7 +1107,7 @@ class JsonParser(BaseParser):
                         
                         //TODO: Add as needed.
                         expression: binaryop | unaryop | descriptionexpression | effectexpression | etbexpression
-                        | ltbexpression
+                        | ltbexpression | controlsexpression
                         
                         unaryop: indefinitesingularexpression |
                         | targetexpression
@@ -1126,14 +1142,15 @@ class JsonParser(BaseParser):
                         | searchlibraryexpression
                         | putinzoneexpression
                         | shufflelibraryexpression
-                        | countasexpression
+                        | countasexpression //Used only on Diligent Farmhand and another card.
                         
                         destroyexpression: "destroy" expression
                         exileexpression: "exile" expression
                         sacrificeexpression: "sacrifice" (unaryop | descriptionorreference) //TODO: optional player field
                         regenerateexpression: "regenerate" expression
-                        dealsdamageexpression:  (referenceterm | targetexpression | eachexpression | descriptionexpression) "deals" valueexpression "damage" "to" (referenceterm | targetexpression | eachexpression) -> dealsdamagevarianta
-                        | (referenceterm | targetexpression | eachexpression | descriptionexpression) "deals" "damage" valueexpression "to" (referenceterm | targetexpression | eachexpression) -> dealsdamagevariantb
+                        dealsdamageexpression:  (referenceterm | targetexpression | eachexpression | descriptionexpression) "deals" valueexpression? "damage" ("to" (referenceterm | targetexpression | eachexpression))? -> dealsdamagevarianta
+                        | (referenceterm | targetexpression | eachexpression | descriptionexpression) "deals" "damage" valueexpression "to" (referenceterm | targetexpression | eachexpression)  -> dealsdamagevariantb
+                        | (referenceterm | targetexpression | eachexpression | descriptionexpression) "deals" "damage" "to" (referenceterm | targetexpression | eachexpression)  valueexpression -> dealsdamagevariantc
                         searchlibraryexpression: "search" playerpossessiveexpr "library" "for" (unaryop | descriptionexpression)
                         putinzoneexpression: "put" descriptionorreference ("onto" | "into") playerpossessiveexpr? ZONE descriptionexpression?
                         shufflelibraryexpression: "shuffle" playerpossessiveexpr "library"
@@ -1146,6 +1163,8 @@ class JsonParser(BaseParser):
                         
                         etbexpression: descriptionorreference "enters" "the" "battlefield"
                         ltbexpression: descriptionorreference "leaves" "the" "battlefield"
+                        
+                        controlsexpression: (unaryop | descriptionorreference) descriptionorreference "controls"
                         
                         ptexpression: valueexpression "/" valueexpression
                         namedexpression: "named" objectname
@@ -1164,8 +1183,10 @@ class JsonParser(BaseParser):
                         NAMEREFSYMBOL: "~" //Note: This substitution happens prior to lexing/parsing.
                         
                         //TODO: What about comma-delimited type expressions?
-                        typeexpression: (TYPE ["s"] | SUBTYPESPELL ["s"] | SUBTYPELAND ["s"] | SUBTYPEARTIFACT ["s"]
-                        | SUBTYPEENCHANTMENT ["s"] | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR | SUPERTYPE)+
+                        typeexpression: (typeterm)+
+                        
+                        typeterm: (TYPE ["s"] | SUBTYPESPELL ["s"] | SUBTYPELAND ["s"] | SUBTYPEARTIFACT ["s"] | SUBTYPEENCHANTMENT ["s"] | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR | SUPERTYPE)
+                        | "non"["-"] typeterm -> nontypeterm
                         
                         TYPE: "planeswalker" | "conspiracy" | "creature" | "enchantment" | "instant"
                         | "land" | "phenomenon" | "plane" | "artifact" | "scheme" | "sorcery"
@@ -1226,6 +1247,8 @@ class JsonParser(BaseParser):
                         | "new phyrexia" | "phyrexia" | "pyrulea" | "rabiah" | "rath" | "ravnica" | "regatha"
                         | "segovia" | "serra’s realm" | "shadowmoor" | "shandalar" | "ulgrotha" | "valla"
                         | "vryn" | "wildfire" | "xerex" | "zendikar"
+                        
+                        SUBTYPE: SUBTYPESPELL | SUBTYPELAND | SUBTYPEARTIFACT | SUBTYPEENCHANTMENT | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR
                         
                         SUPERTYPE: "basic" | "legendary" | "ongoing" | "snow" | "world"
                         

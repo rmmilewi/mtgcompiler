@@ -70,11 +70,42 @@ class TestParseCards(unittest.TestCase):
                 ]
                 }
                 card = self._parser.parse(rod)
+                card.unparseToString()
+                
+                #binding.bindNameReferences(card)
+                #visitor = inspection.SimpleGraphingVisitor(path="rodOfRuin.dot")
+                #visitor.traverse(card)
+                
+        def test_parseWeightOfSpires(self):
+                
+                weightOfSpires = {
+                "artist": "Michael Sutfin",
+                "cmc": 1,
+                "colorIdentity": [
+                "R"
+                ],
+                "colors": [
+                "Red"
+                ],
+                "flavor": "\"Finally, a good use for an Azorius courthouse.\"\n—Ghut Rak, Gruul guildmage",
+                "id": "bd55a199f44b3b36355944abe920cfe67185ac18",
+                "imageName": "weight of spires",
+                "layout": "normal",
+                "manaCost": "{R}",
+                "mciNumber": "78",
+                "multiverseid": 107551,
+                "name": "Weight of Spires",
+                "number": "78",
+                "rarity": "Uncommon",
+                "text": "Weight of Spires deals damage to target creature equal to the number of nonbasic lands that creature's controller controls.",
+                "type": "Instant",
+                "types": [
+                "Instant"
+                ]
+                }
+                card = self._parser.parse(weightOfSpires)
                 print(card.unparseToString())
                 
-                binding.bindNameReferences(card)
-                visitor = inspection.SimpleGraphingVisitor(path="rodOfRuin.dot")
-                visitor.traverse(card)
                 
         def test_parseForest(self):
                 return None

@@ -1,18 +1,17 @@
 import unittest
-from mtgcompiler.AST.reference import MgQualifier
+from mtgcompiler.AST.reference import MgQualifier,MgNameReference
 from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
 from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
 from mtgcompiler.AST.expressions import MgDescriptionExpression,MgNumberValue,MgColorExpression,MgTypeExpression,MgModalExpression
 from mtgcompiler.AST.expressions import MgManaExpression,MgPTExpression,MgNonExpression,MgAndExpression
 from mtgcompiler.AST.expressions import MgOrExpression,MgTargetExpression,MgAllExpression,MgEachExpression
 from mtgcompiler.AST.expressions import MgChoiceExpression,MgTapUntapExpression,MgDestroyExpression,MgUncastExpression
-from  mtgcompiler.AST.expressions import MgCreateTokenExpression
+from  mtgcompiler.AST.expressions import MgCreateTokenExpression,MgDealsDamageExpression
 class TestMagicExpressions(unittest.TestCase):
         
         def test_DestroyExpressions(self):
                 t_creature = MgType(MgType.TypeEnum.Creature)
                 typeExpr = MgTypeExpression(t_creature)
-                typeExpr.setPlural(True)
                 allcreatures = MgAllExpression(typeExpr)
                 
                 destroyExpr = MgDestroyExpression(allcreatures)
@@ -22,7 +21,7 @@ class TestMagicExpressions(unittest.TestCase):
                 self.assertTrue(destroyExpr.isChild(allcreatures))
                 self.assertEqual(allcreatures.getParent(),destroyExpr)
                 
-                self.assertEqual(destroyExpr.unparseToString().lower(),"destroy all creatures")
+                self.assertEqual(destroyExpr.unparseToString().lower(),"destroy all creature")
                 
         def test_TapUntapExpressions(self):
                 t_creature = MgType(MgType.TypeEnum.Creature)
@@ -65,16 +64,43 @@ class TestMagicExpressions(unittest.TestCase):
                 
                 self.assertEqual(uncastExpr.unparseToString().lower(),"counter target non-enchantment spell")
                 
+        def test_DealsDamageExpressions(self):
+                nameref = MgNameReference(None)
+                one = MgNumberValue(1,MgNumberValue.NumberTypeEnum.Literal)
+                any_target = MgTargetExpression(isAny=True)
+                
+                damageexpr_0 = MgDealsDamageExpression(origin=nameref,damageExpression=one,subject=any_target)
+                
+                self.assertTrue(damageexpr_0.isTraversable())
+                self.assertEqual(len(damageexpr_0.getTraversalSuccessors()),3)
+                self.assertTrue(damageexpr_0.isChild(any_target))
+                self.assertEqual(any_target.getParent(),damageexpr_0)
+                
+                self.assertEqual(damageexpr_0.getOrigin(),nameref)
+                self.assertTrue(damageexpr_0.hasDamageExpression())
+                self.assertEqual(damageexpr_0.getDamageExpression(),one)
+                self.assertTrue(damageexpr_0.hasSubject())
+                self.assertEqual(damageexpr_0.getSubject(),any_target)
+                
+                self.assertEqual(damageexpr_0.unparseToString().lower(),"~ deals 1 damage to any target")
+                
+                
+                
+                
         def test_CreateTokenExpressions(self):
                 
                 saproling_description = MgDescriptionExpression(
+                        #1/1
                         MgPTExpression(
                                 MgNumberValue(1,MgNumberValue.NumberTypeEnum.Literal),
                                 MgNumberValue(1,MgNumberValue.NumberTypeEnum.Literal)
-                        ), #1/1
-                        MgColorExpression(MgColorTerm(MgColorTerm.ColorTermEnum.Green)), #green
-                        MgTypeExpression(MgSubtype(MgSubtype.CreatureSubtypeEnum.Saproling),MgType(MgType.TypeEnum.Creature)), #saproling creature
-                        MgQualifier(MgQualifier.QualifierEnum.Token) #token
+                        ),
+                        #green
+                        MgColorExpression(MgColorTerm(MgColorTerm.ColorTermEnum.Green)), 
+                        #saproling creature
+                        MgTypeExpression(MgSubtype(MgSubtype.CreatureSubtypeEnum.Saproling),MgType(MgType.TypeEnum.Creature)),
+                        #token
+                        MgQualifier(MgQualifier.QualifierEnum.Token)
                 )
                 three_of_them = MgNumberValue(3,MgNumberValue.NumberTypeEnum.Quantity)
                 create_three_saprolings = MgCreateTokenExpression(descriptor=saproling_description,quantity=three_of_them)
@@ -86,7 +112,7 @@ class TestMagicExpressions(unittest.TestCase):
                 self.assertTrue(create_three_saprolings.isChild(three_of_them))
                 self.assertEqual(three_of_them.getParent(),create_three_saprolings)
                 
-                self.assertEqual(uncastExpr.unparseToString().lower(),"create three 1/1 green saproling creature token")
+                self.assertEqual(create_three_saprolings.unparseToString().lower(),"create three 1/1 green saproling creature token")
                 
                 
                 
