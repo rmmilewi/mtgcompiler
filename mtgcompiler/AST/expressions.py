@@ -382,12 +382,48 @@ class MgDashCostExpression(MgAbstractExpression):
                 
         def unparseToString(self):
                 return "—{0}".format(self._cost.unparseToString())
+                
+                
+class MgDeclarationExpression(MgAbstractExpression):
+        """Declaration expressions are anonymous definitions of game entities (such as players and
+        game objects. Declarations are composed of one or more MgDescriptionExpression objects (see below),
+        possibly joined together with logical operators. Declaration expressions can either stand on their
+        own or be decorated by other expressions such as target-expressions or each-expressions.
+        
+        Example: In "target enchantment or artifact", "target enchantment or artifact" is the whole declaration,
+        and it is composed of an OR joining two different description expressions and decorated by a 
+        target-expression.
+        """
+        
+        def __init__(self,definition):
+                """definition: The root node of the definition contained by this declaration."""
+                self._definition = definition
+                self._definition.setParent(self)
+                
+        def getDefinition(self):
+                """Returns the definition for this declaration."""
+                return self._definition
+                
+        def setDefinition(self,definition):
+                """Sets the definition for this declaration."""
+                self._definition = definition
+                self._definition.setParent(self)
+                
+        def isChild(self,child):
+                return child is not None and child in {self._definition}
+        
+        def getTraversalSuccessors(self):
+                return [node for node in {self._definition} if node.isTraversable()]
+                
+        def unparseToString(self):
+                return "{0}".format(self._definition.unparseToString())
 
 
 class MgDescriptionExpression(MgAbstractExpression):
         """A description expression is a sequence of sub-expressions/terms that describe some object.
         For example, in 'destroy target non-black creature', 'non-black' is in a MgColorExpression
         and 'creature' is in an MgTypeExpression. The description expression strings these together.
+        The entire description expression itself is a child of an anonymous declaration.
         """
         def __init__(self,*args):
                 """The constructor accepts a list of descriptors in any order."""

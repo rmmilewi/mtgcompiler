@@ -883,18 +883,25 @@ class JsonParser(BaseParser):
                         //TODO: Where to place compound statements in all this?
                         statementblock : (compoundstatement | statement) ["."] | statementblock (compoundstatement | statement) ["."]
                         
+                        
+                        //STATEMENTS
+                        
                         statement: expressionstatement
                         | conditionalstatement 
                         | activationstatement
                         | beingstatement
                         | thenstatement
+                        | maystatement
                         
-                        beingstatement: (expression | referenceterm) "is" (expression|referenceterm) -> isstatement
-                        | expression "isn't" expression -> isntstatement
-                        | "it's" expression -> itsstatement
-                        | "it's" "not" expression -> itsnotstatement
-                        | expression "can" expression -> canstatement
-                        | expression "can't" expression -> cantstatement
+                        maystatement: playerterm "may" statement
+                        
+                        beingstatement: declarationorreference "is" statement -> isstatement
+                        | declarationorreference ("has"|"have"|"had") statement -> hasstatement
+                        | declarationorreference "isn't" statement -> isntstatement
+                        | "it's" statement -> itsstatement
+                        | "it's" "not" statement -> itsnotstatement
+                        | declarationorreference "can" statement -> canstatement
+                        | declarationorreference "can't" statement -> cantstatement
                         
                         thenstatement: "then" statement
                         
@@ -923,7 +930,7 @@ class JsonParser(BaseParser):
                         
                         activationstatement: cost ":" statementblock
                         
-                        
+                        //KEYWORD ABILITIES
                         
                         keywordability: kwdeathtouch
                         | kwdefender | kwdoublestrike | kwenchant | kwequip | kwfirststrike
@@ -1088,99 +1095,196 @@ class JsonParser(BaseParser):
                         kwascend: "ascend"
                         kwassist: "assist"
                         
-                        cost: costsequence | dashcostexpression //TODO
-                        costsequence: ( tapuntapsymbol | manaexpression | effectexpression) ("," (tapuntapsymbol | manaexpression | effectexpression))*
-                        dashcostexpression: "—" expression
+                        //ABILITY COSTS
                         
-                        //TODO: Need to account for custom values, variables, 'equals to' expressions, etc.
+                        cost: costsequence | dashcostexpression //[TODO]
+                        costsequence: ( tapuntapsymbol | manaexpression | effectexpression) ("," (tapuntapsymbol | manaexpression | effectexpression))*
+                        dashcostexpression: "—" effectexpression
+                        
+                        ///VALUE EXPRESSIONS
+                        
+                        //[TODO: Need to account for custom values, variables, 'equals to' expressions, etc.]
                         valueexpression: valueterm | equaltoexpression | numberofexpression
-                        equaltoexpression: expression? "equal" "to" expression
-                        numberofexpression: ("a"|"the") "number" "of" expression
+                        equaltoexpression: eventoreffect? "equal" "to" (valueterm | declarationorreference)
+                        numberofexpression: ("a"|"the") "number" "of" declarationorreference
                         valueterm: valuenumber | valuequantity | valuefrequency | valuecustom
                         valuenumber: NUMBER
                         valuequantity: "one" | "two" | "three" | "four" | "five" | "six" //TODO
-                        //TODO: needs another rule to have a different derivation from valuequantity
+                        //[TODO: needs another rule to have a different derivation from valuequantity]
                         valuefrequency: "once" | "twice" | valuequantity "times"
                         valuecustom: "X" | "*"
                         
                         
+                        //DECLARATIONS AND REFERENCES
                         
-                        //TODO: Add as needed.
-                        expression: binaryop | unaryop | descriptionexpression | effectexpression | etbexpression
-                        | ltbexpression | controlsexpression
-                        
-                        unaryop: indefinitesingularexpression |
-                        | targetexpression
-                        | eachexpression
-                        | fromexpression
-                        
-                        targetexpression: "target" descriptionexpression
+                        declarationexpression: definitionexpression -> nakeddeclarationexpression
                         | "any" "target" -> anytargetexpression
-                        eachexpression: "each" expression
-                        indefinitesingularexpression: "a" descriptionexpression | "an" descriptionexpression
-                        fromexpression: "from" descriptionexpression
+                        | "target" definitionexpression -> targetexpression //[TODO: modifiers like 'up to three other target ___'].
+                        | "each" definitionexpression -> eachexpression
+                        | "all" definitionexpression -> allexpression
+                        | "a"["n"] definitionexpression -> indefinitesingularexpression
                         
-                        binaryop: andexpression 
-                        | orexpression
+                        definitionexpression: descriptionexpression
+                        | definitionexpression "or" descriptionexpression -> ordefinitionexpression
+                        | definitionexpression "and" descriptionexpression -> anddefinitionexpression
+                        | definitionexpression "and/or" descriptionexpression -> andordefinitionexpression
                         
-                        andexpression : statement "and" statement
-                        orexpression : statement "or" statement
+                        declarationorreference: referenceterm | declarationexpression
                         
+                        descriptionexpression: (colorexpression | namedexpression | manaexpression | typeexpression
+                        | ptexpression | qualifier | modifier | locationexpression | valuequantity | controlsexpression)+
+                        | playerterm
                         
-                        descriptionorreference: referenceterm | descriptionexpression //TODO
+                        referenceterm: namereference | itreference | thatreference | thisreference | selfreference | thereference | objectname
+                        namereference: NAMEREFSYMBOL
+                        itreference: "it"
+                        thatreference: ("that"|"those") definitionexpression
+                        thisreference: "this" definitionexpression
+                        selfreference: "itself" | "himself" | "herself"
+                        thereference: "the" definitionexpression
+                        playerterm: PLAYERTERM | referenceterm
+                        possessiveterm: "your" | "their" | referenceterm "'s" //[TODO]
                         
-                        
-                        descriptionexpression: ( colorexpression | namedexpression | manaexpression | typeexpression
-                        | ptexpression | qualifier | modifier | locationexpression | valuequantity)+
-                        
-                        effectexpression:
-                        | destroyexpression
-                        | exileexpression
-                        | sacrificeexpression
-                        | regenerateexpression
-                        | dealsdamageexpression
-                        | searchlibraryexpression
-                        | putinzoneexpression
-                        | shufflelibraryexpression
-                        | countasexpression //Used only on Diligent Farmhand and another card.
-                        
-                        destroyexpression: "destroy" expression
-                        exileexpression: "exile" expression
-                        sacrificeexpression: "sacrifice" (unaryop | descriptionorreference) //TODO: optional player field
-                        regenerateexpression: "regenerate" expression
-                        dealsdamageexpression:  (referenceterm | targetexpression | eachexpression | descriptionexpression) "deals" valueexpression? "damage" ("to" (referenceterm | targetexpression | eachexpression))? -> dealsdamagevarianta
-                        | (referenceterm | targetexpression | eachexpression | descriptionexpression) "deals" "damage" valueexpression "to" (referenceterm | targetexpression | eachexpression)  -> dealsdamagevariantb
-                        | (referenceterm | targetexpression | eachexpression | descriptionexpression) "deals" "damage" "to" (referenceterm | targetexpression | eachexpression)  valueexpression -> dealsdamagevariantc
-                        searchlibraryexpression: "search" playerpossessiveexpr "library" "for" (unaryop | descriptionexpression)
-                        putinzoneexpression: "put" descriptionorreference ("onto" | "into") playerpossessiveexpr? ZONE descriptionexpression?
-                        shufflelibraryexpression: "shuffle" playerpossessiveexpr "library"
-                        countasexpression: expression "count" "it" "as" expression
-                        
-                        
-                        playerpossessiveexpr: "your" | "their" //TODO: What about 'that player's'
-                        playerdoesexpression: playerreference ("do" | "does") -> playerdoesexpression
-                        | playerreference ("don't" | "doesn't") -> playerdoesnotexpression
-                        
-                        etbexpression: descriptionorreference "enters" "the" "battlefield"
-                        ltbexpression: descriptionorreference "leaves" "the" "battlefield"
-                        
-                        controlsexpression: (unaryop | descriptionorreference) descriptionorreference "controls"
                         
                         ptexpression: valueexpression "/" valueexpression
                         namedexpression: "named" objectname
-                        locationexpression: ("in" | "on") (playerpossessiveexpr | "a"["n"] )? zone 
+                        locationexpression: ("in" | "on") (playerpossessiveexpr | "a"["n"] )? zone
+                        controlsexpression: playerterm "controls"
                         
-                        timestepexpression: "end of turn" //TODO
+                        //EVENT AND EFFECT EXPRESSIONS
                         
-                        referenceterm: namereference | itreference | thatreference | thisreference | playerreference | selfreference
-                        itreference: "it"
-                        thatreference: "that" descriptionexpression
-                        thisreference: "this" descriptionexpression
-                        selfreference: "itself" | "himself" | "herself"
+                        eventoreffect: eventexpression | effectexpression
                         
-                        playerreference: "you" //TODO
-                        namereference: NAMEREFSYMBOL
-                        NAMEREFSYMBOL: "~" //Note: This substitution happens prior to lexing/parsing.
+                        eventexpression: etbexpression 
+                        | ltbexpression
+                        | playerdoesexpression
+                        
+                        playerdoesexpression: playerterm ("do" | "does") -> playerdoesexpression
+                        | playerterm ("don't" | "doesn't") -> playerdoesnotexpression
+                        
+                        etbexpression: declarationorreference "enters" "the" "battlefield"
+                        ltbexpression: declarationorreference "leaves" "the" "battlefield"
+                        
+                        effectexpression: keywordactionexpression
+                        | dealsdamageexpression
+                        | returnexpression
+                        | putinzoneexpression
+                        | spendmanaexpression
+                        | paylifeexpression
+                        | addmanaexpression
+                        
+                        
+                        dealsdamageexpression:  declarationorreference "deals" valueexpression? "damage" ("to" declarationorreference)? -> dealsdamagevarianta
+                        | declarationorreference "deals" "damage" valueexpression "to" declarationorreference  -> dealsdamagevariantb
+                        | declarationorreference "deals" "damage" "to" declarationorreference  valueexpression -> dealsdamagevariantc
+                        
+                        returnexpression: playerterm "return"["s"] declarationorreference to possessiveterm? zone //[TODO]
+                        
+                        putinzoneexpression: "put" descriptionorreference ("onto" | "into") possessiveterm? zone definitionexpression?
+                        
+                        spendmanaexpression: "spend mana" //[TODO]
+                        
+                        paylifeexpression: "pay" valueexpression? "life" //[TODO]
+                        
+                        addmanaexpression: "add" manaexpression
+                        
+                        keywordactionexpression: basickeywordaction | specialkeywordaction
+                        
+                        basickeywordaction: activateexpression
+                        | attachexpression
+                        | castexpression
+                        | uncastexpression
+                        | createexpression
+                        | destroyexpression
+                        | discardexpression
+                        | doubleexpression
+                        | exchangeexpression
+                        | exileexpression
+                        | fightexpression
+                        | playexpression
+                        | revealexpression
+                        | sacrificeexpression
+                        | searchexpression
+                        | shuffleexpression
+                        | tapuntapexpression
+                        
+                        attachexpression: "attach" declarationorreference "to" declarationorreference
+                        | "unattach" declarationorreference ("from" declarationorreference)? -> unattachexpression
+                        | playerterm "attaches" declarationorreference "to" declarationorreference -> playerattachesexpression
+                        
+                        castexpression: "cast" declarationorreference (castmodifier ("and" castmodifier")?)*
+                        castmodifier: "without" "paying" "its" "mana" "cost" -> castwithoutpaying
+                        | "as" "though" beingstatement -> castasthough
+                        
+                        uncastexpression: "counter" declarationorreference
+                        createexpression: "create" declarationorreference
+                        destroyexpression: "destroy" declarationorreference
+                        discardexpression: "discard" declarationorreference
+                        doubleexpression: "double" //[TODO]
+                        exchangeexpression: "exchange" //[TODO]
+                        exileexpression: "exile" declarationorreference
+                        fightexpression: "fight" //[TODO]
+                        playexpression: "play" declarationorreference
+                        revealexpression: "reveal" declarationorreference
+                        sacrificeexpression: "sacrifice" declarationorreference
+                        | playerterm "sacrifices" declarationorreference -> playersacrificeexpression
+                        searchexpression: "search" possessiveterm "library" "for" declarationorreference //[TODO: different zones]
+                        shuffleexpression: "shuffle" possessiveterm "library"
+                        tapuntapexpression: "tap" declarationorreference -> tapexpression
+                        | "untap" declarationorreference -> untapexpression
+                        
+                        specialkeywordaction: regenerateexpression
+                        | scryexpression
+                        | fatesealexpression
+                        | clashexpression
+                        | planeswalkexpression
+                        | setinmotionexpression
+                        | abandonexpression
+                        | proliferateexpression
+                        | transformexpression
+                        | populateexpression
+                        | monstrousexpression
+                        | voteexpression
+                        | bolsterexpression
+                        | manifestexpression
+                        | supportexpression
+                        | investigateexpression
+                        | meldexpression
+                        | goadexpression
+                        | exertexpression
+                        | exploreexpression
+                        | assembleexpression
+                        
+                        regenerateexpression: "regenerate" declarationorreference
+                        scryexpression: "scry" valueexpression
+                        fatesealexpression: "fateseal" valueexpression
+                        planeswalkexpression: playerterm "planeswalk"["s"] "to" PLANE
+                        setinmotionexpression: playerterm "set"["s"] declarationorreference "in" "motion"
+                        abandonexpression: playerterm? "abandon"["s"] declarationorreference //[Note: Has never been used]
+                        proliferateexpression: "proliferate"
+                        transformexpression: "transform" declarationorreference
+                        populateexpression: "populate"
+                        monstrousexpression: declarationorreference "becomes" "monstrous" //[TODO?]
+                        bolsterexpression: "bolster" valueexpression
+                        manifestexpression: playerterm? "the" "top" valueexpression? "card"["s"] "of" possessiveterm "library"
+                        supportexpression: "support" valueexpression
+                        investigateexpression: "investigate"
+                        meldexpression: "meld" "them" "into" objectname
+                        goadexpression: "goad" declarationorreference
+                        exertexpression: "exert" declarationorreference
+                        exploreexpression: "explore"
+                        //[Note: Assemble is an Un-set only keyword action. I might remove this.]
+                        assembleexpression: declarationorreference? "assemble"["s"] declarationorreference | assembleexpression valueexpression
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        //TYPE/MANA/COLOR EXPRESSIONS, MODIFIERS, AND MISCELLANEOUS
+                        
+                        timestepexpression: "end of turn" //[TODO]
                         
                         //TODO: What about comma-delimited type expressions?
                         typeexpression: (typeterm)+
@@ -1209,8 +1313,8 @@ class JsonParser(BaseParser):
                         | "yanggu" | "yanling"
                         
                         
-                        //TODO: SUBTYPECREATUREA and SUBTYPECREATUREB are split up because having such a long list of alternatives apparently
-                        //causes Lark to suffer a recursion depth error. We should see if this is fixable.
+                        //[TODO: SUBTYPECREATUREA and SUBTYPECREATUREB are split up because having such a long list of alternatives apparently]
+                        //[causes Lark to suffer a recursion depth error. We should see if this is fixable.]
                         
                         SUBTYPECREATUREA: "advisor" | "aetherborn" | "ally" | "angel" | "antelope" | "ape" | "archer" | "archon" 
                         | "artificer" | "assassin" | "assembly-worker" | "atog" | "aurochs" | "avatar" | "azra" | "badger"
@@ -1275,8 +1379,8 @@ class JsonParser(BaseParser):
                         
                         COLORTERM: "white" | "blue" | "black" | "red" | "green" | "monocolored" | "multicolored" | "colorless"
                         
-                        objectname: "'" OBJECTNAME "'" //TODO: No demarcations around names is difficult also.
-                        OBJECTNAME: WORD ((WS | ",") WORD)* //TODO: commas in names? This is problematic.
+                        objectname: "'" OBJECTNAME "'" //[TODO: No demarcations around names is difficult also.]
+                        OBJECTNAME: WORD ((WS | ",") WORD)* //[TODO: commas in names? This is problematic.]
                         
                         manaexpression: manasymbol+ 
                         manasymbol: "{" manamarkerseq "}"
@@ -1300,6 +1404,9 @@ class JsonParser(BaseParser):
                         manamarker_phyrexian: "P"i -> phyrexianmarker
                         manamarker_colorless: "C"i -> colorlessmarker
                         manamarker_x: "X"i -> xmarker
+                        
+                        NAMEREFSYMBOL: "~" | "~f"
+                        PLAYERTERM: "player"["s"] | "opponent"["s"] | "you" | "teammate"["s"] | "your" "team" | "they"
                         
                         tapuntapsymbol: TAPSYMBOL | UNTAPSYMBOL
                         TAPSYMBOL: "{T}"i

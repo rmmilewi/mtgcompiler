@@ -232,7 +232,7 @@ class MgThisReference(MgAbstractReference):
         'Whenever this creature transforms [...]'
         'Until end of turn, creatures you control gain "Whenever this creature [...]"'
         """
-        pass
+        pass #TODO
 
         
 
@@ -242,7 +242,7 @@ class MgPlayer(core.MgNode):
                 You = "you"
                 Opponent = "opponent"
                 Teammate = "teammate"
-        pass
+        pass #TODO
                 
                 
                 
