@@ -95,6 +95,117 @@ class MgCompoundStatement(MgAbstractStatement):
                 return output
                 
                 
+class MgMayStatement(MgAbstractStatement):
+        """A may-statement wraps around another statement, indicating that the statement underneath is optional."""
+        
+        def __init__(self,player,statement):
+                """
+                player: An expression describing the player who may take the action.
+                statement: The statement that may be carried out.
+                """
+                self._player = player
+                self._player.setParent(self)
+                self._statement = statement
+                self._statement.setParent(self)
+                
+        def getPlayer(self):
+                """Get the player who may carry out the statement."""
+                return self._player
+                
+        def setPlayer(self,player):
+                """Set the player who may carry out the statement."""
+                self._player = player
+                self._player.setParent(self)
+                
+        def getStatement(self):
+                """Get the statement that may be carried out."""
+                return self._statement
+                
+        def setStatement(self):
+                """Get the statement that may be carried out."""
+                self._statement = statement
+                self._statement.setParent(self)
+                
+        def isChild(self,child):
+                return child is not None and child in {self._player,self._statement}
+        
+        def getTraversalSuccessors(self):
+                return [node for node in {self._player,self._statement} if node.isTraversable()]
+                
+        def unparseToString(self):
+                return "{0} may {1}".format(self._player.unparseToString(),self._statement.unparseToString())
+                
+                
+class MgBeingStatement(MgAbstractStatement):
+        """The abstract parent class for all statements of being/status, such as:
+        
+        "~ is an Elf in addition to its other types"
+        "~ has first strike and haste"
+        "~ can't block"
+        "
+        
+        A being statement consists of a left-hand side and a right-hand side. The left-hand side
+        may be option (e.g. in a compound statement such as "target creature gets +1/+1 and <implied> has first strike
+        until end of turn.). 
+        """
+        def __init__(self,lhs,rhs):
+                """
+                lhs: (Optional) The thing that has something.
+                rhs: The thing that is had.
+                impliedLhs: Indicates whether the lhs is implied. This flag is set automatically by the constructor.
+                It is checked during binding.
+                """
+                super().__init__()
+                self._lhs = lhs
+                if self._lhs is not None:
+                        self._lhs.setParent(self)
+                        self._impliedLhs = False
+                else:
+                        self._impliedLhs = True
+                self._rhs = rhs
+                self._rhs.setParent(self)
+                
+        def isImpliedLhs(self):
+                """Checks whether the left-hand side of this statement is implied (i.e. not an actual child of the node)."""
+                return self._impliedLhs
+                
+        def getLhs(self):
+                """Get the left-hand side of this statement."""
+                return self._lhs
+                
+        def setLhs(self,lhs):
+                """Set the left-hand side of this statement."""
+                self._lhs = lhs
+                if self.isImpliedLhs():
+                        self._lhs.setParent(self)
+                        
+        def getRhs(self):
+                """Get the right-hand side of this statement."""
+                return self._rhs
+                
+        def setRhs(self,rhs):
+                """Set the right-hand side of this statement."""
+                self._rhs = rhs
+                self._rhs.setParent(self)
+                
+        def isChild(self,child):
+                if not self.isImpliedLhs():
+                        return child is not None and child in {self._lhs,self._rhs}
+                else:
+                        return child is not None and child in {self._rhs}
+        
+        def getTraversalSuccessors(self):
+                if not self.isImpliedLhs():
+                        return [node for node in {self._lhs,self._rhs} if node.isTraversable()]
+                else:
+                        return [node for node in {self._rhs} if node.isTraversable()]
+        
+        
+                
+        
+                
+                
+                
 class MgIsStatment(MgAbstractStatement):
         pass
                       

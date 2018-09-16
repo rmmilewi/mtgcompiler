@@ -1,13 +1,14 @@
 import collections
 from mtgcompiler.parsers.baseparser import BaseParser
 from mtgcompiler.AST.reference import MgName,MgNameReference,MgTapUntapSymbol
+from mtgcompiler.AST.reference import MgAbilityModifier,MgCombatStatusModifier,MgKeywordStatusModifier,MgTapStatusModifier,MgEffectStatusModifier
 from mtgcompiler.AST.card import MgTypeLine,MgFlavorText,MgTextBox,MgCard
 from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
 from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
 from mtgcompiler.AST.statements import MgKeywordAbilityListStatement,MgStatementBlock,MgExpressionStatement,MgActivationStatement
 
 from mtgcompiler.AST.expressions import MgNumberValue,MgPTExpression,MgManaExpression,MgTypeExpression,MgDescriptionExpression,MgNamedExpression,MgCostSequenceExpression
-from mtgcompiler.AST.expressions import MgColorExpression,MgAndExpression,MgOrExpression,MgAndOrExpression,MgTargetExpression
+from mtgcompiler.AST.expressions import MgColorExpression,MgAndExpression,MgOrExpression,MgAndOrExpression,MgTargetExpression,MgDeclarationExpression
 from mtgcompiler.AST.expressions import MgDestroyExpression,MgExileExpression,MgDealsDamageExpression
 
 from mtgcompiler.AST.abilities import MgReminderText,MgAbilityWord,MgRegularAbility
@@ -156,17 +157,17 @@ class JsonParser(BaseParser):
                 def kwdoublestrike(self,items): 
                         return MgDoubleStrikeAbility()
                 def kwenchant(self,items): 
-                        descriptor = items[0].children[0]
+                        descriptor = items[0]
                         return MgEnchantAbility(descriptor)
                 def kwequip(self,items):
                         if len(items[0].children) == 1:
                                 #Equip <cost>
-                                cost = items[0].children[0]
+                                cost = items[0]
                                 return MgEquipAbility(cost)
                         else:
                                 #Equip <quality> creature <cost>
-                                quality = items[0].children[0]
-                                cost = items[0].children[1]
+                                quality = items[0]
+                                cost = items[1]
                                 return MgEquipAbility(quality=quality,cost=cost)
                                 
                 def kwfirststrike(self,items): 
@@ -625,6 +626,7 @@ class JsonParser(BaseParser):
                         return items[0]
                 
                 def statementblock(self,items):
+                        print("STATEMENT BLOCK",items)
                         return MgStatementBlock(*items)
                 
                 def expressionstatement(self,items):
@@ -636,9 +638,16 @@ class JsonParser(BaseParser):
                         instructions = items[1]
                         return MgActivationStatement(cost=cost,instructions=instructions)
                         
+                def hasstatement(self,items):
+                         #declarationorreference? ("has"|"have"|"had") stmtabilityseq -> hasstatement
+                         return items
+                        
+                
+                        
                 #EXPRESSIONS
-                def expression(self,items):
+                def eventoreffect(self,items):
                         return items[0]
+                
                         
                 #EXPRESSIONS - UNARY OPERATIONS
                 def unaryop(self,items):
@@ -651,7 +660,6 @@ class JsonParser(BaseParser):
                         return MgTargetExpression(isAny=True)
                         
                         
-                        
                 #EXPRESSIONS - VALUE EXPRESSIONS
                 def valueexpression(self,items):
                         return items[0]
@@ -660,7 +668,7 @@ class JsonParser(BaseParser):
                 def valuenumber(self,items):
                         return MgNumberValue(items[0].value,MgNumberValue.NumberTypeEnum.Literal)
                         
-                #EXPRESSIONS - EFFECT EXPRESSIONS
+                #EXPRESSIONS - EVENT AND EFFECT EXPRESSIONS
                 def effectexpression(self,items):
                         return items[0]
                 def destroyexpression(self,items):
@@ -686,16 +694,6 @@ class JsonParser(BaseParser):
                         damageExpression = items[1]
                         subject = items[2]
                         variant = MgDealsDamageExpression.DealsDamageVariantEnum.VariantB
-                        
-                        #if len(items) == 3:
-                        #        subject = items[2]
-                        #        damageExpression = items[1]
-                        #elif len(items) == 2:
-                        #        subject = items[1]
-                        #        damageExpression = None
-                        #else:
-                        #        subject = None
-                        #        damageExpression = None
                         return MgDealsDamageExpression(origin,damageExpression,subject,variant)
                         
                 def dealsdamagevariantc(self,items):
@@ -710,23 +708,55 @@ class JsonParser(BaseParser):
                 def referenceterm(self,items):
                         return items[0]
                 def namereference(self,items):
-                        #This gets bound to the card name later.
+                        #The antecedent is determined during binding.
                         return MgNameReference(None)
                 
                 
-                #TYPES, DESCRIPTIONS, ETC.      
+                #TYPES, DECLARATIONS, ETC.
+                
+                
+                
+                def declarationorreference(self,items):
+                        return items[0]
+                
+                def declarationexpression(self,items):
+                        definition = items[0]
+                        return MgDeclarationExpression(definition)
+                        
+                def nakeddeclarationexpression(self,items):
+                        return items[0]
+                        
+                def definitionexpression(self,items):
+                        return items[0]
+                
+                
                 def descriptionexpression(self,items):
                         return MgDescriptionExpression(*items)
                 
                 def namedexpression(self,items):
                         return MgNamedExpression(items[0])
                         
+                        
+                def modifier(self,items):
+                        item = items[0]
+                        if item.type == "ABILITYMODIFIER":
+                                return MgAbilityModifier(MgAbilityModifier.AbilityModifierEnum(item.value))
+                        elif item.type == "COMBATSTATUSMODIFIER":
+                                return MgCombatStatusModifier(MgCombatStatusModifier.CombatStatusEnum(item.value))
+                        elif item.type == "KEYWORDSTATUSMODIFIER":
+                                return MgKeywordStatusModifier(MgKeywordStatusModifier.KeywordStatusEnum(item.value))
+                        elif item.type == "TAPPEDSTATUSMODIFIER":
+                                return MgTappedStatusModifier(MgTappedStatusModifier.TappedStatusEnum(item.value))
+                        elif item.type == "EFFECTSTATUSMODIFIER":
+                                return MgEffectStatusModifier(MgEffectStatusModifier.EffectStatusEnum(item.value))
+                        else:
+                                raise ValueError("Unrecognized entity modifier token: '{0}'".format(item))
+                        
                 def typeexpression(self,items):
-                        print("TYPE EXPRESSION",items)
                         typeExpr = MgTypeExpression(*items)
+                        return typeExpr
                         
                 def typeterm(self,items):
-                        print("TYPETERM",items)
                         item = items[0]
                         if item.type == "TYPE":
                                 return MgType(MgType.TypeEnum(item.value))
@@ -868,7 +898,7 @@ class JsonParser(BaseParser):
                         typeline: typelinesupert typelinet ("—" typelinesubt)?
                         typelinesupert: SUPERTYPE*
                         typelinet: TYPE*
-                        typelinesubt: SUBTYPE*
+                        typelinesubt: (SUBTYPESPELL | SUBTYPELAND | SUBTYPEARTIFACT | SUBTYPEENCHANTMENT | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR)*
                 
                         cardtext : ability*
                         remindertext : /\(.*?\)/
@@ -896,16 +926,17 @@ class JsonParser(BaseParser):
                         maystatement: playerterm "may" statement
                         
                         beingstatement: declarationorreference "is" statement -> isstatement
-                        | declarationorreference ("has"|"have"|"had") statement -> hasstatement
-                        | declarationorreference "isn't" statement -> isntstatement
+                        | declarationorreference? ("has"|"have"|"had") stmtabilityseq -> hasstatement
+                        | declarationorreference?  ("has"|"have"|"had") ("a"|valueexpression) countertype "counter" "on" "it" -> hascounterstatement
+                        | declarationorreference? "isn't" statement -> isntstatement
                         | "it's" statement -> itsstatement
                         | "it's" "not" statement -> itsnotstatement
-                        | declarationorreference "can" statement -> canstatement
-                        | declarationorreference "can't" statement -> cantstatement
+                        | declarationorreference? "can" statement -> canstatement
+                        | declarationorreference? "can't" statement -> cantstatement
                         
                         thenstatement: "then" statement
                         
-                        expressionstatement: expression
+                        expressionstatement: eventoreffect
                         
                         compoundstatement: statement  ("," statement ",")* "then" statement -> compoundthenstatement
                         | statement ("," statement ",")* "and" statement -> compoundandstatement
@@ -931,6 +962,9 @@ class JsonParser(BaseParser):
                         activationstatement: cost ":" statementblock
                         
                         //KEYWORD ABILITIES
+                        
+                        stmtabilityseq: (keywordability | quotedability) ("," (keywordability | quotedability) ",")* ("and" (keywordability | quotedability))?
+                        quotedability: "\"" statementblock "\""
                         
                         keywordability: kwdeathtouch
                         | kwdefender | kwdoublestrike | kwenchant | kwequip | kwfirststrike
@@ -1117,12 +1151,18 @@ class JsonParser(BaseParser):
                         
                         //DECLARATIONS AND REFERENCES
                         
-                        declarationexpression: definitionexpression -> nakeddeclarationexpression
-                        | "any" "target" -> anytargetexpression
-                        | "target" definitionexpression -> targetexpression //[TODO: modifiers like 'up to three other target ___'].
-                        | "each" definitionexpression -> eachexpression
-                        | "all" definitionexpression -> allexpression
-                        | "a"["n"] definitionexpression -> indefinitesingularexpression
+                        declarationexpression: nakeddeclarationexpression
+                        | anytargetexpression
+                        | eachexpression
+                        | allexpression
+                        | indefinitesingularexpression
+                        
+                        nakeddeclarationexpression: definitionexpression
+                        anytargetexpression: "any" "target"
+                        targetexpression: "target" definitionexpression //[TODO: modifiers like 'up to three other target ___'].
+                        eachexpression: "each" definitionexpression
+                        allexpression: "all" definitionexpression
+                        indefinitesingularexpression: "a"["n"] definitionexpression
                         
                         definitionexpression: descriptionexpression
                         | definitionexpression "or" descriptionexpression -> ordefinitionexpression
@@ -1148,7 +1188,7 @@ class JsonParser(BaseParser):
                         
                         ptexpression: valueexpression "/" valueexpression
                         namedexpression: "named" objectname
-                        locationexpression: ("in" | "on") (playerpossessiveexpr | "a"["n"] )? zone
+                        locationexpression: ("in" | "on") (possessiveterm | "a"["n"] )? zone
                         controlsexpression: playerterm "controls"
                         
                         //EVENT AND EFFECT EXPRESSIONS
@@ -1178,16 +1218,11 @@ class JsonParser(BaseParser):
                         | declarationorreference "deals" "damage" valueexpression "to" declarationorreference  -> dealsdamagevariantb
                         | declarationorreference "deals" "damage" "to" declarationorreference  valueexpression -> dealsdamagevariantc
                         
-                        returnexpression: playerterm "return"["s"] declarationorreference to possessiveterm? zone //[TODO]
-                        
-                        putinzoneexpression: "put" descriptionorreference ("onto" | "into") possessiveterm? zone definitionexpression?
-                        
+                        returnexpression: playerterm "return"["s"] declarationorreference "to" possessiveterm? zone //[TODO]
+                        putinzoneexpression: "put" declarationorreference ("onto" | "into") possessiveterm? zone definitionexpression?
                         spendmanaexpression: "spend mana" //[TODO]
-                        
                         paylifeexpression: "pay" valueexpression? "life" //[TODO]
-                        
                         addmanaexpression: "add" manaexpression
-                        
                         keywordactionexpression: basickeywordaction | specialkeywordaction
                         
                         basickeywordaction: activateexpression
@@ -1208,11 +1243,13 @@ class JsonParser(BaseParser):
                         | shuffleexpression
                         | tapuntapexpression
                         
+                        activateexpression: "activate" declarationorreference
+                        
                         attachexpression: "attach" declarationorreference "to" declarationorreference
                         | "unattach" declarationorreference ("from" declarationorreference)? -> unattachexpression
                         | playerterm "attaches" declarationorreference "to" declarationorreference -> playerattachesexpression
                         
-                        castexpression: "cast" declarationorreference (castmodifier ("and" castmodifier")?)*
+                        castexpression: "cast" declarationorreference (castmodifier ("and" castmodifier)?)*
                         castmodifier: "without" "paying" "its" "mana" "cost" -> castwithoutpaying
                         | "as" "though" beingstatement -> castasthough
                         
@@ -1258,13 +1295,15 @@ class JsonParser(BaseParser):
                         regenerateexpression: "regenerate" declarationorreference
                         scryexpression: "scry" valueexpression
                         fatesealexpression: "fateseal" valueexpression
-                        planeswalkexpression: playerterm "planeswalk"["s"] "to" PLANE
+                        clashexpression: playerterm? "clash" "with" playerterm
+                        planeswalkexpression: playerterm "planeswalk"["s"] "to" SUBTYPEPLANAR
                         setinmotionexpression: playerterm "set"["s"] declarationorreference "in" "motion"
                         abandonexpression: playerterm? "abandon"["s"] declarationorreference //[Note: Has never been used]
                         proliferateexpression: "proliferate"
                         transformexpression: "transform" declarationorreference
                         populateexpression: "populate"
                         monstrousexpression: declarationorreference "becomes" "monstrous" //[TODO?]
+                        voteexpression: playerterm "vote"["s"] "for" (objectname "or" objectname | declarationorreference) //[TODO]
                         bolsterexpression: "bolster" valueexpression
                         manifestexpression: playerterm? "the" "top" valueexpression? "card"["s"] "of" possessiveterm "library"
                         supportexpression: "support" valueexpression
@@ -1275,9 +1314,6 @@ class JsonParser(BaseParser):
                         exploreexpression: "explore"
                         //[Note: Assemble is an Un-set only keyword action. I might remove this.]
                         assembleexpression: declarationorreference? "assemble"["s"] declarationorreference | assembleexpression valueexpression
-                        
-                        
-                        
                         
                         
                         
@@ -1352,7 +1388,7 @@ class JsonParser(BaseParser):
                         | "segovia" | "serra’s realm" | "shadowmoor" | "shandalar" | "ulgrotha" | "valla"
                         | "vryn" | "wildfire" | "xerex" | "zendikar"
                         
-                        SUBTYPE: SUBTYPESPELL | SUBTYPELAND | SUBTYPEARTIFACT | SUBTYPEENCHANTMENT | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR
+                        subtype: SUBTYPESPELL | SUBTYPELAND | SUBTYPEARTIFACT | SUBTYPEENCHANTMENT | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR
                         
                         SUPERTYPE: "basic" | "legendary" | "ongoing" | "snow" | "world"
                         
@@ -1379,8 +1415,15 @@ class JsonParser(BaseParser):
                         
                         COLORTERM: "white" | "blue" | "black" | "red" | "green" | "monocolored" | "multicolored" | "colorless"
                         
-                        objectname: "'" OBJECTNAME "'" //[TODO: No demarcations around names is difficult also.]
-                        OBJECTNAME: WORD ((WS | ",") WORD)* //[TODO: commas in names? This is problematic.]
+                        objectname: OBJECTNAME //[TODO: No demarcations around names is difficult also.]
+                        OBJECTNAME: NAMEWORD ((WS | ",") NAMEWORD)* //[TODO: commas in names? This is problematic.]
+                        NAMEWORD: UCASE_LETTER (LCASE_LETTER)*
+                        
+                        countertype: ptchangeexpression | WORD
+                        
+                        ptchangeexpression: (PLUS | MINUS) valueterm "/" (PLUS | MINUS) valueterm
+                        PLUS: "+"
+                        MINUS: "-"
                         
                         manaexpression: manasymbol+ 
                         manasymbol: "{" manamarkerseq "}"
@@ -1406,12 +1449,14 @@ class JsonParser(BaseParser):
                         manamarker_x: "X"i -> xmarker
                         
                         NAMEREFSYMBOL: "~" | "~f"
-                        PLAYERTERM: "player"["s"] | "opponent"["s"] | "you" | "teammate"["s"] | "your" "team" | "they"
+                        PLAYERTERM: "player"["s"] | "opponent"["s"] | "you" | "teammate"["s"] | "your" "team" | "they" | "controller" | "owner"
                         
                         tapuntapsymbol: TAPSYMBOL | UNTAPSYMBOL
                         TAPSYMBOL: "{T}"i
                         UNTAPSYMBOL: "{Q}"i
                         
+                        %import common.UCASE_LETTER -> UCASE_LETTER
+                        %import common.LCASE_LETTER -> LCASE_LETTER
                         %import common.WORD -> WORD
                         %import common.SIGNED_NUMBER -> NUMBER
                         %import common.WS -> WS

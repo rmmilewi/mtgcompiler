@@ -139,9 +139,7 @@ class TestParseCards(unittest.TestCase):
                 card = self._parser.parse(forest)
                 card.unparseToString()
                 
-        @unittest.expectedFailure        
         def test_parseLance(self):
-                return None
                 lance = {
                 "artist": "Rob Alexander",
                 "cmc": 1,
