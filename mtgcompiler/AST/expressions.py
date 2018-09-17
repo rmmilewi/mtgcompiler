@@ -7,7 +7,8 @@ class MgAbstractExpression(core.MgNode):
         """This is the parent class for all expressions such as power/toughness, 
         types, and mana costs. This class is not instantiated, but provides common
         functionalities for all of these kinds of expressions."""
-        pass
+        def __init__(self):
+                self._traversable = True
         
         
 class MgValueExpression(MgAbstractExpression):
@@ -18,7 +19,7 @@ class MgValueExpression(MgAbstractExpression):
                 - 'greater than' in 'power greater than 4'
         """
         def __init__(self):
-                self._traversable = True
+                super().__init__()
         
 class MgValueComparisonExpression(MgValueExpression):
         """A value-comparison expression is a phrase in plain English comparing
@@ -303,7 +304,7 @@ class MgManaExpression(MgAbstractExpression):
 
         def __init__(self,*args):
                 """The constructor accepts a list of mana symbols in any order."""
-                self._traversable = True
+                super().__init__()
                 self._symlist = args
                 for sym in self._symlist:
                         sym.setParent(self)
@@ -328,7 +329,7 @@ class MgCostSequenceExpression(MgAbstractExpression):
         costs, such as those associated with an activated ability."""
         def __init__(self,*args):
                 """args: Cost expressions in the cost sequence (e.g. a mana expression)"""
-                self._traversable = True
+                super().__init__()
                 self._arguments = args
                 for arg in self._arguments:
                         arg.setParent(self)
@@ -362,6 +363,7 @@ class MgDashCostExpression(MgAbstractExpression):
                 cost: The expression defining the cost of the keyword ability 
                 associated with the dash-cost expresssion.
                 """
+                super().__init__()
                 self._cost = cost
                 self._cost.setParent(self)
                 
@@ -427,7 +429,7 @@ class MgDescriptionExpression(MgAbstractExpression):
         """
         def __init__(self,*args):
                 """The constructor accepts a list of descriptors in any order."""
-                self._traversable = True
+                super().__init__()
                 self._dlist = args
                 for d in self._dlist:
                         d.setParent(self)
@@ -447,7 +449,7 @@ class MgPTExpression(MgAbstractExpression):
         """This node represents power/toughness expressions
         such as 5/5, */*, or X/X."""
         def __init__(self,power,toughness):
-                self._traversable = True
+                super().__init__()
                 self._power = power
                 self._toughness = toughness
                 self._power.setParent(self)
@@ -484,7 +486,7 @@ class MgColorExpression(MgAbstractExpression):
                 """Unlike MgTypeExpression, the constructor for MgColorExpression accepts a single child
                 that can be a composite (e.g. an 'and' expression or a comma-separated series. You have to say
                 'red and white and green', you can't say 'red white green'.)"""
-                self._traversable = True
+                super().__init__()
                 self._value = termOrExpr
                 self._value.setParent(self)
                 
@@ -515,7 +517,7 @@ class MgTypeExpression(MgAbstractExpression):
         
         def __init__(self,*args):
                 """The constructor accepts a list of (sub|super)*types in any order."""
-                self._traversable = True
+                super().__init__()
                 self._tlist = args
                 #self._plural = False
                 self._commaDelimited = False
@@ -574,7 +576,7 @@ class MgControlExpression(MgAbstractExpression):
                 """
                 controller: The party that has the control.
                 """
-                self._traversable = True
+                super().__init__()
                 self._controller = controller
                 
         def getController(self):
@@ -611,7 +613,7 @@ class MgPossessiveExpression(MgAbstractExpression):
                 possessive: a PossessiveEnum.
                 owned: An expression describing the thing that is owned.
                 """
-                self._traversable = True
+                super().__init__()
                 self._possessive = possessive
                 self._owned = owned
                 self._owned.setParent(owned)
@@ -644,7 +646,7 @@ class MgModalExpression(MgAbstractExpression):
                 numberOfChoices: The number of times that the caster can choose different modes for the spell/ability.
                 options: A list containing the different modes of the spell/ability.
                 """
-                self._traversable = True
+                super().__init__()
                 self._options = list(options)
                 self._numberOfChoices = numberOfChoices
                 for option in self._options:
@@ -678,47 +680,70 @@ class MgModalExpression(MgAbstractExpression):
                         output += "• {0}\n".format(option.unparseToString())
                 return output
                 
-def MgEntersLeavesBattlefieldExpression(MgAbstractExpression):
+
+class MgChangeZoneExpression(MgAbstractExpression):
         """Represents the notion of entering or leaving the battlefield.
-        Takes the form of '____ enters the battlefield' or '____ leaves the battlefield.'
+        Takes the form of '____ enters the battlefield' or '____ leaves a graveyard.'
         """
         
-        def __init__(self,subject,entering=True):
+        def __init__(self,subject,zone,entering=True):
                 """
-                subject: The thing that is entering or leaving the battlefield.
-                entering: is the subject entering the battlefield?
+                subject: The thing that is entering or leaving a zone.
+                zone: An expression describing the zone being entered or left.
+                entering: A flag indicating whether the subject entering the zone?
                 """
+                super().__init__()
                 self._subject = subject
+                self._zone = zone
                 self._entering = entering
-                self._subject.setParent(this)
+                self._subject.setParent(self)
+                self._zone.setParent(self)
                 
         def isEntering(self):
-                """Check whether the subject is entering the battlefield."""
+                """Check whether the subject is entering the zone."""
                 return self._entering == True
                 
         def setEntering(self):
-                """Make it so that the subject is entering the battlefield."""
+                """Make it so that the subject is entering the zone."""
                 self._entering = True
                 
         def isLeaving(self):
-                """Check whether the subject is leaving the battlefield."""
+                """Check whether the subject is leaving the zone."""
                 return self._entering == False
                 
         def setLeaving(self):
-                """Make it so that the subject is leaving the battlefield."""
+                """Make it so that the subject is leaving the zone."""
                 self._entering = False
                 
+        def getSubject(self):
+                """Get the subject that is entering/leaving the zone."""
+                return self._subject
+                
+        def setSubject(self,subject):
+                """Set the subject that is entering/leaving the zone."""
+                subject = self._subject
+                self._subject.setParent(self)
+                
+        def getZone(self):
+                """Get the zone that is being entered/left."""
+                return self._zone
+                
+        def setZone(self,Zone):
+                """Set the zone that is being entered/left."""
+                Zone = self._zone
+                self._zone.setParent(self)
+                
         def isChild(self,child):
-                return child in self._subject
+                return child is not None and child in {self._subject,self._zone}
         
         def getTraversalSuccessors(self):
-                return [node for node in {self._subject} if node.isTraversable()]
+                return [node for node in {self._subject,self._zone} if node.isTraversable()]
                 
         def unparseToString(self):
                 if self._entering is True:
-                        return "{0} enters the battlefield".format(self._subject.unparseToString())
+                        return "{0} enters {1}".format(self._subject.unparseToString(),self._zone.unparseToString())
                 else:
-                        return "{0} leaves the battlefield".format(self._subject.unparseToString())
+                        return "{0} leaves {1}".format(self._subject.unparseToString(),self._zone.unparseToString())
                  
         
         
@@ -729,7 +754,7 @@ class MgBinaryOp(MgAbstractExpression):
                 lhs: left-hand side of the operator.
                 rhs: right-hand side of the operator.
                 """
-                self._traversable = True #All binary operators are traversable by default.
+                super().__init__() #All binary operators are traversable by default.
                 self._lhs = lhs
                 self._rhs = rhs
                 self._lhs.setParent(self)
@@ -786,7 +811,7 @@ class MgAndOrExpression(MgBinaryOp):
 class MgUnaryOp(MgAbstractExpression):
         """An uninstantiated parent class for all unary operators, like 'target X' or 'non-Y'."""
         def __init__(self,operand):
-                self._traversable = True #All unary operators are traversable by default.
+                super().__init__() #All unary operators are traversable by default.
                 self._operand = operand
                 self._operand.setParent(self)
                 
@@ -810,7 +835,7 @@ class MgTargetExpression(MgUnaryOp):
         def __init__(self,operand=None,isAny=False):
                 """isAny: A flag indicating that this target expression refers to 'any target'. If
                 this flag is set, the operand is allowed to be None."""
-                self._traversable = True
+                super().__init__()
                 if not isAny:
                         super().__init__(operand)
                         self._isAny = isAny
@@ -905,7 +930,7 @@ class MgEffectExpression(MgAbstractExpression):
         """This is the parent class for all effect expressions, such as destroying things, creating tokens, or gaining life.
         It is not instantiated directly, but instead provides common functionalities for effects."""
         def __init__(self):
-                self._traversable = True #All effects are traversable by default.
+                super().__init__() #All effects are traversable by default.
                 
 class MgDealsDamageExpression(MgEffectExpression):
         """Represents an effect that deals damage, such as
@@ -1045,6 +1070,77 @@ class MgDestroyExpression(MgEffectExpression):
                 
         def unparseToString(self):
                 return "destroy {0}".format(self._subject.unparseToString())
+
+class MgDestroyExpression(MgEffectExpression):
+        """Represents a destroy effect, as in 'destroy target non-white creature.'."""
+        def __init__(self,subject):
+                super().__init__()
+                self._subject = subject
+                self._subject.setParent(self)
+                
+        def getSubject(self):
+                """Get the subject of the destroy effect."""
+                return self._subject
+                
+        def setSubject(self,subject):
+                """Set the subject of the destroy effect."""
+                self._subject = subject
+                self._subject.setParent(self)
+                
+        def isChild(self,child):
+                return child is self._subject
+                
+        def getTraversalSuccessors(self):
+                return [node for node in {self._subject} if node.isTraversable()]
+                
+        def unparseToString(self):
+                return "destroy {0}".format(self._subject.unparseToString())
+                
+                
+class MgSacrificeExpression(MgEffectExpression):
+        """Represents a sacrifice effect, as in 'target player sacrifices a creature' or 'sacrifice a Goblin'."""
+        def __init__(self,subject,controller=None):
+                """
+                subject: The thing being sacrificed.
+                controller: (optional) An expression describing the person being forced to sacrifice something.
+                """
+                super().__init__()
+                self._subject = subject
+                self._subject.setParent(self)
+                self._controller = controller
+                if self._controller is not None:
+                        self._controller.setParent(self)
+                
+        def getSubject(self):
+                """Get the subject of the sacrifice effect."""
+                return self._subject
+                
+        def setSubject(self,subject):
+                """Set the subject of the sacrifice effect."""
+                self._subject = subject
+                self._subject.setParent(self)
+                
+        def getController(self):
+                """Get the (optional) controller of the sacrifice effect."""
+                return self._controller
+                
+        def setController(self,controller):
+                """Set the (optional) controller of the sacrifice effect."""
+                self._controller = controller
+                if self._controller is not None:
+                        self._controller.setParent(self)
+                
+        def isChild(self,child):
+                return child is not None and child in {self._subject,self._controller}
+                
+        def getTraversalSuccessors(self):
+                return [node for node in {self._subject,self._controller} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._controller is None:
+                        return "sacrifice {0}".format(self._subject.unparseToString())
+                else:
+                        return "{0} sacrifices {1}".format(self._controller.unparseToString(),self._subject.unparseToString())
 
 class MgExileExpression(MgEffectExpression):
         """Represents an exile effect, as in 'exile all enchantments'."""

@@ -1,6 +1,7 @@
 import collections
 from mtgcompiler.parsers.baseparser import BaseParser
-from mtgcompiler.AST.reference import MgName,MgNameReference,MgTapUntapSymbol
+from mtgcompiler.AST.reference import MgNameReference,MgThisReference
+from mtgcompiler.AST.reference import MgName,MgTapUntapSymbol,MgZone
 from mtgcompiler.AST.reference import MgAbilityModifier,MgCombatStatusModifier,MgKeywordStatusModifier,MgTapStatusModifier,MgEffectStatusModifier
 from mtgcompiler.AST.card import MgTypeLine,MgFlavorText,MgTextBox,MgCard
 from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
@@ -9,7 +10,7 @@ from mtgcompiler.AST.statements import MgKeywordAbilityListStatement,MgStatement
 
 from mtgcompiler.AST.expressions import MgNumberValue,MgPTExpression,MgManaExpression,MgTypeExpression,MgDescriptionExpression,MgNamedExpression,MgCostSequenceExpression
 from mtgcompiler.AST.expressions import MgColorExpression,MgAndExpression,MgOrExpression,MgAndOrExpression,MgTargetExpression,MgDeclarationExpression
-from mtgcompiler.AST.expressions import MgDestroyExpression,MgExileExpression,MgDealsDamageExpression
+from mtgcompiler.AST.expressions import MgDestroyExpression,MgExileExpression,MgDealsDamageExpression,MgChangeZoneExpression,MgSacrificeExpression
 
 from mtgcompiler.AST.abilities import MgReminderText,MgAbilityWord,MgRegularAbility
 from mtgcompiler.AST.abilities import MgDeathtouchAbility,MgDefenderAbility,MgDoubleStrikeAbility,MgFirstStrikeAbility,MgTrampleAbility
@@ -626,10 +627,10 @@ class JsonParser(BaseParser):
                         return items[0]
                 
                 def statementblock(self,items):
-                        print("STATEMENT BLOCK",items)
                         return MgStatementBlock(*items)
                 
                 def expressionstatement(self,items):
+                        print("EXPRESSION STATEMENT",items)
                         expression = items[0]
                         return MgExpressionStatement(expression)
                         
@@ -640,7 +641,7 @@ class JsonParser(BaseParser):
                         
                 def hasstatement(self,items):
                          #declarationorreference? ("has"|"have"|"had") stmtabilityseq -> hasstatement
-                         return items
+                         return items #TODO
                         
                 
                         
@@ -669,8 +670,42 @@ class JsonParser(BaseParser):
                         return MgNumberValue(items[0].value,MgNumberValue.NumberTypeEnum.Literal)
                         
                 #EXPRESSIONS - EVENT AND EFFECT EXPRESSIONS
+                
+                def eventexpression(self,items):
+                        return items[0]
+                
+                def enterzoneexpression(self,items):
+                        subject = items[0]
+                        if len(items) == 3:
+                                possessiveterm = items[1] #TODO: Deal with possessive constructions.
+                                zone = items[2]
+                                return MgChangeZoneExpression(subject=subject,zone=zone,entering=True)
+                        else:
+                                zone = items[1]
+                                return MgChangeZoneExpression(subject=subject,zone=zone,entering=True)
+                                
+                def leavezoneexpression(self,items):
+                        subject = items[0]
+                        if len(items) == 3:
+                                possessiveterm = items[1] #TODO: Deal with possessive constructions.
+                                zone = items[2]
+                                return MgChangeZoneExpression(subject=subject,zone=zone,entering=False)
+                        else:
+                                zone = items[1]
+                                return MgChangeZoneExpression(subject=subject,zone=zone,entering=False)
+                
+                
                 def effectexpression(self,items):
                         return items[0]
+                        
+                def keywordactionexpression(self,items):
+                        return items[0]
+                def basickeywordaction(self,items):
+                        return items[0]
+                def specialkeywordaction(self,items):
+                        return items[0]
+                        
+                        
                 def destroyexpression(self,items):
                         return MgDestroyExpression(items[0])
                 def dealsdamagevarianta(self,items):
@@ -703,18 +738,34 @@ class JsonParser(BaseParser):
                         damageExpression = items[2]
                         subject = items[1]
                         return MgDealsDamageExpression(origin,damageExpression,subject,variant)
+                        
+                        
+                def sacrificeexpression(self,items):
+                        if len(items) == 2:
+                                controller = items[0]
+                                subject = items[1]
+                                return MgSacrificeExpression(subject=subject,controller=controller)
+                        else:
+                                subject = items[0]
+                                return MgSacrificeExpression(subject=subject)
+                        
                 
                 #REFERENCES
                 def referenceterm(self,items):
                         return items[0]
                 def namereference(self,items):
-                        #The antecedent is determined during binding.
+                        #Note: the antecedent is determined during binding.
                         return MgNameReference(None)
+                def thisreference(self,items):
+                        #Note: the antecedent is determined during binding.
+                        return MgThisReference(items[0])
                 
                 
                 #TYPES, DECLARATIONS, ETC.
                 
-                
+                def zone(self,items):
+                        zone = items[0]
+                        return MgZone(MgZone.ZoneEnum(zone.value))
                 
                 def declarationorreference(self,items):
                         return items[0]
@@ -824,6 +875,7 @@ class JsonParser(BaseParser):
                 def cost(self,items):
                         return items[0]
                 def costsequence(self,items):
+                        print("COST SEQUENCE",items)
                         return MgCostSequenceExpression(*items)
                 def tapuntapsymbol(self,items):
                         if items[0].type == "TAPSYMBOL":
@@ -1172,7 +1224,7 @@ class JsonParser(BaseParser):
                         declarationorreference: referenceterm | declarationexpression
                         
                         descriptionexpression: (colorexpression | namedexpression | manaexpression | typeexpression
-                        | ptexpression | qualifier | modifier | locationexpression | valuequantity | controlsexpression)+
+                        | ptexpression | qualifier | modifier | locationexpression | valuequantity | controlsexpression | withexpression)+
                         | playerterm
                         
                         referenceterm: namereference | itreference | thatreference | thisreference | selfreference | thereference | objectname
@@ -1190,20 +1242,20 @@ class JsonParser(BaseParser):
                         namedexpression: "named" objectname
                         locationexpression: ("in" | "on") (possessiveterm | "a"["n"] )? zone
                         controlsexpression: playerterm "controls"
+                        withexpression: "with" stmtabilityseq
                         
                         //EVENT AND EFFECT EXPRESSIONS
                         
                         eventoreffect: eventexpression | effectexpression
                         
-                        eventexpression: etbexpression 
-                        | ltbexpression
+                        eventexpression: changezoneexpression
                         | playerdoesexpression
                         
                         playerdoesexpression: playerterm ("do" | "does") -> playerdoesexpression
                         | playerterm ("don't" | "doesn't") -> playerdoesnotexpression
                         
-                        etbexpression: declarationorreference "enters" "the" "battlefield"
-                        ltbexpression: declarationorreference "leaves" "the" "battlefield"
+                        changezoneexpression: declarationorreference "enters" possessiveterm? zone -> enterzoneexpression
+                        | declarationorreference "leaves" possessiveterm? zone-> leavezoneexpression
                         
                         effectexpression: keywordactionexpression
                         | dealsdamageexpression
@@ -1222,7 +1274,7 @@ class JsonParser(BaseParser):
                         putinzoneexpression: "put" declarationorreference ("onto" | "into") possessiveterm? zone definitionexpression?
                         spendmanaexpression: "spend mana" //[TODO]
                         paylifeexpression: "pay" valueexpression? "life" //[TODO]
-                        addmanaexpression: "add" manaexpression
+                        addmanaexpression: "add" manaexpression | "add" valuequantity "mana" "of" "any" "color" //[TODO]
                         keywordactionexpression: basickeywordaction | specialkeywordaction
                         
                         basickeywordaction: activateexpression
@@ -1263,8 +1315,7 @@ class JsonParser(BaseParser):
                         fightexpression: "fight" //[TODO]
                         playexpression: "play" declarationorreference
                         revealexpression: "reveal" declarationorreference
-                        sacrificeexpression: "sacrifice" declarationorreference
-                        | playerterm "sacrifices" declarationorreference -> playersacrificeexpression
+                        sacrificeexpression: "sacrifice" declarationorreference | declarationorreference "sacrifices" declarationorreference
                         searchexpression: "search" possessiveterm "library" "for" declarationorreference //[TODO: different zones]
                         shuffleexpression: "shuffle" possessiveterm "library"
                         tapuntapexpression: "tap" declarationorreference -> tapexpression

@@ -187,7 +187,7 @@ class MgThatReference(MgAbstractReference):
                 
         def isChild(self,child):
                 """This node has one child, the descriptor expression."""
-                return self._descriptor is not None and child == self._descriptor
+                return self._child is not None and child == self._descriptor
                 
         def getTraversalSuccessors(self):
                 """This node can have up to one successor, its descriptor."""
@@ -232,7 +232,38 @@ class MgThisReference(MgAbstractReference):
         'Whenever this creature transforms [...]'
         'Until end of turn, creatures you control gain "Whenever this creature [...]"'
         """
-        pass #TODO
+        def __init__(self,descriptor,antecedent=None):
+                """
+                descriptor: An expression that describes the antecedent.
+                antecedent: The thing that the that-reference refers to. By default, this attribute is None
+                to start, because the compiler makes a second pass after parsing and AST construction in order
+                to resolve the identity of the antecedent. This is not necessary for parsing or unparsing, but it
+                is relevant to analyzers.
+                """
+                super().__init__(antecedent)
+                self._descriptor = descriptor
+                self._descriptor.setParent(self)
+                
+        def getDescriptor(self):
+                """Get the descriptor for the that-reference."""
+                return self._descriptor
+                
+        def setDescriptor(self,descriptor):
+                """Set the descriptor for the that-reference."""
+                self._descriptor = descriptor
+                if self._descriptor is not None:
+                        self._descriptor.setParent(self)
+                
+        def isChild(self,child):
+                """This node has one child, the descriptor expression."""
+                return self._child is not None and child == self._descriptor
+                
+        def getTraversalSuccessors(self):
+                """This node can have up to one successor, its descriptor."""
+                return [node for node in {self._descriptor} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                return "this {0}".format(self._descriptor.unparseToString())
 
         
 

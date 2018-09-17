@@ -9,49 +9,44 @@ class TestParseCards(unittest.TestCase):
         @classmethod
         def setUpClass(cls):
                 cls._parser = JsonParser()
-        
-        def test_parseDiligentFarmhand(self):
-                return None
-                farmhand = {
-                "artist": "Gary Ruddell",
-                "cmc": 1,
+                
+        def test_parseSailorOfMeans(self):
+                sailor =  {
+                "artist": "Ryan Pancoast",
+                "cmc": 3,
                 "colorIdentity": [
-                "G"
+                "U"
                 ],
                 "colors": [
-                "Green"
+                "Blue"
                 ],
-                "id": "f8f6dcec4ee1e8192183f0c6ec30f6376e97e8ec",
-                "imageName": "diligent farmhand",
+                "flavor": "In the Brazen Coalition, the wheels of business are greased with plunder.",
+                "id": "3df51b5a6b42b34f836a533677dd22977208ec3d",
+                "imageName": "sailor of means",
                 "layout": "normal",
-                "manaCost": "{G}",
-                "mciNumber": "237",
-                "multiverseid": 29773,
-                "name": "Diligent Farmhand",
-                "number": "237",
+                "manaCost": "{2}{U}",
+                "mciNumber": "73",
+                "multiverseid": 435225,
+                "name": "Sailor of Means",
+                "number": "73",
                 "power": "1",
                 "rarity": "Common",
                 "subtypes": [
                 "Human",
-                "Druid"
+                "Pirate"
                 ],
-                "text": "{1}{G}, Sacrifice Diligent Farmhand: Search your library for a basic land card and put that card onto the battlefield tapped. Then shuffle your library.\nIf Diligent Farmhand is in a graveyard, effects from spells named 'Muscle Burst' count it as a card named 'Muscle Burst'.",
-                "toughness": "1",
-                "type": "Creature — Human Druid",
+                "text": "When Sailor of Means enters the battlefield, create a colorless Treasure artifact token with \"{T}, Sacrifice this artifact: Add one mana of any color.\"",
+                "toughness": "4",
+                "type": "Creature — Human Pirate",
                 "types": [
                 "Creature"
                 ]
                 }
-                card = self._parser.parse(farmhand)
+                card = self._parser.parse(sailor)
                 print(card.unparseToString())
-                #tree = larkparser.parse("first strike, double strike, bushido 5 (this is reminder text)")
-                #print(tree)
-                #pydot__tree_to_png(tree, "lark_test.png")
-                #out = transformer.transform(tree)
-                #print(out)
-                #quit()
                 
         def test_parseRodOfRuin(self):
+                return None
                 rod = {
                 "artist": "Christopher Rush",
                 "cmc": 4,
@@ -77,7 +72,7 @@ class TestParseCards(unittest.TestCase):
                 #visitor.traverse(card)
                 
         def test_parseWeightOfSpires(self):
-                
+                return None
                 weightOfSpires = {
                 "artist": "Michael Sutfin",
                 "cmc": 1,
@@ -140,6 +135,7 @@ class TestParseCards(unittest.TestCase):
                 card.unparseToString()
                 
         def test_parseLance(self):
+                return None
                 lance = {
                 "artist": "Rob Alexander",
                 "cmc": 1,
