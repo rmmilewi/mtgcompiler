@@ -208,7 +208,7 @@ class MgNumberValue(MgValueExpression):
         class NumberTypeEnum(Enum):
                 """Indicates how the number value should be unparsed."""
                 Literal = auto() #1, 2, 3
-                Quantity = auto() #one, two, three
+                Cardinal = auto() #one, two, three
                 Frequency = auto() #once, twice, three times
                 Ordinal = auto() #first, second, third
                 Custom = auto() #*,1+*
@@ -226,13 +226,13 @@ class MgNumberValue(MgValueExpression):
                 """Makes the number type a literal."""
                 self._ntype = MgNumberValue.NumberTypeEnum.Literal
                 
-        def isQuantity(self):
+        def isCardinal(self):
                 """Checks if the number type is a quantity."""
-                return self._ntype == MgNumberValue.NumberTypeEnum.Quantity
+                return self._ntype == MgNumberValue.NumberTypeEnum.Cardinal
                 
-        def setQuantity(self):
+        def setCardinal(self):
                 """Makes the number type a quantity."""
-                self._ntype = MgNumberValue.NumberTypeEnum.Quantity
+                self._ntype = MgNumberValue.NumberTypeEnum.Cardinal
                 
         def isFrequency(self):
                 """Checks if the number type is a frequency."""
@@ -287,7 +287,7 @@ class MgNumberValue(MgValueExpression):
                             
                 if self._ntype == MgNumberValue.NumberTypeEnum.Quantity or self._ntype == MgNumberValue.NumberTypeEnum.Frequency:
                         quantityRepresentation = num2words(self._value)
-                        if self._ntype == MgNumberValue.NumberTypeEnum.Quantity:
+                        if self._ntype == MgNumberValue.NumberTypeEnum.Cardinal:
                                 return quantityRepresentation
                         else: #ntype is frequency
                                 return "{0} times".format(quantityRepresentation)
@@ -323,6 +323,83 @@ class MgManaExpression(MgAbstractExpression):
         def addManaSymbol(self,sym):
                 self._symlist.append(sym)
                 sym.setParent(self)
+                
+
+class MgManaSpecificationExpression(MgAbstractExpression):
+        """This node represents a description of the kind of mana produced by an add-mana-expression.
+        Examples include (relevant portions enclosed by tildes):
+        
+        * Add ~one mana of any color~.
+        * Add ~three mana of any one color~.
+        * Add ~two mana of any combination of colors~.
+        * Add ~one mana in any combination of {R} and/or {G}.~
+        * Add ~{R} for each creature you control.~
+        * Add ~one mana of any type a land an opponent controls could produce~.
+        * Add ~one mana of any color in your commander's color identity~.
+        
+        Normally an add-mana-expression just uses a plain mana expression (e.g. 'add {G}'), but otherwise
+        it uses a mana description expression. This can be a combination of value expressions, mana specifiers,
+        and/or conditional statements.
+        """
+        def __init__(self,quantity,*args):
+                """"
+                quantity: A value expression indicating the amount of mana produced.
+                args: The constructor accepts a list of mana specifications in any order.
+                """
+                super().__init__()
+                self._quantity = quantity
+                self._speclist = args
+                self._quantity.setParent(self)
+                for s in self._speclist:
+                        s.setParent(self)
+                
+        
+                        
+        def isChild(self,child):
+                return child is not None and child in self._quantity+self._speclist
+        
+        def getTraversalSuccessors(self):
+                return [s for s in self._quantity+self._speclist if s.isTraversable()]
+                
+        def unparseToString(self):
+                return ' '.join(s.unparseToString() for s in self._speclist)
+                
+class MgManaSpecifier(MgAbstractExpression):
+        """This is the abstract parent class for all mana specifications."""
+        def __init__(self):
+                super().__init__()
+        
+class MgAnyColorSpecifier(MgManaSpecifier):
+        def __init__(self,anyOneColor=False):
+                """
+                anyOneColor: A flag indicating that the phrase is 'of any one color'. Otherwise it's just 'of any color'.
+                """
+                super().__init__()
+                self._anyOneColor = anyOneColor
+        
+        def isAnyOneColor(self):
+                """Check whether the phrasing is 'of any one color'."""
+                return self._anyOneColor
+                
+        def setAnyOneColor(self,anyOneColor):
+                """Set whether the phrasing is 'of any one color'."""
+                self._anyOneColor = anyOneColor
+                
+        def isChild(self,child):
+                """This node has no children."""
+                return False
+                
+        def getTraversalSuccessors(self):
+                """This node has no successors."""
+                return []
+                
+        def unparseToString(self):
+                if self._anyOneColor == True:
+                        return "mana of any one color"
+                else:
+                        return "mana of any color"
+                 
+        
                 
 class MgCostSequenceExpression(MgAbstractExpression):
         """This node represents a series of terms/expressions separated by a comma used in a series of
@@ -932,6 +1009,35 @@ class MgEffectExpression(MgAbstractExpression):
         def __init__(self):
                 super().__init__() #All effects are traversable by default.
                 
+                
+class MgAddManaExpression(MgEffectExpression):
+        """Represents an effect that adds mana."""
+        def __init__(self,manaexpr,playerexpr=None):
+                """
+                manaexpr: Either a mana expression, value expression containing a mana expression, or a mana specification expression.
+                playerexpr: An expression describing a player. Used in the case that the effect instructs a player to add mana.
+                """
+                self._manaexpr = manaexpr
+                self._manaexpr.setParent(self)
+                self._playerexpr = playerexpr
+                if self._playerexpr is not None:
+                        self._playerexpr.setParent(self)
+        
+        def isChild(self,child):
+                return child is not None and child in {self._manaexpr,self._playerexpr}
+                
+        def getTraversalSuccessors(self):
+                return [node for node in {self._manaexpr,self._playerexpr} if node is not None and node.isTraversable()]
+                
+        def unparseToString(self):
+                if self._playerexpr is not None:
+                        print("{0} adds {1}".format(self._playerexpr.unparseToString(),self._manaexpr.unparseToString()))
+                else:
+                        print("add {0}".format(self._manaexpr.unparseToString()))
+        
+        
+                
+                
 class MgDealsDamageExpression(MgEffectExpression):
         """Represents an effect that deals damage, such as
         'Shock deals 2 damage to any target'
@@ -1046,31 +1152,6 @@ class MgDealsDamageExpression(MgEffectExpression):
                 #        output = output + " to {0}".format(self._subject.unparseToString())
         
         
-class MgDestroyExpression(MgEffectExpression):
-        """Represents a destroy effect, as in 'destroy target non-white creature.'."""
-        def __init__(self,subject):
-                super().__init__()
-                self._subject = subject
-                self._subject.setParent(self)
-                
-        def getSubject(self):
-                """Get the subject of the destroy effect."""
-                return self._subject
-                
-        def setSubject(self,subject):
-                """Set the subject of the destroy effect."""
-                self._subject = subject
-                self._subject.setParent(self)
-                
-        def isChild(self,child):
-                return child is self._subject
-                
-        def getTraversalSuccessors(self):
-                return [node for node in {self._subject} if node.isTraversable()]
-                
-        def unparseToString(self):
-                return "destroy {0}".format(self._subject.unparseToString())
-
 class MgDestroyExpression(MgEffectExpression):
         """Represents a destroy effect, as in 'destroy target non-white creature.'."""
         def __init__(self,subject):
@@ -1310,7 +1391,8 @@ class MgCreateTokenExpression(MgEffectExpression):
                  super().__init__()
                  self._quantity =  quantity
                  self._descriptor = descriptor
-                 self._quantity.setParent(self)
+                 if self._quantity is not None:
+                         self._quantity.setParent(self)
                  self._descriptor.setParent(self)
         
         def getQuantity(self):
@@ -1318,7 +1400,8 @@ class MgCreateTokenExpression(MgEffectExpression):
                 
         def setQuantity(self,quantity):
                 self._quantity = quantity
-                self._quantity.setParent(self)
+                if self._quantity is not None:
+                        self._quantity.setParent(self)
         
         def getDescriptor(self):
                 return self._descriptor
@@ -1331,7 +1414,7 @@ class MgCreateTokenExpression(MgEffectExpression):
                 return child is not None and child in {self._descriptor,self._quantity}
                 
         def getTraversalSuccessors(self):
-                return [node for node in {self._descriptor,self._quantity} if node.isTraversable()] 
+                return [node for node in {self._descriptor,self._quantity} if node is not None and node.isTraversable()] 
                  
         def unparseToString(self):
                 if self._quantity is None:

@@ -76,8 +76,6 @@ class MgStatementSequence(core.MgNode):
                 
         def unparseToString(self):
                 return ' '.join(statement.unparseToString() for statement in self._ilist)
-                
-        
 
 class MgAbstractAbility(core.MgNode):
         """Ability nodes represent abilities on Magic cards, such as

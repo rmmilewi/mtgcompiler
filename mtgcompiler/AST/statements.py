@@ -22,6 +22,15 @@ class MgStatementBlock(MgAbstractStatement):
                 for statement in self._ilist:
                         statement.setParent(self)
                         
+        def getNumberOfStatements(self):
+                """Get the number of statements in this statement block."""
+                return len(self._ilist)
+                
+        def getStatementAtIndex(self,index):
+                """Get the statement at the given index in the statement list.
+                Produces an error if the index falls out of bounds."""
+                return self._ilist[index]
+                        
         def isChild(self,child):
                 return child in self._ilist
         
@@ -29,7 +38,6 @@ class MgStatementBlock(MgAbstractStatement):
                 return [statement for statement in self._ilist if statement.isTraversable()]
                 
         def unparseToString(self):
-                #TODO: How do we want to handle period termination of statements?
                 return '. '.join(statement.unparseToString() for statement in self._ilist)
 
 class MgCompoundStatement(MgAbstractStatement):
@@ -274,7 +282,7 @@ class MgConditionalStatement(MgAbstractStatement):
                 consequence: What happens if the condition is true.
                 """
                 super().__init__()
-                self._conditional = condition
+                self._conditional = conditional
                 self._consequence = consequence
                 self._inverted = inverted
                 if self._conditional is not None:
@@ -456,14 +464,12 @@ class MgActivationStatement(MgAbstractStatement):
         def unparseToString(self):
                 return "{0}: {1}".format(self._cost.unparseToString(),self._instructions.unparseToString())
 
-class MgExpressionStatement(core.MgNode):
-        
+class MgExpressionStatement(MgAbstractStatement):
         def __init__(self,root):
-                super().__init__()
                 """
                 root: a single expression/term underneath the statement.
                 """
-                self._traversable = True
+                super().__init__()
                 self._root = root
                 self._root.setParent(self)
                 
@@ -471,7 +477,7 @@ class MgExpressionStatement(core.MgNode):
                 return child is self._root
         
         def getTraversalSuccessors(self):
-                return [node for node in {self._root} if node]
+                return [node for node in {self._root} if node.isTraversable()]
                 
         def getRoot(self):
                 """Get the root expression/term of the statement."""
@@ -484,3 +490,77 @@ class MgExpressionStatement(core.MgNode):
                 
         def unparseToString(self):
                 return "{0}".format(self._root.unparseToString())
+                
+                
+class MgAbilitySequenceStatement(MgAbstractStatement):
+        """An ability sequence statement is a series of one or more keyword abilities and quoted abilities. If there is more
+        than one element in the sequence, it is terminated with an 'and'. If there are more than two elements, the sequence is
+        comma-delimited. Often used in descriptions of tokens. Examples (in asterisks) include:
+                * A 2/2 white knight creature token *with vigilance*.
+                * A colorless Treasure artifact token with *"{T}, Sacrifice this artifact: Add one mana of any color."*.
+                * A 1/1 colorless Insect artifact creature token with *flying and haste* named Hornet.
+        """
+        
+        def __init__(self,*abilities):
+                """
+                args: The abilities contained in the sequence statement.
+                """
+                super().__init__()
+                self._abilitylist = abilities
+                for ability in self._abilitylist:
+                        ability.setParent(self)
+                        
+        def getAbilities(self):
+                """Get the abilities in this ability sequence statement."""
+                return self._abilitylist
+                for ability in self._abilitylist:
+                        ability.setParent(self)
+                
+        def setAbilities(self,*abilities):
+                """Replaces the current list of abilities with a new list of abilities."""
+                self._abilitylist = abilities
+
+        def isChild(self,child):
+                return child in self._abilitylist
+        
+        def getTraversalSuccessors(self):
+                return [ability for ability in self._abilitylist if ability.isTraversable()]
+                
+        def unparseToString(self):
+                output = ""
+                if len(self._abilitylist) > 1:
+                        output = ','.join([ability.unparseToString() for ability in self._abilitylist[0:len(self._abilitylist)-1]])
+                        output = "{0} and {1}".format(output,self._abilitylist[-1].unparseToString())
+                elif len(self._abilitylist) == 1:
+                        output = "{0}".format(self._abilitylist[0].unparseToString())
+                else:
+                        output = "empty-ability-sequence-statement"
+                return output
+                
+class MgQuotedAbilityStatement(MgAbstractStatement):
+        """A statement block encased in quotes that describes a non-keyword ability that is granted
+        by some other ability, such as in the following examples:
+        
+        * Enchanted land has "{T}: This land deals 1 damage to any target."
+        * You get an emblem with "Your opponents can’t untap more than two permanents during their untap steps."
+        * Each creature has “When this creature dies, choose target opponent. 
+        That player puts this card from its owner’s graveyard onto the battlefield under their control
+        at the beginning of the next end step."
+        """
+        
+        def __init__(self,stmtblock):
+                """
+                stmtblock: A statement block.
+                """
+                super().__init__()
+                self._stmtblock = stmtblock
+                self._stmtblock.setParent(self)
+                
+        def isChild(self,child):
+                return child is self._stmtblock
+        
+        def getTraversalSuccessors(self):
+                return [node for node in {self._stmtblock} if node.isTraversable()]
+                
+        def unparseToString(self):
+                return "\"{0}\"".format(self._stmtblock.unparseToString())

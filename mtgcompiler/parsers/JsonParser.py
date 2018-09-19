@@ -1,16 +1,20 @@
 import collections
 from mtgcompiler.parsers.baseparser import BaseParser
 from mtgcompiler.AST.reference import MgNameReference,MgThisReference
-from mtgcompiler.AST.reference import MgName,MgTapUntapSymbol,MgZone
+from mtgcompiler.AST.reference import MgName,MgTapUntapSymbol,MgZone,MgQualifier
 from mtgcompiler.AST.reference import MgAbilityModifier,MgCombatStatusModifier,MgKeywordStatusModifier,MgTapStatusModifier,MgEffectStatusModifier
 from mtgcompiler.AST.card import MgTypeLine,MgFlavorText,MgTextBox,MgCard
 from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
 from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
 from mtgcompiler.AST.statements import MgKeywordAbilityListStatement,MgStatementBlock,MgExpressionStatement,MgActivationStatement
+from mtgcompiler.AST.statements import MgAbilitySequenceStatement,MgQuotedAbilityStatement
+from mtgcompiler.AST.statements import MgWhenStatement
 
-from mtgcompiler.AST.expressions import MgNumberValue,MgPTExpression,MgManaExpression,MgTypeExpression,MgDescriptionExpression,MgNamedExpression,MgCostSequenceExpression
+from mtgcompiler.AST.expressions import MgNumberValue,MgPTExpression,MgManaExpression,MgTypeExpression,MgDescriptionExpression
+from mtgcompiler.AST.expressions import MgNamedExpression,MgCostSequenceExpression,MgWithExpression,MgIndefiniteSingularExpression
 from mtgcompiler.AST.expressions import MgColorExpression,MgAndExpression,MgOrExpression,MgAndOrExpression,MgTargetExpression,MgDeclarationExpression
 from mtgcompiler.AST.expressions import MgDestroyExpression,MgExileExpression,MgDealsDamageExpression,MgChangeZoneExpression,MgSacrificeExpression
+from mtgcompiler.AST.expressions import MgAnyColorSpecifier,MgManaSpecificationExpression,MgAddManaExpression,MgCreateTokenExpression
 
 from mtgcompiler.AST.abilities import MgReminderText,MgAbilityWord,MgRegularAbility
 from mtgcompiler.AST.abilities import MgDeathtouchAbility,MgDefenderAbility,MgDoubleStrikeAbility,MgFirstStrikeAbility,MgTrampleAbility
@@ -39,6 +43,7 @@ from lark import Lark #Lexing and parsing!
 from lark import Transformer #Converting the parse tree into something useful.
 from lark.tree import pydot__tree_to_png #For rendering the parse tree.
 from lark.lexer import Token
+from word2number import w2n #For converting English value quantities into numbers.
 
 #Convenience function for flattening lists (of lists)+
 def flatten(l):
@@ -627,21 +632,47 @@ class JsonParser(BaseParser):
                         return items[0]
                 
                 def statementblock(self,items):
+                        print("DEBUG STATEMENT BLOCK",items)
                         return MgStatementBlock(*items)
                 
                 def expressionstatement(self,items):
-                        print("EXPRESSION STATEMENT",items)
                         expression = items[0]
                         return MgExpressionStatement(expression)
                         
                 def activationstatement(self,items):
+                        print("DEBUG ACTIVATION STATEMENT",items)
+                        print("DEBUG INSTRUCTIONS:",items[1].unparseToString())
+                        print("DEBUG NUMBER OF STATEMENTS",items[1].getNumberOfStatements())
+                        print("DEBUG STATEMENT AT INDEX 0",items[1].getStatementAtIndex(0))
+                        print("DEBUG ROOT",items[1].getStatementAtIndex(0).getRoot())
                         cost = items[0]
                         instructions = items[1]
                         return MgActivationStatement(cost=cost,instructions=instructions)
+                         
+                def abilitysequencestatement(self,items):
+                        return MgAbilitySequenceStatement(*items)
+                def quotedabilitystatement(self,items):
+                        return MgQuotedAbilityStatement(items[0])
                         
+                #STATEMENTS - BEING STATEMENTS
+                
                 def hasstatement(self,items):
-                         #declarationorreference? ("has"|"have"|"had") stmtabilityseq -> hasstatement
                          return items #TODO
+                        
+                #STATEMENTS - CONDITIONAL STATEMENTS
+                
+                def whenstatement(self,items):
+                        conditional = items[0]
+                        consequence = items[1]
+                        inverted=False
+                        return MgWhenStatement(conditional,consequence,inverted)
+                def whenstatementinv(self,items):
+                        conditional = items[1]
+                        consequence = items[0]
+                        inverted=True
+                        return MgWhenStatement(conditional,consequence,inverted)
+                        
+                        
                         
                 
                         
@@ -659,6 +690,10 @@ class JsonParser(BaseParser):
                 def anytargetexpression(self,items):
                         #Nullary variant of target expression
                         return MgTargetExpression(isAny=True)
+                def withexpression(self,items):
+                        return MgWithExpression(items[0])
+                def indefinitesingularexpression(self,items):
+                        return MgIndefiniteSingularExpression(items[0])
                         
                         
                 #EXPRESSIONS - VALUE EXPRESSIONS
@@ -673,6 +708,16 @@ class JsonParser(BaseParser):
                 
                 def eventexpression(self,items):
                         return items[0]
+                        
+                        
+                def createexpression(self,items):
+                        if len(items) == 2:
+                                quantity = items[0]
+                                declaration = items[1]
+                                return MgCreateTokenExpression(declaration,quantity)
+                        else:
+                                declaration = items[0]
+                                return MgCreateTokenExpression(declaration)
                 
                 def enterzoneexpression(self,items):
                         subject = items[0]
@@ -704,6 +749,17 @@ class JsonParser(BaseParser):
                         return items[0]
                 def specialkeywordaction(self,items):
                         return items[0]
+                        
+                        
+                def addmanaexpression(self,items):
+                        if len(items) == 1:
+                                manaexpr = items[0]
+                                return MgAddManaExpression(manaexpr)
+                        else:
+                                playerexpr = items[0]
+                                manaexpr = items[1]
+                                return MgAddManaExpression(manaexpr,playerexpr)
+                        
                         
                         
                 def destroyexpression(self,items):
@@ -780,7 +836,6 @@ class JsonParser(BaseParser):
                 def definitionexpression(self,items):
                         return items[0]
                 
-                
                 def descriptionexpression(self,items):
                         return MgDescriptionExpression(*items)
                 
@@ -788,6 +843,9 @@ class JsonParser(BaseParser):
                         return MgNamedExpression(items[0])
                         
                         
+                def qualifier(self,items):
+                        return MgQualifier(MgQualifier.QualifierEnum(items[0].value))
+                
                 def modifier(self,items):
                         item = items[0]
                         if item.type == "ABILITYMODIFIER":
@@ -875,7 +933,6 @@ class JsonParser(BaseParser):
                 def cost(self,items):
                         return items[0]
                 def costsequence(self,items):
-                        print("COST SEQUENCE",items)
                         return MgCostSequenceExpression(*items)
                 def tapuntapsymbol(self,items):
                         if items[0].type == "TAPSYMBOL":
@@ -885,6 +942,26 @@ class JsonParser(BaseParser):
                         
                 def objectname(self,items):
                         return MgName(items[0].value)
+                        
+                def valueexpression(self,items):
+                        return items[0]
+                        
+                def valuecardinal(self,items):
+                        return MgNumberValue(w2n.word_to_num(items[0].value),MgNumberValue.NumberTypeEnum.Cardinal)
+                        
+                        
+                        
+                def manaspecificationexpression(self,items):
+                        quantity = items[0]
+                        specifiers = items[1:]
+                        return MgManaSpecificationExpression(quantity,*specifiers)
+                def manaspecifier(self,items):
+                        return items[0]
+                def anycolorspecifier(self,items):
+                        return MgAnyColorSpecifier(anyOneColor=False)
+                def anyonecolorspecifier(self,items):
+                        #"of any one color" variant
+                        return MgAnyColorSpecifier(anyOneColor=True)
                 
                 def manaexpression(self,items):
                         manaExpr = MgManaExpression(*items)
@@ -978,7 +1055,7 @@ class JsonParser(BaseParser):
                         maystatement: playerterm "may" statement
                         
                         beingstatement: declarationorreference "is" statement -> isstatement
-                        | declarationorreference? ("has"|"have"|"had") stmtabilityseq -> hasstatement
+                        | declarationorreference? ("has"|"have"|"had") abilitysequencestatement -> hasstatement
                         | declarationorreference?  ("has"|"have"|"had") ("a"|valueexpression) countertype "counter" "on" "it" -> hascounterstatement
                         | declarationorreference? "isn't" statement -> isntstatement
                         | "it's" statement -> itsstatement
@@ -1015,8 +1092,8 @@ class JsonParser(BaseParser):
                         
                         //KEYWORD ABILITIES
                         
-                        stmtabilityseq: (keywordability | quotedability) ("," (keywordability | quotedability) ",")* ("and" (keywordability | quotedability))?
-                        quotedability: "\"" statementblock "\""
+                        abilitysequencestatement: (keywordability | quotedabilitystatement) ("," (keywordability | quotedabilitystatement) ",")* ("and" (keywordability | quotedabilitystatement))?
+                        quotedabilitystatement: "\"" statementblock "\""
                         
                         keywordability: kwdeathtouch
                         | kwdefender | kwdoublestrike | kwenchant | kwequip | kwfirststrike
@@ -1193,11 +1270,12 @@ class JsonParser(BaseParser):
                         valueexpression: valueterm | equaltoexpression | numberofexpression
                         equaltoexpression: eventoreffect? "equal" "to" (valueterm | declarationorreference)
                         numberofexpression: ("a"|"the") "number" "of" declarationorreference
-                        valueterm: valuenumber | valuequantity | valuefrequency | valuecustom
+                        valueterm: valuenumber | valuecardinal | valuefrequency | valuecustom
                         valuenumber: NUMBER
-                        valuequantity: "one" | "two" | "three" | "four" | "five" | "six" //TODO
-                        //[TODO: needs another rule to have a different derivation from valuequantity]
-                        valuefrequency: "once" | "twice" | valuequantity "times"
+                        valuecardinal: CARDINAL
+                        CARDINAL: "one" | "two" | "three" | "four" | "five" | "six"
+                        valuefrequency: "once" | "twice" | CARDINAL "times"
+                        FREQUENCY: "once" | "twice"
                         valuecustom: "X" | "*"
                         
                         
@@ -1224,7 +1302,7 @@ class JsonParser(BaseParser):
                         declarationorreference: referenceterm | declarationexpression
                         
                         descriptionexpression: (colorexpression | namedexpression | manaexpression | typeexpression
-                        | ptexpression | qualifier | modifier | locationexpression | valuequantity | controlsexpression | withexpression)+
+                        | ptexpression | qualifier | modifier | locationexpression | valuecardinal | controlsexpression | withexpression)+
                         | playerterm
                         
                         referenceterm: namereference | itreference | thatreference | thisreference | selfreference | thereference | objectname
@@ -1242,7 +1320,7 @@ class JsonParser(BaseParser):
                         namedexpression: "named" objectname
                         locationexpression: ("in" | "on") (possessiveterm | "a"["n"] )? zone
                         controlsexpression: playerterm "controls"
-                        withexpression: "with" stmtabilityseq
+                        withexpression: "with" abilitysequencestatement //[TODO: with <property>, e.g. CMC > 5]
                         
                         //EVENT AND EFFECT EXPRESSIONS
                         
@@ -1274,7 +1352,7 @@ class JsonParser(BaseParser):
                         putinzoneexpression: "put" declarationorreference ("onto" | "into") possessiveterm? zone definitionexpression?
                         spendmanaexpression: "spend mana" //[TODO]
                         paylifeexpression: "pay" valueexpression? "life" //[TODO]
-                        addmanaexpression: "add" manaexpression | "add" valuequantity "mana" "of" "any" "color" //[TODO]
+                        addmanaexpression: playerterm? "add"["s"] (manaexpression|manaspecificationexpression)
                         keywordactionexpression: basickeywordaction | specialkeywordaction
                         
                         basickeywordaction: activateexpression
@@ -1306,7 +1384,7 @@ class JsonParser(BaseParser):
                         | "as" "though" beingstatement -> castasthough
                         
                         uncastexpression: "counter" declarationorreference
-                        createexpression: "create" declarationorreference
+                        createexpression: "create" indefinitesingularexpression | "create" valuecardinal nakeddeclarationexpression
                         destroyexpression: "destroy" declarationorreference
                         discardexpression: "discard" declarationorreference
                         doubleexpression: "double" //[TODO]
@@ -1475,6 +1553,12 @@ class JsonParser(BaseParser):
                         ptchangeexpression: (PLUS | MINUS) valueterm "/" (PLUS | MINUS) valueterm
                         PLUS: "+"
                         MINUS: "-"
+                        
+                        manaspecificationexpression: valuecardinal "mana" manaspecifier+
+                        manaspecifier: anycolorspecifier
+                        
+                        anycolorspecifier: "of" "any" "color" -> anycolorspecifier
+                        | "of" "any" "one" "color" -> anyonecolorspecifier
                         
                         manaexpression: manasymbol+ 
                         manasymbol: "{" manamarkerseq "}"
