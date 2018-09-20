@@ -6,7 +6,7 @@ Arbor is an open-source platform for the analysis of Magic: The Gathering cards.
 
 This is a labor of love co-developed by Reed Milewicz and Peter Klavins. The project is not yet ready, but we hope it will be soon! Check back later for more details.
 
-##What is Arbor?
+## What is Arbor?
 
 Arbor is an analysis framework inspired by source-to-source compilers, namely the [ROSE compiler infrastructure](http://rosecompiler.org) developed at Lawrence Livermore National Laboratory (LLNL). The core feature of the Arbor that it can parse Magic cards and produce a graph that is a sophisticated intermediate representation (IR) for those cards. So, given a card like this:
 
@@ -18,7 +18,7 @@ Arbor produces, among other things, an abstract syntax tree (AST) like this:
 
 Once cards are converted into this abstract format, Arbor provides interfaces for querying, editing, and analyzing those cards. Additionally, the Arbor IR can be unparsed to retrieve the original card text or to convert it to another format.
 
-##What can Arbor do?
+## What can Arbor do?
 
 Arbor aims to be a platform upon which a user can easily build their own tools for working with Magic cards. Potential use cases include:
 
