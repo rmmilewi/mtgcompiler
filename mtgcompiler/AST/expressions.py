@@ -285,7 +285,7 @@ class MgNumberValue(MgValueExpression):
                 if self._ntype == MgNumberValue.NumberTypeEnum.Frequency and self._value == 2:
                         return "twice"
                             
-                if self._ntype == MgNumberValue.NumberTypeEnum.Quantity or self._ntype == MgNumberValue.NumberTypeEnum.Frequency:
+                if self._ntype == MgNumberValue.NumberTypeEnum.Cardinal or self._ntype == MgNumberValue.NumberTypeEnum.Frequency:
                         quantityRepresentation = num2words(self._value)
                         if self._ntype == MgNumberValue.NumberTypeEnum.Cardinal:
                                 return quantityRepresentation
@@ -348,21 +348,19 @@ class MgManaSpecificationExpression(MgAbstractExpression):
                 """
                 super().__init__()
                 self._quantity = quantity
-                self._speclist = args
+                self._speclist = list(args)
                 self._quantity.setParent(self)
                 for s in self._speclist:
                         s.setParent(self)
-                
-        
                         
         def isChild(self,child):
-                return child is not None and child in self._quantity+self._speclist
+                return child is not None and child in [self._quantity]+self._speclist
         
         def getTraversalSuccessors(self):
-                return [s for s in self._quantity+self._speclist if s.isTraversable()]
+                return [s for s in [self._quantity]+self._speclist if s.isTraversable()]
                 
         def unparseToString(self):
-                return ' '.join(s.unparseToString() for s in self._speclist)
+                return '{0} '.format(self._quantity.unparseToString())+' '.join(s.unparseToString() for s in self._speclist)
                 
 class MgManaSpecifier(MgAbstractExpression):
         """This is the abstract parent class for all mana specifications."""
@@ -1017,6 +1015,7 @@ class MgAddManaExpression(MgEffectExpression):
                 manaexpr: Either a mana expression, value expression containing a mana expression, or a mana specification expression.
                 playerexpr: An expression describing a player. Used in the case that the effect instructs a player to add mana.
                 """
+                super().__init__()
                 self._manaexpr = manaexpr
                 self._manaexpr.setParent(self)
                 self._playerexpr = playerexpr
@@ -1031,9 +1030,9 @@ class MgAddManaExpression(MgEffectExpression):
                 
         def unparseToString(self):
                 if self._playerexpr is not None:
-                        print("{0} adds {1}".format(self._playerexpr.unparseToString(),self._manaexpr.unparseToString()))
+                        return "{0} adds {1}".format(self._playerexpr.unparseToString(),self._manaexpr.unparseToString())
                 else:
-                        print("add {0}".format(self._manaexpr.unparseToString()))
+                        return "add {0}".format(self._manaexpr.unparseToString())
         
         
                 

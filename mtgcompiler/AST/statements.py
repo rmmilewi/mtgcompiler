@@ -563,4 +563,4 @@ class MgQuotedAbilityStatement(MgAbstractStatement):
                 return [node for node in {self._stmtblock} if node.isTraversable()]
                 
         def unparseToString(self):
-                return "\"{0}\"".format(self._stmtblock.unparseToString())
+                return "\\\"{0}\\\"".format(self._stmtblock.unparseToString())

@@ -10,7 +10,33 @@ class TestParseCards(unittest.TestCase):
         def setUpClass(cls):
                 cls._parser = JsonParser()
                 
+        def test_parseBlackLotus(self):
+                lotus = {
+                "artist": "Chris Rahn",
+                "cmc": 0,
+                "id": "6ad6463d56da447ab490a1a2b2b8a18759befc5f",
+                "imageName": "black lotus",
+                "layout": "normal",
+                "manaCost": "{0}",
+                "mciNumber": "4",
+                "multiverseid": 382866,
+                "name": "Black Lotus",
+                "number": "4",
+                "rarity": "Special",
+                "reserved": True,
+                "text": "{T}, Sacrifice Black Lotus: Add three mana of any one color.",
+                "type": "Artifact",
+                "types": [
+                  "Artifact"
+                ]
+                }
+                card = self._parser.parse(lotus)
+                print(card.unparseToString())
+                visitor = inspection.SimpleGraphingVisitor(path="blacklotus.dot")
+                visitor.traverse(card)
+                
         def test_parseSailorOfMeans(self):
+                return None
                 sailor =  {
                 "artist": "Ryan Pancoast",
                 "cmc": 3,
@@ -44,6 +70,8 @@ class TestParseCards(unittest.TestCase):
                 }
                 card = self._parser.parse(sailor)
                 print(card.unparseToString())
+                visitor = inspection.SimpleGraphingVisitor(path="sailorOfMeans.dot")
+                visitor.traverse(card)
                 
         def test_parseRodOfRuin(self):
                 return None
