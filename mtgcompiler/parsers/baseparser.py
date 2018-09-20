@@ -3,6 +3,18 @@ import abc
 class BaseParser(metaclass=abc.ABCMeta):
         """This is the abstract base class for all MtgCompiler parsers."""
         
+        def __init__(self,options):
+                """
+                options: A dictionary that contains options for the parser. 
+                """
+                
+                
+                #parseonly: Only parse the input, do not construct an AST.
+                if options is not None and "parseonly" in options:
+                        self._parseonly = options["parseonly"]
+                else:
+                        self._parseonly = False
+        
         
         def parse(self,cardinput):
                 """

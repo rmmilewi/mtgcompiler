@@ -54,11 +54,16 @@ def flatten(l):
             yield el
 
 class JsonParser(BaseParser):
+        """A parser implementation supporting the mtgjson card format."""
 
-        def __init__(self,startText='cardtext'):
+        def __init__(self,options):
                 """Calling this constructor causes the Lark parser and the parse-to-AST transformer
-                to be instantiated."""
-                self._lp,self._tf = self.define_grammar(startText)
+                to be instantiated.
+                
+                options: A dictionary that contains options for the parser. See BaseParser for details.
+                """
+                super().__init__(options)
+                self._lp,self._tf = self.define_grammar('cardtext')
                 #TODO: There has to be a better way to set different start rules.
                 self._miniManaParser,self._miniManaTransformer = self.define_grammar("manaexpression")
                 self._miniTypelineParser,self._miniTypelineTransformer = self.define_grammar("typeline")
@@ -1273,7 +1278,7 @@ class JsonParser(BaseParser):
                         valueterm: valuenumber | valuecardinal | valuefrequency | valuecustom
                         valuenumber: NUMBER
                         valuecardinal: CARDINAL
-                        CARDINAL: "one" | "two" | "three" | "four" | "five" | "six"
+                        CARDINAL: "one" | "two" | "three" | "four" | "five" | "six" //[TODO]
                         valuefrequency: "once" | "twice" | CARDINAL "times"
                         FREQUENCY: "once" | "twice"
                         valuecustom: "X" | "*"
@@ -1649,6 +1654,7 @@ class JsonParser(BaseParser):
                 
                 #Preprocessing step: Replace instances of the card name in the body text
                 #with a ~ symbol.
+                #TODO: First name only references need to be replaced with '~f'
                 if 'name' in cardinput and 'text' in cardinput:
                         cardinput['text'] = cardinput['text'].replace(cardinput['name'],'~')
                 
@@ -1667,7 +1673,11 @@ class JsonParser(BaseParser):
                         
                         
                 if 'manaCost' in cardinput:
-                        manaCost = self._miniManaTransformer.transform(self._miniManaParser.parse(cardinput['manaCost']))
+                        parsedManaCost = self._miniManaParser.parse(cardinput['manaCost'])
+                        if not self._parseonly:
+                                manaCost = self._miniManaTransformer.transform(parsedManaCost)
+                        else:
+                                manaCost = MgManaExpression()
                 else:
                         manaCost = MgManaExpression()
                         
@@ -1676,7 +1686,11 @@ class JsonParser(BaseParser):
                 
                 if 'type' in cardinput:
                         try:
-                                typeLine = self._miniTypelineTransformer.transform(self._miniTypelineParser.parse(cardinput['type']))
+                                parsedTypeLine = self._miniTypelineParser.parse(cardinput['type'])
+                                if not self._parseonly:
+                                        typeLine = self._miniTypelineTransformer.transform(parsedTypeLine)
+                                else:
+                                        typeLine = MgTypeLine()
                         except Exception as e:
                                 print("WTF {0}".format(cardinput['name']))
                                 raise e
@@ -1706,10 +1720,12 @@ class JsonParser(BaseParser):
                         powerToughness = None
                         
                 if 'text' in cardinput:
-                        self._lp.start = "cardtext"
                         parseTree = self._lp.parse(cardinput['text'])
-                        pydot__tree_to_png(parseTree, "lark_test.png") #TMP
-                        textBox = self._tf.transform(parseTree)
+                        #pydot__tree_to_png(parseTree, "lark_test.png") #TMP
+                        if not self._parseonly:
+                                textBox = self._tf.transform(parseTree)
+                        else:
+                                textBox = MgTextBox()
                 else:
                         textBox = MgTextBox()
                         
@@ -1734,20 +1750,22 @@ class JsonParser(BaseParser):
                 else:
                         flavor = None 
                         
-                card = MgCard(**{
-                        "name" : cardName,
-                        "manaCost" : manaCost,
-                        "colorIndicator" : colorIndicator,
-                        "typeLine" : typeLine,
-                        "loyalty" : loyalty,
-                        "powerToughness": powerToughness,
-                        "textBox" : textBox,
-                        "lifeModifier" : lifeModifier,
-                        "handModifier" : handModifier,
-                        "flavor" : flavor
-                })
-                
-                return card
+                if not self._parseonly:
+                        card = MgCard(**{
+                                "name" : cardName,
+                                "manaCost" : manaCost,
+                                "colorIndicator" : colorIndicator,
+                                "typeLine" : typeLine,
+                                "loyalty" : loyalty,
+                                "powerToughness": powerToughness,
+                                "textBox" : textBox,
+                                "lifeModifier" : lifeModifier,
+                                "handModifier" : handModifier,
+                                "flavor" : flavor
+                        })
+                        return card
+                else:
+                        return None
                 
                 
                 
