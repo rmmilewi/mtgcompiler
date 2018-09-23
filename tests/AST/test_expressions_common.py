@@ -20,7 +20,7 @@ class TestCommonExpressions(unittest.TestCase):
                 self.assertEqual(len(five_literal.getTraversalSuccessors()),0)
                 self.assertEqual(five_literal.unparseToString().lower(),"5")
                 
-                seventytwo_quantity = MgNumberValue(72,MgNumberValue.NumberTypeEnum.Quantity)
+                seventytwo_quantity = MgNumberValue(72,MgNumberValue.NumberTypeEnum.Cardinal)
                 self.assertTrue(seventytwo_quantity.isQuantity())
                 self.assertEqual(seventytwo_quantity.unparseToString().lower(),"seventy-two")
                 

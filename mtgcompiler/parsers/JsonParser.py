@@ -1054,10 +1054,14 @@ class JsonParser(BaseParser):
                         | conditionalstatement 
                         | activationstatement
                         | beingstatement
+                        | dostatement
                         | thenstatement
                         | maystatement
                         
                         maystatement:  (playerterm | declarationorreference)? "may" statement
+                        
+                        dostatement: (playerterm | declarationorreference)? ("do" | "does") statement? -> dostatement
+                        | (playerterm | declarationorreference)? ("don't" | "doesn't") statement? -> dontstatement
                         
                         beingstatement: declarationorreference ("is"|"are" "each"?) statement -> isstatement
                         | (playerterm | declarationorreference)? ("has"|"have"|"had") abilitysequencestatement -> hasstatement
@@ -1094,6 +1098,8 @@ class JsonParser(BaseParser):
                         | "while" statement "," statement -> whilestatement
                         | "until" timestepexpression "," statement -> untilstatement
                         | statement "until" timestepexpression -> untilstatementinv
+                        | statement "during" timestepexpression -> duringstatement
+                        | statement "only" "during" timestepexpression -> exclusiveduringstatement
                         
                         activationstatement: cost ":" statementblock
                         
@@ -1343,11 +1349,7 @@ class JsonParser(BaseParser):
                         eventoreffect: eventexpression | effectexpression
                         
                         eventexpression: changezoneexpression
-                        | playerdoesexpression
                         | ableexpression
-                        
-                        playerdoesexpression: (playerterm | declarationorreference)? ("do" | "does") -> playerdoesexpression
-                        | (playerterm | declarationorreference)? ("don't" | "doesn't") -> playerdoesnotexpression
                         
                         ableexpression: "able"
                         
@@ -1370,10 +1372,10 @@ class JsonParser(BaseParser):
                         | wingameexpression
                         | lookexpression
                         
-                        dealsdamageexpression:  declarationorreference "deals" valueexpression? DAMAGE ("to" declarationorreference)? ("," wherevariableexpression)? -> dealsdamagevarianta
-                        | declarationorreference "deals" DAMAGE valueexpression "to" declarationorreference ("," wherevariableexpression)? -> dealsdamagevariantb
-                        | declarationorreference "deals" DAMAGE "to" declarationorreference  valueexpression ("," wherevariableexpression)? -> dealsdamagevariantc
-                        DAMAGE: "damage" | "combat" "damage"
+                        dealsdamageexpression:  declarationorreference "deal"["s"] valueexpression? DAMAGETYPE ("to" declarationorreference)? ("," wherevariableexpression)? -> dealsdamagevarianta
+                        | declarationorreference "deal"["s"] DAMAGETYPE valueexpression "to" declarationorreference ("," wherevariableexpression)? -> dealsdamagevariantb
+                        | declarationorreference "deal"["s"] DAMAGETYPE "to" declarationorreference  valueexpression ("," wherevariableexpression)? -> dealsdamagevariantc
+                        DAMAGETYPE: "damage" | "combat damage" | "noncombat damage"
                         
                         returnexpression: (playerterm|declarationorreference)? "return"["s"] declarationorreference ("from" possessiveterm* zone)? "to" possessiveterm* zone //[TODO]
                         putinzoneexpression: (playerterm | declarationorreference)? "put"["s"] (declarationorreference | "the" "top" valueexpression "card"["s"] "of" possessiveterm* zone) ("onto" | "into" | "on top of" | "on bottom of") possessiveterm* zone (definitionexpression | zoneplacementmodifier)?
@@ -1442,8 +1444,8 @@ class JsonParser(BaseParser):
                         sacrificeexpression: "sacrifice" declarationorreference | declarationorreference "sacrifices" declarationorreference
                         searchexpression: "search" possessiveterm "library" "for" declarationorreference //[TODO: different zones]
                         shuffleexpression: "shuffle" possessiveterm "library"
-                        tapuntapexpression: "tap" declarationorreference -> tapexpression
-                        | "untap" declarationorreference -> untapexpression
+                        tapuntapexpression: "tap" declarationorreference? -> tapexpression
+                        | "untap" declarationorreference? -> untapexpression
                         losegameexpression: (playerterm | declarationorreference)? "lose"["s"] "the" "game"
                         wingameexpression: (playerterm | declarationorreference)? "win"["s"] "the" "game"
                         

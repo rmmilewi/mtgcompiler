@@ -12,33 +12,35 @@ class TestParseCards(unittest.TestCase):
                 cls._parser = JsonParser(options)
                 
                 
-        def test_parsePacifism(self):
+        def test_parseCard(self):
                 data = {
-                "artist": "Mark Zug",
-                "cmc": 2,
+                "artist": "Mike Bierek",
+                "cmc": 3,
                 "colorIdentity": [
-                "W"
+                "U"
                 ],
                 "colors": [
-                "White"
+                "Blue"
                 ],
-                "flavor": "\"If I fight, I might step on a butterfly. That would be sad.\"\n—Krowg of Qal Sisma",
-                "id": "885f726576182df83caa7343d3853de6003ba1f4",
-                "imageName": "pacifism",
+                "flavor": "\"I have seen countless petty warmongers gaze on it for a time before turning away.\"\n—Sarlena, paladin of the Northern Verge",
+                "id": "ef27668f1519b2a4f04b74535ff396a273abba66",
+                "imageName": "wall of frost",
                 "layout": "normal",
-                "manaCost": "{1}{W}",
-                "mciNumber": "29",
-                "multiverseid": 394645,
-                "name": "Pacifism",
-                "number": "29",
-                "rarity": "Common",
+                "manaCost": "{1}{U}{U}",
+                "mciNumber": "83",
+                "multiverseid": 383432,
+                "name": "Wall of Frost",
+                "number": "83",
+                "power": "0",
+                "rarity": "Uncommon",
                 "subtypes": [
-                "Aura"
+                "Wall"
                 ],
-                "text": "Enchant creature\nEnchanted creature can't attack or block",
-                "type": "Enchantment — Aura",
+                "text": "Defender\nWhenever Wall of Frost blocks a creature, that creature doesn't untap during its controller's next untap step.",
+                "toughness": "7",
+                "type": "Creature — Wall",
                 "types": [
-                "Enchantment"
+                "Creature"
                 ]
                 }
                 card = self._parser.parse(data)

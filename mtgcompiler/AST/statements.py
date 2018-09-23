@@ -382,13 +382,36 @@ class MgUntilStatement(MgConditionalStatement):
                         return "until {0}, {1}".format(self._conditional.unparseToString(),self._consequence.unparseToString())
                 else:
                         return "{1} until {0}".format(self._conditional.unparseToString(),self._consequence.unparseToString())
-        
+
+
 class MgOtherwiseStatement(MgConditionalStatement):
         def __init__(self,conditional,consequence):
                 super().__init__(conditional,consequence,inverted=False)
         
         def unparseToString(self):
                 return "otherwise {0}, {1}".format(self._conditional.unparseToString(),self._consequence.unparseToString())
+                
+
+class MgDuringStatement(MgConditionalStatement):
+        def __init__(self,conditional,consequence,exclusive=False):
+                """
+                exclusive: Specifies that the conditional is exclusive ('only during')."""
+                super().__init__(conditional,consequence,inverted=False)
+                self._exclusive = exclusive
+                
+        def isExclusive(self):
+                """Checks whether this during statement is exclusive ('only during')."""
+                return self._exclusive == True
+                
+        def setExclusive(self,exclusive):
+                """Sets whether this during statement is exclusive ('only during')."""
+                self._exclusive = exclusive
+        
+        def unparseToString(self):
+                if self._exclusive == True:
+                        return "{0} only during {1}".format(self._conditional.unparseToString(),self._consequence.unparseToString())
+                else:
+                        return "{0} during {1}".format(self._conditional.unparseToString(),self._consequence.unparseToString())
                 
 class MgUnlessStatement(MgConditionalStatement):
         def __init__(self,conditional,consequence):

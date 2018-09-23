@@ -267,16 +267,128 @@ class MgThisReference(MgAbstractReference):
 
         
 
-class MgPlayer(core.MgNode):
-        """This node represents a description of a player. This can be 'you', an opponent, a teammate, etc."""
-        class PlayerEnum(Enum):
-                You = "you"
-                Opponent = "opponent"
-                Teammate = "teammate"
-        pass #TODO
+class MgPlayerTerm(core.MgNode):
+        """This node represents a description of a player. From the rules:
+        
+        102.1. A player is one of the people in the game. The active player is the player whose turn it is.
+        The other players are nonactive players.
+
+        102.2. In a two-player game, a player’s opponent is the other player.
+
+        102.3. In a multiplayer game between teams, a player’s teammates are the other players on their team,
+        and the player’s opponents are all players not on their team.
+
+        102.4. A spell or ability may use the term “your team” as shorthand for “you and/or your teammates.”
+        In a game that isn’t a multiplayer game between teams, “your team” means the same thing as “you.”
+        """
+        
+        #Note: The possessives are only used by possessive expressions.
+        class PlayerTermEnum(Enum):
+                You = {"nominative_singular": "you", "nominative_plural": "NOTUSED","possessive_singular": "your","possessive_plural" : "NOTUSED"}
+                Opponent = {"nominative_singular": "opponent", "nominative_plural": "opponents","possessive_singular": "opponent's","possessive_plural" : "opponents'"}
+                Teammate = {"nominative_singular": "teammate", "nominative_plural": "teammates","possessive_singular": "teammate's","possessive_plural" : "teammates'"}
+                Team =  {"nominative_singular": "team", "nominative_plural": "teams","possessive_singular": "team's","possessive_plural" : "teams'"}
+                Owner =  {"nominative_singular": "owner", "nominative_plural": "owners","possessive_singular": "owner's","possessive_plural" : "owners'"}
+                Controller = {"nominative_singular": "controller", "nominative_plural": "controllers","possessive_singular": "controller's","possessive_plural" : "controllers'"}
+                Player = {"nominative_singular": "player", "nominative_plural": "players","possessive_singular": "player's","possessive_plural" : "players'"}
+        
+        def __init__(self,playerEnum,isPlural=False,isPossessive=False):
+                """
+                playerEnum: An instance of PlayerTermEnum
+                isPlural: A flag indicating whether the player term should be interpreted as plural.
+                ##isPossessive: A flag indicating whether the player term should be interpreted as possessive.
+                """
+                self._playerEnum = playerEnum
+                self._isPlural = isPlural
+                #self._isPossessive = isPossessive
                 
+        #def isPossessive(self):
+        #        """Checks whether this player term is possessive."""
+        #        return self._isPossessive == True
                 
+        #def setisPossessive(self,isPossessive):
+        #        """Sets whether this player term is possessive."""
+        #        self._isPossessive = isPossessive
                 
+        def isPlural(self):
+                """Checks whether this player term is plural."""
+                return self._isPlural == True
+                
+        def setIsPlural(self,isPlural):
+                """Sets whether this player term is plural."""
+                self._isPlural = isPlural
+                
+        def isYou(self):
+                """Checks whether the player term refers to you."""
+                return self._playerEnum == MgPlayerTerm.PlayerTermEnum.You
+        
+        def setYou(self):
+                """Sets the player term to refer to you."""
+                self._playerEnum = MgPlayerTerm.PlayerTermEnum.You
+        
+        def isOpponent(self):
+                """Checks whether the player term refers to one or more opponents."""
+                return self._playerEnum == MgPlayerTerm.PlayerTermEnum.Opponent
+        
+        def setOpponent(self):
+                """Sets the player term to refer to one or more opponents."""
+                self._playerEnum = MgPlayerTerm.PlayerTermEnum.Opponent
+                
+        def isTeammate(self):
+                """Checks whether the player term refers to one or more teammates."""
+                return self._playerEnum == MgPlayerTerm.PlayerTermEnum.Teammate
+        
+        def setTeammate(self):
+                """Sets the player term to refer to one or more teammates."""
+                self._playerEnum = MgPlayerTerm.PlayerTermEnum.Teammate
+                
+        def isTeam(self):
+                """Checks whether the player term refers to a team. Note this is not the same as
+                the plural of teammate."""
+                return self._playerEnum == MgPlayerTerm.PlayerTermEnum.Team
+        
+        def setTeam(self):
+                """Sets the player term to refer to a team. Note this is not the same as
+                the plural of teammate."""
+                self._playerEnum = MgPlayerTerm.PlayerTermEnum.Team
+                
+        def isOwner(self):
+                """Checks whether the player term refers to one or more owners."""
+                return self._playerEnum == MgPlayerTerm.PlayerTermEnum.Owner
+        
+        def setOwner(self):
+                """Sets the player term to refer to one or more owners."""
+                self._playerEnum = MgPlayerTerm.PlayerTermEnum.Owner
+        
+        def isController(self):
+                """Checks whether the player term refers to one or more controllers."""
+                return self._playerEnum == MgPlayerTerm.PlayerTermEnum.Controller
+        
+        def setController(self):
+                """Sets the player term to refer to one or more controllers."""
+                self._playerEnum = MgPlayerTerm.PlayerTermEnum.Controller
+                
+        def isPlayer(self):
+                """Checks whether the player term refers to one or more players."""
+                return self._playerEnum == MgPlayerTerm.PlayerTermEnum.Player
+        
+        def setPlayer(self):
+                """Sets the player term to refer to one or more players."""
+                self._playerEnum = MgPlayerTerm.PlayerTermEnum.Player
+                
+        def getPossessive(self):
+                if self._isPlural == True:
+                        return self._playerEnum.value["possessive_plural"]
+                else:
+                        return self._playerEnum.value["possessive_singular"]
+        
+        def unparseToString(self):
+                #By default, unparseToString provides the nominative.
+                if self._isPlural == True:
+                        return self._playerEnum.value["nominative_plural"]
+                else:
+                        return self._playerEnum.value["nominative_singular"]
+        
 
 class MgName(core.MgNode):
         """This node represents a name, such as the name of a card."""
@@ -301,9 +413,70 @@ class MgName(core.MgNode):
                 return self._name
                 
                 
+                
+class MgDamageType(core.MgNode):
+        """Used to describe a type of damage in a deals-damage expression."""
+        class DamageTypeEnum(Enum):
+                RegularDamage = "damage"
+                NoncombatDamage = "noncombat damage"
+                CombatDamage = "combat damage"
+                
+        def __init__(self,damagetype):
+                """
+                damagetype: A damage type enum.
+                """
+                self._damagetype = damagetype
+                self._traversable = True
+        
+        def isRegularDamage(self):
+                """Checks whether this damage type is regular, plain old damage."""
+                return self._damagetype == MgDamageType.DamageTypeEnum.RegularDamage
+                
+        def setRegularDamage(self):
+                """Sets this damage type as regular, plain old damage."""
+                self._damagetype = MgDamageType.DamageTypeEnum.RegularDamage
+                
+        def isNoncombatDamage(self):
+                """Checks whether this damage type is specifically non-combat damage."""
+                return self._damagetype == MgDamageType.DamageTypeEnum.NoncombatDamage
+                
+        def setNoncombatDamage(self):
+                """Sets this damage type as non-combat damage specifically."""
+                self._damagetype = MgDamageType.DamageTypeEnum.NoncombatDamage
+                
+        def isNoncombatDamage(self):
+                """Checks whether this damage type is specifically non-combat damage."""
+                return self._damagetype == MgDamageType.DamageTypeEnum.NoncombatDamage
+                
+        def setNoncombatDamage(self):
+                """Sets this damage type as non-combat damage specifically."""
+                self._damagetype = MgDamageType.DamageTypeEnum.NoncombatDamage
+                
+        def isCombatDamage(self):
+                """Checks whether this damage type is specifically combat damage."""
+                return self._damagetype == MgDamageType.DamageTypeEnum.CombatDamage
+                
+        def setCombatDamage(self):
+                """Sets this damage type as combat damage specifically."""
+                self._damagetype = MgDamageType.DamageTypeEnum.CombatDamage
+                
+        def isChild(self,child):
+                """Damage type nodes have no children."""
+                return False
+                
+        def getTraversalSuccessors(self):
+                """Damage type nodes have no successors."""
+                return []
+                
+        def unparseToString(self):
+                return self._damagetype.value
+                
 class MgDeclarationModifier(core.MgNode):
         """A parent class for modifiers to players/objects"""
         def __init__(self,modifier):
+                """
+                modifier: aA appropriate modifier enum object.
+                """
                 self._modifier = modifier
                 self._traversable = True
                 
@@ -314,9 +487,11 @@ class MgDeclarationModifier(core.MgNode):
                 self._modifier = modifier
                 
         def isChild(self,child):
+                """Declaration modifiers have no children."""
                 return False
                 
         def getTraversalSuccessors(self):
+                """Declaration modifiers have no successors."""
                 return []
                 
         def unparseToString(self):
@@ -466,7 +641,7 @@ class MgQualifier(core.MgNode):
         def unparseToString(self):
                 return self._value.value
     
-class MgTurnStep(core.MgNode):
+class MgTimeTerm(core.MgNode):
         """This node represents a point in time in a turn, such as 
         the first Main phase or the cleanup step."""
         pass

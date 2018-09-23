@@ -638,21 +638,16 @@ class MgTypeExpression(MgAbstractExpression):
                 else:
                         result = ' '.join(t.unparseToString() for t in self._tlist)
                 return result
-                #if self._plural is True:
-                #        return result+'s'
-                #else:
-                #        return result
 
 class MgControlExpression(MgAbstractExpression):
-        """An expression that indicates control, like 'all creatures your opponents control' or 'target enchantment you control'.
-        TODO: This implementation is not final. Still working this and the possessive expressions out. Need an abstract for players,
-        then we can come back and change this."""
+        """An expression that indicates control, like 'all creatures your opponents control' or 'target enchantment you control'."""
         def __init__(self,controller):
                 """
                 controller: The party that has the control.
                 """
                 super().__init__()
                 self._controller = controller
+                self._controller.setParent(self)
                 
         def getController(self):
                 """Get the controller."""
@@ -663,54 +658,66 @@ class MgControlExpression(MgAbstractExpression):
                 self._controller = controller
                 
         def isChild(self,child):
-                return False
+                return child is not None and child in {self._controller}
                 
         def getTraversalSuccessors(self):
                 """This class is a leaf node. It has no children."""
-                return []
+                return [node for node in {self._controller} if node.isTraversable()]
                 
         def unparseToString(self):
-                return "{0} control".format(self._controller)
+                return "{0} control(s)".format(self._controller.unparseToString())
                         
 class MgPossessiveExpression(MgAbstractExpression):
-        """Represents a phrase that indicates who owns something, such as 'your graveyard' or 'its owner's hand'"""
-        class PossessiveEnum(Enum):
-                """TODO: What if possessives are plural? We haven't decided whose responsibility it is to get that right.
-                I might end up re-doing this later to refer to a MgPlayer object of some kind."""
-                Your = "Your"
-                Owner = "Owner's"
-                Opponent = "Opponent's"
-                Player = "Player's"
-                HisOrHer = "His or Her"
+        """Represents a phrase that indicates who owns something, such as...
+        * 'your graveyard'
+        * 'its owner's hand' (two nested possessive expressions)
+        * 'that player's next turn'
+        * ~'s power and toughness
+        """
 
-        def __init__(self,possessive,owned):
+        def __init__(self,possessor,owned):
                 """
-                possessive: a PossessiveEnum.
+                possessor: An expression describing a game entity (player, object, etc.)
                 owned: An expression describing the thing that is owned.
                 """
                 super().__init__()
-                self._possessive = possessive
+                self._possessor = possessive
+                self._possessor.setParent(self)
                 self._owned = owned
-                self._owned.setParent(owned)
+                self._owned.setParent(self)
+                
+        def getPossessor(self):
+                """Get the possessor."""
+                return self._possessor
+                
+        def setPossessor(self,possessor):
+                """Set the possessor."""
+                self._possessor = possessor
+                self._possessor.setParent(self)
                 
         def getOwned(self):
-                """Access method for the owned attribute."""
+                """Get the thing that is owned."""
                 return self._owned
                 
         def setOwned(self, value):
-                """Setter method for the owned attribute."""
-                self._owned=owned
-                self._owned.setParent(owned)
+                """Set the thing that is owned."""
+                self._owned = owned
+                self._owned.setParent(self)
                 
         def isChild(self,child):
-                return child is self._owned
+                return child is not None and child in {self._possessor,self._owned}
                 
         def getTraversalSuccessors(self):
                 """This class is a leaf node. It has no children."""
-                return [node for node in {self._owned} if node.isTraversable()]
+                return [node for node in {self._possessor,self._owned} if node.isTraversable()]
                 
         def unparseToString(self):
-                return "{0} {1}".format(self._possessive.value,self._owned.unparseToString()) 
+                #Note: This is one of those situations where unparseToString just makes a best-effort approximation because
+                #it doesn't have access to information about plurals (e.g. creature vs. creatures).
+                if type(self._possessor).__name__ == "MgPlayerTerm":
+                        return "{0} {1}".format(self._possessor.getPossessive(),self._owned.unparseToString()) 
+                else:
+                        return "{0}'s {1}".format(self._possessor.unparseToString(),self._owned.unparseToString()) 
         
         
 class MgModalExpression(MgAbstractExpression):
@@ -1049,17 +1056,23 @@ class MgDealsDamageExpression(MgEffectExpression):
                 VariantB = auto() #<origin> deals damage <damageExpression> to <subject>
                 VariantC = auto() #<origin> deals damage to <subject> <damageExpression>
         
-        def __init__(self,origin,damageExpression=None,subject=None,variant=None):
+        def __init__(self,origin,damageType,damageExpression=None,subject=None,variant=None):
                 """
                 origin: The entity dealing the damage
+                damageType: The type of damage being dealt, specified by a MgDamageType node. Default is regular damage.
                 damageExpression: An expression representing the amount of damage. Optional.
                 subject: The entity receiving the damage. Optional.
+                damagetype: 
                 variant: An enum that indicates the order in which the card should be unparsed.
                 By default it is variantA.
                 """
                 super().__init__()
                 self._origin = origin
                 self._origin.setParent(self)
+                
+                self._damageType = damageType
+                self._damageType.setParent(self)
+                        
                 
                 self._damageExpression = damageExpression
                 if self._damageExpression is not None:
@@ -1082,6 +1095,15 @@ class MgDealsDamageExpression(MgEffectExpression):
                 self._origin = origin
                 if self._origin is not None:
                         self._origin.setParent(self)
+                        
+        def getDamageType(self):
+                """Get the damage type object for this deals-damage node."""
+                return self._damageType
+                
+        def setDamageType(self,damageType):
+                """Get the damage type object for this deals-damage node."""
+                self._damageType = damageType
+                self._damageType.setParent(self)
                 
         def hasDamageExpression(self):
                 """Checks whether this deals-damage expression has a damage expression."""
@@ -1126,19 +1148,19 @@ class MgDealsDamageExpression(MgEffectExpression):
                 return [node for node in {self._origin,self._damageExpression,self._subject} if node is not None and node.isTraversable()]
                 
         def unparseToString(self):
-                output = "{0} deals".format(self._origin.unparseToString())
+                output = "{0} deal(s)".format(self._origin.unparseToString())
                 if self._variant == MgDealsDamageExpression.DealsDamageVariantEnum.VariantA:
                         #<origin> deals <damageExpression>? damage to <subject>?
                         if self._damageExpression is not None:
-                                output = output + " {0} damage".format(self._damageExpression.unparseToString())
+                                output = output + " {0} {1}".format(self._damageExpression.unparseToString(),self._damageType.unparseToString())
                         if self._subject is not None:
                                 output = output + " to {0}".format(self._subject.unparseToString())
                 elif self._variant == MgDealsDamageExpression.DealsDamageVariantEnum.VariantB:
                         #<origin> deals damage <damageExpression> to <subject>
-                        output = output + "damage {0} to {1}".format(self._damageExpression.unparseToString(),self._subject.unparseToString())
+                        output = output + "{0} {1} to {2}".format(self._damageType.unparseToString(),self._damageExpression.unparseToString(),self._subject.unparseToString())
                 else:
                         #<origin> deals damage to <subject> <damageExpression>
-                        output = output + "damage to {1} {0}".format(self._damageExpression.unparseToString(),self._subject.unparseToString())
+                        output = output + "{2} to {1} {0}".format(self._damageExpression.unparseToString(),self._subject.unparseToString(),self._damageType.unparseToString())
                 return output
                                 
                 #if self._damageExpression is not None and self._damageQuantityAfter == True:

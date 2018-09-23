@@ -27,7 +27,7 @@ def parseWorker(cardDict):
                 return name, True
         except Exception as e:
                 #TMP: REMOVE ME LATER
-                if name == "Lightwielder Paladin":
+                if name == "Wall of Frost":
                         print(e)
                 print("FAILURE:",name)
                 return name,False
