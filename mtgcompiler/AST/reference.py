@@ -268,7 +268,7 @@ class MgThisReference(MgAbstractReference):
         
 
 class MgPlayer(core.MgNode):
-        """This node represents a player. This can be 'you', an opponent, a teammate, etc."""
+        """This node represents a description of a player. This can be 'you', an opponent, a teammate, etc."""
         class PlayerEnum(Enum):
                 You = "you"
                 Opponent = "opponent"

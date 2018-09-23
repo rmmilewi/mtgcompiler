@@ -26,6 +26,10 @@ def parseWorker(cardDict):
                 card = workerParser.parse(cardDict)
                 return name, True
         except Exception as e:
+                #TMP: REMOVE ME LATER
+                if name == "Lightwielder Paladin":
+                        print(e)
+                print("FAILURE:",name)
                 return name,False
 
 class TestSetParsing(unittest.TestCase):

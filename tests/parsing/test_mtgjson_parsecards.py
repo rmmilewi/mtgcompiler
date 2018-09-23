@@ -8,9 +8,174 @@ class TestParseCards(unittest.TestCase):
         
         @classmethod
         def setUpClass(cls):
-                cls._parser = JsonParser()
+                options = {"parseonly" : True}
+                cls._parser = JsonParser(options)
+                
+                
+        def test_parsePacifism(self):
+                data = {
+                "artist": "Mark Zug",
+                "cmc": 2,
+                "colorIdentity": [
+                "W"
+                ],
+                "colors": [
+                "White"
+                ],
+                "flavor": "\"If I fight, I might step on a butterfly. That would be sad.\"\n—Krowg of Qal Sisma",
+                "id": "885f726576182df83caa7343d3853de6003ba1f4",
+                "imageName": "pacifism",
+                "layout": "normal",
+                "manaCost": "{1}{W}",
+                "mciNumber": "29",
+                "multiverseid": 394645,
+                "name": "Pacifism",
+                "number": "29",
+                "rarity": "Common",
+                "subtypes": [
+                "Aura"
+                ],
+                "text": "Enchant creature\nEnchanted creature can't attack or block",
+                "type": "Enchantment — Aura",
+                "types": [
+                "Enchantment"
+                ]
+                }
+                card = self._parser.parse(data)
+                
+                
+        def test_parseJaceBeleren(self):
+                jace = {
+                "artist": "Aleksi Briclot",
+                "cmc": 3,
+                "colorIdentity": [
+                "U"
+                ],
+                "colors": [
+                "Blue"
+                ],
+                "id": "5e898f919d238471eb26b8b740890324b15402b1",
+                "imageName": "jace beleren",
+                "layout": "normal",
+                "loyalty": 3,
+                "manaCost": "{1}{U}{U}",
+                "mciNumber": "15",
+                "name": "Jace Beleren",
+                "number": "15",
+                "rarity": "Special",
+                "releaseDate": "2009-01-27",
+                "subtypes": [
+                "Jace"
+                ],
+                "supertypes": [
+                "Legendary"
+                ],
+                "text": "+2: Each player draws a card.\n−1: Target player draws a card.\n−10: Target player puts the top twenty cards of his or her library into his or her graveyard.",
+                "type": "Legendary Planeswalker — Jace",
+                "types": [
+                "Planeswalker"
+                ]
+                }
+                card = self._parser.parse(jace)
+                
+                
+        def test_parseMerfolkLooter(self):
+                looter = {
+                "artist": "Austin Hsu",
+                "cmc": 2,
+                "colorIdentity": [
+                "U"
+                ],
+                "colors": [
+                "Blue"
+                ],
+                "flavor": "Merfolk don't always know what they're looking for, but they're certain once they find it.",
+                "id": "ca32a0384ba4357a9f792d0388fd0a02e61034d4",
+                "imageName": "merfolk looter",
+                "layout": "normal",
+                "manaCost": "{1}{U}",
+                "mciNumber": "61",
+                "multiverseid": 413603,
+                "name": "Merfolk Looter",
+                "number": "61",
+                "power": "1",
+                "rarity": "Uncommon",
+                "subtypes": [
+                "Merfolk",
+                "Rogue"
+                ],
+                "text": "{T}: Draw a card, then discard a card.",
+                "toughness": "1",
+                "type": "Creature — Merfolk Rogue",
+                "types": [
+                "Creature"
+                ]
+                }
+                card = self._parser.parse(looter)
+                
+        def test_parseBabyJace(self):
+                baby = {
+                "manaCost": "{U}",
+                "name": "Jace, Baby",
+                "rarity": "Rare",
+                "text": "+2: Each player draws a card.\n−1: Target player draws a card.",
+                "type": "Planeswalker",
+                "loyalty": 1,
+                "types": [
+                  "Planeswalker"
+                ]
+                }
+                card = self._parser.parse(baby)
+                
+                
+        def test_parseAncestralIteration(self):
+                return None
+                iteration = {
+                "manaCost": "{U}",
+                "name": "Ancestral Iteration",
+                "rarity": "Rare",
+                "text": "Draw a card.\nDraw a card.\nDraw a card.",
+                "type": "Instant",
+                "types": [
+                  "Instant"
+                ]
+                }
+                card = self._parser.parse(iteration)
+                
+                
+        def test_parseBountifulHarvest(self):
+                return None
+                harvest = {
+                "artist": "Jason Chan",
+                "cmc": 5,
+                "colorIdentity": [
+                  "G"
+                ],
+                "colors": [
+                  "Green"
+                ],
+                "flavor": "\"When we fail to see the beauty in every tree, we are no better than humans.\"\n—Saelia, elvish scout",
+                "id": "2d1a1ad709cdef0059708e2f5ef592554e98a538",
+                "imageName": "bountiful harvest",
+                "layout": "normal",
+                "manaCost": "{4}{G}",
+                "mciNumber": "163",
+                "multiverseid": 278074,
+                "name": "Bountiful Harvest",
+                "number": "163",
+                "rarity": "Common",
+                #"text": "You gain 1 life for each land you control.",
+                "text": "For each land you control, you gain 1 life.",
+                "type": "Sorcery",
+                "types": [
+                  "Sorcery"
+                ]
+                }
+                card = self._parser.parse(harvest)
+                
                 
         def test_parseBlackLotus(self):
+                return None
                 lotus = {
                 "artist": "Chris Rahn",
                 "cmc": 0,
