@@ -292,7 +292,7 @@ class MgPlayerTerm(core.MgNode):
                 Controller = {"nominative_singular": "controller", "nominative_plural": "controllers","possessive_singular": "controller's","possessive_plural" : "controllers'"}
                 Player = {"nominative_singular": "player", "nominative_plural": "players","possessive_singular": "player's","possessive_plural" : "players'"}
         
-        def __init__(self,playerEnum,isPlural=False,isPossessive=False):
+        def __init__(self,playerEnum,isPlural=False):
                 """
                 playerEnum: An instance of PlayerTermEnum
                 isPlural: A flag indicating whether the player term should be interpreted as plural.
@@ -300,15 +300,6 @@ class MgPlayerTerm(core.MgNode):
                 """
                 self._playerEnum = playerEnum
                 self._isPlural = isPlural
-                #self._isPossessive = isPossessive
-                
-        #def isPossessive(self):
-        #        """Checks whether this player term is possessive."""
-        #        return self._isPossessive == True
-                
-        #def setisPossessive(self,isPossessive):
-        #        """Sets whether this player term is possessive."""
-        #        self._isPossessive = isPossessive
                 
         def isPlural(self):
                 """Checks whether this player term is plural."""
@@ -642,9 +633,214 @@ class MgQualifier(core.MgNode):
                 return self._value.value
     
 class MgTimeTerm(core.MgNode):
-        """This node represents a point in time in a turn, such as 
-        the first Main phase or the cleanup step."""
-        pass
+        """This class is the parent class for nodes that represent a point in time in a turn, such as 
+        the precombat Main phase or the cleanup step."""
+        
+        def __init__(self):
+                self._traversable = True 
+        
+        def isChild(self,child):
+                """Time terms have no children."""
+                return False
+                
+        def getTraversalSuccessors(self):
+                """Time terms have no successors."""
+                return []
+        
+        
+class MgPhaseTerm(MgTimeTerm):
+        """Represents a phase in a turn, such as the precombat Main phase."""
+        class PhaseEnum(Enum):
+                Beginning = "beginning phase"
+                PrecombatMain = "precombat main phase"
+                Combat = "combat phase"
+                PostcombatMain = "postcombat main phase"
+                Ending = "ending phase"
+                
+        def __init__(self,phaseEnum):
+                """
+                phaseEnum: A PhaseEnum instance.
+                """
+                super().__init__()
+                self._phase = phaseEnum
+                
+        def getPhaseValue(self):
+                """Get the value for this phase (the Enum instance)."""
+                return self._phase
+                
+        def setPhaseValue(self,phaseEnum):
+                """Set the value for this phase (the Enum instance)."""
+                self._phase = phaseEnum
+                
+        def isBeginning(self):
+                """Checks whether this phase is the beginning phase."""
+                return self._phase == MgPhaseTerm.PhaseEnum.Beginning
+                
+        def setBeginning(self):
+                """Sets this phase to be the beginning phase."""
+                self._phase = MgPhaseTerm.PhaseEnum.Beginning
+                
+        def isPrecombatMain(self):
+                """Checks whether this phase is the precombat main phase."""
+                return self._phase == MgPhaseTerm.PhaseEnum.PrecombatMain
+                
+        def setPrecombatMain(self):
+                """Sets this phase to be the precombat main phase."""
+                self._phase = MgPhaseTerm.PhaseEnum.PrecombatMain
+                
+        def isCombat(self):
+                """Checks whether this phase is the combat phase."""
+                return self._phase == MgPhaseTerm.PhaseEnum.Combat
+                
+        def setCombat(self):
+                """Sets this phase to be the combat phase."""
+                self._phase = MgPhaseTerm.PhaseEnum.Combat
+                
+        def isPostcombatMain(self):
+                """Checks whether this phase is the postcombat main phase."""
+                return self._phase == MgPhaseTerm.PhaseEnum.PostcombatMain
+                
+        def setPostcombatMain(self):
+                """Sets this phase to be the postcombat main phase."""
+                self._phase = MgPhaseTerm.PhaseEnum.PostcombatMain
+                
+        def isEnding(self):
+                """Checks whether this phase is the ending phase."""
+                return self._phase == MgPhaseTerm.PhaseEnum.Ending
+                
+        def setEnding(self):
+                """Sets this phase to be the ending phase."""
+                self._phase = MgPhaseTerm.PhaseEnum.Ending
+                
+        def unparseToString(self):
+                return self._phase.value
+                
+        
+                
+class MgStepTerm(MgTimeTerm):
+        """Represents a step in a phase, such as the draw step in the beginning phase."""
+        class StepEnum(Enum):
+                #BEGINNING STEPS
+                Untap = "untap step"
+                Upkeep = "upkeep step" #Usually shortened to just 'upkeep'
+                Draw = "draw step"
+                #COMBAT STEPS
+                BeginningOfCombat = "beginning of combat"
+                DeclareAttackers = "declare attackers step"
+                DeclareBlockers = "declare blockers step"
+                CombatDamage = "combat damage step"
+                EndOfCombat = "end of combat"
+                #ENDING STEPS
+                EndStep = "end step"
+                CleanupStep = "cleanup step"
+        
+        def __init__(self,stepEnum):
+                """
+                stepEnum: a StepEnum instance.
+                """
+                self._step = stepEnum
+                
+        def getStepValue(self):
+                """Get the value for this step (the StepEnum instance)."""
+                return self._step
+                
+        def setStepValue(self,stepEnum):
+                """Set the value for this step (the StepEnum instance)."""
+                self._step = stepEnum
+                
+        def isUntap(self):
+                """Checks whether this step is an untap step"""
+                return self._step == MgStepTerm.StepEnum.Untap
+                
+        def setUntap(self):
+                """Sets this step as an untap step."""
+                self._step = MgStepTerm.StepEnum.Untap
+                
+        def isUpkeep(self):
+                """Checks whether this step is an upkeep step"""
+                return self._step == MgStepTerm.StepEnum.Upkeep
+                
+        def setUpkeep(self):
+                """Sets this step as an upkeep step."""
+                self._step = MgStepTerm.StepEnum.Upkeep
+                
+        def isDraw(self):
+                """Checks whether this step is a draw step"""
+                return self._step == MgStepTerm.StepEnum.Draw
+                
+        def setDraw(self):
+                """Sets this step as a draw step."""
+                self._step = MgStepTerm.StepEnum.Draw
+                
+        def isBeginningOfCombat(self):
+                """Checks whether this step is a beginning-of-combat step"""
+                return self._step == MgStepTerm.StepEnum.BeginningOfCombat
+                
+        def setBeginningOfCombat(self):
+                """Sets this step as a beginning-of-combat step."""
+                self._step = MgStepTerm.StepEnum.BeginningOfCombat
+                
+        def isDeclareAttackers(self):
+                """Checks whether this step is a declare-attackers step"""
+                return self._step == MgStepTerm.StepEnum.DeclareAttackers
+                
+        def setDeclareAttackers(self):
+                """Sets this step as a declare-attackers step."""
+                self._step = MgStepTerm.StepEnum.DeclareAttackers
+                
+        def isDeclareBlockers(self):
+                """Checks whether this step is a declare-blockers step"""
+                return self._step == MgStepTerm.StepEnum.DeclareBlockers
+                
+        def setDeclareBlockers(self):
+                """Sets this step as a declare-blockers step."""
+                self._step = MgStepTerm.StepEnum.DeclareBlockers
+                
+        def isCombatDamage(self):
+                """Checks whether this step is a combat-damage step"""
+                return self._step == MgStepTerm.StepEnum.CombatDamage
+                
+        def setCombatDamage(self):
+                """Sets this step as an combat-damage step."""
+                self._step = MgStepTerm.StepEnum.CombatDamage
+                
+        def isEndOfCombat(self):
+                """Checks whether this step is an end-of-combat step"""
+                return self._step == MgStepTerm.StepEnum.EndOfCombat
+                
+        def setEndOfCombat(self):
+                """Sets this step as an end-of-combat step."""
+                self._step = MgStepTerm.StepEnum.EndOfCombat
+                
+        def isEnd(self):
+                """Checks whether this step is an end step"""
+                return self._step == MgStepTerm.StepEnum.End
+                
+        def setEnd(self):
+                """Sets this step as an end step."""
+                self._step = MgStepTerm.StepEnum.End
+                
+        def isCleanup(self):
+                """Checks whether this step is a cleanup step"""
+                return self._step == MgStepTerm.StepEnum.Cleanup
+                
+        def setCleanup(self):
+                """Sets this step as a cleanup step."""
+                self._step = MgStepTerm.StepEnum.Cleanup
+                
+        def unparseToString(self):
+                return self._step.value
+                
+class MgTurnTerm(MgTimeTerm):
+        """Represents a turn, such as your turn, the next turn, or an extra turn."""
+        
+        def __init__(self):
+                super().__init__()
+        
+        def unparseToString(self):
+                return "turn"
+                
+                
     
 class MgZone(core.MgNode):
         """This node represents a zone in the game. From the rules:
