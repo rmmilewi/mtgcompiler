@@ -14,33 +14,28 @@ class TestParseCards(unittest.TestCase):
                 
         def test_parseCard(self):
                 data = {
-                "artist": "Mike Bierek",
-                "cmc": 3,
+                "artist": "John Avon",
+                "cmc": 1,
                 "colorIdentity": [
-                "U"
+                "G"
                 ],
                 "colors": [
-                "Blue"
+                "Green"
                 ],
-                "flavor": "\"I have seen countless petty warmongers gaze on it for a time before turning away.\"\n—Sarlena, paladin of the Northern Verge",
-                "id": "ef27668f1519b2a4f04b74535ff396a273abba66",
-                "imageName": "wall of frost",
+                "flavor": "\"I fear no army or beast, but only the morning fog. Our assault can survive everything else.\"\n—Lord Hilneth",
+                "id": "fd3fe364019d8f86dafd57326f2105b1f6e98501",
+                "imageName": "fog",
                 "layout": "normal",
-                "manaCost": "{1}{U}{U}",
-                "mciNumber": "83",
-                "multiverseid": 383432,
-                "name": "Wall of Frost",
-                "number": "83",
-                "power": "0",
-                "rarity": "Uncommon",
-                "subtypes": [
-                "Wall"
-                ],
-                "text": "Defender\nWhenever Wall of Frost blocks a creature, that creature doesn't untap during its controller's next untap step.",
-                "toughness": "7",
-                "type": "Creature — Wall",
+                "manaCost": "{G}",
+                "mciNumber": "182",
+                "multiverseid": 189919,
+                "name": "Fog",
+                "number": "182",
+                "rarity": "Common",
+                "text": "Prevent all combat damage that would be dealt this turn.",
+                "type": "Instant",
                 "types": [
-                "Creature"
+                "Instant"
                 ]
                 }
                 card = self._parser.parse(data)

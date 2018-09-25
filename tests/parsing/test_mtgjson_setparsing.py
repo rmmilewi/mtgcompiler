@@ -18,6 +18,8 @@ def parseWorker(cardDict):
         if workerParser == None:
                 options = {"parseonly" : True}
                 workerParser = JsonParser(options)
+                #workerParser = JsonParser.loadFromPickle(path="parser.pickle")
+                #JsonParser.saveToPickle(parser=workerParser,path="parser.pickle")
         if 'name' in cardDict:
                 name = cardDict['name']
         else:
@@ -27,7 +29,7 @@ def parseWorker(cardDict):
                 return name, True
         except Exception as e:
                 #TMP: REMOVE ME LATER
-                if name == "Wall of Frost":
+                if name == "Panic Attack":
                         print(e)
                 print("FAILURE:",name)
                 return name,False

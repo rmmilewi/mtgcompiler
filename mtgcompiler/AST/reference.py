@@ -525,6 +525,7 @@ class MgKeywordStatusModifier(MgDeclarationModifier):
                 Enchanted = "enchanted"
                 Equipped = "equipped"
                 Fortified = "fortified"
+                Monstrous = "monstrous"
                 
         def __init__(self,modifier):
                 assert(type(modifier) == MgKeywordStatusModifier.KeywordStatusEnum)
@@ -550,6 +551,8 @@ class MgEffectStatusModifier(MgDeclarationModifier):
                 Died = "died"
                 Countered = "countered"
                 Sacrificed = "sacrificed"
+                Targeted = "the target of a spell or ability"
+                Prevented = "prevented"
         def __init__(self,modifier):
                 assert(type(modifier) == MgEffectStatusModifier.EffectStatusEnum)
                 super().__init__(modifier)

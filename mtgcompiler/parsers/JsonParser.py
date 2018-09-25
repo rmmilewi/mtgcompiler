@@ -1,4 +1,4 @@
-import collections
+import collections, pickle
 from mtgcompiler.parsers.baseparser import BaseParser
 from mtgcompiler.AST.reference import MgNameReference,MgThisReference
 from mtgcompiler.AST.reference import MgName,MgTapUntapSymbol,MgZone,MgQualifier
@@ -67,6 +67,18 @@ class JsonParser(BaseParser):
                 #TODO: There has to be a better way to set different start rules.
                 self._miniManaParser,self._miniManaTransformer = self.define_grammar("manaexpression")
                 self._miniTypelineParser,self._miniTypelineTransformer = self.define_grammar("typeline")
+                
+        @classmethod
+        def saveToPickle(cls,parser,path="parser.pickle"):
+                """Pickle the parser. This is for testing purposes, right now."""
+                with open(path,'wb') as outfile:
+                        pickle.dump(obj=parser,file=outfile)
+        
+        @classmethod
+        def loadFromPickle(cls,path="parser.pickle"):
+                """Unpickle the parser. This is for testing purposes, right now."""
+                with open(path,'rb') as infile:
+                        return pickle.load(infile)
                 
         class JsonTransformer(Transformer):
                 
@@ -1057,8 +1069,10 @@ class JsonParser(BaseParser):
                         | dostatement
                         | thenstatement
                         | maystatement
+                        | wouldstatement
                         
                         maystatement:  (playerterm | declarationorreference)? "may" statement
+                        wouldstatement: (playerterm | declarationorreference)? "would" statement
                         
                         dostatement: (playerterm | declarationorreference)? ("do" | "does") statement? -> dostatement
                         | (playerterm | declarationorreference)? ("don't" | "doesn't") statement? -> dontstatement
@@ -1103,6 +1117,7 @@ class JsonParser(BaseParser):
                         | statement "only" "during" timeexpression -> exclusiveduringstatement
                         | "after" timeexpression "," statement -> afterstatement
                         | statement "after" timeexpression -> afterstatementinv
+                        | statement "except" (("by"|"for") declarationexpression | statement) -> exceptstatement
                         
                         activationstatement: cost ":" statementblock
                         
@@ -1283,8 +1298,9 @@ class JsonParser(BaseParser):
                         ///VALUE EXPRESSIONS
                         
                         //[TODO: Need to account for custom values, variables, 'equals to' expressions, etc.]
-                        valueexpression: valueterm | equaltoexpression | numberofexpression | wherevariableexpression
+                        valueexpression: valueterm | equaltoexpression | numberofexpression | wherevariableexpression | uptoexpression
                         equaltoexpression: eventoreffect? "equal" "to" (valueexpression | declarationorreference)
+                        uptoexpression: "up" "to" valueterm
                         numberofexpression: ("a"|"the") "number" "of" declarationorreference
                         valueterm: valuenumber | valuecardinal | valueordinal | valuefrequency | valuecustom
                         valuenumber: NUMBER
@@ -1313,10 +1329,10 @@ class JsonParser(BaseParser):
                         
                         nakeddeclarationexpression: definitionexpression
                         anytargetexpression: "any" "target"
-                        targetexpression: "target" definitionexpression //[TODO: modifiers like 'up to three other target ___'].
+                        targetexpression: valueexpression? "target" definitionexpression //[TODO: modifiers like 'up to three other target ___'].
                         eachexpression: "each" definitionexpression
                         allexpression: "all" definitionexpression
-                        otherexpression: ["an"]"other" definitionexpression
+                        otherexpression: ["an"]"other" declarationexpression //[TODO: This would lead to a nested declaration, there's only one declaration though.]
                         indefinitesingularexpression: "a"["n"] definitionexpression
                         
                         definitionexpression: descriptionexpression
@@ -1361,6 +1377,7 @@ class JsonParser(BaseParser):
                         
                         effectexpression: keywordactionexpression
                         | dealsdamageexpression
+                        | preventdamageexpression
                         | returnexpression
                         | putinzoneexpression
                         | putcounterexpression
@@ -1375,10 +1392,15 @@ class JsonParser(BaseParser):
                         | wingameexpression
                         | lookexpression
                         
-                        dealsdamageexpression:  declarationorreference "deal"["s"] valueexpression? DAMAGETYPE ("to" declarationorreference)? ("," wherevariableexpression)? -> dealsdamagevarianta
-                        | declarationorreference "deal"["s"] DAMAGETYPE valueexpression "to" declarationorreference ("," wherevariableexpression)? -> dealsdamagevariantb
-                        | declarationorreference "deal"["s"] DAMAGETYPE "to" declarationorreference  valueexpression ("," wherevariableexpression)? -> dealsdamagevariantc
+                        dealsdamageexpression:  declarationorreference "deal"["s"] valueexpression? DAMAGETYPE ("to" (playerterm | declarationorreference))? ("," wherevariableexpression)? -> dealsdamagevarianta
+                        | declarationorreference "deal"["s"] DAMAGETYPE valueexpression "to" (playerterm | declarationorreference) ("," wherevariableexpression)? -> dealsdamagevariantb
+                        | declarationorreference "deal"["s"] DAMAGETYPE "to" (playerterm | declarationorreference)  valueexpression ("," wherevariableexpression)? -> dealsdamagevariantc
+                        preventdamageexpression: "prevent" "the" "next" valueexpression DAMAGETYPE "that" "would" "be" "dealt" "to" (playerterm | declarationorreference) timeexpression? -> preventdamagevarianta
+                        | "prevent" "all" DAMAGETYPE "that" "would" "be" "dealt" ("to" (playerterm | declarationorreference))? timeexpression? -> preventdamagevariantb
+                        
                         DAMAGETYPE: "damage" | "combat damage" | "noncombat damage"
+                        
+                        
                         
                         returnexpression: (playerterm|declarationorreference)? "return"["s"] declarationorreference ("from" possessiveterm* zone)? "to" possessiveterm* zone //[TODO]
                         putinzoneexpression: (playerterm | declarationorreference)? "put"["s"] (declarationorreference | "the" "top" valueexpression "card"["s"] "of" possessiveterm* zone) (("onto" | "into" | "on top of" | "on bottom of") possessiveterm* zone | "back") (definitionexpression | zoneplacementmodifier)?
@@ -1391,7 +1413,7 @@ class JsonParser(BaseParser):
                         getsptexpression: declarationorreference? "get"["s"] ptchangeexpression
                         gainabilityexpression: declarationorreference? "gain"["s"] abilitysequencestatement
                         lookexpression:  (playerterm | declarationorreference)? "look"["s"] "at" (declarationorreference | "the" "top" valueexpression "card"["s"] "of" possessiveterm* zone)
-                        
+        
                         
                         keywordactionexpression: basickeywordaction | specialkeywordaction
                         
@@ -1464,7 +1486,6 @@ class JsonParser(BaseParser):
                         | proliferateexpression
                         | transformexpression
                         | populateexpression
-                        | monstrousexpression
                         | voteexpression
                         | bolsterexpression
                         | manifestexpression
@@ -1486,7 +1507,6 @@ class JsonParser(BaseParser):
                         proliferateexpression: "proliferate"
                         transformexpression: "transform" declarationorreference
                         populateexpression: "populate"
-                        monstrousexpression: declarationorreference "becomes" "monstrous" //[TODO?]
                         voteexpression: playerterm "vote"["s"] "for" (objectname "or" objectname | declarationorreference) //[TODO]
                         bolsterexpression: "bolster" valueexpression
                         manifestexpression: playerterm? "the" "top" valueexpression? "card"["s"] "of" possessiveterm "library"
@@ -1596,10 +1616,10 @@ class JsonParser(BaseParser):
                         
                         ABILITYMODIFIER: "triggered" | "activated" | "mana"
                         COMBATSTATUSMODIFIER: "attacking" | "defending" | "attacked" | "blocking" | "blocked" | "active"
-                        KEYWORDSTATUSMODIFIER: "paired" | "kicked" | "face-up" | "face-down" | "transformed" | "enchanted" | "equipped" | "fortified"
+                        KEYWORDSTATUSMODIFIER: "paired" | "kicked" | "face-up" | "face-down" | "transformed" | "enchanted" | "equipped" | "fortified" | "monstrous"
                         TAPPEDSTATUSMODIFIER: "tapped" | "untapped"
                         EFFECTSTATUSMODIFIER: "named" | "chosen" | "revealed" | "returned" | "destroyed" | "exiled" | "died" | "countered" | "sacrificed"
-                        | "the target of a spell or ability"
+                        | "the target of a spell or ability" | "prevented"
                         
                         qualifier: QUALIFIER["s"]
                         QUALIFIER: ("ability"|"abilities") | "card" | "permanent" | "source" | "spell" | "token" | "effect"
