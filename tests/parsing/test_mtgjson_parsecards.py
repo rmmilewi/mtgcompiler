@@ -8,34 +8,66 @@ class TestParseCards(unittest.TestCase):
         
         @classmethod
         def setUpClass(cls):
-                options = {"parseonly" : True}
+                options = {"parseonly" : True,"rulestextonly": True}
                 cls._parser = JsonParser(options)
-                
-                
+        
+        
         def test_parseCard(self):
                 data = {
-                "artist": "John Avon",
-                "cmc": 1,
+                "artist": "Jesper Ejsing",
+                "cmc": 2,
                 "colorIdentity": [
                 "G"
                 ],
                 "colors": [
                 "Green"
                 ],
-                "flavor": "\"I fear no army or beast, but only the morning fog. Our assault can survive everything else.\"\n—Lord Hilneth",
-                "id": "fd3fe364019d8f86dafd57326f2105b1f6e98501",
-                "imageName": "fog",
+                "flavor": "Bulgo paused, puzzled. What was that rustling sound, and why did he feel so stiff? And how could his feet be so thirsty?",
+                "id": "014d5a7aeac4a85cfee4e3811969d0de6118a5cf",
+                "imageName": "lignify",
                 "layout": "normal",
-                "manaCost": "{G}",
-                "mciNumber": "182",
-                "multiverseid": 189919,
-                "name": "Fog",
-                "number": "182",
+                "manaCost": "{1}{G}",
+                "mciNumber": "16",
+                "multiverseid": 201837,
+                "name": "Lignify",
+                "number": "16",
                 "rarity": "Common",
-                "text": "Prevent all combat damage that would be dealt this turn.",
-                "type": "Instant",
+                "subtypes": [
+                "Treefolk",
+                "Aura"
+                ],
+                "text": "Enchant creature\nEnchanted creature is a Treefolk with base power and toughness 0/4 and loses all abilities.",
+                "type": "Tribal Enchantment — Treefolk Aura",
                 "types": [
-                "Instant"
+                "Tribal",
+                "Enchantment"
+                ]
+                }
+                card = self._parser.parse(data)
+                
+        def test_parseFireball(self):
+                data = {
+                "artist": "Dave Dorman",
+                "cmc": 1,
+                "colorIdentity": [
+                "R"
+                ],
+                "colors": [
+                "Red"
+                ],
+                "id": "f7150866ae484cdcea299da715e6c5ae0612c7cf",
+                "imageName": "fireball",
+                "layout": "normal",
+                "manaCost": "{X}{R}",
+                "mciNumber": "136",
+                "multiverseid": 191076,
+                "name": "Fireball",
+                "number": "136",
+                "rarity": "Uncommon",
+                "text": "This spell costs {1} more to cast for each target beyond the first.\nFireball deals X damage divided evenly, rounded down, among any number of targets.",
+                "type": "Sorcery",
+                "types": [
+                "Sorcery"
                 ]
                 }
                 card = self._parser.parse(data)

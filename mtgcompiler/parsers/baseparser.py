@@ -14,6 +14,12 @@ class BaseParser(metaclass=abc.ABCMeta):
                         self._parseonly = options["parseonly"]
                 else:
                         self._parseonly = False
+                        
+                #rulestextonly: Only parse the rules text
+                if options is not None and "rulestextonly" in options:
+                        self._rulestextonly = options["rulestextonly"]
+                else:
+                        self._rulestextonly = False
         
         
         def parse(self,cardinput):
