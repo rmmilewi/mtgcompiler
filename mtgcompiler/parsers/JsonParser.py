@@ -390,9 +390,10 @@ class JsonParser(BaseParser):
                         #: "split" "second"
                         return MgSplitSecondAbility()
                 def kwsuspend(self,items): 
-                        #: "suspend" NUMBER
+                        #: "suspend" NUMBER cost
                         caliber = int(items[0].value)
-                        return MgSuspendAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal))
+                        cost = items[1]
+                        return MgSuspendAbility(MgNumberValue(caliber,MgNumberValue.NumberTypeEnum.Literal),cost)
                 def kwvanishing(self,items): 
                         #: "vanishing" [NUMBER]
                         if len(items) == 1:
@@ -1047,7 +1048,7 @@ class JsonParser(BaseParser):
                         typelinet: TYPE*
                         typelinesubt: (SUBTYPESPELL | SUBTYPELAND | SUBTYPEARTIFACT | SUBTYPEENCHANTMENT | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR)*
                 
-                        cardtext : ability? ("\n" ability)* //[TODO: Do we need to recognize newlines? We might in order to separate distinct abilities.]
+                        cardtext : ability? ("\n" ability)* //[TODO: Do we need to explicitly recognize newlines? We might in order to separate distinct abilities.]
                         remindertext : /\(.*?\)/
                         
                         ability : abilityword? statementblock remindertext? -> regularability
@@ -1125,6 +1126,7 @@ class JsonParser(BaseParser):
                         | "after" timeexpression "," statement -> afterstatement
                         | statement "after" timeexpression -> afterstatementinv
                         | statement "except" (("by"|"for") declarationexpression | statement) -> exceptstatement
+                        | statement "rather" "than" statement -> ratherstatement
                         
                         activationstatement: cost ":" statementblock
                         
@@ -1223,7 +1225,7 @@ class JsonParser(BaseParser):
                         kwrecover: "recover" cost
                         kwripple: "ripple" NUMBER
                         kwsplitsecond: "split" "second"
-                        kwsuspend: "suspend" NUMBER
+                        kwsuspend: "suspend" NUMBER cost 
                         kwvanishing: "vanishing" [NUMBER]
                         kwabsorb: "absorb" NUMBER
                         kwauraswap: "aura" "swap" cost
@@ -1300,7 +1302,7 @@ class JsonParser(BaseParser):
                         
                         cost: costsequence | dashcostexpression
                         costsequence: (loyaltycost | tapuntapsymbol | manaexpression | effectexpression) ("," (loyaltycost | tapuntapsymbol | manaexpression | effectexpression))*
-                        dashcostexpression: DASH effectexpression
+                        dashcostexpression: DASH ( manaexpression | effectexpression )
                         
                         ///VALUE EXPRESSIONS
                         
@@ -1374,10 +1376,10 @@ class JsonParser(BaseParser):
                         referenceterm: namereference | itreference | thatreference | thisreference | selfreference | thereference | objectname | possessivereference
                         namereference: NAMEREFSYMBOL
                         itreference: "it" | "them" //[TODO: Where should 'them' belong?]
-                        thatreference: ("that"|"those") definitionexpression
-                        thisreference: "this" definitionexpression
+                        thatreference: ("that"|"those") (definitionexpression | possessivereference )
+                        thisreference: "this" (definitionexpression | possessivereference )
                         selfreference: "itself" | "himself" | "herself"
-                        thereference: "the" definitionexpression
+                        thereference: "the" (definitionexpression | possessivereference)
                         controlpostfix: (playerterm | declarationorreference) "control"["s"]
                         playerterm: (modifier)* PLAYERTERM | referenceterm
                         possessivereference: possessiveterm+ definitionexpression
@@ -1414,6 +1416,7 @@ class JsonParser(BaseParser):
                         | paylifeexpression
                         | addmanaexpression
                         | paymanaexpression
+                        | payexpression
                         | gainlifeexpression
                         | loselifeexpression
                         | getsptexpression
@@ -1425,6 +1428,7 @@ class JsonParser(BaseParser):
                         | flipcoinsexpression
                         | winloseeventexpression
                         | remainsexpression
+                        | assigndamageexpression
                         
                         dealsdamageexpression:  declarationorreference? "deal"["s"] valueexpression? DAMAGETYPE ("to" (playerterm | declarationorreference))? (","? quantityrulemodification)* -> dealsdamagevarianta
                         | valueexpression DAMAGETYPE ("to" (playerterm | declarationorreference))?  (","? quantityrulemodification)* -> dealsdamagevariantaimplied //variant a, implied antecedent
@@ -1434,13 +1438,14 @@ class JsonParser(BaseParser):
                         | "prevent" "all" DAMAGETYPE "that" "would" "be" "dealt" ("to" (playerterm | declarationorreference))? timeexpression? -> preventdamagevariantb
                         | "prevent" valueexpression "of" "that" "damage" -> preventdamagevariantc 
                         
-                        returnexpression: (playerterm|declarationorreference)? "return"["s"] declarationorreference atrandomexpression? ("from" possessiveterm* zone)? "to" possessiveterm* zone //[TODO]
+                        returnexpression: (playerterm|declarationorreference)? "return"["s"] declarationorreference atrandomexpression? ("from" possessiveterm* zone)? "to" possessiveterm* zone zoneplacementmodifier?//[TODO]
                         putinzoneexpression: (playerterm | declarationorreference)? "put"["s"] (declarationorreference | "the" "top" valueexpression "card"["s"] "of" possessiveterm* zone) (("onto" | "into" | "on top of" | "on bottom of") possessiveterm* zone | "back") (definitionexpression | zoneplacementmodifier)?
-                        putcounterexpression: (playerterm | declarationorreference)? "put"["s"] ("a"|valueexpression) countertype "counter" "on" declarationorreference ("," wherevariableexpression)? -> hascounterstatement
+                        putcounterexpression: (playerterm | declarationorreference)? "put"["s"] ("a"|valueexpression) countertype "counter"["s"] "on" declarationorreference ("," wherevariableexpression)? -> hascounterstatement
                         spendmanaexpression: "spend" "mana" //[TODO]
                         paylifeexpression: (playerterm | declarationorreference)? "pay"["s"] valueexpression? "life" ("," wherevariableexpression)?//[TODO]
                         addmanaexpression: (playerterm | declarationorreference)? "add"["s"] (manaexpression|manaspecificationexpression)
                         paymanaexpression: (playerterm | declarationorreference)? "pay"["s"] (manaexpression|manaspecificationexpression)
+                        payexpression: (playerterm | declarationorreference)? "pay"["s"] declarationorreference //[TODO: This might change. Added for 'rather than pay this spell's mana cost'.]
                         gainlifeexpression: (playerterm | declarationorreference)? "gain"["s"] (valueexpression? "life" | "life" valueexpression) ("," wherevariableexpression)?
                         loselifeexpression: (playerterm | declarationorreference)? "lose"["s"] (valueexpression? "life" | "life" valueexpression) ("," wherevariableexpression)?
                         getsptexpression: declarationorreference? "get"["s"] ptchangeexpression
@@ -1452,8 +1457,13 @@ class JsonParser(BaseParser):
                         flipcoinsexpression: (playerterm | declarationorreference)? "flip"["s"] ("a" | valuecardinal) "coin"["s"]
                         !winloseeventexpression: (playerterm | declarationorreference)? ("lose"|"win")["s"] ("the" "flip" | "the" "game")?
                         remainsexpression: (playerterm | declarationorreference)? "remain"["s"] (modifier | locationexpression)
-                        keywordactionexpression: basickeywordaction | specialkeywordaction
+                        assigndamageexpression: (playerterm | declarationorreference)? "assign"["s"] DAMAGETYPE "to" declarationorreference -> damageredirectionexpression
+                        | (playerterm | declarationorreference)? "assign"["s"] "no" DAMAGETYPE timeexpression -> nodamageassignedexpression
+                        | (playerterm | declarationorreference)? "assign"["s"] DAMAGETYPE valueexpression -> alternatedamageassignmentexpression
                         
+                        
+                        
+                        keywordactionexpression: basickeywordaction | specialkeywordaction
                         basickeywordaction: activateexpression
                         | attacksexpression
                         | blocksexpression
@@ -1531,7 +1541,8 @@ class JsonParser(BaseParser):
                         | goadexpression
                         | exertexpression
                         | exploreexpression
-                        | assembleexpression
+                        | turnfaceexpression
+                        //| assembleexpression
                         
                         regenerateexpression: "regenerate" declarationorreference
                         scryexpression: "scry" valueexpression
@@ -1552,8 +1563,13 @@ class JsonParser(BaseParser):
                         goadexpression: "goad" declarationorreference
                         exertexpression: "exert" declarationorreference
                         exploreexpression: "explore"
+                        //[This one below is a bit weird because it's not 'becomes turned face up', it's 'is turned face up'.]
+                        //[It's a passive construction, but it's not a modifier like face-up.]
+                        !turnfaceexpression: (playerterm | declarationorreference)? "turn"["s"] declarationorreference "face" ("down" | "up")
+                        | "turned" "face" ("down" | "up") -> turnedfaceexpression
+                        
                         //[Note: Assemble is an Un-set only keyword action. I might remove this.]
-                        assembleexpression: declarationorreference? "assemble"["s"] declarationorreference | assembleexpression valueexpression
+                        //assembleexpression: declarationorreference? "assemble"["s"] declarationorreference | assembleexpression valueexpression
                         
                         
                         //TYPE/MANA/COLOR EXPRESSIONS, MODIFIERS, AND MISCELLANEOUS
