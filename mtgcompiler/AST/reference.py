@@ -494,6 +494,7 @@ class MgAbilityModifier(MgDeclarationModifier):
                 Triggered = "triggered"
                 Activated = "activated"
                 Mana = "mana"
+                Loyalty = "loyalty"
                 
         def __init__(self,modifier):
                 assert(type(modifier) == MgAbilityModifier.AbilityModifierEnum)
