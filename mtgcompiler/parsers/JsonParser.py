@@ -651,7 +651,6 @@ class JsonParser(BaseParser):
                         return items[0]
                 
                 def statementblock(self,items):
-                        print("DEBUG STATEMENT BLOCK",items)
                         return MgStatementBlock(*items)
                 
                 def expressionstatement(self,items):
@@ -659,11 +658,6 @@ class JsonParser(BaseParser):
                         return MgExpressionStatement(expression)
                         
                 def activationstatement(self,items):
-                        print("DEBUG ACTIVATION STATEMENT",items)
-                        print("DEBUG INSTRUCTIONS:",items[1].unparseToString())
-                        print("DEBUG NUMBER OF STATEMENTS",items[1].getNumberOfStatements())
-                        print("DEBUG STATEMENT AT INDEX 0",items[1].getStatementAtIndex(0))
-                        print("DEBUG ROOT",items[1].getStatementAtIndex(0).getRoot())
                         cost = items[0]
                         instructions = items[1]
                         return MgActivationStatement(cost=cost,instructions=instructions)
@@ -1105,8 +1099,8 @@ class JsonParser(BaseParser):
                         
                         conditionalstatement: "if" statement "," statement -> ifstatement
                         | statement "if" statement -> ifstatementinv
-                        | "whenever" statement "," statement -> wheneverstatement
-                        | statement "whenever" statement -> wheneverstatementinv
+                        | "whenever" statement timeexpression? "," statement -> wheneverstatement
+                        | statement "whenever" statement timeexpression? -> wheneverstatementinv
                         | "when" statement "," statement -> whenstatement
                         | statement "when" statement -> whenstatementinv
                         | "at" timeexpression "," statement -> atstatement
@@ -1127,6 +1121,7 @@ class JsonParser(BaseParser):
                         | statement "after" timeexpression -> afterstatementinv
                         | statement "except" (("by"|"for") declarationexpression | statement) -> exceptstatement
                         | statement "rather" "than" statement -> ratherstatement
+                        | "the" "next" "time" statement timeexpression? "," statement -> nexttimestatement
                         
                         activationstatement: cost ":" statementblock
                         
@@ -1143,8 +1138,8 @@ class JsonParser(BaseParser):
                         | kwrampage | kwcumulativeupkeep | kwflanking | kwphasing
                         | kwbuyback | kwshadow | kwcycling | kwecho | kwhorsemanship
                         | kwfading | kwkicker | kwflashback | kwmadness | kwfear
-                        | kwmorph | kwamplify |kwprovoke | kwstorm | kwaffinity
-                        | kwentwine | kwmodular |kwsunburst | kwbushido | kwsoulshift
+                        | kwmorph | kwamplify | kwprovoke | kwstorm | kwaffinity
+                        | kwentwine | kwmodular | kwsunburst | kwbushido | kwsoulshift
                         | kwsplice | kwoffering |kwninjutsu | kwepic | kwconvoke
                         | kwdredge | kwtransmute | kwbloodthirst | kwhaunt | kwreplicate
                         | kwforecast | kwgraft | kwrecover | kwripple | kwsplitsecond
@@ -1162,7 +1157,7 @@ class JsonParser(BaseParser):
                         | kwsurge | kwskulk | kwemerge | kwescalate | kwmelee
                         | kwcrew | kwfabricate | kwpartner | kwundaunted | kwimprovise
                         | kwaftermath | kwembalm | kweternalize | kwafflict | kwascend
-                        |kwassist
+                        | kwassist
                         
                         kwdeathtouch: "deathtouch"
                         kwdefender: "defender"
@@ -1220,7 +1215,7 @@ class JsonParser(BaseParser):
                         kwbloodthirst: "bloodthirst" NUMBER
                         kwhaunt: "haunt"
                         kwreplicate: "replicate" cost
-                        kwforecast: "forecast"
+                        kwforecast: "forecast" activationstatement
                         kwgraft: "graft"
                         kwrecover: "recover" cost
                         kwripple: "ripple" NUMBER
@@ -1310,8 +1305,9 @@ class JsonParser(BaseParser):
                         valueexpression: valueterm | equaltoexpression | numberofexpression | wherevariableexpression | uptoexpression | thatmuchexpression
                         | ltexpression | lteqexpression | gtexpression | gteqexpression
                         ltexpression: eventoreffect? "less" "than" (valueexpression | declarationorreference)
-                        lteqexpression: eventoreffect? valueexpression "or" "less"
+                        lteqexpression: eventoreffect? valueexpression "or" ("less" | "fewer")
                         gtexpression: eventoreffect? "greater" "than" (valueexpression | declarationorreference)
+                        | "more" "than" valueexpression
                         gteqexpression: eventoreffect? valueexpression "or" "greater"
                         | CARDINAL "or" "more" "times"-> gteqfrequencyexpression
                         equaltoexpression: eventoreffect? "equal" "to" (valueexpression | declarationorreference)
@@ -1324,7 +1320,8 @@ class JsonParser(BaseParser):
                         valueordinal: ORDINAL
                         valuefrequency: FREQUENCY | CARDINAL "times"
                         FREQUENCY: "once" | "twice"
-                        CARDINAL: "one" | "two" | "three" | "four" | "five" | "six" |"twenty" //[TODO]
+                        CARDINAL: "one" | "two" | "three" | "four" | "five" | "six" | "seven" | "eight" | "nine" | "ten" 
+                        | "eleven" | "twelve" | "thirteen" | "fourteen" | "fifteen" | "sixteen" | "seventeen" | "eighteen" | "nineteen" | "twenty" //[TODO]
                         ORDINAL: "first" | "second" | "third" | "fourth" //[TODO]
                         valuecustom: "x" | "*"
                         wherevariableexpression: "where" "x" "is" valueexpression
@@ -1339,25 +1336,26 @@ class JsonParser(BaseParser):
                         
                         //DECLARATIONS AND REFERENCES
                         
-                        declarationexpression: nakeddeclarationexpression
-                        | targetexpression
+                        declarationexpression: nakeddeclarationexpression | declarationdecorator
+                        | declarationexpression "or" declarationexpression -> ordeclarationexpression
+                        | declarationexpression "and" declarationexpression -> anddeclarationexpression
+                        | declarationexpression "and/or" declarationexpression -> andordeclarationexpression
+                        
+                        declarationdecorator: targetexpression
                         | anytargetexpression
                         | eachexpression
                         | allexpression
                         | otherexpression
                         | indefinitesingularexpression
-                        | declarationexpression "or" declarationexpression -> ordeclarationexpression
-                        | declarationexpression "and" declarationexpression -> anddeclarationexpression
-                        | declarationexpression "and/or" declarationexpression -> andordeclarationexpression
                         
                         nakeddeclarationexpression: definitionexpression
                         anytargetexpression: "any" "target" 
                         | "among" "any" "number" "of" "targets" -> anynumberoftargets //[TODO: There should be a cleaner way of handling this.]
-                        targetexpression: ("among"? valueexpression)? "target" definitionexpression? //[TODO: modifiers like 'up to three other target ___'].
-                        eachexpression: "each" definitionexpression
-                        allexpression: "all" definitionexpression
-                        otherexpression: ["an"]"other" declarationexpression //[TODO: This would lead to a nested declaration, there's only one declaration though.]
-                        indefinitesingularexpression: "a"["n"] definitionexpression
+                        targetexpression: ("among"? valueexpression)? "target" (nakeddeclarationexpression | declarationdecorator)? //[TODO: modifiers like 'up to three other target ___'].
+                        eachexpression: "each" (nakeddeclarationexpression | declarationdecorator)
+                        allexpression: "all" (nakeddeclarationexpression | declarationdecorator)
+                        otherexpression: ["an"]"other" (nakeddeclarationexpression | declarationdecorator)
+                        indefinitesingularexpression: "a"["n"] (nakeddeclarationexpression | declarationdecorator)
                         
                         definitionexpression: descriptionexpression
                         | definitionexpression "or" descriptionexpression -> ordefinitionexpression
@@ -1368,30 +1366,31 @@ class JsonParser(BaseParser):
                         
                         descriptionexpression: descriptionterm (","? descriptionterm)*
                         
-                        descriptionterm: (colorexpression | namedexpression | manaexpression | typeexpression | ptexpression 
+                        descriptionterm: (colorexpression | namedexpression | manaexpression | typeexpression | ptexpression | valueexpression
                         | qualifier | modifier | locationexpression | valuecardinal | controlpostfix | withexpression | withoutexpression | doesnthaveexpression
-                        | dealtdamageexpression | ofexpression | characteristicexpression)+
+                        | dealtdamageexpression | choiceexpression | ofexpression | characteristicexpression ) +
                         | playerterm //[TODO: Should player descriptions be set aside from object descriptions in the grammar?]
                         
                         referenceterm: namereference | itreference | thatreference | thisreference | selfreference | thereference | objectname | possessivereference
                         namereference: NAMEREFSYMBOL
                         itreference: "it" | "them" //[TODO: Where should 'them' belong?]
-                        thatreference: ("that"|"those") (definitionexpression | possessivereference )
+                        thatreference: ("that"|"those") (definitionexpression | possessivereference)
                         thisreference: "this" (definitionexpression | possessivereference )
                         selfreference: "itself" | "himself" | "herself"
                         thereference: "the" (definitionexpression | possessivereference)
                         controlpostfix: (playerterm | declarationorreference) "control"["s"]
                         playerterm: (modifier)* PLAYERTERM | referenceterm
                         possessivereference: possessiveterm+ definitionexpression
-                        possessiveterm: "its" | "your" | "their" | namereference "'s" | referenceterm "'s" | playerterm "'s" | typeexpression "'s" //[TODO: Possessives and players are fuzzy right now.]
+                        possessiveterm: "its" | "your" | "their" | namereference "'s" | referenceterm "'s" | playerterm "'s" | typeexpression "'s" | declarationexpression "'s" //[TODO: Possessives and players are fuzzy right now.]
                         
                         ptexpression: valueexpression "/" valueexpression
                         namedexpression: "named" objectname
-                        locationexpression: ("in" | "on" | "from") (possessiveterm | "a"["n"] )? zone
-                        withexpression: "with" (abilitysequencestatement | characteristicexpression)
+                        locationexpression: ("into" | "onto" | "in" | "on" | "from")? (possessiveterm | "a"["n"] )? zone
+                        withexpression: "with" (abilitysequencestatement | characteristicexpression | (valueexpression | "a"["n"])? countertype "counter"["s"] "on" itreference)
                         withoutexpression: "without" abilitysequencestatement
                         doesnthaveexpression: "that" "doesn't" "have" declarationorreference //[Basically equivalent to 'without']
                         dealtdamageexpression: "dealt" DAMAGETYPE ("this" "way")? ("by" declarationorreference)? timeexpression?
+                        choiceexpression: "of" possessiveterm "choice"
                         ofexpression: "of" declarationorreference
                         //EVENT AND EFFECT EXPRESSIONS
                         
@@ -1403,8 +1402,8 @@ class JsonParser(BaseParser):
                         ableexpression: "able"
                         atrandomexpression: "at" "random"
                         
-                        changezoneexpression: declarationorreference "enter"["s"] possessiveterm? zone descriptionexpression?-> enterzoneexpression
-                        | declarationorreference "leaves" possessiveterm? zone-> leavezoneexpression
+                        changezoneexpression: declarationorreference "enter"["s"] locationexpression declarationexpression? -> enterzoneexpression
+                        | declarationorreference "leaves" locationexpression -> leavezoneexpression
                         
                         effectexpression: keywordactionexpression
                         | dealsdamageexpression
@@ -1437,9 +1436,11 @@ class JsonParser(BaseParser):
                         preventdamageexpression: "prevent" "the" "next" valueexpression DAMAGETYPE "that" "would" "be" "dealt" "to" (playerterm | declarationorreference) timeexpression? -> preventdamagevarianta
                         | "prevent" "all" DAMAGETYPE "that" "would" "be" "dealt" ("to" (playerterm | declarationorreference))? timeexpression? -> preventdamagevariantb
                         | "prevent" valueexpression "of" "that" "damage" -> preventdamagevariantc 
+                        | "prevent" "that" "damage" -> preventdamagevariantd
                         
                         returnexpression: (playerterm|declarationorreference)? "return"["s"] declarationorreference atrandomexpression? ("from" possessiveterm* zone)? "to" possessiveterm* zone zoneplacementmodifier?//[TODO]
-                        putinzoneexpression: (playerterm | declarationorreference)? "put"["s"] (declarationorreference | "the" "top" valueexpression "card"["s"] "of" possessiveterm* zone) (("onto" | "into" | "on top of" | "on bottom of") possessiveterm* zone | "back") (definitionexpression | zoneplacementmodifier)?
+                        //("onto" | "into" | "on top of" | "on bottom of") possessiveterm* zone
+                        putinzoneexpression: (playerterm | declarationorreference)? "put"["s"] (declarationorreference | "the" "top" valueexpression "card"["s"] "of" possessiveterm* zone) (locationexpression | "back") (definitionexpression | zoneplacementmodifier)?
                         putcounterexpression: (playerterm | declarationorreference)? "put"["s"] ("a"|valueexpression) countertype "counter"["s"] "on" declarationorreference ("," wherevariableexpression)? -> hascounterstatement
                         spendmanaexpression: "spend" "mana" //[TODO]
                         paylifeexpression: (playerterm | declarationorreference)? "pay"["s"] valueexpression? "life" ("," wherevariableexpression)?//[TODO]
@@ -1498,17 +1499,17 @@ class JsonParser(BaseParser):
                         | playerterm "attaches" declarationorreference "to" declarationorreference -> playerattachesexpression
                         
                         castexpression: (playerterm | declarationorreference)? "cast"["s"] declarationorreference (castmodifier ("and" castmodifier)?)*
-                        castmodifier: "without" "paying" "its" "mana" "cost" -> castwithoutpaying
+                        castmodifier: "without" "paying" "its" "mana" "cost" -> castwithoutpaying //[TODO: We may be able to fold this into the pay-expression]
                         | "as" "though" beingstatement -> castasthough
                         chooseexpression: (playerterm|declarationorreference)? "choose"["s"] declarationorreference ("from" "it")? atrandomexpression? //[TODO]
                         controlsexpression: (playerterm|declarationorreference)? "control"["s"] declarationexpression?
                         gaincontrolexpression: (playerterm|declarationorreference)? "gain"["s"] "control" "of" declarationorreference
                         
                         uncastexpression: "counter" declarationorreference
-                        createexpression: "create" indefinitesingularexpression | "create" valuecardinal nakeddeclarationexpression
+                        createexpression: "create" indefinitesingularexpression | "create" valueexpression nakeddeclarationexpression
                         destroyexpression: "destroy" declarationorreference
                         drawexpression: (playerterm | declarationorreference)? "draw"["s"] ("a" "card" | valueexpression "card"["s"] | "cards"["s"] valueexpression)
-                        discardexpression: (playerterm | declarationorreference)? "discard"["s"] (declarationorreference | "a" "card" | valueexpression "card"["s"] | "card"["s"] valueexpression) "at random"?
+                        discardexpression: (playerterm | declarationorreference)? ("discard"["s"] | "discarded") (declarationorreference | "a" "card" | valueexpression "card"["s"] | "card"["s"] valueexpression) "at random"?
                         doubleexpression: "double" //[TODO]
                         exchangeexpression: "exchange" //[TODO]
                         exileexpression: "exile" declarationorreference
@@ -1516,7 +1517,7 @@ class JsonParser(BaseParser):
                         playexpression: (playerterm | declarationorreference)? "play"["s"] declarationorreference
                         revealexpression: (playerterm | declarationorreference)? "reveal"["s"] (declarationorreference | possessiveterm* zone) atrandomexpression?
                         sacrificeexpression: "sacrifice" declarationorreference | declarationorreference "sacrifices" declarationorreference
-                        searchexpression: (playerterm | declarationorreference)? "search"["es"] possessiveterm zone "for" declarationorreference //[TODO: different zones]
+                        searchexpression: (playerterm | declarationorreference)? "search"["es"] locationexpression "for" declarationorreference //[TODO: different zones]
                         | (playerterm | declarationorreference)? "searched" "for" declarationorreference -> searchedexpression
                         shuffleexpression: (playerterm | declarationorreference)? "shuffle"["s"] possessiveterm "library"
                         tapuntapexpression: "tap" declarationorreference? -> tapexpression
@@ -1542,7 +1543,8 @@ class JsonParser(BaseParser):
                         | exertexpression
                         | exploreexpression
                         | turnfaceexpression
-                        //| assembleexpression
+                        | cycleexpression
+                        | levelupexpression~2
                         
                         regenerateexpression: "regenerate" declarationorreference
                         scryexpression: "scry" valueexpression
@@ -1567,9 +1569,10 @@ class JsonParser(BaseParser):
                         //[It's a passive construction, but it's not a modifier like face-up.]
                         !turnfaceexpression: (playerterm | declarationorreference)? "turn"["s"] declarationorreference "face" ("down" | "up")
                         | "turned" "face" ("down" | "up") -> turnedfaceexpression
+                        cycleexpression: (playerterm | declarationorreference)? ("cycle"["s"] | "cycled") declarationorreference? 
                         
-                        //[Note: Assemble is an Un-set only keyword action. I might remove this.]
-                        //assembleexpression: declarationorreference? "assemble"["s"] declarationorreference | assembleexpression valueexpression
+                        levelupexpression: ("level" levelrangeexpression ptexpression ability*)
+                        levelrangeexpression: NUMBER "-" NUMBER | NUMBER "+"
                         
                         
                         //TYPE/MANA/COLOR EXPRESSIONS, MODIFIERS, AND MISCELLANEOUS
@@ -1669,7 +1672,7 @@ class JsonParser(BaseParser):
                         
                         ABILITYMODIFIER: "triggered" | "activated" | "mana" | "loyalty"
                         COMBATSTATUSMODIFIER: "attacking" | "defending" | "attacked" | "blocking" | "blocked" | "active"
-                        KEYWORDSTATUSMODIFIER: "paired" | "kicked" | "face-up" | "face-down" | "transformed" | "enchanted" | "equipped" | "fortified" | "monstrous"
+                        KEYWORDSTATUSMODIFIER: "paired" | "kicked" | "face-up" | "face-down" | "transformed" | "enchanted" | "equipped" | "fortified" | "monstrous" | "regenerated"
                         TAPPEDSTATUSMODIFIER: "tapped" | "untapped"
                         EFFECTSTATUSMODIFIER: "named" | "chosen" | "chosen at random" | "revealed" | "returned" | "destroyed" | "exiled" | "died" | "countered" | "sacrificed"
                         | "the target of a spell or ability" | "prevented"
@@ -1688,9 +1691,9 @@ class JsonParser(BaseParser):
                         
                         characteristicterm: modifier* characteristic
                         characteristic: OBJECTCHARACTERISTIC | PLAYERCHARACTERISTIC
-                        PLAYERCHARACTERISTIC: "maximum hand size" | "life total"
-                        OBJECTCHARACTERISTIC: "card"? "name" | "converted"? "mana cost" | "color"["s"] | "color indicator" | "card type"["s"] | "subtype"["s"] | "supertype"["s"]
-                        | "rules text" | "abilities" | "base"? "power" | "base"? "toughness" | "loyalty" | "hand modifier" | "life modifier"
+                        PLAYERCHARACTERISTIC: "maximum" "hand" "size" | "life" "total"
+                        OBJECTCHARACTERISTIC: "card"? "name" | "mana cost" | "converted mana cost" | "color"["s"] | "color indicator" | "card type"["s"] | "subtype"["s"] | "supertype"["s"]
+                        | "rules text" | "abilities" | "base"? "power" | "base"? "toughness" | "loyalty" | "hand" "modifier" | "life" "modifier"
                         
                         zoneplacementmodifier: "in" "any" "order" -> anyorderplacement
                         | "in" "a" "random" "order" -> randomorderplacement
