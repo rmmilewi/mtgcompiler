@@ -20,6 +20,13 @@ class BaseParser(metaclass=abc.ABCMeta):
                         self._rulestextonly = options["rulestextonly"]
                 else:
                         self._rulestextonly = False
+                        
+                #rendertree: for debugging, renders the parse tree of the body
+                #text to a png file called lark_test.png
+                if options is not None and "renderparsetree" in options:
+                        self._renderparsetree = options["renderparsetree"]
+                else:
+                        self._renderparsetree = False
         
         
         def parse(self,cardinput):
