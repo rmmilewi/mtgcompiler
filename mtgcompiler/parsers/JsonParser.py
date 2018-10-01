@@ -1071,59 +1071,97 @@ class JsonParser(BaseParser):
                         
                         thenstatement: "then" statement
                         insteadstatement: statement "instead"
-                        maystatement:  (playerterm | declarationorreference)? ("may" | "may" "have") statement
-                        wouldstatement: (playerterm | declarationorreference)? "would" statement
+                        maystatement:  playerdeclref? ("may" | "may" "have") statement
+                        wouldstatement: playerdeclref? "would" statement
                         additionalcoststatement: "as" "an" "additional" "cost" "to" statement "," statement
                         
-                        dostatement: (playerterm | declarationorreference)? ("do" | "does") statement? -> dostatement
-                        | (playerterm | declarationorreference)? ("don't" | "doesn't") statement? -> dontstatement
+                        dostatement: declarationorreference? ("do" | "does") statement? -> dostatement
+                        | declarationorreference? ("don't" | "doesn't") statement? -> dontstatement
                         
-                        beingstatement: declarationorreference ("is" | "was" | "are" "each"?) ("still"|"not")? (declarationorreference | characteristicexpression | statement) -> isstatement
-                        | (playerterm | declarationorreference)? ("has"|"have"|"had") (abilitysequencestatement | characteristicexpression | beexpression) -> hasstatement
-                        | (playerterm | declarationorreference)?  ("has"|"have"|"had") ("a"|valueexpression) countertype "counter" "on" declarationorreference -> hascounterstatement
-                        | declarationorreference? "isn't" statement -> isntstatement
-                        | (playerterm | declarationorreference)? "can" statement -> canstatement
-                        | (playerterm | declarationorreference)? "can't" statement -> cantstatement
-                        | (playerterm | declarationorreference)? "become"["s"] declarationexpression  -> becomesstatement
-                        | declarationorreference "cost"["s"] manaexpression "more" "to" "cast" -> costincreasestatement
+                        beingstatement: isstatement
+                        | hasstatement
+                        | isntstatement
+                        | canstatement
+                        | becomesstatement
+                        | costchangestatement
+                        
+                        isstatement: declarationorreference ("is" | "was" | "are" "each"?) ("still"|"not")? (declarationorreference | characteristicexpression | statement)
+                        hasstatement: declarationorreference? ("has"|"have"|"had") (abilitysequencestatement | characteristicexpression | beexpression)
+                        | declarationorreference?  ("has"|"have"|"had") ("a"|valueexpression) countertype "counter" "on" declarationorreference -> hascounterstatement
+                        isntstatement: declarationorreference? "isn't" statement
+                        canstatement: declarationorreference? "can" statement
+                        | declarationorreference? "can't" statement -> cantstatement
+                        becomesstatement: declarationorreference? "become"["s"] genericdeclarationexpression
+                        costchangestatement: declarationorreference "cost"["s"] manaexpression "more" "to" "cast" -> costincreasestatement
                         | declarationorreference "cost"["s"] manaexpression "less" "to" "cast" -> costreductionstatement
-                        //| "it's" statement -> itsstatement
-                        //| "it's" "not" statement -> itsnotstatement
                         
                         expressionstatement: effectexpression | beexpression | valueexpression
                         beexpression: ("be"|"been") modifier valueexpression? timeexpression?//[TODO: Not sure how to categorize this one yet.]
+                        activationstatement: cost ":" statementblock
                         
                         compoundstatement: statement  ("," statement)* ","? "then" statement -> compoundthenstatement
                         | statement ("," statement)* ","? "and" statement -> compoundandstatement
                         | statement ("," statement)* ","? "or" statement -> compoundorstatement
                         
-                        conditionalstatement: "if" statement "," statement -> ifstatement
-                        | statement "if" statement -> ifstatementinv
-                        | "whenever" statement timeexpression? "," statement -> wheneverstatement
-                        | statement "whenever" statement timeexpression? -> wheneverstatementinv
-                        | "when" statement "," statement -> whenstatement
-                        | statement "when" statement -> whenstatementinv
-                        | "at" timeexpression "," statement -> atstatement
-                        | statement "at" timeexpression -> atstatementinv
-                        | "as" statement "," statement -> asstatement
-                        | "for"? "as" "long" "as" statement "," statement -> aslongasstatement
-                        | statement "for"? "as" "long" "as" statement -> aslongasstatementinv
-                        | "for" "each" (declarationexpression | "time" statement) ("beyond" "the" "first")? "," statement -> forstatement
-                        | statement "for" "each" (declarationexpression | "time" statement) ("beyond" "the" "first")? -> forstatementinv
-                        | "otherwise" "," statement -> otherwisestatement
-                        | statement "unless" statement -> unlessstatement
-                        | "while" statement "," statement -> whilestatement
-                        | "until" timeexpression "," statement -> untilstatement
-                        | statement "until" timeexpression -> untilstatementinv
-                        | statement "during" timeexpression -> duringstatement
-                        | statement "only" "during" timeexpression -> exclusiveduringstatement
-                        | "after" timeexpression "," statement -> afterstatement
-                        | statement "after" timeexpression -> afterstatementinv
-                        | statement "except" (("by"|"for") declarationexpression | statement) -> exceptstatement
-                        | statement "rather" "than" statement -> ratherstatement
-                        | "the" "next" "time" statement timeexpression? "," statement -> nexttimestatement
+                        conditionalstatement: ifstatement
+                        | wheneverstatement
+                        | whenstatement
+                        | atstatement
+                        | aslongasstatement
+                        | forstatement
+                        | untilstatement
+                        | afterstatement
+                        | otherwisestatement
+                        | unlessstatement
+                        | asstatement
+                        | whilestatement
+                        | duringstatement
+                        | exceptstatement
+                        | ratherstatement
+                        | nexttimestatement
                         
-                        activationstatement: cost ":" statementblock
+                        
+                        
+                        ifstatement: "if" statement "," statement
+                        | statement "if" statement -> ifstatementinv
+                        
+                        wheneverstatement:  "whenever" statement timeexpression? "," statement 
+                        | statement "whenever" statement timeexpression? -> wheneverstatementinv
+                        
+                        whenstatement:  "when" statement "," statement 
+                        | statement "when" statement -> whenstatementinv
+                        
+                        atstatement:  "at" timeexpression "," statement 
+                        | statement "at" timeexpression -> atstatementinv
+                        
+                        aslongasstatement:  "for"? "as" "long" "as" statement "," statement
+                        | statement "for"? "as" "long" "as" statement -> aslongasstatementinv
+                        
+                        forstatement:  "for" "each" (genericdeclarationexpression | "time" statement) ("beyond" "the" "first")? "," statement 
+                        | statement "for" "each" (genericdeclarationexpression | "time" statement) ("beyond" "the" "first")? -> forstatementinv
+                        
+                        untilstatement:  "until" timeexpression "," statement 
+                        | statement "until" timeexpression -> untilstatementinv
+                        
+                        afterstatement:  "after" timeexpression "," statement 
+                        | statement "after" timeexpression -> afterstatementinv
+                        
+                        otherwisestatement: "otherwise" "," statement
+                        
+                        unlessstatement:  statement "unless" statement
+                        
+                        asstatement: "as" statement "," statement -> asstatement
+                        
+                        whilestatement:  "while" statement "," statement
+                        
+                        duringstatement:  statement "during" timeexpression
+                        | statement "only" "during" timeexpression -> exclusiveduringstatement
+                        
+                        exceptstatement:  statement "except" (("by"|"for") genericdeclarationexpression | statement)
+                        
+                        ratherstatement:  statement "rather" "than" statement
+                        
+                        nexttimestatement: "the" "next" "time" statement timeexpression? "," statement
                         
                         //KEYWORD ABILITIES
                         
@@ -1162,24 +1200,24 @@ class JsonParser(BaseParser):
                         kwdeathtouch: "deathtouch"
                         kwdefender: "defender"
                         kwdoublestrike: "double" "strike"
-                        kwenchant: "enchant" descriptionexpression
-                        kwequip: "equip" cost | "equip" descriptionexpression cost
+                        kwenchant: "enchant" genericdescriptionexpression
+                        kwequip: "equip" cost | "equip" genericdescriptionexpression cost
                         kwfirststrike: "first strike"
                         kwflash: "flash"
                         kwflying: "flying"
                         kwhaste: "haste"
-                        kwhexproof: "hexproof" | "hexproof" "from" descriptionexpression
+                        kwhexproof: "hexproof" | "hexproof" "from" genericdescriptionexpression
                         kwindestructible: "indestructible"
                         kwintimidate: "intimidate"
                         kwlandwalk: typeexpression "walk"
                         kwlifelink: "lifelink"
-                        kwprotection: "protection" "from" descriptionexpression ("and" "from" descriptionexpression)*
+                        kwprotection: "protection" "from" genericdescriptionexpression ("and" "from" genericdescriptionexpression)*
                         kwreach: "reach"
                         kwshroud: "shroud"
                         kwtrample: "trample"
                         kwvigilance: "vigilance"
-                        kwbanding: "banding" | "bands" "with" "other" descriptionexpression
-                        kwrampage: "rampage" NUMBER
+                        kwbanding: "banding" | "bands" "with" "other" genericdescriptionexpression
+                        kwrampage: "rampage" valuenumber
                         kwcumulativeupkeep: "cumulative" "upkeep" cost
                         kwflanking: "flanking"
                         kwphasing: "phasing"
@@ -1188,7 +1226,7 @@ class JsonParser(BaseParser):
                         kwcycling: [typeexpression] "cycling" cost
                         kwecho: "echo" cost
                         kwhorsemanship: "horsemanship"
-                        kwfading: "fading" NUMBER
+                        kwfading: "fading" valuenumber
                         kwkicker: "kicker" cost -> kicker
                         | "multikicker" cost -> multikicker
                         kwflashback: "flashback" cost
@@ -1196,39 +1234,39 @@ class JsonParser(BaseParser):
                         kwfear: "fear"
                         kwmorph: "morph" cost -> kwmorph
                         | "megamorph" cost -> kwmegamorph
-                        kwamplify: "amplify" NUMBER
+                        kwamplify: "amplify" valuenumber
                         kwprovoke: "provoke"
                         kwstorm: "storm"
                         kwaffinity: "affinity" "for" typeexpression
                         kwentwine: "entwine" cost
-                        kwmodular: "modular" NUMBER
+                        kwmodular: "modular" valuenumber
                         kwsunburst: "sunburst"
-                        kwbushido: "bushido" NUMBER
-                        kwsoulshift: "soulshift" NUMBER
+                        kwbushido: "bushido" valuenumber
+                        kwsoulshift: "soulshift" valuenumber
                         kwsplice: "splice" "onto" typeexpression cost
                         kwoffering: typeexpression "offering"
                         kwninjutsu: "ninjutsu" cost
                         kwepic: "epic"
                         kwconvoke: "convoke"
-                        kwdredge: "dredge" NUMBER
+                        kwdredge: "dredge" valuenumber
                         kwtransmute: "transmute" cost
-                        kwbloodthirst: "bloodthirst" NUMBER
+                        kwbloodthirst: "bloodthirst" valuenumber
                         kwhaunt: "haunt"
                         kwreplicate: "replicate" cost
                         kwforecast: "forecast" activationstatement
                         kwgraft: "graft"
                         kwrecover: "recover" cost
-                        kwripple: "ripple" NUMBER
+                        kwripple: "ripple" valuenumber
                         kwsplitsecond: "split" "second"
-                        kwsuspend: "suspend" NUMBER cost 
-                        kwvanishing: "vanishing" [NUMBER]
-                        kwabsorb: "absorb" NUMBER
+                        kwsuspend: "suspend" valuenumber cost 
+                        kwvanishing: "vanishing" [valuenumber]
+                        kwabsorb: "absorb" valuenumber
                         kwauraswap: "aura" "swap" cost
                         kwdelve: "delve"
                         kwfortify: "fortify" cost
                         kwfrenzy: "frenzy"
                         kwgravestorm: "gravestorm"
-                        kwpoisonous: "poisonous" NUMBER
+                        kwpoisonous: "poisonous" valuenumber
                         kwtransfigure: "transfigure" cost
                         kwchampion: "champion" "a"["n"] typeexpression
                         kwchangeling: "changeling"
@@ -1240,11 +1278,11 @@ class JsonParser(BaseParser):
                         kwpersist: "persist"
                         kwwither: "wither"
                         kwretrace: "retrace" cost
-                        kwdevour: "devour" NUMBER
+                        kwdevour: "devour" valuenumber
                         kwexalted: "exalted"
                         kwunearth: "unearth" cost
                         kwcascade: "cascade"
-                        kwannihilator: "annihilator" NUMBER
+                        kwannihilator: "annihilator" valuenumber
                         kwlevelup: "level up" cost
                         kwrebound: "rebound"
                         kwtotemarmor: "totem" "armor"
@@ -1262,7 +1300,7 @@ class JsonParser(BaseParser):
                         kwextort: "extort"
                         kwfuse: "fuse"
                         kwbestow: "bestow" cost
-                        kwtribute: "tribute" NUMBER
+                        kwtribute: "tribute" valuenumber
                         kwdethrone: "dethrone"
                         kwhiddenagenda: "hidden" "agenda" -> kwhiddenagenda
                         | "double" "agenda" -> kwdoubleagenda
@@ -1271,7 +1309,7 @@ class JsonParser(BaseParser):
                         kwdash: "dash" cost
                         kwexploit: "exploit"
                         kwmenace: "menace"
-                        kwrenown: "renown" NUMBER
+                        kwrenown: "renown" valuenumber
                         kwawaken: "awaken" cost
                         kwdevoid: "devoid"
                         kwingest: "ingest"
@@ -1281,15 +1319,15 @@ class JsonParser(BaseParser):
                         kwemerge: "emerge" cost
                         kwescalate: "escalate" cost
                         kwmelee: "melee"
-                        kwcrew: "crew" NUMBER
-                        kwfabricate: "fabricate" NUMBER
+                        kwcrew: "crew" valuenumber
+                        kwfabricate: "fabricate" valuenumber
                         kwpartner: "partner" ["with" objectname]
                         kwundaunted: "undaunted"
                         kwimprovise: "improvise"
                         kwaftermath: "aftermath"
                         kwembalm: "embalm" cost
                         kweternalize: "eternalize" cost
-                        kwafflict: "afflict" NUMBER
+                        kwafflict: "afflict" valuenumber
                         kwascend: "ascend"
                         kwassist: "assist"
                         
@@ -1337,68 +1375,110 @@ class JsonParser(BaseParser):
                         
                         //DECLARATIONS AND REFERENCES
                         
+                        declarationorreference: genericdeclarationexpression | reference | playerreference | objectreference | anytargetexpression
+                        genericdeclarationexpression: (playerdeclaration | objectdeclaration)
+                        | genericdeclarationexpression "or" genericdeclarationexpression -> orgenericdeclarationexpression
+                        | genericdeclarationexpression "and" genericdeclarationexpression -> andgenericdeclarationexpression
+                        | genericdeclarationexpression "and/or" genericdeclarationexpression -> andorgenericdeclarationexpression
                         
+                        genericdescriptionexpression: objectdescriptionexpression | playerdescriptionexpression
                         
+                        playerdeclref: playerdeclaration | playerreference
+                        playerdeclaration: declarationdecorator* playerdefinition
+                        playerreference: referencedecorator+ playerdefinition
+                        playerdefinition: playerdescriptionexpression
+                        playerdescriptionexpression : playerdescriptionterm (","? playerdescriptionterm)*
+                        playerdescriptionterm: (playerterm | withexpression | withoutexpression | modifier)+
+                        playerterm: PLAYERTERM
                         
-                        
-                        
-                        declarationexpression: nakeddeclarationexpression | declarationdecorator
-                        | declarationdecorator "or" declarationdecorator -> ordeclarationexpression
-                        | declarationdecorator "and" declarationdecorator -> anddeclarationexpression
-                        | declarationdecorator "and/or" declarationdecorator -> andordeclarationexpression
-                        
-                        declarationdecorator: targetexpression
-                        | anytargetexpression
-                        | eachexpression
-                        | allexpression
-                        | otherexpression
-                        | indefinitesingularexpression
-                        
-                        nakeddeclarationexpression: definitionexpression
-                        anytargetexpression: "any" "target" 
-                        | "among" "any" "number" "of" "targets" -> anynumberoftargets //[TODO: There should be a cleaner way of handling this.]
-                        targetexpression: ("among"? valueexpression)? "target" (nakeddeclarationexpression | declarationdecorator)? //[TODO: modifiers like 'up to three other target ___'].
-                        eachexpression: "each" (nakeddeclarationexpression | declarationdecorator)
-                        allexpression: "all" (nakeddeclarationexpression | declarationdecorator)
-                        otherexpression: ["an"]"other" (nakeddeclarationexpression | declarationdecorator)
-                        indefinitesingularexpression: "a"["n"] (nakeddeclarationexpression | declarationdecorator)
-                        
-                        definitionexpression: descriptionexpression
-                        | definitionexpression "or" descriptionexpression -> ordefinitionexpression
-                        | definitionexpression "and" descriptionexpression -> anddefinitionexpression
-                        | definitionexpression "and/or" descriptionexpression -> andordefinitionexpression
-                        
-                        declarationorreference: referenceterm | declarationexpression
-                        
-                        descriptionexpression: descriptionterm (","? descriptionterm)*
-                        
-                        descriptionterm: (colorexpression | namedexpression | manaexpression | typeexpression | ptexpression | valueexpression
+                        objectdeclref: objectdeclaration | objectreference
+                        objectdeclaration: declarationdecorator* objectdefinition
+                        objectreference: referencedecorator+ objectdefinition
+                        objectdefinition: objectdescriptionexpression
+                        | objectdescriptionexpression "or" objectdescriptionexpression -> ordefinitionexpression
+                        | objectdescriptionexpression "and" objectdescriptionexpression -> anddefinitionexpression
+                        | objectdescriptionexpression "and/or" objectdescriptionexpression -> andordefinitionexpression
+                        objectdescriptionexpression: objectdescriptionterm (","? objectdescriptionterm)*
+                        objectdescriptionterm: (colorexpression | namedexpression | manaexpression | typeexpression | ptexpression | valueexpression
                         | qualifier | modifier | locationexpression | valuecardinal | controlpostfix | withexpression | withoutexpression | doesnthaveexpression
-                        | dealtdamageexpression | choiceexpression | ofexpression | characteristicexpression | additionalexpression) +
-                        | playerterm //[TODO: Should player descriptions be set aside from object descriptions in the grammar?]
+                        | dealtdamageexpression | choiceexpression | ofexpression | characteristicexpression | additionalexpression)+
                         
-                        referenceterm: namereference | itreference | thatreference | thisreference | selfreference | thereference | objectname | possessivereference
+                        declarationdecorator: "each" -> eachdecorator
+                        | "all" -> alldecorator
+                        | ["an"]"other" -> otherdecorator
+                        | "a"["n"] -> definitearticledecorator
+                        | "the" -> definitearticledecorator
+                        | valueexpression? "target" -> targetdecorator
+                        | "any" -> anydecorator
+                        anytargetexpression: "any" "target" //Special nullary variant
+                        
+                        reference: neutralreference | selfreference | namereference
+                        neutralreference: "it" | "them"
+                        selfreference: "itself" | "himself" | "herself" -> selfreference
                         namereference: NAMEREFSYMBOL
-                        itreference: "it" | "them" //[TODO: Where should 'them' belong?]
-                        thatreference: ("that"|"those") (definitionexpression | possessivereference)
-                        thisreference: "this" (definitionexpression | possessivereference )
-                        selfreference: "itself" | "himself" | "herself"
-                        thereference: "the" (declarationexpression | possessivereference)
-                        controlpostfix: (playerterm | declarationorreference) "control"["s"]
-                        playerterm: (modifier)* PLAYERTERM | referenceterm
-                        possessivereference: possessiveterm+ definitionexpression
-                        possessiveterm: "its" | "your" | "their" | namereference "'s" | referenceterm "'s" | playerterm "'s" | typeexpression "'s" | declarationexpression "'s" //[TODO: Possessives and players are fuzzy right now.]
+                        
+                        referencedecorator: ("that" | "those") -> thatreference
+                        | ("this"|"these") -> thisreference
+                        | possessiveterm -> possessivereference
+                        !possessiveterm: "its" | "your" | "their" | namereference "'s" | objectreference "'s" | playerreference "'s" | typeexpression "'s" | genericdeclarationexpression "'s"
                         
                         ptexpression: valueexpression "/" valueexpression
                         namedexpression: "named" objectname
-                        !locationexpression: ("into" | "onto" | "in" | "on" | "from" | "on top of" | "on bottom of")? (possessiveterm | "a"["n"] )? zone
-                        withexpression: "with" (abilitysequencestatement | characteristicexpression | (valueexpression | "a"["n"])? countertype "counter"["s"] "on" itreference)
+                        !locationexpression: ("into" | "onto" | "in" | "on" | "from" | "on top of" | "on bottom of")? (possessiveterm+ | "a"["n"] )? zone
+                        withexpression: "with" (abilitysequencestatement | characteristicexpression | (valueexpression | "a"["n"])? countertype "counter"["s"] "on" reference)
                         withoutexpression: "without" abilitysequencestatement
                         doesnthaveexpression: "that" "doesn't" "have" declarationorreference //[Basically equivalent to 'without']
                         dealtdamageexpression: "dealt" DAMAGETYPE ("this" "way")? ("by" declarationorreference)? timeexpression?
                         choiceexpression: "of" possessiveterm "choice"
                         ofexpression: "of" declarationorreference
                         additionalexpression: "additional"
+                        controlpostfix: playerdeclref "control"["s"]
+                        
+                        //declarationexpression: nakeddeclarationexpression | declarationdecorator
+                        //| declarationdecorator "or" declarationdecorator -> ordeclarationexpression
+                        //| declarationdecorator "and" declarationdecorator -> anddeclarationexpression
+                        //| declarationdecorator "and/or" declarationdecorator -> andordeclarationexpression
+                        
+                        //declarationdecorator: targetexpression
+                        //| anytargetexpression
+                        //| eachexpression
+                        //| allexpression
+                        //| otherexpression
+                        //| indefinitesingularexpression
+                        
+                        //nakeddeclarationexpression: definitionexpression
+                        //anytargetexpression: "any" "target" 
+                        //| "among" "any" "number" "of" "targets" -> anynumberoftargets //[TODO: There should be a cleaner way of handling this.]
+                        //targetexpression: ("among"? valueexpression)? "target" (nakeddeclarationexpression | declarationdecorator)?
+                        //eachexpression: "each" (nakeddeclarationexpression | declarationdecorator)
+                        //allexpression: "all" (nakeddeclarationexpression | declarationdecorator)
+                        //otherexpression: ["an"]"other" (nakeddeclarationexpression | declarationdecorator)
+                        //indefinitesingularexpression: "a"["n"] (nakeddeclarationexpression | declarationdecorator)
+                        
+                        //definitionexpression: descriptionexpression
+                        //| definitionexpression "or" descriptionexpression -> ordefinitionexpression
+                        //| definitionexpression "and" descriptionexpression -> anddefinitionexpression
+                        //| definitionexpression "and/or" descriptionexpression -> andordefinitionexpression
+                        
+                        //declarationorreference: referenceterm | declarationexpression
+                        
+                        //descriptionexpression: descriptionterm (","? descriptionterm)*
+                        
+                        //descriptionterm: (colorexpression | namedexpression | manaexpression | typeexpression | ptexpression | valueexpression
+                        //| qualifier | modifier | locationexpression | valuecardinal | controlpostfix | withexpression | withoutexpression | doesnthaveexpression
+                        //| dealtdamageexpression | choiceexpression | ofexpression | characteristicexpression | additionalexpression) +
+                        
+                        //referenceterm: namereference | itreference | thatreference | thisreference | selfreference | thereference | objectname | possessivereference
+                        //namereference: NAMEREFSYMBOL
+                        //itreference: "it" | "them" //[TODO: Where should 'them' belong?]
+                        //thatreference: ("that"|"those") (definitionexpression | possessivereference)
+                        //thisreference: "this" (definitionexpression | possessivereference )
+                        //selfreference: "itself" | "himself" | "herself"
+                        //thereference: "the" (declarationexpression | possessivereference)
+                        
+                        //playerterm: (modifier)* PLAYERTERM | referenceterm
+                        //possessivereference: possessiveterm+ definitionexpression
+                        //possessiveterm: "its" | "your" | "their" | namereference "'s" | referenceterm "'s" | playerterm "'s" | typeexpression "'s" | declarationexpression "'s" //[TODO: Possessives and players are fuzzy right now.]
                         
                         
                         
@@ -1434,40 +1514,40 @@ class JsonParser(BaseParser):
                         | ableexpression
                         | changezoneexpression
                         
-                        dealsdamageexpression:  declarationorreference? "deal"["s"] valueexpression? DAMAGETYPE ("to" (playerterm | declarationorreference))? (","? quantityrulemodification)* -> dealsdamagevarianta
-                        | valueexpression DAMAGETYPE ("to" (playerterm | declarationorreference))?  (","? quantityrulemodification)* -> dealsdamagevariantaimplied //variant a, implied antecedent
-                        | declarationorreference "deal"["s"] DAMAGETYPE valueexpression ("to" (playerterm | declarationorreference))?  (","? quantityrulemodification)* -> dealsdamagevariantb
-                        | declarationorreference "deal"["s"] DAMAGETYPE ("to" (playerterm | declarationorreference))?  valueexpression  (","? quantityrulemodification)* -> dealsdamagevariantc
-                        preventdamageexpression: "prevent" "the" "next" valueexpression DAMAGETYPE "that" "would" "be" "dealt" "to" (playerterm | declarationorreference) timeexpression? -> preventdamagevarianta
-                        | "prevent" "all" DAMAGETYPE "that" "would" "be" "dealt" ("to" (playerterm | declarationorreference))? timeexpression? -> preventdamagevariantb
+                        dealsdamageexpression:  declarationorreference? "deal"["s"] valueexpression? DAMAGETYPE ("to" declarationorreference)? (","? quantityrulemodification)* -> dealsdamagevarianta
+                        | valueexpression DAMAGETYPE ("to" declarationorreference)?  (","? quantityrulemodification)* -> dealsdamagevariantaimplied //variant a, implied antecedent
+                        | declarationorreference "deal"["s"] DAMAGETYPE valueexpression ("to" declarationorreference)?  (","? quantityrulemodification)* -> dealsdamagevariantb
+                        | declarationorreference "deal"["s"] DAMAGETYPE ("to" declarationorreference)?  valueexpression  (","? quantityrulemodification)* -> dealsdamagevariantc
+                        preventdamageexpression: "prevent" "the" "next" valueexpression DAMAGETYPE "that" "would" "be" "dealt" "to" declarationorreference timeexpression? -> preventdamagevarianta
+                        | "prevent" "all" DAMAGETYPE "that" "would" "be" "dealt" ("to" declarationorreference)? timeexpression? -> preventdamagevariantb
                         | "prevent" valueexpression "of" "that" "damage" -> preventdamagevariantc 
                         | "prevent" "that" "damage" -> preventdamagevariantd
                         
                         returnexpression: (playerterm|declarationorreference)? "return"["s"] declarationorreference atrandomexpression? ("from" possessiveterm* zone)? "to" possessiveterm* zone zoneplacementmodifier?//[TODO]
                         //[("onto" | "into" | "on top of" | "on bottom of") possessiveterm* zone]
-                        putinzoneexpression: (playerterm | declarationorreference)? "put"["s"] (declarationorreference | "the" "top" valueexpression "card"["s"] "of" possessiveterm* zone) (locationexpression | "back") (definitionexpression | zoneplacementmodifier)?
-                        putcounterexpression: (playerterm | declarationorreference)? "put"["s"] ("a"|valueexpression) countertype "counter"["s"] "on" declarationorreference ("," wherevariableexpression)? -> hascounterstatement
+                        putinzoneexpression: playerdeclref? "put"["s"] (declarationorreference | "the" "top" valueexpression "card"["s"] "of" possessiveterm* zone) (locationexpression | "back") (objectdefinition | playerdefinition | zoneplacementmodifier)?
+                        putcounterexpression: playerdeclref? "put"["s"] ("a"|valueexpression) countertype "counter"["s"] "on" declarationorreference ("," wherevariableexpression)? -> hascounterstatement
                         spendmanaexpression: "spend" "mana" //[TODO]
-                        paylifeexpression: (playerterm | declarationorreference)? "pay"["s"] valueexpression? "life" ("," wherevariableexpression)?//[TODO]
-                        addmanaexpression: (playerterm | declarationorreference)? "add"["s"] (manaexpression|manaspecificationexpression)
-                        paymanaexpression: (playerterm | declarationorreference)? "pay"["s"] (manaexpression|manaspecificationexpression)
-                        payexpression: (playerterm | declarationorreference)? "pay"["s"] declarationorreference //[TODO: This might change. Added for 'rather than pay this spell's mana cost'.]
-                        gainlifeexpression: (playerterm | declarationorreference)? "gain"["s"] (valueexpression? "life" | "life" valueexpression) ("," wherevariableexpression)?
-                        loselifeexpression: (playerterm | declarationorreference)? "lose"["s"] (valueexpression? "life" | "life" valueexpression) ("," wherevariableexpression)?
+                        paylifeexpression: playerdeclref? "pay"["s"] valueexpression? "life" ("," wherevariableexpression)?//[TODO]
+                        addmanaexpression: playerdeclref? "add"["s"] (manaexpression|manaspecificationexpression)
+                        paymanaexpression: playerdeclref? "pay"["s"] (manaexpression|manaspecificationexpression)
+                        payexpression: playerdeclref? "pay"["s"] declarationorreference //[TODO: This might change. Added for 'rather than pay this spell's mana cost'.]
+                        gainlifeexpression: playerdeclref? "gain"["s"] (valueexpression? "life" | "life" valueexpression) ("," wherevariableexpression)?
+                        loselifeexpression: playerdeclref? "lose"["s"] (valueexpression? "life" | "life" valueexpression) ("," wherevariableexpression)?
                         getsptexpression: declarationorreference? "get"["s"] ptchangeexpression
                         diesexpression: declarationorreference? "die"["s"] timeexpression?
-                        gainabilityexpression: (playerterm | declarationorreference)? "gain"["s"] abilitysequencestatement
-                        loseabilityexpression: (playerterm | declarationorreference)? "lose"["s"] abilitysequencestatement
-                        lookexpression:  (playerterm | declarationorreference)? "look"["s"] "at" (declarationorreference | "the" "top" valueexpression "card"["s"] "of" possessiveterm* zone)
-                        takeextraturnexpression: (playerterm | declarationorreference)? "take"["s"] timeexpression
-                        flipcoinsexpression: (playerterm | declarationorreference)? "flip"["s"] ("a" | valuecardinal) "coin"["s"]
-                        !winloseeventexpression: (playerterm | declarationorreference)? ("lose"|"win")["s"] ("the" "flip" | "the" "game")?
-                        remainsexpression: (playerterm | declarationorreference)? "remain"["s"] (modifier | locationexpression)
-                        assigndamageexpression: (playerterm | declarationorreference)? "assign"["s"] DAMAGETYPE "to" declarationorreference -> damageredirectionexpression
-                        | (playerterm | declarationorreference)? "assign"["s"] "no" DAMAGETYPE timeexpression -> nodamageassignedexpression
-                        | (playerterm | declarationorreference)? "assign"["s"] DAMAGETYPE valueexpression -> alternatedamageassignmentexpression
+                        gainabilityexpression: declarationorreference? "gain"["s"] abilitysequencestatement
+                        loseabilityexpression: declarationorreference? "lose"["s"] abilitysequencestatement
+                        lookexpression:  playerdeclref? "look"["s"] "at" (declarationorreference | "the" "top" valueexpression "card"["s"] "of" possessiveterm* zone)
+                        takeextraturnexpression: playerdeclref? "take"["s"] timeexpression
+                        flipcoinsexpression: playerdeclref? "flip"["s"] ("a" | valuecardinal) "coin"["s"]
+                        !winloseeventexpression: playerdeclref? ("lose"|"win")["s"] ("the" "flip" | "the" "game")?
+                        remainsexpression: declarationorreference? "remain"["s"] (modifier | locationexpression)
+                        assigndamageexpression: declarationorreference? "assign"["s"] DAMAGETYPE "to" declarationorreference -> damageredirectionexpression
+                        | declarationorreference? "assign"["s"] "no" DAMAGETYPE timeexpression -> nodamageassignedexpression
+                        | declarationorreference? "assign"["s"] DAMAGETYPE valueexpression -> alternatedamageassignmentexpression
                         ableexpression: declarationorreference? "able" ("to" statement "do" "so")?
-                        changezoneexpression: declarationorreference "enter"["s"] locationexpression declarationexpression? zoneplacementmodifier? -> enterzoneexpression
+                        changezoneexpression: declarationorreference "enter"["s"] locationexpression genericdeclarationexpression? zoneplacementmodifier? -> enterzoneexpression
                         | declarationorreference "leaves" locationexpression -> leavezoneexpression
                         
                         
@@ -1497,36 +1577,37 @@ class JsonParser(BaseParser):
                         | tapuntapexpression
                         
                         activateexpression: "activate" declarationorreference
-                        attacksexpression: (playerterm | declarationorreference)? "attack"["s"] (timeexpression? declarationorreference?| declarationorreference? timeexpression?) "alone"?
-                        | (playerterm | declarationorreference)? "attacked" (timeexpression? declarationorreference?| declarationorreference? timeexpression?) "alone"? -> attackedexpression
-                        blocksexpression: (playerterm | declarationorreference)? "block"["s"] (timeexpression? declarationorreference?| declarationorreference? timeexpression?) "alone"?
-                        | (playerterm | declarationorreference)? "blocked" (timeexpression? declarationorreference?| declarationorreference? timeexpression?) "alone"? -> blockedexpression
+                        attacksexpression: declarationorreference? "attack"["s"] (timeexpression? declarationorreference?| declarationorreference? timeexpression?) "alone"?
+                        | declarationorreference? "attacked" (timeexpression? declarationorreference?| declarationorreference? timeexpression?) "alone"? -> attackedexpression
+                        blocksexpression: declarationorreference? "block"["s"] (timeexpression? declarationorreference? | declarationorreference? timeexpression?) "alone"?
+                        | playerdeclref? "blocked" (timeexpression? declarationorreference?| declarationorreference? timeexpression?) "alone"? -> blockedexpression
                         attachexpression: "attach" declarationorreference "to" declarationorreference
                         | "unattach" declarationorreference ("from" declarationorreference)? -> unattachexpression
-                        | playerterm "attaches" declarationorreference "to" declarationorreference -> playerattachesexpression
+                        | playerdeclref "attaches" declarationorreference "to" declarationorreference -> playerattachesexpression
                         
-                        castexpression: (playerterm | declarationorreference)? "cast"["s"] declarationorreference (castmodifier ("and" castmodifier)?)*
+                        castexpression: playerdeclref? "cast"["s"] declarationorreference (castmodifier ("and" castmodifier)?)*
                         castmodifier: "without" "paying" "its" "mana" "cost" -> castwithoutpaying //[TODO: We may be able to fold this into the pay-expression]
                         | "as" "though" beingstatement -> castasthough
-                        chooseexpression: (playerterm|declarationorreference)? "choose"["s"] declarationorreference ("from" "it")? atrandomexpression? //[TODO]
-                        controlsexpression: (playerterm|declarationorreference)? "control"["s"] declarationexpression
-                        gaincontrolexpression: (playerterm|declarationorreference)? "gain"["s"] "control" "of" declarationorreference
+                        chooseexpression: playerdeclref? "choose"["s"] declarationorreference ("from" "it")? atrandomexpression? //[TODO]
+                        controlsexpression: playerdeclref? "control"["s"] genericdeclarationexpression
+                        gaincontrolexpression: playerdeclref? "gain"["s"] "control" "of" declarationorreference
                         
                         uncastexpression: "counter" declarationorreference
-                        createexpression: "create" indefinitesingularexpression | "create" valueexpression nakeddeclarationexpression
+                        //createexpression: "create" indefinitesingularexpression | "create" valueexpression objectdeclaration
+                        createexpression: "create" objectdeclaration
                         destroyexpression: "destroy" declarationorreference
-                        drawexpression: (playerterm | declarationorreference)? "draw"["s"] ("a" "card" | valueexpression "card"["s"] | "cards"["s"] valueexpression)
-                        discardexpression: (playerterm | declarationorreference)? ("discard"["s"] | "discarded") (declarationorreference | "a" "card" | valueexpression "card"["s"] | "card"["s"] valueexpression) "at random"?
+                        drawexpression: playerdeclref? "draw"["s"] ("a" "card" | valueexpression "card"["s"] | "cards"["s"] valueexpression)
+                        discardexpression: playerdeclref? ("discard"["s"] | "discarded") (declarationorreference | "a" "card" | valueexpression "card"["s"] | "card"["s"] valueexpression) "at random"?
                         doubleexpression: "double" //[TODO]
                         exchangeexpression: "exchange" //[TODO]
                         exileexpression: "exile" declarationorreference
                         fightexpression: "fight" //[TODO]
-                        playexpression: (playerterm | declarationorreference)? "play"["s"] declarationorreference timeexpression?
-                        revealexpression: (playerterm | declarationorreference)? "reveal"["s"] (declarationorreference | possessiveterm* zone) atrandomexpression?
+                        playexpression: playerdeclref? "play"["s"] declarationorreference timeexpression?
+                        revealexpression: playerdeclref? "reveal"["s"] (declarationorreference | possessiveterm* zone) atrandomexpression?
                         sacrificeexpression: "sacrifice" declarationorreference | declarationorreference "sacrifices" declarationorreference
-                        searchexpression: (playerterm | declarationorreference)? "search"["es"] locationexpression "for" declarationorreference //[TODO: different zones]
-                        | (playerterm | declarationorreference)? "searched" "for" declarationorreference -> searchedexpression
-                        shuffleexpression: (playerterm | declarationorreference)? "shuffle"["s"] possessiveterm "library"
+                        searchexpression: playerdeclref? "search"["es"] locationexpression "for" declarationorreference //[TODO: different zones]
+                        | playerdeclref? "searched" "for" declarationorreference -> searchedexpression
+                        shuffleexpression: playerdeclref? "shuffle"["s"] possessiveterm "library"
                         tapuntapexpression: "tap" declarationorreference? -> tapexpression
                         | "untap" declarationorreference? -> untapexpression
                         
@@ -1556,14 +1637,14 @@ class JsonParser(BaseParser):
                         regenerateexpression: "regenerate" declarationorreference
                         scryexpression: "scry" valueexpression
                         fatesealexpression: "fateseal" valueexpression
-                        clashexpression: playerterm? "clash" "with" playerterm
-                        planeswalkexpression: playerterm "planeswalk"["s"] "to" SUBTYPEPLANAR
-                        setinmotionexpression: playerterm "set"["s"] declarationorreference "in" "motion"
+                        clashexpression: playerdeclref? "clash" "with" playerterm
+                        planeswalkexpression: playerdeclref "planeswalk"["s"] "to" SUBTYPEPLANAR
+                        setinmotionexpression: playerdeclref "set"["s"] declarationorreference "in" "motion"
                         abandonexpression: playerterm? "abandon"["s"] declarationorreference //[Note: Has never been used]
                         proliferateexpression: "proliferate"
                         transformexpression: "transform" declarationorreference
                         populateexpression: "populate"
-                        voteexpression: playerterm "vote"["s"] "for" (objectname "or" objectname | declarationorreference) //[TODO]
+                        voteexpression: playerdeclref "vote"["s"] "for" (objectname "or" objectname | declarationorreference) //[TODO]
                         bolsterexpression: "bolster" valueexpression
                         manifestexpression: playerterm? "the" "top" valueexpression? "card"["s"] "of" possessiveterm "library"
                         supportexpression: "support" valueexpression
@@ -1574,9 +1655,9 @@ class JsonParser(BaseParser):
                         exploreexpression: "explore"
                         //[This one below is a bit weird because it's not 'becomes turned face up', it's 'is turned face up'.]
                         //[It's a passive construction, but it's not a modifier like face-up.]
-                        !turnfaceexpression: (playerterm | declarationorreference)? "turn"["s"] declarationorreference "face" ("down" | "up")
+                        !turnfaceexpression: playerdeclref? "turn"["s"] declarationorreference "face" ("down" | "up")
                         | "turned" "face" ("down" | "up") -> turnedfaceexpression
-                        cycleexpression: (playerterm | declarationorreference)? ("cycle"["s"] | "cycled") declarationorreference? 
+                        cycleexpression: playerdeclref? ("cycle"["s"] | "cycled") declarationorreference? 
                         
                         levelupexpression: ("level" levelrangeexpression ptexpression ability*)
                         levelrangeexpression: NUMBER "-" NUMBER | NUMBER "+"
@@ -1584,15 +1665,10 @@ class JsonParser(BaseParser):
                         
                         //TYPE/MANA/COLOR EXPRESSIONS, MODIFIERS, AND MISCELLANEOUS
                         
-                        timeexpression: startendspecifier? (timereference | timeterm) ofexpression?
+                        timeexpression: startendspecifier? timeterm ofexpression?
                         startendspecifier: "the"? "beginning" "of" -> timebeginmodifier
                         | "the"? "end" "of" -> timeendmodifier
-                        timereference: "a"["n"] timeterm -> indefinitesingulartimereference
-                        | "the" timeterm -> thetimereference
-                        | "that" timeterm -> thattimereference
-                        | "this" timeterm -> thistimereference
-                        | "each" timeterm -> eachtimereference
-                        timeterm: possessiveterm* timemodifier* (PHASE | STEP | TURN | GAME |  "one")
+                        timeterm: (referencedecorator* | declarationdecorator*) possessiveterm* timemodifier* (PHASE | STEP | TURN | GAME |  "one")
                         timemodifier: "next" valuecardinal? -> nexttimemodifier
                         | "additional" -> additionaltimemodifier
                         | valuecardinal? "extra" -> extratimemodifier
