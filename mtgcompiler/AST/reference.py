@@ -527,6 +527,7 @@ class MgKeywordStatusModifier(MgDeclarationModifier):
                 Equipped = "equipped"
                 Fortified = "fortified"
                 Monstrous = "monstrous"
+                Suspended = "suspended"
                 
         def __init__(self,modifier):
                 assert(type(modifier) == MgKeywordStatusModifier.KeywordStatusEnum)
