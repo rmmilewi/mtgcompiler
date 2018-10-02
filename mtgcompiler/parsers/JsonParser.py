@@ -1042,7 +1042,8 @@ class JsonParser(BaseParser):
                         typelinet: TYPE*
                         typelinesubt: (SUBTYPESPELL | SUBTYPELAND | SUBTYPEARTIFACT | SUBTYPEENCHANTMENT | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR)*
                 
-                        cardtext : ability? ("\n" ability)* //[TODO: Do we need to explicitly recognize newlines? We might in order to separate distinct abilities.]
+                        //[NOTE: Added support for starting reminder text, but what does it attach to?]
+                        cardtext : remindertext? ability? ("\n" ability)* //[TODO: Do we need to explicitly recognize newlines? We might in order to separate distinct abilities.]
                         remindertext : /\(.*?\)/
                         
                         ability : abilityword? statementblock remindertext? -> regularability
@@ -1403,8 +1404,8 @@ class JsonParser(BaseParser):
                         | objectdescriptionexpression "and/or" objectdescriptionexpression -> andordefinitionexpression
                         objectdescriptionexpression: objectdescriptionterm (","? objectdescriptionterm)*
                         objectdescriptionterm: (colorexpression | namedexpression | manaexpression | typeexpression | ptexpression | valueexpression
-                        | qualifier | modifier | locationexpression | valuecardinal | controlpostfix | withexpression | withoutexpression | doesnthaveexpression
-                        | dealtdamageexpression | choiceexpression | ofexpression | characteristicexpression | additionalexpression | atrandomexpression)+
+                        | qualifier | modifier | locationexpression | valuecardinal | controlpostfix | withexpression | withoutexpression | "that" doesnthaveexpression
+                        | "that" dealtdamageexpression | choiceexpression | ofexpression | characteristicexpression | additionalexpression | atrandomexpression)+
                         
                         declarationdecorator: "each" -> eachdecorator
                         | "all" -> alldecorator
@@ -1430,12 +1431,13 @@ class JsonParser(BaseParser):
                         !locationexpression: ("into" | "onto" | "in" | "on" | "from" | "on top of" | "on bottom of")? (possessiveterm+ | "a"["n"] )? zone
                         withexpression: "with" (abilitysequencestatement | characteristicexpression | (valueexpression | "a"["n"])? countertype "counter"["s"] "on" reference)
                         withoutexpression: "without" abilitysequencestatement
-                        doesnthaveexpression: "that" "doesn't" "have" declarationorreference //[Basically equivalent to 'without']
+                        doesnthaveexpression: "doesn't" "have" declarationorreference //[Basically equivalent to 'without']
                         dealtdamageexpression: "dealt" DAMAGETYPE ("this" "way")? ("by" declarationorreference)? timeexpression?
                         choiceexpression: "of" possessiveterm "choice"
                         ofexpression: "of" declarationorreference
                         additionalexpression: "additional"
                         controlpostfix: playerdeclref "control"["s"]
+                        | playerdeclref ("don't" | "doesn't") "control"["s"] -> negativecontrolpostfix
                         atrandomexpression: "at" "random" //[TODO: Need to find out where to put this.]
                         
                         //declarationexpression: nakeddeclarationexpression | declarationdecorator
@@ -1561,6 +1563,7 @@ class JsonParser(BaseParser):
                         | blocksexpression
                         | attachexpression
                         | castexpression
+                        | modalexpression
                         | chooseexpression
                         | controlsexpression
                         | gaincontrolexpression
@@ -1593,6 +1596,8 @@ class JsonParser(BaseParser):
                         castmodifier: "without" "paying" "its" "mana" "cost" -> castwithoutpaying //[TODO: We may be able to fold this into the pay-expression]
                         | "as" "though" beingstatement -> castasthough
                         chooseexpression: playerdeclref? "choose"["s"] declarationorreference ("from" "it")? atrandomexpression? //[TODO]
+                        modalexpression: "choose" valuecardinal DASH (modalchoiceexpression)+
+                        modalchoiceexpression: MODALCHOICE statementblock
                         controlsexpression: playerdeclref? "control"["s"] genericdeclarationexpression
                         gaincontrolexpression: playerdeclref? "gain"["s"] "control" "of" declarationorreference
                         
@@ -1619,6 +1624,7 @@ class JsonParser(BaseParser):
                         | scryexpression
                         | fatesealexpression
                         | clashexpression
+                        | detainexpression
                         | planeswalkexpression
                         | setinmotionexpression
                         | abandonexpression
@@ -1641,7 +1647,8 @@ class JsonParser(BaseParser):
                         regenerateexpression: "regenerate" declarationorreference
                         scryexpression: "scry" valueexpression
                         fatesealexpression: "fateseal" valueexpression
-                        clashexpression: playerdeclref? "clash" "with" playerterm
+                        clashexpression: playerdeclref? "clash" "with" playerdeclref
+                        detainexpression: "detain" objectdeclref
                         planeswalkexpression: playerdeclref "planeswalk"["s"] "to" SUBTYPEPLANAR
                         setinmotionexpression: playerdeclref "set"["s"] declarationorreference "in" "motion"
                         abandonexpression: playerterm? "abandon"["s"] declarationorreference //[Note: Has never been used]
@@ -1845,6 +1852,7 @@ class JsonParser(BaseParser):
                         manamarker_x: "X"i -> xmarker
                         
                         DASH: "—"
+                        MODALCHOICE: "•"
                         
                         NAMEREFSYMBOL: "~" | "~f"
                         PLAYERTERM: "player"["s"] | "opponent"["s"] | "you" |  "teammate"["s"] | "team" | "they" | "controller" | "owner"
