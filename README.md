@@ -30,6 +30,6 @@ Arbor aims to be a platform upon which a user can easily build their own tools f
 
 As Arbor becomes more mature and stable, we hope to provide mini-applications that demonstrate these use cases. 
 
-
+This project is licensed under the terms of the MIT license.
 
 
