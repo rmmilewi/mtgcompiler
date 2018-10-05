@@ -1085,16 +1085,18 @@ class JsonParser(BaseParser):
                         | canstatement
                         | becomesstatement
                         | costchangestatement
+                        | wherestatement
                         
                         isstatement: declarationorreference ("is" | "was" | "are" "each"?) ("still"|"not")? (declarationorreference | characteristicexpression | statement)
-                        hasstatement: declarationorreference? ("has"|"have"|"had") (abilitysequencestatement | characteristicexpression | beexpression)
-                        | declarationorreference?  ("has"|"have"|"had") ("a"|valueexpression) countertype "counter" "on" declarationorreference -> hascounterstatement
+                        hasstatement: declarationorreference? ("has"|"have"|"had") (abilitysequencestatement | characteristicexpression | beexpression | statement)
+                        | declarationorreference?  ("has"|"have"|"had") ("a"|valueexpression) countertype "counter"["s"] "on" declarationorreference -> hascounterstatement
                         isntstatement: declarationorreference? "isn't" statement
                         canstatement: declarationorreference? "can" statement
                         | declarationorreference? "can't" statement -> cantstatement
                         becomesstatement: declarationorreference? "become"["s"] genericdeclarationexpression
                         costchangestatement: declarationorreference "cost"["s"] manaexpression "more" "to" "cast" -> costincreasestatement
                         | declarationorreference "cost"["s"] manaexpression "less" "to" "cast" -> costreductionstatement
+                        wherestatement: statement "," "where" statement //[Note: Used in elaborating variables.]
                         
                         expressionstatement: effectexpression | beexpression | valueexpression
                         beexpression: ("be"|"been") modifier valueexpression? timeexpression?//[TODO: Not sure how to categorize this one yet.]
@@ -1122,10 +1124,8 @@ class JsonParser(BaseParser):
                         | nexttimestatement
                         | beforestatement
                         
-                        
-                        
                         ifstatement: "if" statement "," statement
-                        | statement "if" statement -> ifstatementinv
+                        | statement "only"? "if" statement -> ifstatementinv
                         
                         wheneverstatement:  "whenever" statement timeexpression? "," statement 
                         | statement "whenever" statement timeexpression? -> wheneverstatementinv
@@ -1344,8 +1344,8 @@ class JsonParser(BaseParser):
                         ///VALUE EXPRESSIONS
                         
                         //[TODO: Need to account for custom values, variables, 'equals to' expressions, etc.]
-                        valueexpression: valueterm | equaltoexpression | numberofexpression | anynumberofexpression | wherevariableexpression
-                        | uptoexpression | thatmuchexpression | thatmanyexpression | ltexpression | lteqexpression | gtexpression | gteqexpression
+                        valueexpression: valueterm | equaltoexpression | numberofexpression | uptoexpression | thatmanyexpression 
+                        | ltexpression | lteqexpression | gtexpression | gteqexpression | timesexpression
                         ltexpression: effectexpression? "less" "than" (valueexpression | declarationorreference)
                         lteqexpression: effectexpression? (valueexpression "or" ("less" | "fewer") | "less" "than" "or" "equal" "to" valueexpression)
                         gtexpression: effectexpression? "greater" "than" (valueexpression | declarationorreference)
@@ -1354,10 +1354,9 @@ class JsonParser(BaseParser):
                         | CARDINAL "or" "more" "times"-> gteqfrequencyexpression
                         equaltoexpression: effectexpression? "equal" "to" (valueexpression | declarationorreference)
                         uptoexpression: "up" "to" valueterm
-                        thatmuchexpression: valuefrequency? "that" "much"
-                        thatmanyexpression: valuefrequency? "that" "many"
-                        numberofexpression: ("a"|"the") "number" "of" declarationorreference
-                        anynumberofexpression: "any" "number" "of" declarationorreference
+                        !thatmanyexpression: valuefrequency? "that" ("much"|"many")
+                        !numberofexpression: ("a"|"the"|"any") "number" "of" declarationorreference
+                        timesexpression: "times" statement? //[example: the number of times ~ was kicked]
                         valueterm: valuenumber | valuecardinal | valueordinal | valuefrequency | valuecustom
                         valuenumber: NUMBER
                         valuecardinal: CARDINAL
@@ -1368,23 +1367,21 @@ class JsonParser(BaseParser):
                         | "eleven" | "twelve" | "thirteen" | "fourteen" | "fifteen" | "sixteen" | "seventeen" | "eighteen" | "nineteen" | "twenty" //[TODO]
                         ORDINAL: "first" | "second" | "third" | "fourth" //[TODO]
                         valuecustom: "x" | "*"
-                        wherevariableexpression: "where" "x" "is" valueexpression
                         quantityrulemodification: "rounded" "up" -> roundedupmod
                         | "rounded" "down" -> roundeddownmod
                         | "divided" "evenly" -> dividedevenlymod
                         | "divided as you choose" -> dividedfreelymod
                         | "plus" valueterm -> plusmod
                         | "minus" valueterm -> minusmod
-                        | wherevariableexpression
                         
                         
                         //DECLARATIONS AND REFERENCES
                         
                         declarationorreference: genericdeclarationexpression | reference | playerreference | objectreference | anytargetexpression
                         genericdeclarationexpression: (playerdeclaration | objectdeclaration)
-                        | genericdeclarationexpression "or" genericdeclarationexpression -> orgenericdeclarationexpression
-                        | genericdeclarationexpression "and" genericdeclarationexpression -> andgenericdeclarationexpression
-                        | genericdeclarationexpression "and/or" genericdeclarationexpression -> andorgenericdeclarationexpression
+                        | declarationorreference "or" declarationorreference -> orgenericdeclarationexpression
+                        | declarationorreference "and" declarationorreference -> andgenericdeclarationexpression
+                        | declarationorreference "and/or" declarationorreference -> andorgenericdeclarationexpression
                         
                         genericdescriptionexpression: objectdescriptionexpression | playerdescriptionexpression
                         
@@ -1405,7 +1402,7 @@ class JsonParser(BaseParser):
                         | objectdescriptionexpression "and/or" objectdescriptionexpression -> andordefinitionexpression
                         objectdescriptionexpression: objectdescriptionterm (","? objectdescriptionterm)*
                         objectdescriptionterm: (colorexpression | namedexpression | manaexpression | typeexpression | ptexpression | valueexpression
-                        | qualifier | modifier | locationexpression | valuecardinal | controlpostfix | withexpression | withoutexpression | "that" doesnthaveexpression
+                        | qualifier | modifier | locationexpression | valuecardinal | controlpostfix | putinzonepostfix | withexpression | withoutexpression | "that" doesnthaveexpression
                         | "that" dealtdamageexpression | choiceexpression | ofexpression | characteristicexpression | additionalexpression | atrandomexpression)+
                         
                         declarationdecorator: "each" -> eachdecorator
@@ -1439,6 +1436,7 @@ class JsonParser(BaseParser):
                         additionalexpression: "additional"
                         controlpostfix: playerdeclref "control"["s"]
                         | playerdeclref ("don't" | "doesn't") "control"["s"] -> negativecontrolpostfix
+                        putinzonepostfix: "put" locationexpression zoneplacementmodifier? ("this" "way")?
                         atrandomexpression: "at" "random" //[TODO: Need to find out where to put this.]
                         
                         
@@ -1473,28 +1471,31 @@ class JsonParser(BaseParser):
                         | ableexpression
                         | changezoneexpression
                         | skiptimeexpression
+                        | switchexpression
                         
                         dealsdamageexpression:  declarationorreference? "deal"["s"] valueexpression? DAMAGETYPE ("to" declarationorreference)? (","? quantityrulemodification)* -> dealsdamagevarianta
                         | valueexpression DAMAGETYPE ("to" declarationorreference)?  (","? quantityrulemodification)* -> dealsdamagevariantaimplied //variant a, implied antecedent
                         | declarationorreference "deal"["s"] DAMAGETYPE valueexpression ("to" declarationorreference)?  (","? quantityrulemodification)* -> dealsdamagevariantb
                         | declarationorreference "deal"["s"] DAMAGETYPE ("to" declarationorreference)?  valueexpression  (","? quantityrulemodification)* -> dealsdamagevariantc
                         preventdamageexpression: "prevent" "the" "next" valueexpression DAMAGETYPE "that" "would" "be" "dealt" "to" declarationorreference timeexpression? -> preventdamagevarianta
-                        | "prevent" "all" DAMAGETYPE "that" "would" "be" "dealt" ("to" declarationorreference)? timeexpression? -> preventdamagevariantb
-                        | "prevent" valueexpression "of" "that" "damage" -> preventdamagevariantc 
-                        | "prevent" "that" "damage" -> preventdamagevariantd
+                        | "prevent" "the" "next" valueexpression DAMAGETYPE "that" declarationorreference "would" "deal" "to" declarationorreference timeexpression? -> preventdamagevariantb
+                        | "prevent" "all" DAMAGETYPE "that" "would" "be" "dealt" ("to" declarationorreference)? timeexpression? -> preventdamagevariantc
+                        | "prevent" valueexpression "of" "that" DAMAGETYPE -> preventdamagevariantd 
+                        | "prevent" "that" DAMAGETYPE -> preventdamagevariante
+                        | DAMAGETYPE "is" "prevented" "this" "way" -> preventdamagevariantf //[TODO: There may be a more general is-statement for stuff like 'damage'.]
                         
                         returnexpression: playerdeclref? "return"["s"] declarationorreference atrandomexpression? ("from" zonedeclarationexpression)? "to" zonedeclarationexpression zoneplacementmodifier?//[TODO]
                         
                         putinzoneexpression: playerdeclref? "put"["s"] (declarationorreference | cardexpression) (locationexpression | "back") (objectdefinition | playerdefinition | zoneplacementmodifier)?
-                        putcounterexpression: playerdeclref? "put"["s"] ("a"|valueexpression) countertype "counter"["s"] "on" declarationorreference ("," wherevariableexpression)?
-                        removecounterexpression: playerdeclref? "remove"["s"] ("a"|valueexpression) countertype "counter"["s"] "from" declarationorreference ("," wherevariableexpression)?
-                        spendmanaexpression: "spend" "mana" //[TODO]
-                        paylifeexpression: playerdeclref? "pay"["s"] valueexpression? "life" ("," wherevariableexpression)?
+                        putcounterexpression: playerdeclref? "put"["s"] ("a"|valueexpression) countertype "counter"["s"] "on" declarationorreference
+                        removecounterexpression: playerdeclref? "remove"["s"] ("a"|valueexpression) countertype "counter"["s"] "from" declarationorreference
+                        spendmanaexpression: "spend" "mana" //[TODO: this is just a stub]
+                        paylifeexpression: playerdeclref? "pay"["s"] valueexpression? "life"
                         addmanaexpression: playerdeclref? "add"["s"] (manaexpression|manaspecificationexpression)
                         paymanaexpression: playerdeclref? "pay"["s"] (manaexpression|manaspecificationexpression)
                         payexpression: playerdeclref? "pay"["s"] declarationorreference //[TODO: This might change. Added for 'rather than pay this spell's mana cost'.]
-                        gainlifeexpression: playerdeclref? "gain"["s"] (valueexpression? "life" | "life" valueexpression) ("," wherevariableexpression)?
-                        loselifeexpression: playerdeclref? "lose"["s"] (valueexpression? "life" | "life" valueexpression) ("," wherevariableexpression)?
+                        gainlifeexpression: playerdeclref? "gain"["s"] (valueexpression? "life" | "life" valueexpression) 
+                        loselifeexpression: playerdeclref? "lose"["s"] (valueexpression? "life" | "life" valueexpression) 
                         getsptexpression: declarationorreference? "get"["s"] ptchangeexpression
                         diesexpression: declarationorreference? "die"["s"] timeexpression?
                         gainabilityexpression: declarationorreference? "gain"["s"] abilitysequencestatement
@@ -1508,9 +1509,10 @@ class JsonParser(BaseParser):
                         | declarationorreference? "assign"["s"] "no" DAMAGETYPE timeexpression -> nodamageassignedexpression
                         | declarationorreference? "assign"["s"] DAMAGETYPE valueexpression -> alternatedamageassignmentexpression
                         ableexpression: declarationorreference? "able" ("to" statement "do" "so")?
-                        changezoneexpression: declarationorreference "enter"["s"] locationexpression genericdeclarationexpression? zoneplacementmodifier? -> enterzoneexpression
+                        changezoneexpression: declarationorreference "enter"["s"] locationexpression genericdeclarationexpression? zoneplacementmodifier? timeexpression? -> enterzoneexpression
                         | declarationorreference "leaves" locationexpression -> leavezoneexpression
                         skiptimeexpression: playerdeclref? "skip"["s"] timeexpression
+                        switchexpression: playerdeclref? "switch"["es"] declarationorreference
                         
                         
                         keywordactionexpression: basickeywordaction | specialkeywordaction
@@ -1548,7 +1550,7 @@ class JsonParser(BaseParser):
                         | "unattach" declarationorreference ("from" declarationorreference)? -> unattachexpression
                         | playerdeclref "attaches" declarationorreference "to" declarationorreference -> playerattachesexpression
                         
-                        castexpression: playerdeclref? "cast"["s"] declarationorreference (castmodifier ("and" castmodifier)?)*
+                        castexpression: playerdeclref? "cast"["s"] declarationorreference (castmodifier ("and" castmodifier)?)* timeexpression?
                         castmodifier: "without" "paying" "its" "mana" "cost" -> castwithoutpaying //[TODO: We may be able to fold this into the pay-expression]
                         | "as" "though" beingstatement -> castasthough
                         chooseexpression: playerdeclref? "choose"["s"] declarationorreference ("from" "it")? atrandomexpression? //[TODO]
@@ -1558,8 +1560,7 @@ class JsonParser(BaseParser):
                         gaincontrolexpression: playerdeclref? "gain"["s"] "control" "of" declarationorreference
                         
                         uncastexpression: "counter" declarationorreference
-                        //createexpression: "create" indefinitesingularexpression | "create" valueexpression objectdeclaration
-                        createexpression: "create" objectdeclaration
+                        createexpression: playerdeclref? "create"["s"] objectdeclaration
                         destroyexpression: "destroy" declarationorreference
                         drawexpression: playerdeclref? "draw"["s"] ("a" "card" | valueexpression "card"["s"] | "cards"["s"] valueexpression)
                         discardexpression: playerdeclref? ("discard"["s"] | "discarded") (declarationorreference | "a" "card" | valueexpression "card"["s"] | "card"["s"] valueexpression) "at random"?
@@ -1676,23 +1677,23 @@ class JsonParser(BaseParser):
                         //[TODO: SUBTYPECREATUREA and SUBTYPECREATUREB are split up because having such a long list of alternatives apparently]
                         //[causes Lark to suffer a recursion depth error. We should see if this is fixable.]
                         
-                        SUBTYPECREATUREA: "advisor" | "aetherborn" | "ally" | "angel" | "antelope" | "ape" | "archer" | "archon" 
+                        SUBTYPECREATUREA: "advisor" | "aetherborn" | ("ally"|"allies") | "angel" | "antelope" | "ape" | "archer" | "archon" 
                         | "artificer" | "assassin" | "assembly-worker" | "atog" | "aurochs" | "avatar" | "azra" | "badger"
                         | "barbarian" | "basilisk" | "bat" | "bear" | "beast" | "beeble" | "berserker" | "bird" | "blinkmoth"
                         | "boar" | "bringer" | "brushwagg" | "camarid" | "camel" | "caribou" | "carrier" | "cat" | "centaur"
                         | "cephalid" | "chimera" | "citizen" | "cleric" | "cockatrice" | "construct" | "coward" | "crab"
                         | "crocodile" | "cyclops" | "dauthi" | "demon" | "deserter" | "devil" | "dinosaur" | "djinn" | "dragon"
-                        | "drake" | "dreadnought" | "drone" | "druid" | "dryad" | "dwarf" | "efreet" | "egg" | "elder" | "eldrazi"
-                        | "elemental" | "elephant" | "elf" | "elk" | "eye" | "faerie" | "ferret" | "fish" | "flagbearer" | "fox"
+                        | "drake" | "dreadnought" | "drone" | "druid" | "dryad" | ("dwarf"|"dwarves") | "efreet" | "egg" | "elder" | "eldrazi"
+                        | "elemental" | "elephant" | ("elf"|"elves") | "elk" | "eye" | "faerie" | "ferret" | "fish" | "flagbearer" | "fox"
                         
                         SUBTYPECREATUREB: "frog" | "fungus" | "gargoyle" | "germ" | "giant" | "gnome" | "goat" | "goblin" | "god" | "golem" | "gorgon"
                         | "graveborn" | "gremlin" | "griffin" | "hag" | "harpy" | "hellion" | "hippo" | "hippogriff" | "homarid" | "homunculus"
                         | "horror" | "horse" | "hound" | "human" | "hydra" | "hyena" | "illusion" | "imp" | "incarnation" | "insect"
                         | "jackal" | "jellyfish" | "juggernaut" | "kavu" | "kirin" | "kithkin" | "knight" | "kobold" | "kor" | "kraken"
                         | "lamia" | "lammasu" | "leech" | "leviathan" | "lhurgoyf" | "licid" | "lizard" | "manticore" | "masticore"
-                        | "mercenary" | "merfolk" | "metathran" | "minion" | "minotaur" | "mole" | "monger" | "mongoose" | "monk" 
+                        | ("mercenary"|"mercenaries") | "merfolk" | "metathran" | "minion" | "minotaur" | "mole" | "monger" | "mongoose" | "monk" 
                         | "monkey" | "moonfolk" | "mutant" | "myr" | "mystic" | "naga" | "nautilus" | "nephilim" | "nightmare" 
-                        | "nightstalker" | "ninja" | "noggle" | "nomad" | "nymph" | "octopus" | "ogre" | "ooze" | "orb" | "orc" 
+                        | "nightstalker" | "ninja" | "noggle" | "nomad" | "nymph" | ("octopus"|"octopuses") | "ogre" | "ooze" | "orb" | "orc" 
                         | "orgg" | "ouphe" | "ox" | "oyster" | "pangolin" | "pegasus" | "pentavite" | "pest" | "phelddagrif" | "phoenix"
                         | "pilot" | "pincher" | "pirate" | "plant" | "praetor" | "prism" | "processor" | "rabbit" | "rat" | "rebel"
                         | "reflection" | "rhino" | "rigger" | "rogue" | "sable" | "salamander" | "samurai" | "sand" | "saproling" | "satyr"
@@ -1701,7 +1702,7 @@ class JsonParser(BaseParser):
                         | "spellshaper" | "sphinx" | "spider" | "spike" | "spirit" | "splinter" | "sponge" | "squid" | "squirrel" | "starfish"
                         | "surrakar" | "survivor" | "tetravite" | "thalakos" | "thopter" | "thrull" | "treefolk" | "trilobite" | "triskelavite"
                         | "troll" | "turtle" | "unicorn" | "vampire" | "vedalken" | "viashino" | "volver" | "wall" | "warrior" | "weird"
-                        | "werewolf" | "whale" | "wizard" | "wolf" | "wolverine" | "wombat" | "worm" | "wraith" | "wurm" | "yeti" 
+                        | ("werewolf"|"werewolves") | "whale" | "wizard" | ("wolf"|"wolves") | "wolverine" | "wombat" | "worm" | "wraith" | "wurm" | "yeti" 
                         | "zombie" | "zubera"
                         
                         SUBTYPEPLANAR: "alara" | "arkhos" | "azgol" | "belenon" | "bolas’s meditation realm"
@@ -1744,14 +1745,14 @@ class JsonParser(BaseParser):
                         
                         characteristicterm: modifier* characteristic
                         characteristic: OBJECTCHARACTERISTIC | PLAYERCHARACTERISTIC
-                        PLAYERCHARACTERISTIC: "maximum hand size" | "life total"
+                        PLAYERCHARACTERISTIC: "maximum hand size" | "life total" | "cards in hand"
                         OBJECTCHARACTERISTIC: "card"? "name" | "mana cost" | "converted mana cost" | "color"["s"] | "color indicator" | "type"["s"] | "card type"["s"] | "subtype"["s"] | "supertype"["s"]
                         | "rules text" | "abilities" | "power" | "toughness" | "base power" | "base toughness" | "loyalty" | "hand modifier" | "life modifier"
                         
                         //[TODO: Not quite done, there are expressions like 'a number of cards equal to [...]'. There's some overlapping responsibilities with descriptions involving cards, maybe.]
-                        !cardexpression: ("the" "top" | "the" "bottom")? (valueterm | thatmanyexpression)? "card"["s"] ("from" "the" "top" | "from" "the" "bottom")? ("of" zonedeclarationexpression)?  ("," wherevariableexpression)?
+                        !cardexpression: ("the" "top" | "the" "bottom")? (valueterm | thatmanyexpression)? "card"["s"] ("from" "the" "top" | "from" "the" "bottom")? ("of" zonedeclarationexpression)?  
                         
-                        zonedeclarationexpression: referencedecorator* possessiveterm* zone
+                        zonedeclarationexpression: (declarationdecorator* | referencedecorator*) possessiveterm* zone
                         zoneplacementmodifier: "in" "any" "order" -> anyorderplacement
                         | "in" "a" "random" "order" -> randomorderplacement
                         | ORDINAL "from" "the" "top" -> fromtopplacement
@@ -1783,8 +1784,8 @@ class JsonParser(BaseParser):
                         PLUS: "+"
                         MINUS: "-"
                         
-                        manaspecificationexpression: valuecardinal "mana" manaspecifier+
-                        manaspecifier: anycolorspecifier
+                        manaspecificationexpression: valueterm "mana" manaspecifier+
+                        manaspecifier: anycolorspecifier //[TODO: Need to add the rest of these]
                         
                         anycolorspecifier: "of" "any" "color" -> anycolorspecifier
                         | "of" "any" "one" "color" -> anyonecolorspecifier
