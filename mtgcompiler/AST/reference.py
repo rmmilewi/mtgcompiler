@@ -865,6 +865,7 @@ class MgZone(core.MgNode):
                 Exile = "exile"
                 Command = "command zone"
                 Outside = "outside the game"
+                Anywhere = "anywhere"
 
         def __init__(self,value):
                 """value: a ZoneEnum."""
