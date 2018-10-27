@@ -2,6 +2,8 @@ from mtgcompiler.frontend.compilers.BaseImplementation.BaseCompiler import BaseC
 import mtgcompiler.frontend.compilers.LarkMtgJson.grammar as grammar #TODO: This will change.
 #from mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonLexer import MtgJsonLexer
 from mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonPreprocessor import MtgJsonPreprocessor
+from mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonTransformer import MtgJsonTransformer
+from mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonPostprocessor import MtgJsonPostprocessor
 #from mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonParser import MtgJsonParser
 
 from lark import Lark
@@ -18,12 +20,39 @@ class MtgJsonCompiler(BaseCompiler):
                 #print(larkfrontend.lexer_conf.tokens)
                 
                 self._larkfrontend = Lark(g,start='cardtext',debug=True)
+                self._preprocessor = MtgJsonPreprocessor(options)
+                self._transformer = MtgJsonTransformer(options)
+                self._postprocessor = MtgJsonPostprocessor(options)
                 
                 #self._lexer = MtgJsonLexer(options,larklexer=larkfrontend.parser.lexer)
                 #self._parser = MtgJsonParser(options,larkparser=larkfrontend.parser.parser)
                 
+        def _callLarkParse(self,bodytext):
+                """Calls the Lark frontend to parse the input."""
+                return self._frontend.parse(bodytext)
                 
         def compile(self,cardinput,flags):
+                
+                
+                #Apply the prelex preprocessing step.
+                result = self._preprocessor.prelex(cardinput,flags)
+                
+                #Apply the postlex preprocessing step.
+                result = self._preprocessor.postlex(result,flags)
+                
+                #Call the Lark frontend to parse the card text.
+                result['parsed_body'] = _calllarkparse(result['text'])
+                
+                #Apply the transformer to generate the AST.
+                result = self._transformer.transform(result)
+                
+                #Apply the postprocessing step
+                result = self._postprocessor.postprocess(result,flags)
+                
+                return result
+                
+                
+                
                 #tokenstream = self._lexer.lex(cardinput)
                 #print(tokenstream)
                 #for token in tokenstream:

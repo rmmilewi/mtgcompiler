@@ -4,44 +4,44 @@ from lark import Transformer as LarkTransformer #The Lark class responsible for 
 
 
 #TODO: I'm gonna restructure all these imports, because this is just getting really messy.
-from mtgcompiler.AST.reference import MgNameReference,MgThisReference
-from mtgcompiler.AST.reference import MgName,MgTapUntapSymbol,MgZone,MgQualifier
-from mtgcompiler.AST.reference import MgAbilityModifier,MgCombatStatusModifier,MgKeywordStatusModifier,MgTapStatusModifier,MgEffectStatusModifier
-from mtgcompiler.AST.card import MgTypeLine,MgFlavorText,MgTextBox,MgCard
-from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
-from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
-from mtgcompiler.AST.statements import MgKeywordAbilityListStatement,MgStatementBlock,MgExpressionStatement,MgActivationStatement
-from mtgcompiler.AST.statements import MgAbilitySequenceStatement,MgQuotedAbilityStatement
-from mtgcompiler.AST.statements import MgWhenStatement
+from mtgcompiler.frontend.AST.reference import MgNameReference,MgThisReference
+from mtgcompiler.frontend.AST.reference import MgName,MgTapUntapSymbol,MgZone,MgQualifier
+from mtgcompiler.frontend.AST.reference import MgAbilityModifier,MgCombatStatusModifier,MgKeywordStatusModifier,MgTapStatusModifier,MgEffectStatusModifier
+from mtgcompiler.frontend.AST.card import MgTypeLine,MgFlavorText,MgTextBox,MgCard
+from mtgcompiler.frontend.AST.mtypes import MgSupertype,MgSubtype,MgType
+from mtgcompiler.frontend.AST.colormana import MgManaSymbol,MgColorTerm
+from mtgcompiler.frontend.AST.statements import MgKeywordAbilityListStatement,MgStatementBlock,MgExpressionStatement,MgActivationStatement
+from mtgcompiler.frontend.AST.statements import MgAbilitySequenceStatement,MgQuotedAbilityStatement
+from mtgcompiler.frontend.AST.statements import MgWhenStatement
 
-from mtgcompiler.AST.expressions import MgNumberValue,MgPTExpression,MgManaExpression,MgTypeExpression,MgDescriptionExpression
-from mtgcompiler.AST.expressions import MgNamedExpression,MgCostSequenceExpression,MgWithExpression,MgIndefiniteSingularExpression
-from mtgcompiler.AST.expressions import MgColorExpression,MgAndExpression,MgOrExpression,MgAndOrExpression,MgTargetExpression,MgDeclarationExpression
-from mtgcompiler.AST.expressions import MgDestroyExpression,MgExileExpression,MgDealsDamageExpression,MgChangeZoneExpression,MgSacrificeExpression
-from mtgcompiler.AST.expressions import MgAnyColorSpecifier,MgManaSpecificationExpression,MgAddManaExpression,MgCreateTokenExpression
+from mtgcompiler.frontend.AST.expressions import MgNumberValue,MgPTExpression,MgManaExpression,MgTypeExpression,MgDescriptionExpression
+from mtgcompiler.frontend.AST.expressions import MgNamedExpression,MgCostSequenceExpression,MgWithExpression,MgIndefiniteSingularExpression
+from mtgcompiler.frontend.AST.expressions import MgColorExpression,MgAndExpression,MgOrExpression,MgAndOrExpression,MgTargetExpression,MgDeclarationExpression
+from mtgcompiler.frontend.AST.expressions import MgDestroyExpression,MgExileExpression,MgDealsDamageExpression,MgChangeZoneExpression,MgSacrificeExpression
+from mtgcompiler.frontend.AST.expressions import MgAnyColorSpecifier,MgManaSpecificationExpression,MgAddManaExpression,MgCreateTokenExpression
 
-from mtgcompiler.AST.abilities import MgReminderText,MgAbilityWord,MgRegularAbility
-from mtgcompiler.AST.abilities import MgDeathtouchAbility,MgDefenderAbility,MgDoubleStrikeAbility,MgFirstStrikeAbility,MgTrampleAbility
-from mtgcompiler.AST.abilities import MgFlashAbility,MgFlyingAbility,MgHasteAbility,MgIndestructibleAbility,MgReachAbility
+from mtgcompiler.frontend.AST.abilities import MgReminderText,MgAbilityWord,MgRegularAbility
+from mtgcompiler.frontend.AST.abilities import MgDeathtouchAbility,MgDefenderAbility,MgDoubleStrikeAbility,MgFirstStrikeAbility,MgTrampleAbility
+from mtgcompiler.frontend.AST.abilities import MgFlashAbility,MgFlyingAbility,MgHasteAbility,MgIndestructibleAbility,MgReachAbility
 
 
 
-from mtgcompiler.AST.abilities import MgHexproofAbility,MgProtectionAbility,MgLandwalkAbility,MgRampageAbility
-from mtgcompiler.AST.abilities import MgFadingAbility, MgAmplifyAbility, MgModularAbility, MgBushidoAbility
-from mtgcompiler.AST.abilities import MgSoulshiftAbility, MgDredgeAbility, MgBloodthirstAbility, MgGraftAbility
-from mtgcompiler.AST.abilities import MgRippleAbility, MgVanishingAbility, MgAbsorbAbility, MgFrenzyAbility
-from mtgcompiler.AST.abilities import MgPoisonousAbility, MgDevourAbility, MgAnnihilatorAbility, MgTributeAbility
-from mtgcompiler.AST.abilities import MgRenownAbility, MgCrewAbility, MgFabricateAbility, MgAfflictAbility, MgSurveilAbility
+from mtgcompiler.frontend.AST.abilities import MgHexproofAbility,MgProtectionAbility,MgLandwalkAbility,MgRampageAbility
+from mtgcompiler.frontend.AST.abilities import MgFadingAbility, MgAmplifyAbility, MgModularAbility, MgBushidoAbility
+from mtgcompiler.frontend.AST.abilities import MgSoulshiftAbility, MgDredgeAbility, MgBloodthirstAbility, MgGraftAbility
+from mtgcompiler.frontend.AST.abilities import MgRippleAbility, MgVanishingAbility, MgAbsorbAbility, MgFrenzyAbility
+from mtgcompiler.frontend.AST.abilities import MgPoisonousAbility, MgDevourAbility, MgAnnihilatorAbility, MgTributeAbility
+from mtgcompiler.frontend.AST.abilities import MgRenownAbility, MgCrewAbility, MgFabricateAbility, MgAfflictAbility, MgSurveilAbility
 
-from mtgcompiler.AST.abilities import MgCumulativeUpkeepAbility, MgBuybackAbility, MgCyclingAbility, MgKickerAbility, MgMadnessAbility
-from mtgcompiler.AST.abilities import MgMorphAbility, MgNinjutsuAbility, MgTransmuteAbility, MgRecoverAbility
-from mtgcompiler.AST.abilities import MgAuraSwapAbility, MgTransfigureAbility, MgEvokeAbility, MgMiracleAbility
-from mtgcompiler.AST.abilities import MgOverloadAbility, MgScavengeAbility, MgOutlastAbility, MgSurgeAbility
-from mtgcompiler.AST.abilities import MgEmergeAbility, MgEscalateAbility, MgEnbalmAbility, MgEternalizeAbility, MgJumpStartAbility
+from mtgcompiler.frontend.AST.abilities import MgCumulativeUpkeepAbility, MgBuybackAbility, MgCyclingAbility, MgKickerAbility, MgMadnessAbility
+from mtgcompiler.frontend.AST.abilities import MgMorphAbility, MgNinjutsuAbility, MgTransmuteAbility, MgRecoverAbility
+from mtgcompiler.frontend.AST.abilities import MgAuraSwapAbility, MgTransfigureAbility, MgEvokeAbility, MgMiracleAbility
+from mtgcompiler.frontend.AST.abilities import MgOverloadAbility, MgScavengeAbility, MgOutlastAbility, MgSurgeAbility
+from mtgcompiler.frontend.AST.abilities import MgEmergeAbility, MgEscalateAbility, MgEnbalmAbility, MgEternalizeAbility, MgJumpStartAbility
 
-from mtgcompiler.AST.abilities import MgSpliceAbility,MgEnchantAbility,MgEquipAbility,MgBandingAbility,MgAffinityAbility
-from mtgcompiler.AST.abilities import MgOfferingAbility,MgForecastAbility,MgSuspendAbility,MgChampionAbility,MgReinforceAbility
-from mtgcompiler.AST.abilities import MgHiddenAgendaAbility,MgAwakenAbility,MgPartnerAbility
+from mtgcompiler.frontend.AST.abilities import MgSpliceAbility,MgEnchantAbility,MgEquipAbility,MgBandingAbility,MgAffinityAbility
+from mtgcompiler.frontend.AST.abilities import MgOfferingAbility,MgForecastAbility,MgSuspendAbility,MgChampionAbility,MgReinforceAbility
+from mtgcompiler.frontend.AST.abilities import MgHiddenAgendaAbility,MgAwakenAbility,MgPartnerAbility
 
 #Convenience function for flattening lists (of lists)+
 def flatten(l):
@@ -64,8 +64,9 @@ class MtgJsonTransformer(BaseTransformer):
                 self._larktf = MtgJsonTransformer.LarkTransformer()
                 pass #TODO: Handling various options in here.
                 
-        def transform(self,parsetree):
-                ast = self._larktf.transform(parsetree) #Calls the Lark transformer which traverses the parsetree.
+        def transform(self,cardobj):
+                cardobj['ast'] = self._larktf.transform(cardobj['parsed_body']) #Calls the Lark transformer which traverses the parsetree.
+                return card
 
         class LarkTransformer(Transformer):
                 #CARDS

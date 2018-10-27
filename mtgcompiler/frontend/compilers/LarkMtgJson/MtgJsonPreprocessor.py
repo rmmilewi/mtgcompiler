@@ -7,8 +7,8 @@ class MtgJsonPreprocessor(BasePreprocessor):
                 pass #TODO
                 
                 
-        def prelex(self,inputobj):
-                pass
+        def prelex(self,inputobj,flags):
+                return inputobj
                 
-        def postlex(self,inputstream):
-                pass
+        def postlex(self,inputobj,flags):
+                return inputobj
