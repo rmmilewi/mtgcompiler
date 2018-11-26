@@ -1,0 +1,45 @@
+//Numeric value expressions
+
+valueexpression: valueterm | comparisonexpression | valueformulaexpression
+valueformulaexpression: uptoexpression | numberofexpression | thatmanyexpression | valuemodexpression
+uptoexpression: "up" "to" valueexpression
+!numberofexpression: ("a"|"the"|"any") "number" "of" valueexpression
+!thatmanyexpression: frequencyexpression? "that" ("much"|"many")
+valuemodexpression: valueexpression "rounded" "up" -> roundedupmod
+| valueexpression "rounded" "down" -> roundeddownmod
+| valueexpression "divided" "evenly" -> dividedevenlymod
+| valueexpression "divided" "as" "you" "choose" -> dividedfreelymod
+| valueexpression "plus" valueexpression -> plusmod
+| valueexpression "minus" valueexpression -> minusmod
+
+comparisonexpression: eqexpression | ltexpression | lteqexpression | gtexpression | gteqexpression
+eqexpression: "equal" "to" valueexpression
+ltexpression: ("less" | "fewer") "than" valueexpression
+lteqexpression: valueexpression "or" ("less" | "fewer") | "less" "than" "or" "equal" "to" valueexpression
+gtexpression: ("greater" | "more") "than" valueexpression
+gteqexpression: valueexpression "or" ("greater" | "more") | "greater" "than" "or" "equal" "to" valueexpression
+
+valueterm: cardinalexpression | frequencyexpression | ordinalexpression | numberliteral | valuevarsymbol
+
+cardinalexpression: cardinalterm+
+cardinalterm: (CARDINALZERONINE | CARDINALTEEN | CARDINALTENS CARDINALZERONINE?) PLACE*
+frequencyexpression: FREQUENCYTERM | cardinalterm+ "times"
+ordinalexpression: cardinalterm* ORDINAL
+
+PLACE: "hundred" | "thousand" | "million" | "billion"
+CARDINALZERONINE: "one" | "two" | "three" | "four" | "five" | "six" | "seven" | "eight" | "nine"
+CARDINALTEEN: "ten" | "eleven" | "twelve" | "thirteen" | "fourteen" | "fifteen" | "sixteen" | "seventeen" | "eighteen" | "nineteen"
+CARDINALTENS: "twenty" | "thirty" | "fourty" | "fifty" | "sixty" | "seventy" | "eighty" | "ninety"
+FREQUENCYTERM: "once" | "twice"
+ORDINAL: "first" | "second" | "third" | "fourth" | "fifth" | "sixth" | "seventh" | "eighth" | "ninth" | "tenth" | "eleventh" | "twelfth"
+| "twentieth" | "thirtieth" | "fourtieth" | "fiftieth" | "sixtieth" | "seventieth" | "eightieth" | "ninetieth"
+| "hundredth" | "thousandth" | "millionth" | "billionth"
+
+numberliteral: NUMBER
+valuevarsymbol: variablexsymbol | starsymbol
+variablexsymbol: "X"i
+starsymbol: "*"
+
+%import common.WS -> WS
+%import common.SIGNED_NUMBER -> NUMBER
+%ignore WS
