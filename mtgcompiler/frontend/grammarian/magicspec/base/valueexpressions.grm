@@ -39,7 +39,3 @@ numberliteral: NUMBER
 valuevarsymbol: variablexsymbol | starsymbol
 variablexsymbol: "X"i
 starsymbol: "*"
-
-%import common.WS -> WS
-%import common.SIGNED_NUMBER -> NUMBER
-%ignore WS

@@ -1,0 +1,18 @@
+//Characteristic expressions
+
+characteristicexpression: characteristicterms 
+| (characteristicterms (valueexpression|ptexpression) | (valueexpression|ptexpression) characteristicterms) -> characteristicvaluecompexpr
+
+characteristicterms: characteristicterm
+| possessiveterm+ characteristicterm -> characteristicpossessiveexpr
+| "the" characteristicterm -> characteristicthereference
+| characteristicterm  ("," characteristicterm ",")* "or" characteristicterm -> characteristicorexpr
+| characteristicterm  ("," characteristicterm ",")* "and" characteristicterm -> characteristicandexpr
+| characteristicterm  ("," characteristicterm ",")* "and/or" characteristicterm -> characteristicandorexpr
+| "no" characteristicterm -> nocharacteristicexpr //[example: no maximum hand size]
+
+characteristicterm: modifier* characteristic
+characteristic: OBJECTCHARACTERISTIC | PLAYERCHARACTERISTIC
+PLAYERCHARACTERISTIC: "maximum hand size" | "life total" | "life" | "cards in hand"
+OBJECTCHARACTERISTIC: "card"? "name" | "mana cost" | "converted mana cost" | "color"["s"] | "color indicator" | "type"["s"] | "card type"["s"] | "subtype"["s"] | "supertype"["s"]
+| "rules text" | "abilities" | "power" | "toughness" | "base power" | "base toughness" | "loyalty" | "hand modifier" | "life modifier"

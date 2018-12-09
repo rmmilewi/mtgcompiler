@@ -1,0 +1,26 @@
+//Mana symbol expressions
+
+manasymbolexpression: manasymbol+
+| manasymbolexpression "or" manasymbolexpression -> ormanaexpression
+manasymbol: "{" manamarkerseq "}"
+manamarkerseq: manamarker_color -> regularmanasymbol
+| manamarker_color "/" manamarker_phyrexian -> phyrexianmanasymbol
+| manamarker_color "/" manamarker_color -> hybridmanasymbol
+| "2" "/" manamarker_color -> alternate2manasymbol
+| manamarker_snow -> snowmanasymbol
+| manamarker_colorless -> colorlessmanasymbol
+| manamarker_x -> xmanasymbol
+| NUMBER -> genericmanasymbol
+| manamarker_halfmana manamarker_color -> halfmanasymbol
+| "∞" -> infinitemanasymbol
+
+manamarker_halfmana: "H"i -> halfmarker
+manamarker_color: "W"i -> whitemarker
+| "U"i -> bluemarker
+| "B"i -> blackmarker
+| "R"i -> redmarker
+| "G"i -> greenmarker
+manamarker_snow: "S"i -> snowmarker
+manamarker_phyrexian: "P"i -> phyrexianmarker
+manamarker_colorless: "C"i -> colorlessmarker
+manamarker_x: "X"i -> xmarker

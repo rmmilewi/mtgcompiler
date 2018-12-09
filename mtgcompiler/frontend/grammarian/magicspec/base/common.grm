@@ -1,0 +1,8 @@
+//Common imports
+%import common.UCASE_LETTER -> UCASE_LETTER
+%import common.LCASE_LETTER -> LCASE_LETTER
+%import common.WORD -> WORD
+%import common.SIGNED_NUMBER -> NUMBER
+%import common.WS -> WS
+%ignore WS
+

@@ -1,0 +1,11 @@
+//Color expressions
+
+colorexpression: colorterm -> colorsingleexpr
+| colorterm  ("," colorterm ",")* "or" colorterm -> colororexpr
+| colorterm ("," colorterm ",")* "and" colorterm -> colorandexpr
+| colorterm ("," colorterm ",")* "and/or" colorterm -> colorandorexpr
+
+colorterm: COLORTERM
+| "non" COLORTERM -> noncolorterm
+
+COLORTERM: "white" | "blue" | "black" | "red" | "green" | "monocolored" | "multicolored" | "colorless"

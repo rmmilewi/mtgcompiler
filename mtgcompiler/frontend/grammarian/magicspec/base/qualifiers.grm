@@ -1,0 +1,4 @@
+//Qualifiers
+
+qualifier: QUALIFIER["s"]
+QUALIFIER: ("ability"|"abilities") | "card" | "permanent" | "source" | "spell" | "token" | "effect"

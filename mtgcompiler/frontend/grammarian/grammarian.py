@@ -331,10 +331,16 @@ class GrmNumberRange(GrmIRNode):
                 
 
 class GrammarAssembler(Transformer):
-        def __init__(self):
+        def __init__(self,generateDummyRules):
+                """
+                generateDummyRules: A boolean that indicates whether the generator 
+                should come up with rules/tokens that match currently undefined names 
+                in the grammar. Used when doing unit tests on the grammar.
+                """
                 self._statementTable = []
                 self._globalNameTable = set()
                 self._unresolvedNamesTable = set()
+                self._generateDummyRules = generateDummyRules
                 
         def production(self,items,isToken):
                 productionIdentifier = items[0]
@@ -438,6 +444,10 @@ class GrammarAssembler(Transformer):
                         unparsedStatement = statement.unparseToString()
                         #print(unparsedStatement)
                         output = output + unparsedStatement
+                if self._generateDummyRules:
+                        for name in self._unresolvedNamesTable:
+                                rule = "{0}: \"{1}\"\n".format(name,name.upper())
+                                output = output + rule
                 return output
 
 def _createGrammarianFrontend(grammarianPath):
@@ -475,10 +485,19 @@ def requestGrammar(imports,options={}):
                 specificationPath = options["devSpecificationDirectory"]
         else:
                 specificationPath = "mtgcompiler/frontend/grammarian/magicspec"
+                
+        if "devDefineMissingNames" in options:
+                #devDefineMissingNames: For unit testing, we often want to load only part of the grammar.
+                #sometimes that involves testing rules that have undefined rule/token names.
+                #Setting this to true will allow Grammarian to create rules/tokens with names in all capital
+                #letters that correspond to undeclared names.
+                devDefineMissingNames = options["devDefineMissingNames"]
+        else:
+                devDefineMissingNames = False
         
         #Load the Lark-based Grammarian frontend.
         frontend = _createGrammarianFrontend(grammarianPath)
-        asmblr = GrammarAssembler()
+        asmblr = GrammarAssembler(generateDummyRules=devDefineMissingNames)
         
         for grmpath in imports:
                 grmpath = "{0}/{1}".format(specificationPath,grmpath)
@@ -490,19 +509,13 @@ def requestGrammar(imports,options={}):
                 #pydot__tree_to_png(parsetree, "lark_test.png")
                 asmblr.transform(parsetree)
         
-        outputGrammar = asmblr.generateGrammar() 
+        #TMP
+        unresolvedNames = asmblr.getUnresolvedNamesTable()
+        if len(unresolvedNames) > 0:
+                print("UNRESOLVED NAMES: {0}".format(",".join(unresolvedNames))) #TMP
+        
+        outputGrammar = asmblr.generateGrammar()
+        
         return outputGrammar
         
         
-requestGrammar(["base/valueexpressions.grm"])
-        
-        
-        
-#lp = createGrammarianFrontend()
-
-#testinputs = ["!foo.5: (bar foo) _baz | baz bar \"dog\""]
-
-#for s in testinputs:
-#    parsetree = lp.parse(s)
-#    print(parsetree.pretty())
-#    pydot__tree_to_png(parsetree, "lark_test.png")
