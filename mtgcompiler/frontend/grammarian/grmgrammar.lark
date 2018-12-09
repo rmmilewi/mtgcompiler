@@ -12,9 +12,9 @@ productiondefinition: expansions
 
 priority: "." NUMBER
 
-statement: "%ignore" expansions _NL                -> ignore
-         | "%import" import_args ["->" TOKEN] _NL  -> import
-         | "%declare" name+                        -> declare
+statement: "%ignore" expansions _NL                -> ignorestmt
+         | "%import" import_args ["->" TOKEN] _NL  -> importstmt
+         | "%declare" name+                        -> declarestmt
 
 import_args: name ("." name)*
 
@@ -24,7 +24,13 @@ import_args: name ("." name)*
 
 ?expansion: expr*
 
-?expr: atom [OP | "~" NUMBER [".." NUMBER]]
+//?expr: atom  [OP | "~" NUMBER [".." NUMBER]]
+
+?expr: atom quantifier?
+
+quantifier: qsymbol | qnumberrange
+qsymbol: OP
+qnumberrange: "~" NUMBER [".." NUMBER]
 
 ?atom: "(" expansions ")" -> group
      | "[" expansions "]" -> maybe

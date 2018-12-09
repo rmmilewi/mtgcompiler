@@ -18,10 +18,55 @@ class GrmIRNode(metaclass=abc.ABCMeta):
                 Used to assemble the final grammar.
                 """
                 raise NotImplemented
+                
+class GrmImport(GrmIRNode):
+        """
+        Represents an import statement.
+        """
+        def __init__(self,importTarget,importAlias=None):
+                """
+                importTarget: The import args.
+                importAlias: The alias for the import
+                """
+                self._importTarget = importTarget
+                self._importAlias = importAlias
+                
+        def unparseToString(self):
+                if self._importAlias is not None:
+                        return "%import {0} -> {1}\n".format(self._importTarget.unparseToString(),self._importAlias)
+                else:
+                        return "%import {0}\n".format(self._importTarget.unparseToString())
+        
+
+class GrmImportArgs(GrmIRNode):
+        """
+        Represents import args.
+        """
+        def __init__(self,pathArgs):
+                """
+                pathArgs: The import path.
+                """
+                self._pathArgs = pathArgs
+                
+        def unparseToString(self):
+                return ".".join([path.unparseToString() for path in self._pathArgs])
+        
+class GrmIgnore(GrmIRNode):
+        """
+        Represents an import statement.
+        """
+        def __init__(self,ignored):
+                """
+                ignored: The name of the thing to be ignored
+                """
+                self._ignored = ignored
+        
+        def unparseToString(self):
+                return "%ignore {0}\n".format(self._ignored.unparseToString())
 
 class GrmProductionDeclaration(GrmIRNode):
         """
-        Represents a rule or terminal definition.
+        Represents a rule or terminal declaration.
         """
         def __init__(self,name,isToken,productionDef):
                 """
@@ -31,7 +76,7 @@ class GrmProductionDeclaration(GrmIRNode):
                 """
                 self._name = name
                 self._isToken = isToken
-                self.productionDefs = [productionDef]
+                self._productionDefs = [productionDef]
                 
         def isToken(self):
                 """Checks whether this production declaration is flagged as being for a token."""
@@ -57,7 +102,7 @@ class GrmProductionDeclaration(GrmIRNode):
                 return self._productionDefs
                 
         def unparseToString(self):
-                return "{0}: {1}\n".format(self._name,"\n|".join(self._productionDefs.unparseToString()))
+                return "{0}: {1}\n".format(self._name,"\n|".join([pdef.unparseToString() for pdef in self._productionDefs]))
 
 class GrmProductionDefinition(GrmIRNode):
         """
@@ -80,7 +125,9 @@ class GrmProductionDefinition(GrmIRNode):
                 
                 
 class GrmExpansionList(GrmIRNode):
-        """Represents an 'expansions' rule in the parse tree."""
+        """
+        Represents an 'expansions' rule in the parse tree.
+        """
         def __init__(self,children):
                 """
                 children: A list of child nodes.
@@ -92,64 +139,252 @@ class GrmExpansionList(GrmIRNode):
                 return self._children
         
         def unparseToString(self):
-                return "|".join(self._children.unparseToString())
+                return " | ".join([child.unparseToString() for child in self._children])
+                
+class GrmExpansion(GrmIRNode):
+        """
+        Represents an 'expansion' rule in the parse tree.
+        """
+        def __init__(self,children):
+                """
+                children: A list of child nodes.
+                """
+                self._children = children
+                
+        def getChildren(self):
+                """Returns the children associated with this node."""
+                return self._children
+        
+        def unparseToString(self):
+                return " ".join([child.unparseToString() for child in self._children])
+                
+class GrmGroup(GrmIRNode):
+        """
+        Represents an 'group' rule in the parse tree.
+        """
+        def __init__(self,children):
+                """
+                children: A list of child nodes.
+                """
+                self._children = children
+                
+        def getChildren(self):
+                """Returns the children associated with this node."""
+                return self._children
+        
+        def unparseToString(self):
+                return "({0})".format(" ".join([child.unparseToString() for child in self._children]))
+                
+class GrmGroup(GrmIRNode):
+        """
+        Represents an 'group' node in the parse tree.
+        """
+        def __init__(self,children):
+                """
+                children: A list of child nodes.
+                """
+                self._children = children
+                
+        def getChildren(self):
+                """Returns the children associated with this node."""
+                return self._children
+        
+        def unparseToString(self):
+                return "({0})".format(" ".join([child.unparseToString() for child in self._children]))
                 
 
+class GrmGroup(GrmIRNode):
+        """
+        Represents an 'group' node in the parse tree.
+        """
+        def __init__(self,children):
+                """
+                children: A list of child nodes.
+                """
+                self._children = children
                 
-# class GrmNameReference(object):
-#         """
-#         Represents a name used in a production.
-#         """
-#         def __init__(self,value):
-#                 """
-#                 value: The string value of the name.
-#                 """
-#                 self._nameRef = value
+        def getChildren(self):
+                """Returns the children associated with this node."""
+                return self._children
+        
+        def unparseToString(self):
+                return "({0})".format(" ".join([child.unparseToString() for child in self._children]))
                 
+class GrmMaybe(GrmIRNode):
+        """
+        Represents an 'maybe' node in the parse tree.
+        """
+        def __init__(self,children):
+                """
+                children: A list of child nodes.
+                """
+                self._children = children
                 
+        def getChildren(self):
+                """Returns the children associated with this node."""
+                return self._children
+        
+        def unparseToString(self):
+                return "[{0}]".format(" ".join([child.unparseToString() for child in self._children]))                
         
                 
-# class GrmSymbol(object):
-#         """
-#         A name of a rule or terminal is represented as a GrmSymbol. Symbols are tracked
-#         in a global symbol table so we know what refers to what in the grammar.
-#         """
-#         def __init__(identifier):
-#                 """
-#                 identifier: A string that is the symbol name.
-#                 declaration: The production that defines this symbol.
-#                 """
-#                 self._identifier = identifier
-#                 self._declaration = None
-#
-#         def hasDeclaration(self):
-#                 """Checks to see whether the symbol has been matched with a declaration."""
-#                 return self._declaration is not None
-#
-#         def getDeclaration(self):
-#                 """Gets the declaration (a production) associated with the symbol."""
-#                 return self._declaration
-#
-#         def setDeclaration(self,production):
-#                 """Assigns a production that is the declaration for this symbol."""
-#                 self._declaration = production
-#
+class GrmExpr(GrmIRNode):
+        """
+        Represents an 'expr' node in the parse tree.
+        """
+        def __init__(self,children):
+                """
+                children: A list of child nodes.
+                """
+                self._children = children
+                
+        def getChildren(self):
+                """Returns the children associated with this node."""
+                return self._children
+        
+        def unparseToString(self):
+                return "".join([child.unparseToString() for child in self._children])
+                
+                
+class GrmAliasExpression(GrmIRNode):
+        """
+        Represents an alias expression in the parse tree.
+        """
+        def __init__(self,expr,name):
+                """
+                expr: The thing that is aliased.
+                name: the alias given to the aliased.
+                """
+                self._expr = expr
+                self._name = name
+        
+        def unparseToString(self):
+                return "{0} -> {1}".format(self._expr.unparseToString(),self._name)
+                
+                
+class GrmNameReference(GrmIRNode):
+        """
+        Represents a name of a rule/token used in a production.
+        """
+        def __init__(self,name):
+                """
+                name: The string value of the name.
+                """
+                self._nameRef = name
+                
+        def getName(self):
+                return self._nameRef
+                
+        def unparseToString(self):
+                return self._nameRef
+        
+class GrmLiteral(GrmIRNode):
+        """
+        Represents a literal used in a production.
+        """
+        def __init__(self,value):
+                """
+                value: The string value of the name.
+                """
+                self._value = value
+                
+        def getValue(self):
+                return self._value
+                
+        def unparseToString(self):
+                return self._value
+                
+class GrmQuantifierSymbol(GrmIRNode):
+        """
+        Represents a quantifier symbol used in a production.
+        """
+        def __init__(self,value):
+                """
+                value: The string value of the quantifier symbol.
+                """
+                self._value = value
+                
+        def getValue(self):
+                return self._value
+                
+        def unparseToString(self):
+                return self._value
+                
+class GrmNumberRange(GrmIRNode):
+        """
+        Represents a number range quantifier used in a production.
+        """
+        def __init__(self,lbound,ubound=None):
+                """
+                lbound: The lower bound of the range. If there is only one number, then
+                the bound is exact.
+                ubound: The upper bound of the range (optional).
+                """
+                self._lbound = lbound
+                self._ubound = ubound
+        
+        def unparseToString(self):
+                if self._ubound is None:
+                        return "~{0}".format(self._lbound)
+                else:
+                        return "~{0}..{1}".format(self._lbound,self._ubound)
+                
 
 class GrammarAssembler(Transformer):
         def __init__(self):
-                self._declarationTable = []
+                self._statementTable = []
                 self._globalNameTable = set()
+                self._unresolvedNamesTable = set()
                 
         def production(self,items,isToken):
-                print(items)
-                productionIdentifier = items[0].value
+                productionIdentifier = items[0]
                 productionDefinition = items[1]
-                
-                
-                if productionIdentifier not in [r.getName() for r in self._declarationTable]:
+                if productionIdentifier in self._unresolvedNamesTable:
+                        #If we scan a definition that uses a rule/token before its declaration has been
+                        #reached, it will be in the unresolved names table. If we find a matching declaration,
+                        #we can remove the name from that table.
+                        self._unresolvedNamesTable.remove(productionIdentifier)
+                if productionIdentifier not in [r.getName() for r in self._statementTable]:
                         production = GrmProductionDeclaration(productionIdentifier,isToken,productionDefinition)
-                        self._declarationTable.append(production)
+                        self._statementTable.append(production)
                         self._globalNameTable.add(productionIdentifier)
+                        
+        def expansions(self,items):
+                return GrmExpansionList(items)
+                
+        def expansion(self,items):
+                return GrmExpansion(items)
+                
+        def group(self,items):
+                return GrmGroup(items)
+                
+        def maybe(self,items):
+                return GrmMaybe(items)
+                
+        def expr(self,items):
+                return GrmExpr(items)
+                
+        def quantifier(self,items):
+                return items[0]
+                
+        def ignore(self,items):
+                return GrmIgnore(items[0])
+                
+        def qsymbol(self,items):
+                symbolValue = items[0].value
+                return GrmQuantifierSymbol(symbolValue)
+                
+        def qnumberrange(self,items):
+                lbound = items[0].value
+                if len(items) > 1:
+                        ubound = items[1].value
+                else:
+                        ubound = None
+                return GrmNumberRange(lbound,ubound)
+                
+        def alias(self,items):
+                aliasName = items[1].value
+                return GrmAliasExpression(items[0],aliasName)
                 
         def token(self,items):
                 self.production(items,isToken=True)
@@ -157,10 +392,53 @@ class GrammarAssembler(Transformer):
         def rule(self,items):
                 self.production(items,isToken=False)
                 
+        def literal(self,items):
+                value = items[0].value
+                return GrmLiteral(value)
+                
+        def name(self,items):
+                name = items[0].value
+                if name not in self._globalNameTable:
+                        self._unresolvedNamesTable.add(name)
+                return GrmNameReference(name)
+                
+        def import_args(self,items):
+                for nameref in items:
+                        if nameref.getName() in self._unresolvedNamesTable:
+                                self._unresolvedNamesTable.remove(nameref.getName())
+                return GrmImportArgs(items)
+                
+        def importstmt(self,items):
+                importArgs = items[0]
+                if len(items) > 1:
+                        alias = items[1].value
+                        if alias in self._unresolvedNamesTable:
+                                self._unresolvedNamesTable.remove(alias)
+                        self._globalNameTable.add(alias)
+                else:
+                        alias = None
+                importStmt = GrmImport(importArgs,alias)
+                self._statementTable.append(importStmt)
+                
+        def ignorestmt(self,items):
+                ignoreStatement = GrmIgnore(items[0])
+                self._statementTable.append(ignoreStatement)
+        
         def productiondefinition(self,items):
                 return GrmProductionDefinition(items[0])
                 
+        def getUnresolvedNamesTable(self):
+                """Returns the set of unresolved names."""
+                return self._unresolvedNamesTable
         
+        def generateGrammar(self):
+                """Return string containing a Lark-compatible grammar for Arbor to use."""
+                output = ""
+                for statement in self._statementTable:
+                        unparsedStatement = statement.unparseToString()
+                        #print(unparsedStatement)
+                        output = output + unparsedStatement
+                return output
 
 def _createGrammarianFrontend(grammarianPath):
         """
@@ -206,11 +484,15 @@ def requestGrammar(imports,options={}):
                 grmpath = "{0}/{1}".format(specificationPath,grmpath)
                 with open(grmpath,'r') as grmfile:
                         grmtext = grmfile.read()
-                print("parsing grm file")
+                #print("parsing grm file")
                 parsetree = frontend.parse(grmtext)
-                print(parsetree.pretty())
-                pydot__tree_to_png(parsetree, "lark_test.png")
+                #print(parsetree.pretty())
+                #pydot__tree_to_png(parsetree, "lark_test.png")
                 asmblr.transform(parsetree)
+        
+        outputGrammar = asmblr.generateGrammar() 
+        return outputGrammar
+        
         
 requestGrammar(["base/valueexpressions.grm"])
         
