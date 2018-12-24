@@ -1,0 +1,17 @@
+//Player declarations and references
+
+playerdeclref: playerdeclaration | playerreference
+playerdeclaration: declarationdecorator* playerdefinition
+playerreference: referencedecorator+ playerdefinition
+playerdefinition: playerdescriptionexpression
+
+//playerdescriptionexpression: 
+
+
+
+
+//playerdescriptionexpression : playerdescriptionterm (","? playerdescriptionterm)*
+//playerdescriptionterm: ordinalexpression | modifier | playerterm | withexpression | withoutexpression | whoexpression
+//playerterm: PLAYERTERM
+//whoexpression: "who" statement
+//PLAYERTERM: "player"["s"] | "opponent"["s"] | "you" |  "teammate"["s"] | "team"["s"] | "they" | "controller"["s"] | "owner"["s"]

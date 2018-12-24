@@ -1,0 +1,62 @@
+//Conditional statements
+
+conditionalstatement: ifstatement
+| wheneverstatement
+| whenstatement
+| atstatement
+| aslongasstatement
+| forstatement
+| untilstatement
+| afterstatement
+| otherwisestatement
+| unlessstatement
+| asstatement
+| whilestatement
+| duringstatement
+| exceptstatement
+| ratherstatement
+| nexttimestatement
+| beforestatement
+
+ifstatement: "if" statement "," statement
+| statement "only"? "if" statement -> ifstatementinv
+
+wheneverstatement:  "whenever" statement timeexpression? "," statement 
+| statement "whenever" statement timeexpression? -> wheneverstatementinv
+
+whenstatement:  "when" statement "," statement 
+| statement "when" statement -> whenstatementinv
+
+atstatement:  "at" timeexpression "," statement 
+| statement "at" timeexpression -> atstatementinv
+
+aslongasstatement:  "for"? "as" "long" "as" statement "," statement
+| statement "for"? "as" "long" "as" statement -> aslongasstatementinv
+
+forstatement:  "for" "each" (genericdeclarationexpression | "time" statement) ("beyond" "the" "first")? "," statement 
+| statement "for" "each" (genericdeclarationexpression | "time" statement) ("beyond" "the" "first")? -> forstatementinv
+
+untilstatement:  "until" timeexpression "," statement 
+| statement "until" timeexpression -> untilstatementinv
+
+afterstatement:  "after" timeexpression "," statement 
+| statement "after" timeexpression -> afterstatementinv
+
+otherwisestatement: "otherwise" "," statement
+
+unlessstatement:  statement "unless" statement
+
+asstatement: "as" statement "," statement -> asstatement
+
+whilestatement:  "while" statement "," statement
+
+duringstatement:  statement "during" timeexpression
+| statement "only" "during" timeexpression -> exclusiveduringstatement
+
+exceptstatement:  statement "except" (("by"|"for") genericdeclarationexpression | statement)
+
+ratherstatement:  statement "rather" "than" statement
+
+nexttimestatement: "the" "next" "time" statement timeexpression? "," statement
+
+beforestatement: statement "before" (timeexpression | statement)

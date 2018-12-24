@@ -68,15 +68,22 @@ class GrmProductionDeclaration(GrmIRNode):
         """
         Represents a rule or terminal declaration.
         """
-        def __init__(self,name,isToken,productionDef):
+        def __init__(self,name,isToken,productionDef,keepShape=False,discardShape=False,inlineChildShape=False):
                 """
                 name: The identifier for the production, a string.
                 isToken: A boolean flag indicating whether or not this production is for a token.
                 expansions: A list of expansions associated with this production.
+                productionDef: A production definition.
+                keepShape: A '!' indicates that the production will not be filtered out.
+                discardShape: A '_' indicates that the production will be filtered out.
+                inlineChildShape: A '?' indicates that the production will be inlined if there is only one child.
                 """
                 self._name = name
                 self._isToken = isToken
                 self._productionDefs = [productionDef]
+                self._keepShape = keepShape
+                self._discardShape = discardShape
+                self._inlineChildShape = inlineChildShape
                 
         def isToken(self):
                 """Checks whether this production declaration is flagged as being for a token."""
@@ -101,8 +108,24 @@ class GrmProductionDeclaration(GrmIRNode):
                 """
                 return self._productionDefs
                 
+        def hasKeepShape(self):
+                return self._keepShape
+                
+        def hasDiscardShape(self):
+                return self._discardShape
+                
+        def hasInlineChildShape(self):
+                return self._inlineChildShape
+                
         def unparseToString(self):
-                return "{0}: {1}\n".format(self._name,"\n|".join([pdef.unparseToString() for pdef in self._productionDefs]))
+                nameOutput = self._name
+                if self.hasInlineChildShape():
+                        nameOutput = "?" + nameOutput
+                if self.hasDiscardShape():
+                        nameOutput = "_" + nameOutput
+                if self.hasKeepShape():
+                        nameOutput = "!" + nameOutput
+                return "{0}: {1}\n".format(nameOutput,"\n|".join([pdef.unparseToString() for pdef in self._productionDefs]))
 
 class GrmProductionDefinition(GrmIRNode):
         """
@@ -192,24 +215,6 @@ class GrmGroup(GrmIRNode):
         def unparseToString(self):
                 return "({0})".format(" ".join([child.unparseToString() for child in self._children]))
                 
-
-class GrmGroup(GrmIRNode):
-        """
-        Represents an 'group' node in the parse tree.
-        """
-        def __init__(self,children):
-                """
-                children: A list of child nodes.
-                """
-                self._children = children
-                
-        def getChildren(self):
-                """Returns the children associated with this node."""
-                return self._children
-        
-        def unparseToString(self):
-                return "({0})".format(" ".join([child.unparseToString() for child in self._children]))
-                
 class GrmMaybe(GrmIRNode):
         """
         Represents an 'maybe' node in the parse tree.
@@ -266,17 +271,39 @@ class GrmNameReference(GrmIRNode):
         """
         Represents a name of a rule/token used in a production.
         """
-        def __init__(self,name):
+        def __init__(self,name,keepShape=False,discardShape=False,inlineChildShape=False):
                 """
                 name: The string value of the name.
+                keepShape: A '!' indicates that the production will not be filtered out.
+                discardShape: A '_' indicates that the production will be filtered out.
+                inlineChildShape: A '?' indicates that the production will be inlined if there is only one child.
                 """
                 self._nameRef = name
+                self._keepShape = keepShape
+                self._discardShape = discardShape
+                self._inlineChildShape = inlineChildShape
                 
         def getName(self):
                 return self._nameRef
                 
+        def hasKeepShape(self):
+                return self._keepShape
+                
+        def hasDiscardShape(self):
+                return self._discardShape
+                
+        def hasInlineChildShape(self):
+                return self._inlineChildShape
+                
         def unparseToString(self):
-                return self._nameRef
+                output = self._nameRef
+                if self.hasInlineChildShape():
+                        output = "?" + output
+                if self.hasDiscardShape():
+                        output = "_" + output
+                if self.hasKeepShape():
+                        output = "!" + output
+                return output
         
 class GrmLiteral(GrmIRNode):
         """
@@ -343,15 +370,16 @@ class GrammarAssembler(Transformer):
                 self._generateDummyRules = generateDummyRules
                 
         def production(self,items,isToken):
-                productionIdentifier = items[0]
+                productionIdentifier,keepFlag,discardFlag,inlineChildFlag = items[0]
                 productionDefinition = items[1]
+
                 if productionIdentifier in self._unresolvedNamesTable:
                         #If we scan a definition that uses a rule/token before its declaration has been
                         #reached, it will be in the unresolved names table. If we find a matching declaration,
                         #we can remove the name from that table.
                         self._unresolvedNamesTable.remove(productionIdentifier)
                 if productionIdentifier not in [r.getName() for r in self._statementTable]:
-                        production = GrmProductionDeclaration(productionIdentifier,isToken,productionDefinition)
+                        production = GrmProductionDeclaration(productionIdentifier,isToken,productionDefinition,keepFlag,discardFlag,inlineChildFlag)
                         self._statementTable.append(production)
                         self._globalNameTable.add(productionIdentifier)
                         
@@ -389,7 +417,7 @@ class GrammarAssembler(Transformer):
                 return GrmNumberRange(lbound,ubound)
                 
         def alias(self,items):
-                aliasName = items[1].value
+                aliasName,_,_,_ = items[1]
                 return GrmAliasExpression(items[0],aliasName)
                 
         def token(self,items):
@@ -402,11 +430,58 @@ class GrammarAssembler(Transformer):
                 value = items[0].value
                 return GrmLiteral(value)
                 
-        def name(self,items):
-                name = items[0].value
+        def namereference(self,items):
+                name,keepFlag,discardFlag,inlineChildFlag = items[0]
                 if name not in self._globalNameTable:
                         self._unresolvedNamesTable.add(name)
-                return GrmNameReference(name)
+                return GrmNameReference(name,keepShape=keepFlag,discardShape=discardFlag,inlineChildShape=inlineChildFlag)
+                
+        def rulename(self,items):
+                if len(items) == 2:
+                        shapeFlags = items[0].value
+                        if "!" in shapeFlags:
+                                keepFlag = True
+                        else:
+                                keepFlag = False
+                        if "_" in shapeFlags:
+                                discardFlag = True
+                        else:
+                                discardFlag = False
+                        if "?" in shapeFlags:
+                                inlineChildFlag = True
+                        else:
+                                inlineChildFlag = False
+                        name = items[1].value
+                else:
+                        keepFlag = False
+                        discardFlag = False
+                        inlineChildFlag = False
+                        name = items[0].value
+                return name,keepFlag,discardFlag,inlineChildFlag
+        
+        def tokenname(self,items):
+                if len(items) == 2:
+                        shapeFlags = items[0].value
+                        if "!" in shapeFlags:
+                                keepFlag = True
+                        else:
+                                keepFlag = False
+                        if "_" in shapeFlags:
+                                discardFlag = True
+                        else:
+                                discardFlag = False
+                        if "?" in shapeFlags:
+                                inlineChildFlag = True
+                        else:
+                                inlineChildFlag = False
+                        name = items[1].value
+                else:
+                        keepFlag = False
+                        discardFlag = False
+                        inlineChildFlag = False
+                        name = items[0].value
+                        
+                return name,keepFlag,discardFlag,inlineChildFlag
                 
         def import_args(self,items):
                 for nameref in items:

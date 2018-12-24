@@ -5,8 +5,8 @@ _item: rule
      | token
      | statement
 
-rule: RULE priority? ":" productiondefinition _NL
-token: TOKEN priority? ":" productiondefinition _NL
+rule: rulename priority? ":" productiondefinition _NL
+token: tokenname priority? ":" productiondefinition _NL
 
 productiondefinition: expansions
 
@@ -14,13 +14,13 @@ priority: "." NUMBER
 
 statement: "%ignore" expansions _NL                -> ignorestmt
          | "%import" import_args ["->" TOKEN] _NL  -> importstmt
-         | "%declare" name+                        -> declarestmt
+         | "%declare" namereference+                        -> declarestmt
 
-import_args: name ("." name)*
+import_args: namereference ("." namereference)*
 
 ?expansions: alias (_VBAR alias)*
 
-?alias: expansion ["->" RULE]
+?alias: expansion ["->" rulename]
 
 ?expansion: expr*
 
@@ -35,16 +35,24 @@ qnumberrange: "~" NUMBER [".." NUMBER]
 ?atom: "(" expansions ")" -> group
      | "[" expansions "]" -> maybe
      | STRING ".." STRING -> literal_range
-     | name
+     | namereference
      | (REGEXP | STRING) -> literal
 
-name: RULE
-    | TOKEN
+namereference: rulename | tokenname
 
 _VBAR: _NL? "|"
 OP: /[+*][?]?|[?](?![a-z])/
-RULE: /!?[_?]?[a-z][_a-z0-9]*/
-TOKEN: /_?[A-Z][_A-Z0-9]*/
+//RULE: /!?[_?]?[a-z][_a-z0-9]*/
+//TOKEN: /_?[A-Z][_A-Z0-9]*/
+
+rulename: RULESHAPE? RULE
+tokenname: TOKENSHAPE? TOKEN
+RULE: /[a-z][_a-z0-9]*/
+TOKEN: /[A-Z][_A-Z0-9]*/
+
+RULESHAPE: "!" | "!"? ("_"|"?")
+TOKENSHAPE: "_"
+
 STRING: _STRING "i"?
 REGEXP: /\/(?!\/)(\\\/|\\\\|[^\/\n])*?\/[imslux]*/
 _NL: /(\r?\n)+\s*/

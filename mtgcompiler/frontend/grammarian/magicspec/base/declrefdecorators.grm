@@ -1,0 +1,16 @@
+//Declaration and reference decorators
+
+declarationdecorator: "each" -> eachdecorator
+| "all" -> alldecorator
+| ["an"]"other" -> otherdecorator
+| ("a"|"an") -> indefinitearticledecorator
+| "the" -> definitearticledecorator
+| valueexpression? "target" -> targetdecorator
+| "any" -> anydecorator
+
+referencedecorator: ("that" | "those") -> thatreference
+| ("this"|"these") -> thisreference
+| possessiveterm -> possessivereference
+!possessiveterm: "its" | "your" | "their" | playerdeclref ("'s"|"'") | typeexpression ("'s"|"'")
+
+//namereference ("'s"|"'") | objectdeclref ("'s"|"'") | playerdeclref ("'s"|"'") | typeexpression ("'s"|"'") | genericdeclarationexpression ("'s"|"'")

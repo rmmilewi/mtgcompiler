@@ -1,0 +1,92 @@
+//Declarations and References
+
+
+declarationorreference: genericdeclarationexpression | reference | playerreference | objectreference | anytargetexpression
+genericdeclarationexpression: (playerdeclaration | objectdeclaration)
+| declarationorreference ("," declarationorreference ",")* "or" declarationorreference -> orgenericdeclarationexpression
+| declarationorreference ("," declarationorreference ",")* "and" declarationorreference -> andgenericdeclarationexpression
+| declarationorreference ("," declarationorreference ",")* "and/or" declarationorreference -> andorgenericdeclarationexpression
+
+genericdescriptionexpression: objectdescriptionexpression | playerdescriptionexpression
+
+playerdeclref: playerdeclaration | playerreference
+playerdeclaration: declarationdecorator* playerdefinition
+playerreference: referencedecorator+ playerdefinition
+playerdefinition: playerdescriptionexpression
+playerdescriptionexpression : playerdescriptionterm (","? playerdescriptionterm)*
+playerdescriptionterm: valueordinal | modifier | playerterm | withexpression | withoutexpression | whoexpression
+playerterm: PLAYERTERM
+whoexpression: "who" statement
+
+objectdeclref: objectdeclaration | objectreference
+objectdeclaration: declarationdecorator* objectdefinition
+objectreference: referencedecorator+ objectdefinition
+objectdefinition: objectdescriptionexpression
+| objectdescriptionexpression ("," objectdescriptionexpression ",")* "or" objectdescriptionexpression -> orobjectdescriptionexpression
+| objectdescriptionexpression ("," objectdescriptionexpression ",")* "and" objectdescriptionexpression -> andobjectdescriptionexpression
+| objectdescriptionexpression ("," objectdescriptionexpression ",")* "and/or" objectdescriptionexpression -> andorobjectdescriptionexpression
+
+///[TODO: Rewriting objectdescriptionexpression to respect a canonical order because it makes parsing so much faster.]
+//objectdescriptionexpression: objectdescriptionterm (","? objectdescriptionterm)*
+objectdescriptionexpression: objectpreterm* objectpostterm*
+objectpreterm:  colorexpression | namedexpression | manasymbolexpression | typeexpression | ptexpression | valueexpression
+| qualifier | modifier | locationexpression | valuecardinal | additionalexpression | characteristicexpression
+objectpostterm: withexpression | withoutexpression | choiceexpression | ofexpression | characteristicexpression | atrandomexpression
+| "that"? dealtdamageexpression | "that" doesnthaveexpression | controlpostfix | ownpostfix | putinzonepostfix | castpostfix | "that" ispostfix | targetspostfix
+| "that" sharepostfix
+
+//[TODO: Mana type declarations. Mana is now a first-class citizen!]
+manadeclref: manadeclaration | manareference
+manadeclaration: declarationdecorator* manadefinition
+manareference: referencedecorator+ manadefinition
+manadefinition: manadescriptionexpression
+| manadescriptionexpression ("," manadescriptionexpression ",")* "or" manadescriptionexpression -> ormanadescriptionexpression
+| manadescriptionexpression ("," manadescriptionexpression ",")* "and" manadescriptionexpression -> andmanadescriptionexpression
+| manadescriptionexpression ("," manadescriptionexpression ",")* "and/or" manadescriptionexpression -> andormanadescriptionexpression
+manadescriptionexpression: puremanaexpression //| textmanaexpression
+puremanaexpression: manasymbolexpression
+//textmanaexpression: 
+productionexpression: "produced" "by" declarationorreference -> producedbyexpression
+| "that" declarationorreference "could" "produce" -> couldproduceexpression
+anycolorexpression: "of" "any" "color"
+| "of" "any" "one" "color" -> anyonecolorexpression
+
+declarationdecorator: "each" -> eachdecorator
+| "all" -> alldecorator
+| ["an"]"other" -> otherdecorator
+| "a"["n"] -> indefinitearticledecorator
+| "the" -> definitearticledecorator
+| valueexpression? "target" -> targetdecorator
+| "any" -> anydecorator
+anytargetexpression: "any" "target" //Special nullary variant
+
+reference: neutralreference | selfreference | namereference
+neutralreference: "it" | "them"
+selfreference: "itself" | "himself" | "herself" -> selfreference
+namereference: NAMEREFSYMBOL
+
+referencedecorator: ("that" | "those") -> thatreference
+| ("this"|"these") -> thisreference
+| possessiveterm -> possessivereference
+!possessiveterm: "its" | "your" | "their" | namereference ("'s"|"'") | objectdeclref ("'s"|"'") | playerdeclref ("'s"|"'") | typeexpression ("'s"|"'") | genericdeclarationexpression ("'s"|"'")
+
+ptexpression: valueexpression "/" valueexpression
+namedexpression: "named" (namereference | objectname)
+!locationexpression: ("into" | "onto" | "in" | "on" | "from" | "on top of" | "on bottom of")? zonedeclarationexpression
+withexpression: "with" (reference | abilitysequencestatement | characteristicexpression | (valueexpression | "a"["n"])? countertype "counter"["s"] "on" reference)
+withoutexpression: "without" (reference | abilitysequencestatement | characteristicexpression | (valueexpression | "a"["n"])? countertype "counter"["s"] "on" reference)
+doesnthaveexpression: "does" "not" "have" declarationorreference //[Basically equivalent to 'without']
+dealtdamageexpression: "dealt" DAMAGETYPE ("this" "way")? ("by" declarationorreference)? timeexpression?
+choiceexpression: "of" possessiveterm "choice"
+ofexpression: "of" declarationorreference
+additionalexpression: "additional"
+controlpostfix: playerdeclref "control"["s"]
+| playerdeclref ("do" "not" | "does" "not") "control"["s"] -> negativecontrolpostfix
+ownpostfix: playerdeclref "own"["s"]
+| playerdeclref ("do" "not" | "does" "not") "own"["s"] -> negativeownpostfix
+castpostfix: playerdeclref "cast"
+putinzonepostfix: "put" locationexpression zoneplacementmodifier? ("this" "way")?
+targetspostfix: "that" "target"["s"] declarationorreference
+atrandomexpression: "at" "random" //[TODO: Need to find out where to put this.]
+ispostfix: isstatement
+sharepostfix: "share"["s"] declarationorreference
