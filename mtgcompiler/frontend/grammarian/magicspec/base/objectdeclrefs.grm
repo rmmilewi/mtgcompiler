@@ -1,0 +1,34 @@
+//Object declarations and references
+
+objectdeclref: objectdeclaration | objectreference
+objectdeclaration: declarationdecorator? possessive* objectdefinition
+objectreference: referencedecorator possessive* objectdefinition
+objectdefinition: objectdescriptionexpression
+
+objectdescriptionexpression: (ordinalexpression | cardinalexpression)? ptexpression? colorexpression? modifier* typeexpression? qualifier?
+
+//Not yet accurate. Doesn't handle Muvonuli Ooze's 1+*, for example. But a plain value expression production causes an LALR shift/reduce conflict
+//with a preceding ordinal/cardinal expression.
+ptexpression: (numberliteral | valuevarsymbol) "/" (numberliteral | valuevarsymbol)
+
+
+
+
+
+// objectdescriptionexpression: objectpreterm* objectpostterm*
+//objectpreterm:  colorexpression | namedexpression | manasymbolexpression | typeexpression | ptexpression | valueexpression
+//| qualifier | modifier | locationexpression | valuecardinal | additionalexpression | characteristicexpression
+//objectpostterm: withexpression | withoutexpression | choiceexpression | ofexpression | characteristicexpression | atrandomexpression
+//| "that"? dealtdamageexpression | "that" doesnthaveexpression | controlpostfix | ownpostfix | putinzonepostfix | castpostfix | "that" ispostfix | targetspostfix
+//| "that" sharepostfix
+
+//five 3/3 legendary blue wolf tokens named NAME with haste tapped and attacking
+//defending creatures
+//creature tokens
+
+
+
+
+
+
+

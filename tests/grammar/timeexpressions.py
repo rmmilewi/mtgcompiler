@@ -11,7 +11,7 @@ class TestTimeExpressions(unittest.TestCase):
                 cls._frontend = Lark(grammar,parser="lalr",start="timeexpression",debug=True)
                 
         def test_1(self):
-                self._frontend.parse("the beginning of POSSESSIVETERM upkeep")
+                self._frontend.parse("the beginning of POSSESSIVE upkeep")
         
         def test_2(self):
                 self._frontend.parse("end of turn")

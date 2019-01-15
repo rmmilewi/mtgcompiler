@@ -10,6 +10,6 @@ KEYWORDSTATUSMODIFIER: "paired" | "kicked" | "face-up" | "face-down" | "transfor
 TAPPEDSTATUSMODIFIER: "tapped" | "untapped"
 EFFECTSTATUSMODIFIER: "named" | "chosen" | "chosen at random" | "revealed" | "returned" | "destroyed" | "exiled" | "died" | "countered" | "sacrificed"
 | "the target of a spell or ability" | "prevented" | "created"
-controlmodifier: "under" referencedecorator+ "control"
-attachmentmodifier: "attached" ("only"? "to" declarationorreference)? -> attachedmodifier
-| "unattached" ("from" declarationorreference)? -> unattachedmodifier
+controlmodifier: "under" possessive+ "control"
+attachmentmodifier: "attached" ("only"? "to" entity)? -> attachedmodifier
+| "unattached" ("from" entity)? -> unattachedmodifier

@@ -1,0 +1,8 @@
+//Entities, a category which brings together all kinds of players and game objects.
+
+entityexpression: entity
+| entity ("," entity ",")* "or" entity -> orentityexpression
+| entity ("," entity ",")* "and" entity -> andentityexpression
+| entity ("," entity ",")* "and/or" entity -> andorentityexpression
+
+entity: playerdeclref //| objectdeclref

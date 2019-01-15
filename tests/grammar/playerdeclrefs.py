@@ -27,7 +27,7 @@ class TestPlayerDeclarationsAndReferences(unittest.TestCase):
                 self._frontend.parse("the active player")
                 self._frontend.parse("attacking players")
                 self._frontend.parse("a defending player")
-                self._frontend.parse("each player who STATEMENT")
+                #self._frontend.parse("each player who STATEMENT")
                 self._frontend.parse("its controller")
                 self._frontend.parse("their controllers")
                 self._frontend.parse("that player's team")

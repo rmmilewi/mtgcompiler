@@ -10,7 +10,8 @@ declarationdecorator: "each" -> eachdecorator
 
 referencedecorator: ("that" | "those") -> thatreference
 | ("this"|"these") -> thisreference
-| possessiveterm -> possessivereference
-!possessiveterm: "its" | "your" | "their" | playerdeclref ("'s"|"'") | typeexpression ("'s"|"'")
 
-//namereference ("'s"|"'") | objectdeclref ("'s"|"'") | playerdeclref ("'s"|"'") | typeexpression ("'s"|"'") | genericdeclarationexpression ("'s"|"'")
+possessive: playerdefinition "'" ["s"] | "your" | "their" | "its" | objectdefinition "'" ["s"]
+
+//| possessiveterm -> possessivereference
+//!possessiveterm: "its" | "your" | "their" | playerdeclref ("'s"|"'") | typeexpression ("'s"|"'")
