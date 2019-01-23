@@ -1,0 +1,3 @@
+//Bringing together all the different kinds of statements under a single rule.
+
+statement: conditionalstatement | effectstatement

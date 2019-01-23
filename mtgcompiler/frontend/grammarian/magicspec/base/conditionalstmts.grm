@@ -33,8 +33,8 @@ atstatement:  "at" timeexpression "," statement
 aslongasstatement:  "for"? "as" "long" "as" statement "," statement
 | statement "for"? "as" "long" "as" statement -> aslongasstatementinv
 
-forstatement:  "for" "each" (genericdeclarationexpression | "time" statement) ("beyond" "the" "first")? "," statement 
-| statement "for" "each" (genericdeclarationexpression | "time" statement) ("beyond" "the" "first")? -> forstatementinv
+forstatement:  "for" "each" (entity | "time" statement) ("beyond" "the" "first")? "," statement 
+| statement "for" "each" (entity | "time" statement) ("beyond" "the" "first")? -> forstatementinv
 
 untilstatement:  "until" timeexpression "," statement 
 | statement "until" timeexpression -> untilstatementinv
@@ -53,7 +53,7 @@ whilestatement:  "while" statement "," statement
 duringstatement:  statement "during" timeexpression
 | statement "only" "during" timeexpression -> exclusiveduringstatement
 
-exceptstatement:  statement "except" (("by"|"for") genericdeclarationexpression | statement)
+exceptstatement:  statement "except" (("by"|"for") entity | statement)
 
 ratherstatement:  statement "rather" "than" statement
 

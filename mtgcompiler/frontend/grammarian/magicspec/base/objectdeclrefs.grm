@@ -5,11 +5,15 @@ objectdeclaration: declarationdecorator? possessive* objectdefinition
 objectreference: referencedecorator possessive* objectdefinition
 objectdefinition: objectdescriptionexpression
 
-objectdescriptionexpression: (ordinalexpression | cardinalexpression)? ptexpression? colorexpression? modifier* typeexpression? qualifier?
+objectdescriptionexpression: (ordinalexpression | cardinalexpression)? ptexpression? colorexpression? modifier* typeexpression? qualifier? objectpostfix*
+
+objectpostfix: locationpostfixexpression
+//!locationpostfixexpression: ("into" | "onto" | "in" | "on" | "from" | "on top of" | "on bottom of")? zonedeclarationexpression
 
 //Not yet accurate. Doesn't handle Muvonuli Ooze's 1+*, for example. But a plain value expression production causes an LALR shift/reduce conflict
 //with a preceding ordinal/cardinal expression.
 ptexpression: (numberliteral | valuevarsymbol) "/" (numberliteral | valuevarsymbol)
+
 
 
 

@@ -3,10 +3,10 @@
 timeexpression: startendspecifier? timeterm ("of" timeexpression)?
 startendspecifier: "the"? "beginning" "of" -> timebeginmodifier
 | "the"? "end" "of" -> timeendmodifier
-timeterm: (referencedecorator* | declarationdecorator*) possessiveterm* timemodifier* (PHASE | STEP | TURN | GAME | "one")
-timemodifier: "next" valuecardinal? -> nexttimemodifier
+timeterm: (referencedecorator* | declarationdecorator*) possessive* timemodifier* (PHASE | STEP | TURN | GAME | "one")
+timemodifier: "next" cardinalexpression? -> nexttimemodifier
 | "additional" -> additionaltimemodifier
-| valuecardinal? "extra" -> extratimemodifier
+| cardinalexpression? "extra" -> extratimemodifier
 PHASE: "beginning phase" | ("precombat" | "postcombat")? "main phase" | ("combat" | "combat phase") | "ending phase"
 STEP: "untap step" | ("upkeep step" | "upkeep") | "draw step" | "beginning of combat" | "declare attackers step"
 | "declare blockers step" | "combat damage step" | "end of combat" | "end step" | "cleanup step" | "step"

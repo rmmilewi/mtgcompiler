@@ -1,9 +1,11 @@
 //Zones
 
-zonedeclarationexpression: (declarationdecorator* | referencedecorator*) zone
+zonedeclarationexpression: (declarationdecorator | referencedecorator)? possessive* zone 
+| "anywhere" -> zoneanywhere
+| "outside the game" -> zoneoutside
 zoneplacementmodifier: "in" "any" "order" -> anyorderplacement
 | "in" "a" "random" "order" -> randomorderplacement
 | ORDINAL "from" "the" "top" -> fromtopplacement
 | ORDINAL "from" "the" "bottom" -> frombottomplacement
 zone: ZONE
-ZONE: "the battlefield" | "graveyard"["s"] | ("library"|"libraries") | "hand"["s"] | "stack" | "exile" | "command zone" | "outside the game" | "anywhere"
+ZONE: "the battlefield" | "graveyard"["s"] | ("library"|"libraries") | "hand"["s"] | "stack" | "exile" | "command zone"

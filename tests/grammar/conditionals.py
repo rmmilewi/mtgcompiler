@@ -31,8 +31,8 @@ class TestConditionalStatements(unittest.TestCase):
         
         def test_6(self):
                 self._frontend.parse("for each time STATEMENT beyond the first, STATEMENT")
-                self._frontend.parse("for each GENERICDECLARATIONEXPRESSION, STATEMENT")
-                self._frontend.parse("STATEMENT for each GENERICDECLARATIONEXPRESSION")
+                self._frontend.parse("for each ENTITY, STATEMENT")
+                self._frontend.parse("STATEMENT for each ENTITY")
                 
         def test_7(self):
                 self._frontend.parse("until TIMEEXPRESSION, STATEMENT")
@@ -56,7 +56,7 @@ class TestConditionalStatements(unittest.TestCase):
                 self._frontend.parse("STATEMENT only during TIMEEXPRESSION")
                 
         def test_13(self):
-                self._frontend.parse("STATEMENT except by GENERICDECLARATIONEXPRESSION")
+                self._frontend.parse("STATEMENT except by ENTITY")
                 self._frontend.parse("STATEMENT except STATEMENT")
                 
         def test_14(self):

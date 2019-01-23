@@ -4,7 +4,7 @@ characteristicexpression: characteristicterms
 | (characteristicterms (valueexpression|ptexpression) | (valueexpression|ptexpression) characteristicterms) -> characteristicvaluecompexpr
 
 characteristicterms: characteristicterm
-| possessiveterm+ characteristicterm -> characteristicpossessiveexpr
+| possessive+ characteristicterm -> characteristicpossessiveexpr
 | "the" characteristicterm -> characteristicthereference
 | characteristicterm  ("," characteristicterm ",")* "or" characteristicterm -> characteristicorexpr
 | characteristicterm  ("," characteristicterm ",")* "and" characteristicterm -> characteristicandexpr

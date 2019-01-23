@@ -13,5 +13,10 @@ referencedecorator: ("that" | "those") -> thatreference
 
 possessive: playerdefinition "'" ["s"] | "your" | "their" | "its" | objectdefinition "'" ["s"]
 
+reference: neutralreference | selfreference | namereference
+neutralreference: "it" | "them"
+selfreference: "itself" | "himself" | "herself" -> selfreference
+namereference: NAMEREFSYMBOL
+NAMEREFSYMBOL: "~"
 //| possessiveterm -> possessivereference
 //!possessiveterm: "its" | "your" | "their" | playerdeclref ("'s"|"'") | typeexpression ("'s"|"'")
