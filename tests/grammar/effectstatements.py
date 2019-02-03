@@ -49,13 +49,12 @@ class TestEffectStatements(unittest.TestCase):
                 self._frontend.parse("~ dealt combat damage equal to 5 this turn")
                 self._frontend.parse("it deals that much damage plus 1 to that permanent or player")
                 
-                
         def test_preventdamage(self):
                 self._frontend.parse("prevent the next 2 damage")
                 self._frontend.parse("all damage prevented this way")
                 self._frontend.parse("prevent that damage")
                 self._frontend.parse("prevent the next 1 damage that would be dealt to any target this turn")
-                
+                self._frontend.parse("prevent all combat damage that would be dealt this turn")
                 
 
         

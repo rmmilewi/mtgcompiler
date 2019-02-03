@@ -4,10 +4,13 @@
 //TODO: Double something, like the number of loyalty counters on a planeswalker
 //TODO: Participles, like "dying" or "exiling"
 
-effectstatement: (entityexpression | auxvp beaux?)? effectvp
+//There might be a cleaner way to write this that recognizes transitive/intransitive, active/passive, direct/indirect, indicative/subjunctive, etc.
+effectstatement: (entityexpression | auxvp beaux?)? effectvp relativeclause?
 effectvp: effectverb entityexpression preposition? -> effectvpactive
-| entityexpression effectverb preposition? -> effectvppassive
-| effectverb entityexpression ("to"|"by") entityexpression preposition? -> effectvpindirect
+| entityexpression? effectverb preposition? -> effectvppassive
+| effectverb entityexpression? ("to"|"by") entityexpression preposition? -> effectvpindirect
+
+relativeclause: "that" effectstatement
 
 effectverb: gainverb
 | loseverb
@@ -87,13 +90,12 @@ preventverb: "prevent"["s"] -> preventpresent
 
 preposition: "this" "way" | timeexpression
 
-!auxvp: entityexpression "may" -> optionalaux
-| entityexpression "would" -> subjunctiveaux
-| entityexpression "may" ("have" | "had") entityexpression -> delegationaux
-| entityexpression "can" ["not"] -> canaux
-| entityexpression "could" ["not"] -> couldaux
-| entityexpression "must" ["not"] -> mandatoryaux
-
+!auxvp: entityexpression? "may" -> optionalaux
+| entityexpression? "would" -> subjunctiveaux
+| entityexpression? "may" ("have" | "had") entityexpression -> delegationaux
+| entityexpression? "can" ["not"] -> canaux
+| entityexpression? "could" ["not"] -> couldaux
+| entityexpression? "must" ["not"] -> mandatoryaux
 beaux: "be"
 
 
