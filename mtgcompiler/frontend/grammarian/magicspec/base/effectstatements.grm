@@ -1,143 +1,223 @@
 //Statements concerning effects/events.
 
 //TODO: Exchange control/life totals
-//TODO: Double something
+//TODO: Double something, like the number of loyalty counters on a planeswalker
 //TODO: Participles, like "dying" or "exiling"
 
+effectstatement: (entityexpression | auxvp beaux?)? effectvp
+effectvp: effectverb entityexpression preposition? -> effectvpactive
+| entityexpression effectverb preposition? -> effectvppassive
+| effectverb entityexpression ("to"|"by") entityexpression preposition? -> effectvpindirect
 
-effectstatement: lifegainlossstatement
-| sacrificestatement
-| exilestatement
-| destroystatement
-| activatestatement
-| attackstatement
-| blockstatement
-| attachstatement
-| caststatement
-| uncaststatement
-| controlstatement
-| gaincontrolstatement
-| createstatement
-| drawstatement
-| discardstatement
-| fightstatement
-| playstatement
-| revealstatement
-| searchstatement
-| tapuntapstatement
+effectverb: gainverb
+| loseverb
+| sacrificeverb
+| exileverb
+| destroyverb
+| activateverb
+| attackverb
+| blockverb
+| attachverb
+| castverb
+| uncastverb
+| controlverb
+| gaincontrolverb
+| createverb
+| drawverb
+| discardverb
+| fightverb
+| playverb
+| revealverb
+| searchverb
+| tapverb
+| untapverb
+| dealverb
+| preventverb
 
-lifegainlossstatement: (entity | auxvp)? lifegainlossvp
-lifegainlossvp: (gainverb|loseverb) (valueexpression "life" | "life" valueexpression | "life") preposition?
 gainverb: "gain"["s"] -> gainpresent
 | "gained" -> gainpast
 loseverb: "lose"["s"] -> losepresent
 | "lost" -> losepast
-
-sacrificestatement: (entity | auxvp)? sacrificevp
-sacrificevp: sacrificeverb entity preposition?
 sacrificeverb: "sacrifice"["s"] -> sacrificepresent
 | "sacrificed" -> sacrificepast
-
-exilestatement: (entity | auxvp)? exilevp
-exilevp: exileverb entity preposition?
 exileverb: "exile"["s"] -> exilepresent
 | "exiled" -> exilepast
-
-destroystatement: (entity | auxvp)? destroyvp
-destroyvp: destroyverb entity preposition?
 destroyverb: "destroy"["s"] -> destroypresent
 | "destroyed" -> destroypast
-
-activatestatement: (entity | auxvp)? activatevp
-activatevp: activateverb entity preposition?
 activateverb: "activate"["s"] -> activatepresent
 | "activated" -> activatepast
-
-attackstatement: (entity | auxvp)? attackvp
-attackvp: attackverb entity preposition?
+exileverb: "exile"["s"] -> exilepresent
+| "exiled" -> exilepast
 attackverb: "attack"["s"] -> attackpresent
 | "attacked" -> attackpast
-
-blockstatement: (entity | auxvp)? blockvp
-blockvp: blockverb entity preposition?
 blockverb: "block"["s"] -> blockpresent
 | "blocked" -> blockpast
-
-attachstatement: (entity | auxvp)? attachvp
-attachvp: attachverb entity preposition?
 attachverb: "attach"["es"] -> attachpresent
 | "attached" -> attachpast
-
-caststatement: (entity | auxvp)? castvp
-castvp: castverb entity preposition?
 castverb: "cast"["s"] -> castpresentpast
-
-uncaststatement: (entity | auxvp)? uncastvp
-uncastvp: uncastverb entity preposition?
 uncastverb: "counter"["s"] -> uncastpresent
 | "countered" -> uncastpast
-
-controlstatement: (entity | auxvp)? controlvp
-controlvp: controlverb entity preposition?
 controlverb: "control"["s"] -> controlpresent
 | "controlled" -> controlpast
-
-gaincontrolstatement: (entity | auxvp)? gaincontrolvp
-gaincontrolvp: gaincontrolverb entity preposition?
-gaincontrolverb: "gains" "control" "of" -> gaincontrolpresent
+gaincontrolverb: "gain"["s"] "control" "of" -> gaincontrolpresent
 | "gained" "control" "of" -> gaincontrolpast
-
-createstatement: (entity | auxvp)? createvp
-createvp: createverb entity preposition?
 createverb: "create"["s"] -> createpresent
 | "created" -> createpast
-
-drawstatement: (entity | auxvp)? drawvp
-drawvp: drawverb entity preposition?
 drawverb: "draw"["s"] -> drawpresent
 | "drew" -> drawpast
-
-discardstatement: (entity | auxvp)? discardvp
-discardvp: discardverb entity preposition?
+| "drawn" -> drawsubjunctive
 discardverb: "discard"["s"] -> discardpresent
 | "discarded" -> discardpast
-
-fightstatement: (entity | auxvp)? fightvp
-fightvp: fightverb entity preposition?
 fightverb: "fight"["s"] -> fightpresent
 | "fought" -> fightpast
-
-playstatement: (entity | auxvp)? playvp
-playvp: playverb entity preposition?
 playverb: "play"["s"] -> playpresent
 | "played" -> playpast
-
-revealstatement: (entity | auxvp)? revealvp
-revealvp: revealverb entity preposition?
 revealverb: "reveal"["s"] -> revealpresent
 | "revealed" -> revealpast
-
-searchstatement: (entity | auxvp)? searchvp
-searchvp: searchverb entity preposition?
 searchverb: "search"["es"] entity ["for"] -> revealpresent
 | "searched" -> revealpast
-
-tapuntapstatement: (entity | auxvp)? tapuntapvp
-tapuntapvp: (tapverb | untapverb) entity preposition?
 tapverb: "tap"["s"] -> tappresent
 | "tapped" -> tappast
 untapverb: "untap"["s"] -> untappresent
 | "untapped" -> untappast
-
-
-
+dealverb: "deal"["s"] -> dealpresent
+| "dealt" -> dealpast
+preventverb: "prevent"["s"] -> preventpresent
+| "prevented" -> preventpast
 
 preposition: "this" "way" | timeexpression
 
-auxvp: entity "may" -> optionalaux
-| entity "would" -> subjunctiveaux
-| entity "may" ("have" | "had") entity -> delegationaux
-| entity "can" ["not"] -> canaux
-| entity "could" ["not"] -> couldaux
-| entity "must" ["not"] -> mandatoryaux
+!auxvp: entityexpression "may" -> optionalaux
+| entityexpression "would" -> subjunctiveaux
+| entityexpression "may" ("have" | "had") entityexpression -> delegationaux
+| entityexpression "can" ["not"] -> canaux
+| entityexpression "could" ["not"] -> couldaux
+| entityexpression "must" ["not"] -> mandatoryaux
+
+beaux: "be"
+
+
+// effectstatement: lifegainlossstatement
+// | sacrificestatement
+// | exilestatement
+// | destroystatement
+// | activatestatement
+// | attackstatement
+// | blockstatement
+// | attachstatement
+// | caststatement
+// | uncaststatement
+// | controlstatement
+// | gaincontrolstatement
+// | createstatement
+// | drawstatement
+// | discardstatement
+// | fightstatement
+// | playstatement
+// | revealstatement
+// | searchstatement
+// | tapuntapstatement
+//
+// lifegainlossstatement: (entity | auxvp)? lifegainlossvp
+// lifegainlossvp: (gainverb|loseverb) (valueexpression "life" | "life" valueexpression | "life") preposition?
+// gainverb: "gain"["s"] -> gainpresent
+// | "gained" -> gainpast
+// loseverb: "lose"["s"] -> losepresent
+// | "lost" -> losepast
+//
+// sacrificestatement: (entity | auxvp)? sacrificevp
+// sacrificevp: sacrificeverb entity preposition?
+// sacrificeverb: "sacrifice"["s"] -> sacrificepresent
+// | "sacrificed" -> sacrificepast
+//
+// exilestatement: (entity | auxvp)? exilevp
+// exilevp: exileverb entity preposition?
+// exileverb: "exile"["s"] -> exilepresent
+// | "exiled" -> exilepast
+//
+// destroystatement: (entity | auxvp)? destroyvp
+// destroyvp: destroyverb entity preposition? -> destroyactive
+// destroyverb: "destroy"["s"] -> destroypresent
+// | "destroyed" -> destroypast
+//
+// activatestatement: (entity | auxvp)? activatevp
+// activatevp: activateverb entity preposition?
+// activateverb: "activate"["s"] -> activatepresent
+// | "activated" -> activatepast
+//
+// attackstatement: (entity | auxvp)? attackvp
+// attackvp: attackverb entity preposition?
+// attackverb: "attack"["s"] -> attackpresent
+// | "attacked" -> attackpast
+//
+// blockstatement: (entity | auxvp)? blockvp
+// blockvp: blockverb entity preposition?
+// blockverb: "block"["s"] -> blockpresent
+// | "blocked" -> blockpast
+//
+// attachstatement: (entity | auxvp)? attachvp
+// attachvp: attachverb entity preposition?
+// attachverb: "attach"["es"] -> attachpresent
+// | "attached" -> attachpast
+//
+// caststatement: (entity | auxvp)? castvp
+// castvp: castverb entity preposition?
+// castverb: "cast"["s"] -> castpresentpast
+//
+// uncaststatement: (entity | auxvp)? uncastvp
+// uncastvp: uncastverb entity preposition?
+// uncastverb: "counter"["s"] -> uncastpresent
+// | "countered" -> uncastpast
+//
+// controlstatement: (entity | auxvp)? controlvp
+// controlvp: controlverb entity preposition?
+// controlverb: "control"["s"] -> controlpresent
+// | "controlled" -> controlpast
+//
+// gaincontrolstatement: (entity | auxvp)? gaincontrolvp
+// gaincontrolvp: gaincontrolverb entity preposition?
+// gaincontrolverb: "gains" "control" "of" -> gaincontrolpresent
+// | "gained" "control" "of" -> gaincontrolpast
+//
+// createstatement: (entity | auxvp)? createvp
+// createvp: createverb entity preposition?
+// createverb: "create"["s"] -> createpresent
+// | "created" -> createpast
+//
+// drawstatement: (entity | auxvp)? drawvp
+// drawvp: drawverb entity preposition?
+// drawverb: "draw"["s"] -> drawpresent
+// | "drew" -> drawpast
+//
+// discardstatement: (entity | auxvp)? discardvp
+// discardvp: discardverb entity preposition?
+// discardverb: "discard"["s"] -> discardpresent
+// | "discarded" -> discardpast
+//
+// fightstatement: (entity | auxvp)? fightvp
+// fightvp: fightverb entity preposition?
+// fightverb: "fight"["s"] -> fightpresent
+// | "fought" -> fightpast
+//
+// playstatement: (entity | auxvp)? playvp
+// playvp: playverb entity preposition?
+// playverb: "play"["s"] -> playpresent
+// | "played" -> playpast
+//
+// revealstatement: (entity | auxvp)? revealvp
+// revealvp: revealverb entity preposition?
+// revealverb: "reveal"["s"] -> revealpresent
+// | "revealed" -> revealpast
+//
+// searchstatement: (entity | auxvp)? searchvp
+// searchvp: searchverb entity preposition?
+// searchverb: "search"["es"] entity ["for"] -> revealpresent
+// | "searched" -> revealpast
+//
+// tapuntapstatement: (entity | auxvp)? tapuntapvp
+// tapuntapvp: (tapverb | untapverb) entity preposition?
+// tapverb: "tap"["s"] -> tappresent
+// | "tapped" -> tappast
+// untapverb: "untap"["s"] -> untappresent
+// | "untapped" -> untappast
 

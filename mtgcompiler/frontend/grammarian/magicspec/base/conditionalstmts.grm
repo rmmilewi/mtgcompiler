@@ -33,8 +33,12 @@ atstatement:  "at" timeexpression "," statement
 aslongasstatement:  "for"? "as" "long" "as" statement "," statement
 | statement "for"? "as" "long" "as" statement -> aslongasstatementinv
 
-forstatement:  "for" "each" (entity | "time" statement) ("beyond" "the" "first")? "," statement 
-| statement "for" "each" (entity | "time" statement) ("beyond" "the" "first")? -> forstatementinv
+forstatement:  "for" (entity | "each" "time" statement | statement) "," statement
+| statement "for" (entity | "each" "time" statement | statement) -> forstatementinv
+
+//"for" "each"
+//forstatement:  "for" "each" (entity | "time" statement) ("beyond" "the" "first")? "," statement 
+//| statement "for" "each" (entity | "time" statement) ("beyond" "the" "first")? -> forstatementinv
 
 untilstatement:  "until" timeexpression "," statement 
 | statement "until" timeexpression -> untilstatementinv

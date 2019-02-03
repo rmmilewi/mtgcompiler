@@ -5,6 +5,7 @@ declarationdecorator: "each" -> eachdecorator
 | ["an"]"other" -> otherdecorator
 | ("a"|"an") -> indefinitearticledecorator
 | "the" -> definitearticledecorator
+| "next" -> nextdecorator
 | valueexpression? "target" -> targetdecorator
 | "any" -> anydecorator
 

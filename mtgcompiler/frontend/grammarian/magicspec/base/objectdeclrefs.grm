@@ -1,11 +1,11 @@
 //Object declarations and references
 
 objectdeclref: objectdeclaration | objectreference
-objectdeclaration: declarationdecorator? possessive* objectdefinition
+objectdeclaration: declarationdecorator* possessive* objectdefinition
 objectreference: referencedecorator possessive* objectdefinition
 objectdefinition: objectdescriptionexpression
 
-objectdescriptionexpression: (ordinalexpression | cardinalexpression)? ptexpression? colorexpression? modifier* typeexpression? qualifier? objectpostfix*
+objectdescriptionexpression: (ordinalexpression | cardinalexpression)? ptexpression? colorexpression? modifier* (typeexpression qualifier? | qualifier) objectpostfix*
 
 objectpostfix: locationpostfixexpression
 //!locationpostfixexpression: ("into" | "onto" | "in" | "on" | "from" | "on top of" | "on bottom of")? zonedeclarationexpression

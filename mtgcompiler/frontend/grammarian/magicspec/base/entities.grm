@@ -5,4 +5,14 @@ entityexpression: entity
 | entity ("," entity ",")* "and" entity -> andentityexpression
 | entity ("," entity ",")* "and/or" entity -> andorentityexpression
 
-entity: playerdeclref //| objectdeclref
+entity: playerdeclref | objectdeclref | lifeentity | damageentity | nakedtargetentity | reference
+
+
+//I'm putting life, damage, etc. here for now as first-class entities. It might get moved into another file later.
+lifeentity: valueexpression? "life"
+
+damageentity: (declarationdecorator*|referencedecorator) (valueexpression? damagetypemodifier? "damage" valuemodexpression? | damagetypemodifier? "damage" valueexpression)
+damagetypemodifier: "combat" | "noncombat"
+
+nakedtargetentity: (declarationdecorator*|referencedecorator) "target" beyondthefirstpostfix?
+beyondthefirstpostfix: "beyond" "the" "first"

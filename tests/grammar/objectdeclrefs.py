@@ -11,13 +11,13 @@ class TestObjectDeclarationsAndReferences(unittest.TestCase):
                 "base/modifiers.grm","base/characteristics.grm","base/qualifiers.grm","base/typeexpressions.grm","base/colorexpressions.grm","base/entities.grm","base/zones.grm","base/common.grm"],options=options)
                 cls._frontend = Lark(grammar,parser="lalr",start="objectdeclref",debug=True)
                 
-        def test_1(self):
+        def test_elves(self):
                 self._frontend.parse("an elf")
                 self._frontend.parse("that elf")
                 self._frontend.parse("green elf creatures")
                 self._frontend.parse("three 1/1 green elf warrior creatures")
                 
-        def test_2(self):
+        def test_targets(self):
                 self._frontend.parse("target tapped creature")
                 self._frontend.parse("target nonwhite creature")
                 self._frontend.parse("target monocolored spell")
