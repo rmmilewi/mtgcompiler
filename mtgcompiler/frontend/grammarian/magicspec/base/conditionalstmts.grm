@@ -17,6 +17,7 @@ conditionalstatement: ifstatement
 | ratherstatement
 | nexttimestatement
 | beforestatement
+| thencontinuationstatement
 
 ifstatement: "if" statement "," statement
 | statement "only"? "if" statement -> ifstatementinv
@@ -57,10 +58,14 @@ whilestatement:  "while" statement "," statement
 duringstatement:  statement "during" timeexpression
 | statement "only" "during" timeexpression -> exclusiveduringstatement
 
-exceptstatement:  statement "except" (("by"|"for") entity | statement)
+exceptstatement:  "except" (("by"|"for") entity | statement) "," statement
+| statement "except" (("by"|"for") entity | statement) -> exceptstatementinv
 
 ratherstatement:  statement "rather" "than" statement
 
 nexttimestatement: "the" "next" "time" statement timeexpression? "," statement
 
 beforestatement: statement "before" (timeexpression | statement)
+
+thencontinuationstatement: statement "," "then" statement
+| "then" statement 

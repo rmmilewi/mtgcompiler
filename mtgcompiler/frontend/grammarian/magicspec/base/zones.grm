@@ -2,7 +2,7 @@
 
 zonedeclarationexpression: (declarationdecorator | referencedecorator)? possessive* zone 
 | "anywhere" -> zoneanywhere
-| "outside the game" -> zoneoutside
+| "outside" "the" "game" -> zoneoutside
 zoneplacementmodifier: "in" "any" "order" -> anyorderplacement
 | "in" "a" "random" "order" -> randomorderplacement
 | ORDINAL "from" "the" "top" -> fromtopplacement

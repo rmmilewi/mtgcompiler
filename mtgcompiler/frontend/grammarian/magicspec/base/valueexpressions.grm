@@ -3,7 +3,7 @@
 valueexpression: valueterm | comparisonexpression | valueformulaexpression
 valueformulaexpression: uptoexpression | numberofexpression | thatmanyexpression | valuemodexpression
 uptoexpression: "up" "to" valueexpression
-!numberofexpression: ("a"|"the"|"any") "number" "of" valueexpression
+!numberofexpression: ("a"|"the"|"any") "number" "of" (valueexpression | entity)?
 !thatmanyexpression: frequencyexpression? "that" ("much"|"many")
 valuemodexpression: valueexpression "rounded" "up" -> roundedupmod
 | valueexpression? "rounded" "down" -> roundeddownmod
@@ -21,10 +21,10 @@ gteqexpression: valueexpression "or" ("greater" | "more") | "greater" "than" "or
 
 valueterm: cardinalexpression | frequencyexpression | ordinalexpression | numberliteral | valuevarsymbol
 
-cardinalexpression: cardinalterm+
+cardinalexpression: cardinalterm+ | "both"
 cardinalterm: (CARDINALZERONINE | CARDINALTEEN | CARDINALTENS CARDINALZERONINE?) PLACE*
 frequencyexpression: FREQUENCYTERM | cardinalterm+ "times"
-ordinalexpression: cardinalterm* ORDINAL
+ordinalexpression: cardinalterm* ORDINAL | "last"
 
 PLACE: "hundred" | "thousand" | "million" | "billion"
 CARDINALZERONINE: "one" | "two" | "three" | "four" | "five" | "six" | "seven" | "eight" | "nine"

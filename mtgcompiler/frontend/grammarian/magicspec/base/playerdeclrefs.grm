@@ -5,7 +5,7 @@ playerdeclaration: declarationdecorator? possessive* playerdefinition
 playerreference: referencedecorator possessive* playerdefinition
 playerdefinition: playerdescriptionexpression
 
-playerdescriptionexpression: (ordinalexpression | cardinalexpression)? modifier* playerterm //(withexpression | withoutexpression | whoexpression)*
+playerdescriptionexpression: (ordinalexpression | cardinalexpression)? modifier* playerterm //(withexpression | withoutexpression)*
 | "you" -> playerself
 | "they" -> playerother
 

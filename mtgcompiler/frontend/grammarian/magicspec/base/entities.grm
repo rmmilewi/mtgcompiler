@@ -9,9 +9,12 @@ entity: playerdeclref
 | objectdeclref 
 | lifeentity 
 | damageentity 
-| nakedtargetentity 
+| nakedtargetentity
+| zoneentity
+| valueentity
+| characteristicentity
+| ptentity
 | reference
-
 
 //I'm putting life, damage, etc. here for now as first-class entities. It might get moved into another file later.
 lifeentity: valueexpression? "life"
@@ -21,3 +24,14 @@ damagetypemodifier: "combat" | "noncombat"
 
 nakedtargetentity: (declarationdecorator*|referencedecorator) "target" beyondthefirstpostfix?
 beyondthefirstpostfix: "beyond" "the" "first"
+
+zoneentity: zonedeclarationexpression
+
+valueentity: valueexpression  //e.g. choose one.
+
+characteristicentity: characteristicdeclarationexpression
+
+ptentity: ptexpression
+
+//choicenameentity: choicetype
+//choicetype: WORD

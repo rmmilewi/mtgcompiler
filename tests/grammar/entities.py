@@ -25,10 +25,13 @@ class TestEntityExpressions(unittest.TestCase):
                 self._frontend.parse("target artifact or enchantment")
                 self._frontend.parse("all creatures and all lands")
                 self._frontend.parse("target creature, target enchantment, and target artifact")
-                
-        
+
         def test_objectsandplayers(self):
                 self._frontend.parse("target creature and its controller")
+                
+        def test_characteristics(self):
+                self._frontend.parse("base power and/or base toughness")
+                self._frontend.parse("name and rules text")
 
         
 if __name__ == '__main__':

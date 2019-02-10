@@ -1,8 +1,12 @@
 import unittest
 import mtgcompiler.frontend.grammarian.grammarian as grammarian
 from lark import Lark #Lexing and parsing!
+from lark.tree import pydot__tree_to_png #For rendering the parse tree.
 
 class TestEffectStatements(unittest.TestCase):
+        
+        def makedot(self,tree):
+                pydot__tree_to_png(tree, "lark_test.png")
         
         @classmethod
         def setUpClass(cls):
@@ -55,6 +59,44 @@ class TestEffectStatements(unittest.TestCase):
                 self._frontend.parse("prevent that damage")
                 self._frontend.parse("prevent the next 1 damage that would be dealt to any target this turn")
                 self._frontend.parse("prevent all combat damage that would be dealt this turn")
+                
+        def test_drawdiscard(self):
+                self._frontend.parse("draw two cards")
+                self._frontend.parse("if you drew a card this turn, draw a card")
+                self._frontend.parse("target player draws a card")
+                self._frontend.parse("if you draw a card named ~, you gain two life")
+                self._frontend.parse("if an opponent drew three or more cards this turn, you gain two life")
+                self._frontend.parse("draw a card, then draw cards equal to the number of cards named ~ in all graveyards") #Accumulated Knowledge
+                self._frontend.parse("discard a card")
+                self._frontend.parse("discard your hand") #One with Nothing
+                self._frontend.parse("discard the last card that you drew this turn") #Jandor's Ring, added 'that' for relative clause
+                
+        def test_castuncast(self):
+                self._frontend.parse("you may cast a spell")
+                self._frontend.parse("whenever an opponent casts a blue spell during your turn, you may create a 4/4 green elemental creature token")
+                #self._frontend.parse("whenever you cast a spell that is both red and white")
+                self._frontend.parse("counter target spell")
+                self._frontend.parse("~ can not be countered")
+                self._frontend.parse("~ can not be countered by spells or abilities")
+                
+                
+        def test_enterleave(self):
+                self._frontend.parse("when ~ enters the battlefield, draw a card")
+                self._frontend.parse("when ~ leaves the battlefield, draw a card")
+                
+        def test_choose(self):
+                self._frontend.parse("choose artifact, enchantment, instant, sorcery, or planeswalker")
+                self._frontend.parse("choose two")
+                self._frontend.parse("choose one or both")
+                self._frontend.parse("choose a creature type")
+                self._frontend.parse("each player chooses a color")
+                self._frontend.parse("each player chooses «war» or «peace»")
+                self._frontend.parse("if a player chose «cake», you may draw a card")
+        
+        def test_getgain(self):
+                self._frontend.parse("target creature gets -3/-3 until end of turn")
+                #self.makedot(self._frontend.parse("except for elves named «john», all elf creatures gets +1/+1 until end of turn"))
+                #self._frontend.parse("creatures you control get +1/+1")
                 
 
         
