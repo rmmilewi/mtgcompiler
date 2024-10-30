@@ -1,43 +1,41 @@
 import collections, pickle
-from mtgcompiler.parsers.baseparser import BaseParser
-from mtgcompiler.AST.reference import MgNameReference,MgThisReference
-from mtgcompiler.AST.reference import MgName,MgTapUntapSymbol,MgZone,MgQualifier
-from mtgcompiler.AST.reference import MgAbilityModifier,MgCombatStatusModifier,MgKeywordStatusModifier,MgTapStatusModifier,MgEffectStatusModifier
-from mtgcompiler.AST.card import MgTypeLine,MgFlavorText,MgTextBox,MgCard
-from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
-from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
-from mtgcompiler.AST.statements import MgKeywordAbilityListStatement,MgStatementBlock,MgExpressionStatement,MgActivationStatement
-from mtgcompiler.AST.statements import MgAbilitySequenceStatement,MgQuotedAbilityStatement
-from mtgcompiler.AST.statements import MgWhenStatement
+# from mtgcompiler.parsers.baseparser import BaseParser
+from mtgcompiler.frontend.AST.reference import MgNameReference,MgThisReference
+from mtgcompiler.frontend.AST.reference import MgName,MgTapUntapSymbol,MgZone,MgQualifier
+from mtgcompiler.frontend.AST.reference import MgAbilityModifier,MgCombatStatusModifier,MgKeywordStatusModifier,MgTapStatusModifier,MgEffectStatusModifier
+from mtgcompiler.frontend.AST.card import MgTypeLine,MgFlavorText,MgTextBox,MgCard
+from mtgcompiler.frontend.AST.mtypes import MgSupertype,MgSubtype,MgType
+from mtgcompiler.frontend.AST.colormana import MgManaSymbol,MgColorTerm
+from mtgcompiler.frontend.AST.statements import MgKeywordAbilityListStatement,MgStatementBlock,MgExpressionStatement,MgActivationStatement
+from mtgcompiler.frontend.AST.statements import MgAbilitySequenceStatement,MgQuotedAbilityStatement
+from mtgcompiler.frontend.AST.statements import MgWhenStatement
 
-from mtgcompiler.AST.expressions import MgNumberValue,MgPTExpression,MgManaExpression,MgTypeExpression,MgDescriptionExpression
-from mtgcompiler.AST.expressions import MgNamedExpression,MgCostSequenceExpression,MgWithExpression,MgIndefiniteSingularExpression
-from mtgcompiler.AST.expressions import MgColorExpression,MgAndExpression,MgOrExpression,MgAndOrExpression,MgTargetExpression,MgDeclarationExpression
-from mtgcompiler.AST.expressions import MgDestroyExpression,MgExileExpression,MgDealsDamageExpression,MgChangeZoneExpression,MgSacrificeExpression
-from mtgcompiler.AST.expressions import MgAnyColorSpecifier,MgManaSpecificationExpression,MgAddManaExpression,MgCreateTokenExpression
+from mtgcompiler.frontend.AST.expressions import MgNumberValue,MgPTExpression,MgManaExpression,MgTypeExpression,MgDescriptionExpression
+from mtgcompiler.frontend.AST.expressions import MgNamedExpression,MgCostSequenceExpression,MgWithExpression,MgIndefiniteSingularExpression
+from mtgcompiler.frontend.AST.expressions import MgColorExpression,MgAndExpression,MgOrExpression,MgAndOrExpression,MgTargetExpression,MgDeclarationExpression
+from mtgcompiler.frontend.AST.expressions import MgDestroyExpression,MgExileExpression,MgDealsDamageExpression,MgChangeZoneExpression,MgSacrificeExpression
+from mtgcompiler.frontend.AST.expressions import MgAnyColorSpecifier,MgManaSpecificationExpression,MgAddManaExpression,MgCreateTokenExpression
 
-from mtgcompiler.AST.abilities import MgReminderText,MgAbilityWord,MgRegularAbility
-from mtgcompiler.AST.abilities import MgDeathtouchAbility,MgDefenderAbility,MgDoubleStrikeAbility,MgFirstStrikeAbility,MgTrampleAbility
-from mtgcompiler.AST.abilities import MgFlashAbility,MgFlyingAbility,MgHasteAbility,MgIndestructibleAbility,MgReachAbility
+from mtgcompiler.frontend.AST.abilities import MgReminderText,MgAbilityWord,MgRegularAbility
+from mtgcompiler.frontend.AST.abilities import MgDeathtouchAbility,MgDefenderAbility,MgDoubleStrikeAbility,MgFirstStrikeAbility,MgTrampleAbility
+from mtgcompiler.frontend.AST.abilities import MgFlashAbility,MgFlyingAbility,MgHasteAbility,MgIndestructibleAbility,MgReachAbility
 
+from mtgcompiler.frontend.AST.abilities import MgHexproofAbility,MgProtectionAbility,MgLandwalkAbility,MgRampageAbility
+from mtgcompiler.frontend.AST.abilities import MgFadingAbility, MgAmplifyAbility, MgModularAbility, MgBushidoAbility
+from mtgcompiler.frontend.AST.abilities import MgSoulshiftAbility, MgDredgeAbility, MgBloodthirstAbility, MgGraftAbility
+from mtgcompiler.frontend.AST.abilities import MgRippleAbility, MgVanishingAbility, MgAbsorbAbility, MgFrenzyAbility
+from mtgcompiler.frontend.AST.abilities import MgPoisonousAbility, MgDevourAbility, MgAnnihilatorAbility, MgTributeAbility
+from mtgcompiler.frontend.AST.abilities import MgRenownAbility, MgCrewAbility, MgFabricateAbility, MgAfflictAbility, MgSurveilAbility
 
+from mtgcompiler.frontend.AST.abilities import MgCumulativeUpkeepAbility, MgBuybackAbility, MgCyclingAbility, MgKickerAbility, MgMadnessAbility
+from mtgcompiler.frontend.AST.abilities import MgMorphAbility, MgNinjutsuAbility, MgTransmuteAbility, MgRecoverAbility
+from mtgcompiler.frontend.AST.abilities import MgAuraSwapAbility, MgTransfigureAbility, MgEvokeAbility, MgMiracleAbility
+from mtgcompiler.frontend.AST.abilities import MgOverloadAbility, MgScavengeAbility, MgOutlastAbility, MgSurgeAbility
+from mtgcompiler.frontend.AST.abilities import MgEmergeAbility, MgEscalateAbility, MgEnbalmAbility, MgEternalizeAbility, MgJumpStartAbility
 
-from mtgcompiler.AST.abilities import MgHexproofAbility,MgProtectionAbility,MgLandwalkAbility,MgRampageAbility
-from mtgcompiler.AST.abilities import MgFadingAbility, MgAmplifyAbility, MgModularAbility, MgBushidoAbility
-from mtgcompiler.AST.abilities import MgSoulshiftAbility, MgDredgeAbility, MgBloodthirstAbility, MgGraftAbility
-from mtgcompiler.AST.abilities import MgRippleAbility, MgVanishingAbility, MgAbsorbAbility, MgFrenzyAbility
-from mtgcompiler.AST.abilities import MgPoisonousAbility, MgDevourAbility, MgAnnihilatorAbility, MgTributeAbility
-from mtgcompiler.AST.abilities import MgRenownAbility, MgCrewAbility, MgFabricateAbility, MgAfflictAbility, MgSurveilAbility
-
-from mtgcompiler.AST.abilities import MgCumulativeUpkeepAbility, MgBuybackAbility, MgCyclingAbility, MgKickerAbility, MgMadnessAbility
-from mtgcompiler.AST.abilities import MgMorphAbility, MgNinjutsuAbility, MgTransmuteAbility, MgRecoverAbility
-from mtgcompiler.AST.abilities import MgAuraSwapAbility, MgTransfigureAbility, MgEvokeAbility, MgMiracleAbility
-from mtgcompiler.AST.abilities import MgOverloadAbility, MgScavengeAbility, MgOutlastAbility, MgSurgeAbility
-from mtgcompiler.AST.abilities import MgEmergeAbility, MgEscalateAbility, MgEnbalmAbility, MgEternalizeAbility, MgJumpStartAbility
-
-from mtgcompiler.AST.abilities import MgSpliceAbility,MgEnchantAbility,MgEquipAbility,MgBandingAbility,MgAffinityAbility
-from mtgcompiler.AST.abilities import MgOfferingAbility,MgForecastAbility,MgSuspendAbility,MgChampionAbility,MgReinforceAbility
-from mtgcompiler.AST.abilities import MgHiddenAgendaAbility,MgAwakenAbility,MgPartnerAbility
+from mtgcompiler.frontend.AST.abilities import MgSpliceAbility,MgEnchantAbility,MgEquipAbility,MgBandingAbility,MgAffinityAbility
+from mtgcompiler.frontend.AST.abilities import MgOfferingAbility,MgForecastAbility,MgSuspendAbility,MgChampionAbility,MgReinforceAbility
+from mtgcompiler.frontend.AST.abilities import MgHiddenAgendaAbility,MgAwakenAbility,MgPartnerAbility
 
 
 
@@ -55,7 +53,7 @@ def flatten(l):
         else:
             yield el
 
-class JsonParser(BaseParser):
+class JsonParser:
         """A parser implementation supporting the mtgjson card format."""
 
         def __init__(self,options):
@@ -64,7 +62,10 @@ class JsonParser(BaseParser):
                 
                 options: A dictionary that contains options for the parser. See BaseParser for details.
                 """
-                super().__init__(options)
+                # commenting this out because BaseParser base class was removed?
+                #super().__init__(options)
+
+                self.options = options
                 
                 #parseonly: Only parse the input, do not construct an AST.
                 if options is not None and "parseonly" in options:
@@ -1528,16 +1529,20 @@ class JsonParser(BaseParser):
                         | targetsexpression
                         | shareexpression
                         
-                        dealsdamageexpression:  declarationorreference? ("deal"["s"]|"dealt") valueexpression? DAMAGETYPE ("to" declarationorreference)? (","? quantityrulemodification)* -> dealsdamagevarianta
-                        | valueexpression DAMAGETYPE ("to" declarationorreference)?  (","? quantityrulemodification)* -> dealsdamagevariantaimplied //variant a, implied antecedent
-                        | declarationorreference ("deal"["s"]|"dealt") DAMAGETYPE valueexpression ("to" declarationorreference)?  (","? quantityrulemodification)* -> dealsdamagevariantb
-                        | declarationorreference ("deal"["s"]|"dealt") DAMAGETYPE ("to" declarationorreference)?  valueexpression  (","? quantityrulemodification)* -> dealsdamagevariantc
+                        //dealsdamageexpression:  declarationorreference? ("deal"["s"]|"dealt") valueexpression? DAMAGETYPE ("to" declarationorreference)? (","? quantityrulemodification)* -> dealsdamagevarianta
+                        //| valueexpression DAMAGETYPE ("to" declarationorreference)?  (","? quantityrulemodification)* -> dealsdamagevariantaimplied //variant a, implied antecedent
+                        //| declarationorreference ("deal"["s"]|"dealt") DAMAGETYPE valueexpression ("to" declarationorreference)?  (","? quantityrulemodification)* -> dealsdamagevariantb
+                        //| declarationorreference ("deal"["s"]|"dealt") DAMAGETYPE ("to" declarationorreference)?  valueexpression  (","? quantityrulemodification)* -> dealsdamagevariantc
                         preventdamageexpression: "prevent" "the" "next" valueexpression DAMAGETYPE "that" "would" "be" "dealt" "to" declarationorreference timeexpression? -> preventdamagevarianta
                         | "prevent" "the" "next" valueexpression DAMAGETYPE "that" declarationorreference "would" "deal" "to" declarationorreference timeexpression? -> preventdamagevariantb
                         | "prevent" "all" DAMAGETYPE "that" "would" "be" "dealt" ("to" declarationorreference)? timeexpression? -> preventdamagevariantc
                         | "prevent" valueexpression "of" "that" DAMAGETYPE -> preventdamagevariantd 
                         | "prevent" "that" DAMAGETYPE -> preventdamagevariante
                         | DAMAGETYPE "is" "prevented" "this" "way" -> preventdamagevariantf //[TODO: There may be a more general is-statement for stuff like 'damage'.]
+
+                        dealsdamageexpression: declarationorreference? "deal"["s"] valueexpression? DAMAGETYPE ("to" declarationorreference)? (","? quantityrulemodification)*
+                          | valueexpression DAMAGETYPE ("to" declarationorreference)?  (","? quantityrulemodification)*
+
                         
                         returnexpression: playerdeclref? "return"["s"] declarationorreference atrandomexpression? ("from" zonedeclarationexpression)? "to" zonedeclarationexpression genericdeclarationexpression? zoneplacementmodifier?//[TODO]
                         
@@ -1847,7 +1852,9 @@ class JsonParser(BaseParser):
                         
                         manaspecificationexpression: valueterm "mana" manaspecifier+
                         manaspecifier: anycolorexpression //[TODO: Need to add the rest of these]
+
                         
+                        manaexpression: manasymbol+
                         manasymbolexpression: manasymbol+
                         | manasymbolexpression "or" manasymbolexpression -> ormanaexpression
                         manasymbol: "{" manamarkerseq "}"

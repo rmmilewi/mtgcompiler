@@ -1,6 +1,6 @@
-import mtgcompiler.AST.core as core
-from mtgcompiler.AST.expressions import MgTypeExpression,MgManaExpression
-from mtgcompiler.AST.reference import MgName
+import mtgcompiler.frontend.AST.core as core
+from mtgcompiler.frontend.AST.expressions import MgTypeExpression,MgManaExpression
+from mtgcompiler.frontend.AST.reference import MgName
 
 
 class MgFlavorText(core.MgNode):

@@ -2,6 +2,11 @@ import abc
 
 class MgNode(metaclass=abc.ABCMeta):
         """This is the abstract base class for all AST classes."""
+
+        def __init__(self):
+                self._annotations = {}
+                self._parent = None
+                self._traversable = True
         
         def getAnnotation(self,handle):
                 """Annotations are arbitrary objects that can be attached to nodes. Annotations can be used by

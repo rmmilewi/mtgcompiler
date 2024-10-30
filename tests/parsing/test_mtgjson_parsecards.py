@@ -1,14 +1,14 @@
 import unittest
-from mtgcompiler.parsers.JsonParser import JsonParser
+from mtgcompiler.frontend.JsonParser import JsonParser
 from lark.tree import pydot__tree_to_png #For rendering the parse tree.
-import mtgcompiler.support.inspection as inspection
-import mtgcompiler.support.binding as binding
+import mtgcompiler.midend.support.inspection as inspection
+import mtgcompiler.midend.support.binding as binding
 
 class TestParseCards(unittest.TestCase):
         
         @classmethod
         def setUpClass(cls):
-                options = {"parseonly" : True,"rulestextonly": True}
+                options = {"rulestextonly": True}
                 cls._parser = JsonParser(options)
         
         
@@ -141,6 +141,7 @@ class TestParseCards(unittest.TestCase):
                 ]
                 }
                 card = self._parser.parse(looter)
+                print(card)
                 
         def test_parseBabyJace(self):
                 baby = {
@@ -158,7 +159,7 @@ class TestParseCards(unittest.TestCase):
                 
                 
         def test_parseAncestralIteration(self):
-                return None
+                # return None
                 iteration = {
                 "manaCost": "{U}",
                 "name": "Ancestral Iteration",
@@ -204,7 +205,7 @@ class TestParseCards(unittest.TestCase):
                 
                 
         def test_parseBlackLotus(self):
-                return None
+                # return None
                 lotus = {
                 "artist": "Chris Rahn",
                 "cmc": 0,

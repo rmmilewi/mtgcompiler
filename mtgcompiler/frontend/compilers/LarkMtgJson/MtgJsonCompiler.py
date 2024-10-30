@@ -5,6 +5,7 @@ from mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonPreprocessor import MtgJs
 from mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonTransformer import MtgJsonTransformer
 from mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonPostprocessor import MtgJsonPostprocessor
 #from mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonParser import MtgJsonParser
+import cProfile
 
 from lark import Lark
 
@@ -29,19 +30,19 @@ class MtgJsonCompiler(BaseCompiler):
                 
         def _callLarkParse(self,bodytext):
                 """Calls the Lark frontend to parse the input."""
-                return self._frontend.parse(bodytext)
+                return self._larkfrontend.parse(bodytext)
                 
         def compile(self,cardinput,flags):
                 
-                
+                result = {}
                 #Apply the prelex preprocessing step.
-                result = self._preprocessor.prelex(cardinput,flags)
+                result['parsed_body'] = self._preprocessor.prelex(cardinput,flags)
                 
                 #Apply the postlex preprocessing step.
-                result = self._preprocessor.postlex(result,flags)
+                result['parsed_body'] = self._preprocessor.postlex(result['parsed_body'],flags)
                 
                 #Call the Lark frontend to parse the card text.
-                result['parsed_body'] = _calllarkparse(result['text'])
+                result['parsed_body'] = self._callLarkParse(result['parsed_body'])
                 
                 #Apply the transformer to generate the AST.
                 result = self._transformer.transform(result)
@@ -66,5 +67,5 @@ compiler = MtgJsonCompiler(options=None)
 
 txt = "destroy target blue creature."
 
-compiler.compile(cardinput=txt,flags=None)
+cProfile.run(compiler.compile(cardinput=txt,flags=None))
 

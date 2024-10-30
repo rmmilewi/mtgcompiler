@@ -1,5 +1,5 @@
-import mtgcompiler.support.inspection as inspection
-from mtgcompiler.AST.reference import MgNameReference
+import mtgcompiler.midend.support.inspection as inspection
+from mtgcompiler.frontend.AST.reference import MgNameReference
 
 class BindingError(Exception):
         def __init__(self, location, message):

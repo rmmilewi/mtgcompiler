@@ -1,4 +1,4 @@
-import mtgcompiler.AST.core as core
+import mtgcompiler.frontend.AST.core as core
 
 
 class MgReminderText(core.MgNode):

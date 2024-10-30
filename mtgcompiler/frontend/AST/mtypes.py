@@ -1,5 +1,5 @@
 import abc
-import mtgcompiler.AST.core as core
+import mtgcompiler.frontend.AST.core as core
 from enum import Enum
 
 class MgAbstractType(core.MgNode):

@@ -1,4 +1,4 @@
-import mtgcompiler.AST.core as core
+import mtgcompiler.frontend.AST.core as core
 import abc
 from enum import Enum,auto
 from num2words import num2words
@@ -8,6 +8,7 @@ class MgAbstractExpression(core.MgNode):
         types, and mana costs. This class is not instantiated, but provides common
         functionalities for all of these kinds of expressions."""
         def __init__(self):
+                super().__init__()  # Ensure MgNode's constructor is called
                 self._traversable = True
         
         
@@ -1178,6 +1179,10 @@ class MgDestroyExpression(MgEffectExpression):
         def __init__(self,subject):
                 super().__init__()
                 self._subject = subject
+
+                print(type(self._subject))
+                assert isinstance(self._subject, core.MgNode), "Subject does not inherit from MgNode"
+
                 self._subject.setParent(self)
                 
         def getSubject(self):

@@ -1,6 +1,7 @@
 
 from mtgcompiler.frontend.compilers.BaseImplementation.BaseTransformer import BaseTransformer
-from lark import Transformer as LarkTransformer #The Lark class responsible for converting the parse tree into something useful.
+from lark import Transformer as LarkTransformer, \
+        Transformer  # The Lark class responsible for converting the parse tree into something useful.
 
 
 #TODO: I'm gonna restructure all these imports, because this is just getting really messy.
@@ -66,7 +67,7 @@ class MtgJsonTransformer(BaseTransformer):
                 
         def transform(self,cardobj):
                 cardobj['ast'] = self._larktf.transform(cardobj['parsed_body']) #Calls the Lark transformer which traverses the parsetree.
-                return card
+                return cardobj
 
         class LarkTransformer(Transformer):
                 #CARDS

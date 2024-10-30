@@ -1,5 +1,5 @@
 import unittest
-from mtgcompiler.parsers.JsonParser import JsonParser
+from mtgcompiler.frontend.JsonParser import JsonParser
 
 class TestFeatureParsingAndTransformation(unittest.TestCase):
         

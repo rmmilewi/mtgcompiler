@@ -1,6 +1,6 @@
 import unittest,json
 from tqdm import tqdm
-from mtgcompiler.parsers.JsonParser import JsonParser
+from mtgcompiler.frontend.compilers.JsonParser import JsonParser
 from multiprocessing import Pool
 
 def loadAllSets(fname="tests/parsing/AllSets.json"):
