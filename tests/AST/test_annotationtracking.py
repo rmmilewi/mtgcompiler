@@ -1,7 +1,7 @@
 import unittest
 
-from mtgcompiler.AST.expressions import MgAllExpression
-from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
+from mtgcompiler.frontend.AST.expressions import MgAllExpression
+from mtgcompiler.frontend.AST.mtypes import MgSupertype,MgSubtype,MgType
 
 class TestAnnotationTracking(unittest.TestCase):
         

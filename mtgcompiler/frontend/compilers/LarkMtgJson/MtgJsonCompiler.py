@@ -43,9 +43,9 @@ class MtgJsonCompiler(BaseCompiler):
                 #self._lexer = MtgJsonLexer(options,larklexer=larkfrontend.parser.lexer)
                 #self._parser = MtgJsonParser(options,larkparser=larkfrontend.parser.parser)
                 
-        def _callLarkParse(self,bodytext):
+        def _callLarkParse(self,textInput):
                 """Calls the Lark frontend to parse the input."""
-                return self._larkfrontend.parse(bodytext)
+                return self._larkfrontend.parse(textInput)
                 
         def compile(self,textInput,flags={}):
                 result = {}

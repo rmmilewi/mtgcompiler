@@ -253,11 +253,11 @@ class MgNumberValue(MgValueExpression):
                 
         def isCustom(self):
                 """Checks if the number type is a frequency."""
-                return self._ntype == MgNumberValue.NumberTypeEnum.Ordinal
+                return self._ntype == MgNumberValue.NumberTypeEnum.Custom
                 
         def setCustom(self):
                 """Makes the number type a frequency."""
-                self._ntype = MgNumberValue.NumberTypeEnum.Ordinal
+                self._ntype = MgNumberValue.NumberTypeEnum.Custom
                 
         def getValue(self):
                 """Gets the underlying integer value."""
@@ -918,12 +918,13 @@ class MgTargetExpression(MgUnaryOp):
         def __init__(self,operand=None,isAny=False):
                 """isAny: A flag indicating that this target expression refers to 'any target'. If
                 this flag is set, the operand is allowed to be None."""
-                super().__init__()
                 if not isAny:
                         super().__init__(operand)
                         self._isAny = isAny
                 else:
                         self._operand = None
+                        self._annotations = {}
+                        self._traversable = False
                         self._isAny = isAny
                         
         def isAnyTarget(self):
@@ -933,7 +934,6 @@ class MgTargetExpression(MgUnaryOp):
         def setIsAnyTarget(self,isAny):
                 """Sets the flag indicating whether this target expression refers to 'any target'."""
                 self._isAny = isAny
-                        
         
         def unparseToString(self):
                 if self._isAny == True:

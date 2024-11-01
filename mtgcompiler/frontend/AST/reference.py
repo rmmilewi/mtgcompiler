@@ -187,7 +187,7 @@ class MgThatReference(MgAbstractReference):
                 
         def isChild(self,child):
                 """This node has one child, the descriptor expression."""
-                return self._child is not None and child == self._descriptor
+                return self._descriptor is not None and child == self._descriptor
                 
         def getTraversalSuccessors(self):
                 """This node can have up to one successor, its descriptor."""
@@ -412,11 +412,11 @@ class MgDamageType(core.MgNode):
                 NoncombatDamage = "noncombat damage"
                 CombatDamage = "combat damage"
                 
-        def __init__(self,damagetype):
+        def __init__(self,damageType):
                 """
-                damagetype: A damage type enum.
+                damageType: A damage type enum.
                 """
-                self._damagetype = damagetype
+                self._damagetype = damageType
                 self._traversable = True
         
         def isRegularDamage(self):

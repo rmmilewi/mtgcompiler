@@ -1,5 +1,5 @@
 import unittest
-from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
+from mtgcompiler.frontend.AST.colormana import MgManaSymbol,MgColorTerm
 
 class TestColorsAndManaSymbols(unittest.TestCase):
         

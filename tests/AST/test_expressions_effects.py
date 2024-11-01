@@ -1,12 +1,12 @@
 import unittest
-from mtgcompiler.AST.reference import MgQualifier,MgNameReference
-from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
-from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
-from mtgcompiler.AST.expressions import MgDescriptionExpression,MgNumberValue,MgColorExpression,MgTypeExpression,MgModalExpression
-from mtgcompiler.AST.expressions import MgManaExpression,MgPTExpression,MgNonExpression,MgAndExpression
-from mtgcompiler.AST.expressions import MgOrExpression,MgTargetExpression,MgAllExpression,MgEachExpression
-from mtgcompiler.AST.expressions import MgChoiceExpression,MgTapUntapExpression,MgDestroyExpression,MgUncastExpression
-from  mtgcompiler.AST.expressions import MgCreateTokenExpression,MgDealsDamageExpression
+from mtgcompiler.frontend.AST.reference import MgQualifier,MgNameReference,MgDamageType
+from mtgcompiler.frontend.AST.mtypes import MgSupertype,MgSubtype,MgType
+from mtgcompiler.frontend.AST.colormana import MgManaSymbol,MgColorTerm
+from mtgcompiler.frontend.AST.expressions import MgDescriptionExpression,MgNumberValue,MgColorExpression,MgTypeExpression,MgModalExpression
+from mtgcompiler.frontend.AST.expressions import MgManaExpression,MgPTExpression,MgNonExpression,MgAndExpression
+from mtgcompiler.frontend.AST.expressions import MgOrExpression,MgTargetExpression,MgAllExpression,MgEachExpression
+from mtgcompiler.frontend.AST.expressions import MgChoiceExpression,MgTapUntapExpression,MgDestroyExpression,MgUncastExpression
+from  mtgcompiler.frontend.AST.expressions import MgCreateTokenExpression,MgDealsDamageExpression
 class TestMagicExpressions(unittest.TestCase):
         
         def test_DestroyExpressions(self):
@@ -68,11 +68,12 @@ class TestMagicExpressions(unittest.TestCase):
                 nameref = MgNameReference(None)
                 one = MgNumberValue(1,MgNumberValue.NumberTypeEnum.Literal)
                 any_target = MgTargetExpression(isAny=True)
+                damageType = MgDamageType(damageType=MgDamageType.DamageTypeEnum.RegularDamage)
                 
-                damageexpr_0 = MgDealsDamageExpression(origin=nameref,damageExpression=one,subject=any_target)
+                damageexpr_0 = MgDealsDamageExpression(origin=nameref,damageType=damageType,damageExpression=one,subject=any_target)
                 
                 self.assertTrue(damageexpr_0.isTraversable())
-                self.assertEqual(len(damageexpr_0.getTraversalSuccessors()),3)
+                self.assertEqual(len(damageexpr_0.getTraversalSuccessors()),2)
                 self.assertTrue(damageexpr_0.isChild(any_target))
                 self.assertEqual(any_target.getParent(),damageexpr_0)
                 
@@ -82,7 +83,7 @@ class TestMagicExpressions(unittest.TestCase):
                 self.assertTrue(damageexpr_0.hasSubject())
                 self.assertEqual(damageexpr_0.getSubject(),any_target)
                 
-                self.assertEqual(damageexpr_0.unparseToString().lower(),"~ deals 1 damage to any target")
+                self.assertEqual(damageexpr_0.unparseToString().lower(),"~ deal(s) 1 damage to any target")
                 
                 
                 
@@ -102,7 +103,7 @@ class TestMagicExpressions(unittest.TestCase):
                         #token
                         MgQualifier(MgQualifier.QualifierEnum.Token)
                 )
-                three_of_them = MgNumberValue(3,MgNumberValue.NumberTypeEnum.Quantity)
+                three_of_them = MgNumberValue(3,MgNumberValue.NumberTypeEnum.Cardinal)
                 create_three_saprolings = MgCreateTokenExpression(descriptor=saproling_description,quantity=three_of_them)
                 
                 self.assertTrue(create_three_saprolings.isTraversable())

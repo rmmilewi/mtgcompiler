@@ -48,7 +48,7 @@ class MgNode(metaclass=abc.ABCMeta):
                 if not hasattr(self, '_annotations'):
                         self._annotations = {}
                         
-                self._annotations[handle] = attr
+                self._annotations[handle] = annotation
 
         def setParent(self, parent):
                 """Setter method for the parent node. The parent node is the ancestor of a given node."""

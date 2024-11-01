@@ -172,87 +172,87 @@ class MgRegularAbility(MgAbstractAbility):
                          
                 
 
-# class MgSpellAbility(MgAbstractAbility):
-#         """Spell abilities are abilities that are followed as instructions while an instant or sorcery spell is resolving.
-#         Any text on an instant or sorcery spell is a spell ability unless it’s an activated ability, a triggered ability,
-#         or a static ability that fits the criteria described in rule 112.6."""
-#
-#         def __init__(self,instructions,abilityWord=None,reminderText=None):
-#                 """
-#                 instructions: one or more effects/instructions that follow from carrying out the ability.
-#                 """
-#                 super().__init__(abilityWord,reminderText)
-#                 self._instructions = instructions
-#                 self._instructions.setParent(self)
-#
-#         def isChild(self,child):
-#                 """A spell ability has only one child, the instruction sequence."""
-#                 return child is self._instructions
-#
-#         def getTraversalSuccessors(self):
-#                 """A spell ability has only one child, the instruction sequence."""
-#                 return [node for node in {self._instructions} if node.isTraversable()]
-#
-#         def getInstructions(self):
-#                 """Get the instruction sequence held by the ability."""
-#                 return self._instructions
-#
-#         def setInstructions(self,instructions):
-#                 """Set the instruction sequence held by the ability."""
-#                 self._instructions = instructions
-#                 self._instructions.setParent(self)
-#
-#         def unparseToString(self):
-#                 output = "{0}".format(self._instructions.unparseToString())
-#                 if self.hasAbilityWord():
-#                         output = "{0} {1}".format(self._abilityWord.unparseToString(),output)
-#                 if self.hasReminderText():
-#                         output = "{0} {1}".format(output,self._reminderText.unparseToString())
-#                 return output   
+class MgSpellAbility(MgAbstractAbility):
+        """Spell abilities are abilities that are followed as instructions while an instant or sorcery spell is resolving.
+        Any text on an instant or sorcery spell is a spell ability unless it’s an activated ability, a triggered ability,
+        or a static ability that fits the criteria described in rule 112.6."""
+
+        def __init__(self,instructions,abilityWord=None,reminderText=None):
+                """
+                instructions: one or more effects/instructions that follow from carrying out the ability.
+                """
+                super().__init__(abilityWord,reminderText)
+                self._instructions = instructions
+                self._instructions.setParent(self)
+
+        def isChild(self,child):
+                """A spell ability has only one child, the instruction sequence."""
+                return child is self._instructions
+
+        def getTraversalSuccessors(self):
+                """A spell ability has only one child, the instruction sequence."""
+                return [node for node in {self._instructions} if node.isTraversable()]
+
+        def getInstructions(self):
+                """Get the instruction sequence held by the ability."""
+                return self._instructions
+
+        def setInstructions(self,instructions):
+                """Set the instruction sequence held by the ability."""
+                self._instructions = instructions
+                self._instructions.setParent(self)
+
+        def unparseToString(self):
+                output = "{0}".format(self._instructions.unparseToString())
+                if self.hasAbilityWord():
+                        output = "{0} {1}".format(self._abilityWord.unparseToString(),output)
+                if self.hasReminderText():
+                        output = "{0} {1}".format(output,self._reminderText.unparseToString())
+                return output   
                 
 
-# class MgActivatedAbility(MgAbstractAbility):
-#         """Activated abilities have a cost and an effect.
-#         They are written as '[Cost]: [Effect.] [Activation instructions (if any).]'."""
-#         def __init__(self,cost,instructions,abilityWord=None,reminderText=None):
-#                 """
-#                 cost: The cost of the ability that must be paid.
-#                 instructions: one or more effects/instructions that follow from
-#                 activating the ability.
-#                 """
-#                 super().__init__(abilityWord,reminderText)
-#                 self._cost = cost
-#                 self._instructions = instructions
-#                 self._cost.setParent(self)
-#                 self._instructions.setParent(self)
-#
-#         def isChild(self,child):
-#                 return child is self._cost or child is self._instructions
-#
-#         def getTraversalSuccessors(self):
-#                 return [node for node in {self._cost,self._instructions} if node.isTraversable()]
-#
-#         def unparseToString(self):
-#                 output = "{0}: {1}".format(self._cost.unparseToString(),self._instructions.unparseToString())
-#                 if self.hasAbilityWord():
-#                         output = "{0} {1}".format(self._abilityWord.unparseToString(),output)
-#                 if self.hasReminderText():
-#                         output = "{0} {1}".format(output,self._reminderText.unparseToString())
-#                 return output
-#
-# class MgTriggeredAbility(MgAbstractAbility):
-#         """ Triggered abilities have a trigger condition and an effect.
-#         They are written as '[Trigger condition], [effect],' and include
-#         (and usually begin with) the word 'when,' 'whenever,' or 'at.'"""
-#         def __init__(self,condition,outcome,abilityWord=None,reminderText=None):
-#                 super().__init__(abilityWord,reminderText)
-#                 self._condition = condition
-#                 self._outcome = outcome
-#
-#
-# class MgStaticAbility(MgAbstractAbility):
-#         """Static abilities are written as statements. They’re simply true."""
-#         pass
+class MgActivatedAbility(MgAbstractAbility):
+        """Activated abilities have a cost and an effect.
+        They are written as '[Cost]: [Effect.] [Activation instructions (if any).]'."""
+        def __init__(self,cost,instructions,abilityWord=None,reminderText=None):
+                """
+                cost: The cost of the ability that must be paid.
+                instructions: one or more effects/instructions that follow from
+                activating the ability.
+                """
+                super().__init__(abilityWord,reminderText)
+                self._cost = cost
+                self._instructions = instructions
+                self._cost.setParent(self)
+                self._instructions.setParent(self)
+
+        def isChild(self,child):
+                return child is self._cost or child is self._instructions
+
+        def getTraversalSuccessors(self):
+                return [node for node in {self._cost,self._instructions} if node.isTraversable()]
+
+        def unparseToString(self):
+                output = "{0}: {1}".format(self._cost.unparseToString(),self._instructions.unparseToString())
+                if self.hasAbilityWord():
+                        output = "{0} {1}".format(self._abilityWord.unparseToString(),output)
+                if self.hasReminderText():
+                        output = "{0} {1}".format(output,self._reminderText.unparseToString())
+                return output
+
+class MgTriggeredAbility(MgAbstractAbility):
+        """ Triggered abilities have a trigger condition and an effect.
+        They are written as '[Trigger condition], [effect],' and include
+        (and usually begin with) the word 'when,' 'whenever,' or 'at.'"""
+        def __init__(self,condition,outcome,abilityWord=None,reminderText=None):
+                super().__init__(abilityWord,reminderText)
+                self._condition = condition
+                self._outcome = outcome
+
+
+class MgStaticAbility(MgAbstractAbility):
+        """Static abilities are written as statements. They’re simply true."""
+        pass
 
 
         

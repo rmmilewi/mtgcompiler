@@ -44,6 +44,7 @@ from mtgcompiler.frontend.AST.abilities import MgOfferingAbility,MgForecastAbili
 from mtgcompiler.frontend.AST.abilities import MgHiddenAgendaAbility,MgAwakenAbility,MgPartnerAbility
 
 from lark.lexer import Token
+import collections, pickle
 
 #Convenience function for flattening lists (of lists)+
 def flatten(l):
@@ -58,7 +59,7 @@ class MtgJsonTransformer(BaseTransformer):
         """The MtgJson transformer. This class wraps the Lark implementation of the transformer,
         helping somewhat to decouple Lark from Arbor."""
         
-        def __init__(self,options):
+        def __init__(self,options={}):
                 """
                 options: an object that contains options for the transformer.
                 """
@@ -69,7 +70,7 @@ class MtgJsonTransformer(BaseTransformer):
         def transform(self,parseTree):
                 """
                 parsedText: A parse tree from Lark
-                output - an Arbor abstract syntax tree (AST) derived from the parse tree.
+                ast: an Arbor abstract syntax tree (AST) derived from the parse tree.
                 """
                 ast = self._larktf.transform(parseTree) #Calls the Lark transformer which traverses the parsetree.
                 return ast

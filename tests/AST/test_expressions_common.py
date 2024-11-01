@@ -1,12 +1,12 @@
 import unittest
-import mtgcompiler.AST.expressions
-from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
-from mtgcompiler.AST.colormana import MgManaSymbol,MgColorTerm
-from mtgcompiler.AST.expressions import MgNumberValue,MgColorExpression,MgTypeExpression,MgModalExpression
-from mtgcompiler.AST.expressions import MgManaExpression,MgPTExpression,MgNonExpression,MgAndExpression
-from mtgcompiler.AST.expressions import MgOrExpression,MgTargetExpression,MgAllExpression,MgEachExpression
-from mtgcompiler.AST.expressions import MgChoiceExpression,MgTapUntapExpression,MgDestroyExpression
-from mtgcompiler.AST.reference import MgQualifier
+import mtgcompiler.frontend.AST.expressions
+from mtgcompiler.frontend.AST.mtypes import MgSupertype,MgSubtype,MgType
+from mtgcompiler.frontend.AST.colormana import MgManaSymbol,MgColorTerm
+from mtgcompiler.frontend.AST.expressions import MgNumberValue,MgColorExpression,MgTypeExpression,MgModalExpression
+from mtgcompiler.frontend.AST.expressions import MgManaExpression,MgPTExpression,MgNonExpression,MgAndExpression
+from mtgcompiler.frontend.AST.expressions import MgOrExpression,MgTargetExpression,MgAllExpression,MgEachExpression
+from mtgcompiler.frontend.AST.expressions import MgChoiceExpression,MgTapUntapExpression,MgDestroyExpression
+from mtgcompiler.frontend.AST.reference import MgQualifier
 
 class TestCommonExpressions(unittest.TestCase):
         
@@ -21,7 +21,7 @@ class TestCommonExpressions(unittest.TestCase):
                 self.assertEqual(five_literal.unparseToString().lower(),"5")
                 
                 seventytwo_quantity = MgNumberValue(72,MgNumberValue.NumberTypeEnum.Cardinal)
-                self.assertTrue(seventytwo_quantity.isQuantity())
+                self.assertTrue(seventytwo_quantity.isCardinal())
                 self.assertEqual(seventytwo_quantity.unparseToString().lower(),"seventy-two")
                 
                 one_frequency = MgNumberValue(1,MgNumberValue.NumberTypeEnum.Frequency)
@@ -131,7 +131,7 @@ class TestCommonExpressions(unittest.TestCase):
                 self.assertEqual(one_three.unparseToString().lower(),"1/3")
                 
         def test_NonExpressions(self):
-                t_ferret = mtgcompiler.AST.mtypes.MgSubtype(mtgcompiler.AST.mtypes.MgSubtype.CreatureSubtypeEnum.Ferret)
+                t_ferret = mtgcompiler.frontend.AST.mtypes.MgSubtype(mtgcompiler.frontend.AST.mtypes.MgSubtype.CreatureSubtypeEnum.Ferret)
                 nonferret = MgNonExpression(t_ferret)
                 self.assertEqual(nonferret.unparseToString().lower(),"non-ferret")
                 

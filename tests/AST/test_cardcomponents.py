@@ -1,7 +1,7 @@
 import unittest
-from mtgcompiler.AST.card import MgTypeLine,MgFlavorText
-from mtgcompiler.AST.expressions import MgTypeExpression
-from mtgcompiler.AST.mtypes import MgSupertype,MgSubtype,MgType
+from mtgcompiler.frontend.AST.card import MgTypeLine,MgFlavorText
+from mtgcompiler.frontend.AST.expressions import MgTypeExpression
+from mtgcompiler.frontend.AST.mtypes import MgSupertype,MgSubtype,MgType
 
 class TestMagicCardComponents(unittest.TestCase):
         def test_TypeLine(self):
