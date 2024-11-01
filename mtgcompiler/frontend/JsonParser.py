@@ -43,7 +43,7 @@ from lark import Lark #Lexing and parsing!
 from lark import Transformer #Converting the parse tree into something useful.
 from lark.tree import pydot__tree_to_png #For rendering the parse tree.
 from lark.lexer import Token
-from word2number import w2n #For converting English value quantities into numbers.
+from num2words import num2words #For converting English value quantities into numbers.
 
 #Convenience function for flattening lists (of lists)+
 def flatten(l):
