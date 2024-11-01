@@ -6,5 +6,5 @@ class MtgJsonPostprocessor(BasePostprocessor):
         def __init__(self,options):
                 pass #TODO
                 
-        def postprocess(self,cardobj,flags):
-                pass
+        def postprocess(self,cardobj,flags={}):
+                return cardobj

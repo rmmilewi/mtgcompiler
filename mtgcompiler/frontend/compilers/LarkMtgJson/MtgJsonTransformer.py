@@ -3,7 +3,6 @@ from mtgcompiler.frontend.compilers.BaseImplementation.BaseTransformer import Ba
 from lark import Transformer as LarkTransformer, \
         Transformer  # The Lark class responsible for converting the parse tree into something useful.
 
-
 #TODO: I'm gonna restructure all these imports, because this is just getting really messy.
 from mtgcompiler.frontend.AST.reference import MgNameReference,MgThisReference
 from mtgcompiler.frontend.AST.reference import MgName,MgTapUntapSymbol,MgZone,MgQualifier
@@ -44,6 +43,8 @@ from mtgcompiler.frontend.AST.abilities import MgSpliceAbility,MgEnchantAbility,
 from mtgcompiler.frontend.AST.abilities import MgOfferingAbility,MgForecastAbility,MgSuspendAbility,MgChampionAbility,MgReinforceAbility
 from mtgcompiler.frontend.AST.abilities import MgHiddenAgendaAbility,MgAwakenAbility,MgPartnerAbility
 
+from lark.lexer import Token
+
 #Convenience function for flattening lists (of lists)+
 def flatten(l):
     for el in l:
@@ -65,9 +66,13 @@ class MtgJsonTransformer(BaseTransformer):
                 self._larktf = MtgJsonTransformer.LarkTransformer()
                 pass #TODO: Handling various options in here.
                 
-        def transform(self,cardobj):
-                cardobj['ast'] = self._larktf.transform(cardobj['parsed_body']) #Calls the Lark transformer which traverses the parsetree.
-                return cardobj
+        def transform(self,parseTree):
+                """
+                parsedText: A parse tree from Lark
+                output - an Arbor abstract syntax tree (AST) derived from the parse tree.
+                """
+                ast = self._larktf.transform(parseTree) #Calls the Lark transformer which traverses the parsetree.
+                return ast
 
         class LarkTransformer(Transformer):
                 #CARDS
