@@ -60,12 +60,4 @@ class MtgJsonCompiler(BaseCompiler):
                 #        print(token.type, token.value)
                 #parsetree = self._frontend.parse(cardinput)
                 #print(parsetree.pretty())
-                
-                
-                
-compiler = MtgJsonCompiler(options=None)
-
-txt = "destroy target blue creature."
-
-cProfile.run(compiler.compile(cardinput=txt,flags=None))
 
