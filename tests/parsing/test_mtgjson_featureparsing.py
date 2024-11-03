@@ -1,5 +1,6 @@
 import unittest
-from mtgcompiler.frontend.JsonParser import JsonParser
+#from mtgcompiler.frontend.JsonParser import JsonParser
+import mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonCompiler as MtgJsonCompiler
 
 class TestFeatureParsingAndTransformation(unittest.TestCase):
         
@@ -8,13 +9,14 @@ class TestFeatureParsingAndTransformation(unittest.TestCase):
                 #Because apparently we can't easily change the starting point of the parser after we
                 #instantiate it, I'm putting specialized parsers here to save on setup time for these
                 #unit tests.
-                cls._keywordSequenceParser = JsonParser(startText="ability")
+                #cls._keywordSequenceParser = JsonParser(startText="ability")
+                cls._keywordSequenceCompiler = MtgJsonCompiler.MtgJsonCompiler(options={"parser.startRule" : "ability"})
         
         def test_parseManaExpressions(self):
-                jsonParser = JsonParser(startText="manaexpression")
-                lp = jsonParser.getLarkParser()
-                
-                tf = jsonParser.getLarkTransformer()
+                #jsonParser = JsonParser(startText="manaexpression")
+                compiler = MtgJsonCompiler.MtgJsonCompiler(options={"parser.startRule" : "manaexpression"})
+                lp = compiler.getParser()
+                tf = compiler.getTransformer()
                 
                 symbols_1 = "{W}{U}{B}{R}{G}"
                 tree_1 = lp.parse(symbols_1)
@@ -53,9 +55,10 @@ class TestFeatureParsingAndTransformation(unittest.TestCase):
                 ast_godEmperor = tf.transform(tree_godEmperor)
                 
         def test_parseTypeExpressions(self):
-                jsonParser = JsonParser(startText="typeexpression")
-                lp = jsonParser.getLarkParser()
-                tf = jsonParser.getLarkTransformer()
+                #jsonParser = JsonParser(startText="typeexpression")
+                compiler = MtgJsonCompiler.MtgJsonCompiler(options={"parser.startRule" : "typeexpression"})
+                lp = compiler.getParser()
+                tf = compiler.getTransformer()
                 
                 expr_1 = "creature"
                 tree_1 = lp.parse(expr_1)
@@ -74,16 +77,16 @@ class TestFeatureParsingAndTransformation(unittest.TestCase):
                 ast_4 = tf.transform(tree_4)
                 
         def test_parseChampionAbility(self):
-                lp = self._keywordSequenceParser.getLarkParser()
-                tf = self._keywordSequenceParser.getLarkTransformer()
+                lp = self._keywordSequenceCompiler.getParser()
+                tf = self._keywordSequenceCompiler.getTransformer()
                 kw_ability = "champion an elf"
                 tree_ability = lp.parse(kw_ability)
                 ast_ability = tf.transform(tree_ability)
                 ast_ability.unparseToString()
                 
         def test_parseLandwalkAbility(self):
-                lp = self._keywordSequenceParser.getLarkParser()
-                tf = self._keywordSequenceParser.getLarkTransformer()
+                lp = self._keywordSequenceCompiler.getParser()
+                tf = self._keywordSequenceCompiler.getTransformer()
                 kw_ability = "legendary swampwalk"
                 tree_ability = lp.parse(kw_ability)
                 ast_ability = tf.transform(tree_ability)
@@ -91,8 +94,8 @@ class TestFeatureParsingAndTransformation(unittest.TestCase):
         
         @unittest.expectedFailure
         def test_parsePartnerAbility(self):
-                lp = self._keywordSequenceParser.getLarkParser()
-                tf = self._keywordSequenceParser.getLarkTransformer()
+                lp = self._keywordSequenceCompiler.getParser()
+                tf = self._keywordSequenceCompiler.getTransformer()
                 
                 kw_ability_0 = "partner"
                 tree_ability_0 = lp.parse(kw_ability_0)
@@ -112,8 +115,8 @@ class TestFeatureParsingAndTransformation(unittest.TestCase):
                 ast_ability_2.unparseToString()
                 
         def test_parseAffinityAbility(self):
-                lp = self._keywordSequenceParser.getLarkParser()
-                tf = self._keywordSequenceParser.getLarkTransformer()
+                lp = self._keywordSequenceCompiler.getParser()
+                tf = self._keywordSequenceCompiler.getTransformer()
                 
                 kw_ability = "affinity for artifacts"
                 tree_ability = lp.parse(kw_ability)
@@ -121,8 +124,8 @@ class TestFeatureParsingAndTransformation(unittest.TestCase):
                 ast_ability.unparseToString()
                 
         def test_parseSpliceAbility(self):
-                lp = self._keywordSequenceParser.getLarkParser()
-                tf = self._keywordSequenceParser.getLarkTransformer()
+                lp = self._keywordSequenceCompiler.getParser()
+                tf = self._keywordSequenceCompiler.getTransformer()
                 
                 kw_ability = "splice onto arcane {1}{R}"
                 tree_ability = lp.parse(kw_ability)
@@ -130,8 +133,8 @@ class TestFeatureParsingAndTransformation(unittest.TestCase):
                 ast_ability.unparseToString()
                 
         def test_parseBandingAbility(self):
-                lp = self._keywordSequenceParser.getLarkParser()
-                tf = self._keywordSequenceParser.getLarkTransformer()
+                lp = self._keywordSequenceCompiler.getParser()
+                tf = self._keywordSequenceCompiler.getTransformer()
                 
                 kw_ability_0 = "banding"
                 tree_ability_0 = lp.parse(kw_ability_0)
@@ -149,8 +152,8 @@ class TestFeatureParsingAndTransformation(unittest.TestCase):
                 ast_ability_2.unparseToString()
                 
         def test_parseHexproofAbility(self):
-                lp = self._keywordSequenceParser.getLarkParser()
-                tf = self._keywordSequenceParser.getLarkTransformer()
+                lp = self._keywordSequenceCompiler.getParser()
+                tf = self._keywordSequenceCompiler.getTransformer()
                 
                 kw_ability_0 = "hexproof"
                 tree_ability_0 = lp.parse(kw_ability_0)
@@ -169,8 +172,8 @@ class TestFeatureParsingAndTransformation(unittest.TestCase):
                 print(ast_ability.unparseToString())
                 
         def test_parseProtectionAbility(self):
-                lp = self._keywordSequenceParser.getLarkParser()
-                tf = self._keywordSequenceParser.getLarkTransformer()
+                lp = self._keywordSequenceCompiler.getParser()
+                tf = self._keywordSequenceCompiler.getTransformer()
                 
                 kw_ability_0 = "protection from creatures"
                 tree_ability_0 = lp.parse(kw_ability_0)
@@ -183,8 +186,8 @@ class TestFeatureParsingAndTransformation(unittest.TestCase):
                 ast_ability_1.unparseToString()
                 
         def test_parseKeywordList(self):
-                lp = self._keywordSequenceParser.getLarkParser()
-                tf = self._keywordSequenceParser.getLarkTransformer()
+                lp = self._keywordSequenceCompiler.getParser()
+                tf = self._keywordSequenceCompiler.getTransformer()
                 
                 kw_ability_0 = "haste, first strike, trample"
                 tree_ability_0 = lp.parse(kw_ability_0)
@@ -199,8 +202,8 @@ class TestFeatureParsingAndTransformation(unittest.TestCase):
                 
                 
         def test_parseKeywordAbility(self):
-                lp = self._keywordSequenceParser.getLarkParser()
-                tf = self._keywordSequenceParser.getLarkTransformer()
+                lp = self._keywordSequenceCompiler.getParser()
+                tf = self._keywordSequenceCompiler.getTransformer()
                 
                 kw_ability = "haste, first strike, trample"
                 #kw_ability = "haste, first strike"
