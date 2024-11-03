@@ -840,8 +840,14 @@ class MtgJsonTransformer(BaseTransformer):
         
                 def definitionexpression(self,items):
                         return items[0]
+                        
+                def genericdescriptionexpression(self,items):
+                        return items[0]
 
-                def descriptionexpression(self,items):
+                def playerdescriptionexpression(self,items):
+                        return MgDescriptionExpression(*items)
+                
+                def objectdescriptionexpression(self,items):
                         return MgDescriptionExpression(*items)
 
                 def namedexpression(self,items):
@@ -945,6 +951,9 @@ class MtgJsonTransformer(BaseTransformer):
                         else:
                                 return MgTapUntapSymbol(isTap=False)
         
+                def objectpreterm(self,items):
+                        return items[0]
+                
                 def objectname(self,items):
                         return MgName(items[0].value)
         
@@ -968,9 +977,11 @@ class MtgJsonTransformer(BaseTransformer):
                         #"of any one color" variant
                         return MgAnyColorSpecifier(anyOneColor=True)
 
-                def manaexpression(self,items):
+                def manasymbolexpression(self,items):
                         manaExpr = MgManaExpression(*items)
-                        return manaExpr
+                        return manaExpr 
+                        
+                
 
                 def manasymbol(self,items):
                         subtree = items[0] #A mana symbol should only have one child: a marker sequence.

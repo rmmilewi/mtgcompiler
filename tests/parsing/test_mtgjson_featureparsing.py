@@ -1,6 +1,10 @@
 import unittest
 #from mtgcompiler.frontend.JsonParser import JsonParser
 import mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonCompiler as MtgJsonCompiler
+from lark import logger
+import logging
+logger.setLevel(logging.DEBUG)
+from lark.visitors import VisitError
 
 class TestFeatureParsingAndTransformation(unittest.TestCase):
         
@@ -14,7 +18,7 @@ class TestFeatureParsingAndTransformation(unittest.TestCase):
         
         def test_parseManaExpressions(self):
                 #jsonParser = JsonParser(startText="manaexpression")
-                compiler = MtgJsonCompiler.MtgJsonCompiler(options={"parser.startRule" : "manaexpression"})
+                compiler = MtgJsonCompiler.MtgJsonCompiler(options={"parser.startRule" : "manasymbolexpression"})
                 lp = compiler.getParser()
                 tf = compiler.getTransformer()
                 
@@ -143,7 +147,10 @@ class TestFeatureParsingAndTransformation(unittest.TestCase):
                 
                 kw_ability_1 = "bands with other creatures named Wolves of the Hunt"
                 tree_ability_1 = lp.parse(kw_ability_1)
-                ast_ability_1 = tf.transform(tree_ability_1)
+                try:
+                    ast_ability_1 = tf.transform(tree_ability_1)
+                except VisitError as e:
+                    raise e.orig_exc
                 ast_ability_1.unparseToString()
                 
                 kw_ability_2 = "bands with other legendary creatures"

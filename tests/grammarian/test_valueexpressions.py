@@ -7,7 +7,7 @@ class TestValueExpressions(unittest.TestCase):
         @classmethod
         def setUpClass(cls):
                 options = {}
-                grammar = grammarian.requestGrammar(imports=["base/valueexpressions.grm","base/common.grm"],options=options)
+                grammar = grammarian.requestGrammar(imports=["base/valueexpressions.grm","base/common.grm","base/entities.grm"],options=options)
                 cls._frontend = Lark(grammar,parser="lalr",start="valueexpression",debug=True)
                 
         def test_1(self):

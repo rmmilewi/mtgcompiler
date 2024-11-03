@@ -776,7 +776,8 @@ def getGrammar():
 
         objectname: OBJECTNAME //[TODO: No demarcations around names is difficult also. Need preprocessor help here.]
         OBJECTNAME: NAMEWORD ((WS | ",") NAMEWORD)* //[TODO: commas in names? This is problematic. Need preprocessor help here.]
-        NAMEWORD: UCASE_LETTER (LCASE_LETTER)*
+        //NAMEWORD: UCASE_LETTER (LCASE_LETTER)*
+        NAMEWORD: (UCASE_LETTER | LCASE_LETTER)+
 
         countertype: ptchangeexpression | WORD
 

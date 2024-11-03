@@ -16,7 +16,7 @@ class TestMtgJsonCompiler(unittest.TestCase):
                 
         def test_MtgJsonCompiler_hasParserByDefault(self):
                 compiler = MtgJsonCompiler.MtgJsonCompiler()
-                self.assertTrue(compiler.hasParser())                
+                self.assertTrue(compiler.hasParser())      
                 
         def test_MtgJsonCompiler_hasPostprocessorByDefault(self):
                 compiler = MtgJsonCompiler.MtgJsonCompiler()
