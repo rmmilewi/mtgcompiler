@@ -72,10 +72,10 @@ class MtgJsonCompiler(BaseCompiler):
                 """Calls the Lark frontend to parse the input."""
                 return self._larkfrontend.parse(textInput)
                 
-        def compile(self,textInput,flags={}):
+        def compile(self,textInput,flags={},name=None):
                 result = {}
                 #Apply the prelex preprocessing step.
-                result['parsed_body'] = self._preprocessor.prelex(textInput,flags)
+                result['parsed_body'] = self._preprocessor.prelex(textInput,name,flags)
                 
                 #Apply the postlex preprocessing step.
                 result['parsed_body'] = self._preprocessor.postlex(result['parsed_body'],flags)
