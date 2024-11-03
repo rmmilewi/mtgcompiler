@@ -1,12 +1,12 @@
 from mtgcompiler.frontend.compilers.BaseImplementation.BaseCompiler import BaseCompiler
 import mtgcompiler.frontend.compilers.LarkMtgJson.grammar as grammar #TODO: This will change.
-#from mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonLexer import MtgJsonLexer
+import mtgcompiler.frontend.grammarian.grammarian as grammarian
 from mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonPreprocessor import MtgJsonPreprocessor
 from mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonTransformer import MtgJsonTransformer
 from mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonPostprocessor import MtgJsonPostprocessor
-#from mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonParser import MtgJsonParser
 import cProfile
 import lark
+
 
 class MtgJsonCompiler(BaseCompiler):
         def __init__(self,options={}):
@@ -15,6 +15,31 @@ class MtgJsonCompiler(BaseCompiler):
                 #TODO: This is just a temporary solution until we have a more elegant
                 #way of generating the grammar.
                 g = grammar.getGrammar()
+                
+                """
+                grammar = grammarian.requestGrammar(imports=
+                [
+                "base/common.grm",
+                "base/entities.grm",
+                "base/statements.grm",
+                "base/abilities.grm",
+                "base/manasymbolexpressions.grm",
+                "base/playerdeclrefs.grm",
+                "base/timeexpressions.grm",
+                "base/zones.grm",
+                "base/characteristics.grm",
+                "base/conditionalstmts.grm",
+                "base/effectstatements.grm",
+                "base/modifiers.grm",
+                "base/qualifiers.grm",
+                "base/typeexpressions.grm",
+                "base/colorexpressions.grm",
+                "base/declrefdecorators.grm",
+                "base/objectdeclrefs.grm",
+                "base/valueexpressions.grm"
+                ]
+                ,options=options)
+                """
                 
                 #larkfrontend = Lark(g,start='cardtext',parser='earley',lexer='standard',debug=True)
                 #print(larkfrontend.lexer_conf.tokens)
@@ -35,7 +60,7 @@ class MtgJsonCompiler(BaseCompiler):
                     print("MTGJsonCompiler: Failed to instantiate Lark frontend.")
                     raise e
                 
-                self._parser = self._larkfrontend.parser
+                self._parser = self._larkfrontend
                 self._preprocessor = MtgJsonPreprocessor(options)
                 self._transformer = MtgJsonTransformer(options)
                 self._postprocessor = MtgJsonPostprocessor(options)

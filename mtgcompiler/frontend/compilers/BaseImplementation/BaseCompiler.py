@@ -69,7 +69,7 @@ class BaseCompiler(metaclass=abc.ABCMeta):
                 """
                 Returns the Parser instance.
                 """
-                return self._Parser
+                return self._parser
                 
         def hasTransformer(self):
                 """
