@@ -4,7 +4,7 @@ import mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonCompiler as MtgJsonComp
 from multiprocessing import Pool
 
 def loadAllSets(fname="tests/parsing/AllSets.json"):
-        with open(fname) as f:
+        with open(fname, encoding='utf-8') as f:
                 data = json.load(f)
                 return data
 
