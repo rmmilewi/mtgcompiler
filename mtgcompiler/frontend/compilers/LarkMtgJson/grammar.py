@@ -11,7 +11,7 @@ def getGrammar():
 
         ability : abilityword? statementblock remindertext? -> regularability
         | keywordlist remindertext?
-        abilityword: WORD "—"
+        abilityword: WORD+ "—"
 
         keywordlist: keywordsequence
         keywordsequence: keywordability | keywordsequence ("," | ";") keywordability

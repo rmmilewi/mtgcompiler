@@ -1,4 +1,4 @@
-import unittest,json
+import unittest,json, traceback
 from tqdm import tqdm
 import mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonCompiler as MtgJsonCompiler
 from multiprocessing import Pool
@@ -13,24 +13,27 @@ totalCardsAttempted = 0
 parsednames = set()
 
 workerParser = None
+workerPreprocessor = None
 def parseWorker(cardDict):
         global workerParser
+        global workerPreprocessor
         if workerParser == None:
                 options = {"parseonly" : True,"rulestextonly": True}
-                workerParser = MtgJsonCompiler.MtgJsonCompiler().getParser()
+                compiler = MtgJsonCompiler.MtgJsonCompiler()
+                workerParser = compiler.getParser()
+                workerPreprocessor = compiler.getPreprocessor()
         if 'name' in cardDict:
                 name = cardDict['name']
-                cardDict['text'] = cardDict['text'].replace(cardDict['name'],'~')
         else:
                 name = None
         try:
-                cardDict['text'] = cardDict['text'].lower()
-                card = workerParser.parse(cardDict['text'])
+                card = workerParser.parse(workerPreprocessor.prelex(cardDict['text'], None, cardDict['name']))
                 print("SUCCESS:",name)
                 return name, True
         except Exception as e:
                 print("FAILURE:",name)
-                raise e
+                print(e)
+                # traceback.print_exc()
                 return name,False
 
 class TestSetParsing(unittest.TestCase):
