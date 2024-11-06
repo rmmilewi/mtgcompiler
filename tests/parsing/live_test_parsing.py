@@ -4,6 +4,8 @@ if project_root not in sys.path:
     sys.path.append(project_root)
 import mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonCompiler as MtgJsonCompiler
 from lark import UnexpectedInput, logger
+from lark.exceptions import UnexpectedEOF, UnexpectedToken,UnexpectedCharacters
+
 
 RED = "\033[91m"
 GREEN = "\033[92m"
@@ -48,6 +50,11 @@ def add_test_function(test_input, filename="test_random_parsings.py"):
         f.write(function_code)
 
     print(f"{GREEN}Added function {function_name} to {filename}.{RESET}")
+    
+    
+def errorFunction():
+    print("HELLO WORLD!")
+    
 
 def main():
     print("Enter text to process or type 'quit' to exit the program.")
@@ -83,7 +90,8 @@ def main():
                 lastTestedText = user_input
 
                 # result = process_input(user_input)
-                card = parser.parse(preprocessor.prelex(user_input, None, None))
+                text = preprocessor.prelex(user_input, None, None)
+                card = parser.parse(text=text)
 
                 stop_event.set()
                 spinner_t.join()  # Ensure spinner thread finishes
@@ -102,18 +110,27 @@ def main():
             spinner_t.join()  # Ensure spinner thread finishes
             print(f"{RED}!!!FAILURE!!!{RESET}")
             print(f"Error at line {e.line}, column {e.column}")
+            print(f"Error Type {type(e)}")
             print(e)
             print(f"{e.get_context(lastTestedText)}")
 
             # Optionally, show expected tokens and their rules
             # print("Expected tokens:", e.expected)
             print("Error context:", e.match_examples(parser.parse, {"rule": [e.get_context(lastTestedText)]}))
-
+            
+            if isinstance(e,UnexpectedCharacters):
+                print("Considered Rules:",e.considered_rules)
+                print("Considered Tokens:",e.considered_tokens)
+                print("Token History:",e.token_history)
+                print("State:",e.state)
+            
+        
         except Exception as e:
             stop_event.set()
             spinner_t.join()  # Ensure spinner thread finishes
             print(f"{RED}!!!FAILURE!!!{RESET}")
             print(f"An error occurred: {e}")
+            print("ERROR",e.state)
 
 if __name__ == "__main__":
     main()
