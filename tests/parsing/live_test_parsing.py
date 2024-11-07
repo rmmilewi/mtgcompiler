@@ -51,10 +51,6 @@ def add_test_function(test_input, filename="test_random_parsings.py"):
 
     print(f"{GREEN}Added function {function_name} to {filename}.{RESET}")
     
-    
-def errorFunction():
-    print("HELLO WORLD!")
-    
 
 def main():
     print("Enter text to process or type 'quit' to exit the program.")

@@ -13,7 +13,6 @@ class TestFeatureParsingAndTransformation(unittest.TestCase):
                 #Because apparently we can't easily change the starting point of the parser after we
                 #instantiate it, I'm putting specialized parsers here to save on setup time for these
                 #unit tests.
-                #cls._keywordSequenceParser = JsonParser(startText="ability")
                 cls._keywordSequenceCompiler = MtgJsonCompiler.MtgJsonCompiler(options={"parser.startRule" : "ability"})
         
         def test_parseManaExpressions(self):
@@ -59,7 +58,6 @@ class TestFeatureParsingAndTransformation(unittest.TestCase):
                 ast_godEmperor = tf.transform(tree_godEmperor)
                 
         def test_parseTypeExpressions(self):
-                #jsonParser = JsonParser(startText="typeexpression")
                 compiler = MtgJsonCompiler.MtgJsonCompiler(options={"parser.startRule" : "typeexpression"})
                 lp = compiler.getParser()
                 tf = compiler.getTransformer()
@@ -79,6 +77,28 @@ class TestFeatureParsingAndTransformation(unittest.TestCase):
                 expr_4 = "snow dragon artifact creature"
                 tree_4 = lp.parse(expr_4)
                 ast_4 = tf.transform(tree_4)
+                
+        def test_parseNewlines(self):
+            compiler = MtgJsonCompiler.MtgJsonCompiler(options={"parser.startRule": "cardtext"})
+            lp = compiler.getParser()
+            preprocessor = compiler.getPreprocessor()
+            
+            card0 = "Destroy target creature. You gain three life."
+            preprocessedCard0 = preprocessor.prelex(card0, None, None)
+            parseTree0 = lp.parse(preprocessedCard0)
+            
+            card1 = "Destroy target creature. \n You gain three life."
+            preprocessedCard1 = preprocessor.prelex(card1, None, None)
+            parseTree0 = lp.parse(preprocessedCard1)
+            
+            card2 = "Destroy target creature.\n\nYou gain three life."
+            preprocessedCard1 = preprocessor.prelex(card1, None, None)
+            parseTree0 = lp.parse(preprocessedCard1)
+            
+            card3 = "first strike\nYou gain three life."
+            preprocessedCard1 = preprocessor.prelex(card1, None, None)
+            parseTree0 = lp.parse(preprocessedCard1)
+            
                 
         def test_parseChampionAbility(self):
                 lp = self._keywordSequenceCompiler.getParser()

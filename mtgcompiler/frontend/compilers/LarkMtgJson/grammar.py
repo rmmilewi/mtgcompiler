@@ -6,7 +6,7 @@ def getGrammar():
         typelinesubt: (SUBTYPESPELL | SUBTYPELAND | SUBTYPEARTIFACT | SUBTYPEENCHANTMENT | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR)*
 
         //[NOTE: Added support for starting reminder text, but what does it attach to?]
-        cardtext : remindertext? ability? ("\n" ability)* //[TODO: Do we need to explicitly recognize newlines? We might in order to separate distinct abilities.]
+        cardtext : remindertext? (ability "\n"*)*
         remindertext : /\(.*?\)/
 
         ability : abilityword? statementblock remindertext? -> regularability
@@ -16,7 +16,7 @@ def getGrammar():
         keywordlist: keywordsequence
         keywordsequence: keywordability | keywordsequence ("," | ";") keywordability
 
-        statementblock : (statement ["."])+
+        statementblock : (statement ".")+
 
         //STATEMENTS
 
