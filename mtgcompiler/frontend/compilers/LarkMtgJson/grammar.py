@@ -16,7 +16,7 @@ def getGrammar():
         keywordlist: keywordsequence
         keywordsequence: keywordability | keywordsequence ("," | ";") keywordability
 
-        statementblock : (statement ".")+
+        statementblock : (statement ["."])+
 
         //STATEMENTS
 
@@ -477,6 +477,8 @@ def getGrammar():
         preventdamageexpression: "prevent" "the" "next" valueexpression DAMAGETYPE "that" "would" "be" "dealt" "to" declarationorreference timeexpression? -> preventdamagevarianta
         | "prevent" "the" "next" valueexpression DAMAGETYPE "that" declarationorreference "would" "deal" "to" declarationorreference timeexpression? -> preventdamagevariantb
         | "prevent" "all" DAMAGETYPE "that" "would" "be" "dealt" ("to" declarationorreference)? timeexpression? -> preventdamagevariantc
+        | "prevent" "all" DAMAGETYPE "that" "would" "be" "dealt" "to" "or" "dealt" "by" (declarationorreference)? timeexpression? -> preventdamagevariantd
+        | "prevent" "all" DAMAGETYPE "that"? (declarationorreference)? "would" "deal" timeexpression? -> preventdamagevariante
         | "prevent" valueexpression "of" "that" DAMAGETYPE -> preventdamagevariantd 
         | "prevent" "that" DAMAGETYPE -> preventdamagevariante
         | DAMAGETYPE "is" "prevented" "this" "way" -> preventdamagevariantf //[TODO: There may be a more general is-statement for stuff like 'damage'.]
