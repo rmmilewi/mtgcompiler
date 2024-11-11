@@ -67,7 +67,8 @@ def getGrammar():
         beexpression: ("be"|"been") modifier valueexpression? ("by" declarationorreference)? timeexpression?//[TODO: Not sure how to categorize this one yet.]
         activationstatement: cost ":" statementblock
 
-        compoundstatement: statement  ("," statement)* ","? "then" statement -> compoundthenstatement
+        compoundstatement: statement  ("," statement)* ","? thenstatement -> compoundthenstatement
+        | statement ("," statement)* untilstatement -> compounduntilstatement
         | statement ("," statement)* ","? "and" statement -> compoundandstatement
         | statement ("," statement)* ","? "or" statement -> compoundorstatement
 
@@ -107,8 +108,9 @@ def getGrammar():
         forstatement:  "for" "each" (genericdeclarationexpression | "time" statement) ("beyond" "the" "first")? "," statement 
         | statement "for" "each" (genericdeclarationexpression | "time" statement) ("beyond" "the" "first")? -> forstatementinv
 
-        untilstatement:  "until" timeexpression "," statement 
-        | statement "until" timeexpression -> untilstatementinv
+        untilstatement: "until" effectexpression -> untileffecthappensstatement
+        | "until" timeexpression "," statement -> untiltimestatement
+        | statement "until" timeexpression -> untiltimestatementinv
 
         afterstatement:  "after" timeexpression "," statement 
         | statement "after" timeexpression -> afterstatementinv
@@ -510,7 +512,7 @@ def getGrammar():
         | declarationorreference? "assign"["s"] "no" DAMAGETYPE timeexpression -> nodamageassignedexpression
         | declarationorreference? "assign"["s"] DAMAGETYPE valueexpression -> alternatedamageassignmentexpression
         ableexpression: declarationorreference? "able" ("to" statement "do" "so")?
-        changezoneexpression: declarationorreference "enter"["s"] locationexpression genericdeclarationexpression? zoneplacementmodifier? timeexpression? -> enterzoneexpression
+        changezoneexpression: declarationorreference "enter"["s"] locationexpression? genericdeclarationexpression? zoneplacementmodifier? timeexpression? -> enterzoneexpression
         | declarationorreference "leaves" locationexpression -> leavezoneexpression
         skiptimeexpression: playerdeclref? "skip"["s"] timeexpression
         switchexpression: playerdeclref? "switch"["es"] declarationorreference
