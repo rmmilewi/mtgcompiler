@@ -142,7 +142,7 @@ def instrumentedVersionOfXEarleyParse(self, stream, columns, to_scan, start_symb
 
         if not next_set and not delayed_matches and not next_to_scan:
             considered_rules = list(sorted(to_scan, key=lambda key: key.rule.origin.name))
-            print(f"\tCONSIDERED_RULES: {considered_rules}")
+            print(f"\tCONSIDERED_RULES: {considered_rules[:500]}")
             raise UnexpectedCharacters(stream, i, text_line, text_column, {item.expect.name for item in to_scan},
                                        set(to_scan), state=frozenset(i.s for i in to_scan),
                                        considered_rules=considered_rules
@@ -174,7 +174,7 @@ def instrumentedVersionOfXEarleyParse(self, stream, columns, to_scan, start_symb
         self.predict_and_complete(i, to_scan, columns, transitives)
 
         to_scan = scan(i, to_scan)
-        print("\t\tNEXT TO SCAN:",to_scan)
+        print("\t\tNEXT TO SCAN:", str(to_scan)[:500])
 
         if token == '\n':
             text_line += 1
@@ -250,8 +250,8 @@ def main():
     lastTestedText = ''
     while True:
         # Event to signal spinner thread to stop
-        stop_event = threading.Event()
-        spinner_t = threading.Thread(target=spinner_thread, args=(stop_event,))
+        # stop_event = threading.Event()
+        # spinner_t = threading.Thread(target=spinner_thread, args=(stop_event,))
 
         try:
             user_input = input("Input: ")
@@ -267,52 +267,53 @@ def main():
             else:
 
                 # Start spinner in a separate thread
-                spinner_t.start()
+                # spinner_t.start()
                 # Start timer
                 start_time = time.time()
 
                 # Save this text
                 lastTestedText = user_input
 
+                print(f"PROCESSING THIS TEXT: {user_input}")
                 # result = process_input(user_input)
                 text = preprocessor.prelex(user_input, None, None)
                 card = parser.parse(text=text)
 
-                stop_event.set()
-                spinner_t.join()  # Ensure spinner thread finishes
+                # stop_event.set()
+                # spinner_t.join()  # Ensure spinner thread finishes
                 elapsed_time = time.time() - start_time
                 print(f"{BLUE}Processed Result in {elapsed_time:.2f} seconds: {card}{RESET}")
 
         except KeyboardInterrupt:
-            stop_event.set()
-            spinner_t.join()  # Ensure spinner thread finishes
+            # stop_event.set()
+            # spinner_t.join()  # Ensure spinner thread finishes
             print("\nProgram interrupted by user. Exiting.")
             break
 
         except UnexpectedInput as e:
             # Print detailed error information
-            stop_event.set()
-            spinner_t.join()  # Ensure spinner thread finishes
+            # stop_event.set()
+            # spinner_t.join()  # Ensure spinner thread finishes
             print(f"{RED}!!!FAILURE!!!{RESET}")
             print(f"Error at line {e.line}, column {e.column}")
             print(f"Error Type {type(e)}")
             print(e)
-            print(f"{e.get_context(lastTestedText)}")
+            # print(f"{e.get_context(lastTestedText)}")
 
             # Optionally, show expected tokens and their rules
-            # print("Expected tokens:", e.expected)
-            print("Error context:", e.match_examples(parser.parse, {"rule": [e.get_context(lastTestedText)]}))
-            
+            print("Expected tokens:", e.expected)
+            # print("Error context:", e.match_examples(parser.parse, {"rule": [e.get_context(lastTestedText)]}))
+            #
             if isinstance(e,UnexpectedCharacters):
-                print("Considered Rules:",e.considered_rules)
-                print("Considered Tokens:",e.considered_tokens)
+                print("Considered Rules:",str(e.considered_rules)[:500])
+                print("Considered Tokens:",str(e.considered_tokens)[:500])
                 print("Token History:",e.token_history)
-                print("State:",e.state)
+                print("State:",str(e.state)[:500])
             
         
         except Exception as e:
-            stop_event.set()
-            spinner_t.join()  # Ensure spinner thread finishes
+            # stop_event.set()
+            # spinner_t.join()  # Ensure spinner thread finishes
             print(f"{RED}!!!FAILURE!!!{RESET}")
             print(f"An error occurred: {e}")
             print("ERROR",e.state)

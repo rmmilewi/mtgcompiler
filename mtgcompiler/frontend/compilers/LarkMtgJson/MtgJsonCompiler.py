@@ -53,9 +53,14 @@ class MtgJsonCompiler(BaseCompiler):
                     larkDebug = options["parser.larkDebug"]
                 else:
                     larkDebug = True
+
+                if "parser.larkLexer" in options:
+                    larkLexer = options["parser.larkLexer"]
+                else:
+                    larkLexer = "auto"
                 
                 try:
-                    self._larkfrontend = lark.Lark(g,start=startRule,debug=larkDebug, parser="earley")
+                    self._larkfrontend = lark.Lark(g,start=startRule,debug=larkDebug, parser="earley", lexer=larkLexer)
                 except Exception as e:
                     print("MTGJsonCompiler: Failed to instantiate Lark frontend.")
                     raise e

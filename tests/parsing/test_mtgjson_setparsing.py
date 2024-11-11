@@ -18,8 +18,9 @@ def parseWorker(cardDict):
         global workerParser
         global workerPreprocessor
         if workerParser == None:
-                options = {"parseonly" : True,"rulestextonly": True}
-                compiler = MtgJsonCompiler.MtgJsonCompiler()
+                options = {"parseonly": True, "rulestextonly": True}
+                # compiler = MtgJsonCompiler.MtgJsonCompiler()
+                compiler = MtgJsonCompiler.MtgJsonCompiler(options={"parser.startRule": "cardtext", "parser.larkDebug": True})
                 workerParser = compiler.getParser()
                 workerPreprocessor = compiler.getPreprocessor()
         if 'name' in cardDict:
@@ -27,7 +28,10 @@ def parseWorker(cardDict):
         else:
                 name = None
         try:
-                card = workerParser.parse(workerPreprocessor.prelex(cardDict['text'], None, cardDict['name']))
+                # print(cardDict['text'])
+                preprocessed = workerPreprocessor.prelex(cardDict['text'], None, cardDict['name'])
+                # print(preprocessed)
+                card = workerParser.parse(preprocessed)
                 print("SUCCESS:",name)
                 return name, True
         except Exception as e:

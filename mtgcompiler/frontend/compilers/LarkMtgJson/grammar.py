@@ -510,7 +510,7 @@ def getGrammar():
         | declarationorreference? "assign"["s"] "no" DAMAGETYPE timeexpression -> nodamageassignedexpression
         | declarationorreference? "assign"["s"] DAMAGETYPE valueexpression -> alternatedamageassignmentexpression
         ableexpression: declarationorreference? "able" ("to" statement "do" "so")?
-        changezoneexpression: declarationorreference "enter"["s"] locationexpression genericdeclarationexpression? zoneplacementmodifier? timeexpression? -> enterzoneexpression
+        changezoneexpression: declarationorreference "enter"["s"] locationexpression? genericdeclarationexpression? zoneplacementmodifier? timeexpression? -> enterzoneexpression
         | declarationorreference "leaves" locationexpression -> leavezoneexpression
         skiptimeexpression: playerdeclref? "skip"["s"] timeexpression
         switchexpression: playerdeclref? "switch"["es"] declarationorreference
@@ -568,7 +568,7 @@ def getGrammar():
         drawexpression: playerdeclref? ("draw"["s"]|"drew") cardexpression //[("a" "card" | valueexpression "card"["s"] | "cards"["s"] valueexpression)]
         discardexpression: playerdeclref? ("discard"["s"] | "discarded") (declarationorreference | "a" "card" | valueexpression "card"["s"] | "card"["s"] valueexpression) "at random"?
         doubleexpression: "double" //[TODO]
-        exchangeexpression: "exchange" //[TODO]
+        exchangeexpression: "exchange" characteristicexpression //[TODO]
         exileexpression: "exile" declarationorreference
         fightexpression: declarationorreference? "fight"["s"] declarationorreference?
         playexpression: playerdeclref? ("play"["s"] | "played") declarationorreference timeexpression?
@@ -751,7 +751,7 @@ def getGrammar():
 
         characteristicterm: modifier* characteristic
         characteristic: OBJECTCHARACTERISTIC | PLAYERCHARACTERISTIC
-        PLAYERCHARACTERISTIC: "maximum hand size" | "life total" | "life" | "cards in hand"
+        PLAYERCHARACTERISTIC: "maximum hand size" | "life total"["s"] | "life" | "cards in hand"
         OBJECTCHARACTERISTIC: "card"? "name" | "mana cost" | "converted mana cost" | "color"["s"] | "color indicator" | "type"["s"] | "card type"["s"] | "subtype"["s"] | "supertype"["s"]
         | "rules text" | "abilities" | "power" | "toughness" | "base power" | "base toughness" | "loyalty" | "hand modifier" | "life modifier"
 
