@@ -3,10 +3,10 @@ from tqdm import tqdm
 import mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonCompiler as MtgJsonCompiler
 from multiprocessing import Pool
 
-def loadAllSets(fname="tests/parsing/AllSets.json"):
+def loadAllSets(fname="tests/parsing/AllPrintings.json"):
         with open(fname, encoding='utf-8') as f:
                 data = json.load(f)
-                return data
+                return data["data"] # in latest AllPrintings files, set data is under the 'data' prop
 
 totalCardsParsed = 0
 totalCardsAttempted = 0
@@ -17,6 +17,7 @@ workerPreprocessor = None
 def parseWorker(cardDict):
         global workerParser
         global workerPreprocessor
+        preprocessed = None
         if workerParser == None:
                 options = {"parseonly": True, "rulestextonly": True}
                 # compiler = MtgJsonCompiler.MtgJsonCompiler()
@@ -25,17 +26,23 @@ def parseWorker(cardDict):
                 workerPreprocessor = compiler.getPreprocessor()
         if 'name' in cardDict:
                 name = cardDict['name']
+                if " // " in cardDict['name']:
+                        # print('double sided card')
+                        # print(name)
+                        # double sided card, use faceName
+                        name = cardDict['faceName']
         else:
                 name = None
         try:
                 # print(cardDict['text'])
-                preprocessed = workerPreprocessor.prelex(cardDict['text'], None, cardDict['name'])
+                preprocessed = workerPreprocessor.prelex(cardDict['text'], None, name)
                 # print(preprocessed)
                 card = workerParser.parse(preprocessed)
                 print("SUCCESS:",name)
                 return name, True
         except Exception as e:
                 print("FAILURE:",name)
+                print(preprocessed)
                 print(e)
                 # traceback.print_exc()
                 return name,False
@@ -82,6 +89,10 @@ class TestSetParsing(unittest.TestCase):
         #        mset = self._sets["UGL"]
         #        cardsParsed,numberOfCards = self.parseCards(mset)
         #        print("MtgJsonCompiler support for Unglued: {0} / {1} cards".format(cardsParsed,numberOfCards))
+        def test_KHM(self):
+                mset = self._sets["KHM"]
+                cardsParsed,numberOfCards = self.parseCards(mset)
+                print("MtgJsonCompiler support for Kaldheim: {0} / {1} cards".format(cardsParsed,numberOfCards))
         def test_pWOS(self):
                 mset = self._sets["pWOS"]
                 cardsParsed,numberOfCards = self.parseCards(mset)

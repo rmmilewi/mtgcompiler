@@ -170,7 +170,7 @@ def instrumentedVersionOfXEarleyParse(self, stream, columns, to_scan, start_symb
     for token in stream:
         print(f"\t\tCURRENT POSITION (line: {text_line}, column: {text_column}): {token}")
         print("\t\tDELAYED_MATCHES:",delayed_matches)
-        print("\t\tTRANSITIVES:",transitives)
+        # print("\t\tTRANSITIVES:",transitives)
         self.predict_and_complete(i, to_scan, columns, transitives)
 
         to_scan = scan(i, to_scan)
@@ -254,7 +254,7 @@ def main():
         # spinner_t = threading.Thread(target=spinner_thread, args=(stop_event,))
 
         try:
-            user_input = input("Input: ")
+            user_input = input(f"{GREEN}Input: {RESET}")
             if user_input.lower() == 'quit':
                 print("Exiting the program.")
                 break
@@ -301,7 +301,7 @@ def main():
             # print(f"{e.get_context(lastTestedText)}")
 
             # Optionally, show expected tokens and their rules
-            print("Expected tokens:", e.expected)
+            # print("Expected tokens:", e.expected)
             # print("Error context:", e.match_examples(parser.parse, {"rule": [e.get_context(lastTestedText)]}))
             #
             if isinstance(e,UnexpectedCharacters):

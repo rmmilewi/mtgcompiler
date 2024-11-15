@@ -59,7 +59,7 @@ def getGrammar():
         canstatement: declarationorreference? "can" statement
         | declarationorreference? "can" "not" statement -> cantstatement
         becomesstatement: declarationorreference? "become"["s"] genericdeclarationexpression
-        costchangestatement: declarationorreference "cost"["s"] manasymbolexpression "more" "to" "cast" -> costincreasestatement
+        costchangestatement: declarationorreference "cost"["s"] manasymbolexpression "more" "to" ("cast" | "activate") -> costincreasestatement
         | declarationorreference "cost"["s"] manasymbolexpression "less" "to" "cast" -> costreductionstatement
         wherestatement: statement "," "where" statement //[Note: Used in elaborating variables.]
 
@@ -107,6 +107,7 @@ def getGrammar():
 
         forstatement:  "for" "each" (genericdeclarationexpression | "time" statement) ("beyond" "the" "first")? "," statement 
         | statement "for" "each" (genericdeclarationexpression | "time" statement) ("beyond" "the" "first")? -> forstatementinv
+        | "for" "each" genericdeclarationexpression -> forstatementnostatement
 
         untilstatement: "until" effectexpression -> untileffecthappensstatement
         | "until" timeexpression "," statement -> untiltimestatement
@@ -166,7 +167,15 @@ def getGrammar():
         | kwsurge | kwskulk | kwemerge | kwescalate | kwmelee
         | kwcrew | kwfabricate | kwpartner | kwundaunted | kwimprovise
         | kwaftermath | kwembalm | kweternalize | kwafflict | kwascend
-        | kwassist
+        | kwassist | kwjumpstart | kwmentor | kwafterlife | kwriot | kwspectacle
+        | kwescape | kwmutate | kwencore | kwboast | kwforetell | kwdemonstrate
+        | kwtimebound | kwdisturb | kwdecayed | kwcleave | kwtraining
+        | kwcompleated | kwreconfigure | kwblitz | kwcasualty | kwenlist
+        | kwreadahead | kwravenous | kwsquad | kwprototype | kwlivingmetal
+        | kwformirrodin | kwtoxic | kwbackup | kwbargain | kwcraft | kwdisguise
+        | kwsolve | kwplot | kwsaddle | kwspree | kwfreerunning | kwgift
+        | kwoffspring | kwimpending
+        
 
         kwdeathtouch: "deathtouch"
         kwdefender: "defender"
@@ -301,12 +310,56 @@ def getGrammar():
         kwafflict: "afflict" valuenumber
         kwascend: "ascend"
         kwassist: "assist"
+        kwjumpstart: "jump-start"
+        kwmentor: "mentor"
+        kwafterlife: "afterlife" valuenumber
+        kwriot: "riot"
+        kwspectacle: "spectacle" cost
+        kwescape: "escape" cost
+        kwcompanion: "companion" // TODO: this is gonna be bonkers.
+        kwmutate: "mutate" cost
+        kwencore: "encore" cost
+        kwboast: "boast" cost
+        kwforetell: "foretell" cost
+        kwdemonstrate: "demonstrate"
+        kwtimebound: "daybound" -> daybound | "nightbound" -> nightbound
+        kwdisturb: "disturb" cost
+        kwdecayed: "decayed"
+        kwcleave: "cleave" cost // TODO: this will be hilarious fun for the AST builder.
+        kwtraining: "training"
+        kwcompleated: "compleated"
+        kwreconfigure: "reconfigure" cost
+        kwblitz: "blitz" cost
+        kwcasualty: "casualty" valuenumber
+        kwenlist: "enlist"
+        kwreadahead: "read ahead"
+        kwravenous: "ravenous"
+        kwsquad: "squad" cost
+        kwprototype: "prototype" cost
+        kwlivingmetal: "living metal"
+        kwformirrodin: "for mirrodin!"
+        kwtoxic: "toxic" valuenumber
+        kwbackup: "backup" valuenumber
+        kwbargain: "bargain"
+        kwcraft: "craft" "with" declarationorreference cost
+        kwdisguise: "disguise" cost
+        kwsolve: "to solve" DASH expressionstatement -> kwtosolve
+        | "solved" DASH cost? expressionstatement -> kwsolved
+        kwplot: "plot" cost
+        kwsaddle: "saddle" valuenumber
+        kwspree: "spree" // TODO: implement +cost on other lines... this one is weird
+        kwfreerunning: "freerunning" cost
+        kwgift: "gift" declarationorreference
+        kwoffspring: "offspring" cost
+        kwimpending: "impending" valuenumber cost
 
         //ABILITY COSTS
 
         cost: costsequence | dashcostexpression
         costsequence: (loyaltycost | tapuntapsymbol | manasymbolexpression | effectexpression) ("," (loyaltycost | tapuntapsymbol | manasymbolexpression | effectexpression))*
-        dashcostexpression: DASH ( manasymbolexpression | effectexpression )
+        // this has ptexpression to account for Prototype keyword ability, e.g.: Prototype {3}{G} — 3/3
+        dashcostexpression: DASH ( manasymbolexpression | effectexpression ) ("," (effectexpression))*
+        | ( manasymbolexpression | effectexpression ) DASH ptexpression -> dashprototypeexpression
 
         ///VALUE EXPRESSIONS
 
@@ -388,7 +441,7 @@ def getGrammar():
         | manadescriptionexpression ("," manadescriptionexpression ",")* "and/or" manadescriptionexpression -> andormanadescriptionexpression
         manadescriptionexpression: puremanaexpression | textmanaexpression
         puremanaexpression: manasymbolexpression
-        textmanaexpression: 
+        textmanaexpression: valuecardinal "mana" anycolorexpression // E.G. "add one mana of any one color
         productionexpression: "produced" "by" declarationorreference -> producedbyexpression
         | "that" declarationorreference "could" "produce" -> couldproduceexpression
         anycolorexpression: "of" "any" "color"
@@ -397,6 +450,7 @@ def getGrammar():
 
 
         declarationdecorator: "each" -> eachdecorator
+        | "same" -> samedecorator
         | "all" -> alldecorator
         | ["an"]"other" -> otherdecorator
         | "a"["n"] -> indefinitearticledecorator
@@ -413,7 +467,8 @@ def getGrammar():
         referencedecorator: ("that" | "those") -> thatreference
         | ("this"|"these") -> thisreference
         | possessiveterm -> possessivereference
-        !possessiveterm: "its" | "your" | "their" | namereference ("'s"|"'") | objectdeclref ("'s"|"'") | playerdeclref ("'s"|"'") | typeexpression ("'s"|"'") | genericdeclarationexpression ("'s"|"'")
+        !possessiveterm: "its" | "your" | "their" | namereference ("'s"|"'") | objectdeclref ("'s"|"'") 
+        | playerdeclref ("'s"|"'") | typeexpression ("'s"|"'") | genericdeclarationexpression ("'s"|"'")
 
         ptexpression: valueexpression "/" valueexpression
         namedexpression: "named" (namereference | objectname)
@@ -544,10 +599,12 @@ def getGrammar():
         | searchexpression
         | shuffleexpression
         | tapuntapexpression
+        | millexpression
 
         activateexpression: "activate" declarationorreference
         !attacksexpression: declarationorreference? "only"? "attack"["s"] "only"? (timeexpression? declarationorreference?| declarationorreference? timeexpression?) "alone"?
         | declarationorreference? "attacked" (timeexpression? declarationorreference?| declarationorreference? timeexpression?) "alone"? -> attackedexpression
+        | declarationorreference? "attack"["s"] "with" declarationorreference -> attackswithexpression
         //| "be" "attacked" "by" declarationorreference? timeexpression? -> beattackedexpression
         !blocksexpression: declarationorreference? "only"? "block"["s"] "only"? (timeexpression? declarationorreference? | declarationorreference? timeexpression?) "alone"?
         | declarationorreference? "blocked" (timeexpression? declarationorreference? | declarationorreference? timeexpression?) "alone"? -> blockedexpression
@@ -577,9 +634,11 @@ def getGrammar():
         revealexpression: playerdeclref? ("reveal"["s"] | "revealed") (cardexpression | declarationorreference)
         sacrificeexpression: playerdeclref? ("sacrifice"["s"] | "sacrificed") declarationorreference
         searchexpression: playerdeclref? ("search"["es"] | "searched") zonedeclarationexpression? "for" declarationorreference
-        shuffleexpression: playerdeclref? ("shuffle"["s"] | "shuffled") zonedeclarationexpression
+        // used to be mandatory to specify a zone for shuffling, now default deck shuffling doesn't specify it.
+        shuffleexpression: playerdeclref? ("shuffle"["s"] | "shuffled") zonedeclarationexpression? 
         tapuntapexpression: "tap" declarationorreference? -> tapexpression
         | "untap" declarationorreference? -> untapexpression
+        millexpression: "mill" valueexpression "card"["s"]
 
         specialkeywordaction: regenerateexpression
         | scryexpression
@@ -604,6 +663,23 @@ def getGrammar():
         | turnfaceexpression
         | cycleexpression
         | levelupexpression~2
+        | surveilexpression
+        | conniveexpression
+        | monstrosityexpression
+        | adaptexpression
+        | amassexpression
+        | learnexpression
+        | ventureexpression
+        | convertexpression
+        | incubateexpression
+        | theringtemptsexpression
+        | timetravelexpression
+        | discoverexpression
+        | cloakexpression
+        | collectevidenceexpression
+        | suspectexpression
+        | forageexpression
+        | manifestdreadexpression
 
         regenerateexpression: "regenerate" declarationorreference
         scryexpression: "scry" valueexpression
@@ -633,11 +709,29 @@ def getGrammar():
 
         levelupexpression: ("level" levelrangeexpression ptexpression ability*)
         levelrangeexpression: NUMBER "-" NUMBER | NUMBER "+"
+        surveilexpression: "surveil" valueexpression
+        conniveexpression: "connive" valueexpression
+        monstrosityexpression: "monstrosity" valueexpression
+        adaptexpression: "adapt" valueexpression
+        amassexpression: "amass" typeterm? valueexpression
+        learnexpression: "learn"
+        ventureexpression: "venture into the dungeon"
+        convertexpression: "convert" namereference
+        incubateexpression: "incubate" valueexpression
+        theringtemptsexpression: "the ring tempts you"
+        timetravelexpression: "time travel" valuefrequency?
+        discoverexpression: "discover" valueexpression
+        # // TODO: not sure this works, e.g. "cloak the top card of your library"
+        cloakexpression: "cloak" declarationorreference 
+        collectevidenceexpression: "collect evidence" valueexpression
+        suspectexpression: "suspect" reference
+        forageexpression: "forage"
+        manifestdreadexpression: "manifest dread"
 
 
         //TYPE/MANA/COLOR EXPRESSIONS, MODIFIERS, AND MISCELLANEOUS
 
-        timeexpression: startendspecifier? timeterm ("of" timeexpression)?
+        timeexpression: startendspecifier? timeterm ("of" timeexpression)? ("on" possessiveterm timemodifier* PHASE)?
         startendspecifier: "the"? "beginning" "of" -> timebeginmodifier
         | "the"? "end" "of" -> timeendmodifier
         timeterm: (referencedecorator* | declarationdecorator*) possessiveterm* timemodifier* (PHASE | STEP | TURN | GAME |  "one")
@@ -668,7 +762,7 @@ def getGrammar():
 
         SUBTYPEARTIFACT: "clue" | "contraption" | "equipment" | "fortification" | "treasure" | "vehicle"
 
-        SUBTYPEENCHANTMENT: "aura" | "cartouche" | "curse" | "saga" | "shrine"
+        SUBTYPEENCHANTMENT: "aura" | "cartouche" | "curse" | "saga" | "shrine" | "case"
 
         SUBTYPEPLANESWALKER: "ajani" | "aminatou" | "angrath" | "arlinn" | "ashiok" | "bolas" | "chandra"
         | "dack" | "daretti" | "domri" | "dovin" | "elspeth" | "estrid" | "freyalise" | "garruk" | "gideon"
@@ -729,7 +823,7 @@ def getGrammar():
         ABILITYMODIFIER: "triggered" | "activated" | "mana" | "loyalty"
         COMBATSTATUSMODIFIER: "attacking" | "defending" | "attacked" | "blocking" | "blocked" | "active"
         KEYWORDSTATUSMODIFIER: "paired" | "kicked" | "face-up" | "face-down" | "transformed" | "enchanted" | "equipped"
-        | "fortified" | "monstrous" | "regenerated" | "suspended" | "flipped"
+        | "fortified" | "monstrous" | "regenerated" | "suspended" | "flipped" | "suspected" // TODO: ensure 'suspected' works properly
         TAPPEDSTATUSMODIFIER: "tapped" | "untapped"
         EFFECTSTATUSMODIFIER: "named" | "chosen" | "chosen at random" | "revealed" | "returned" | "destroyed" | "exiled" | "died" | "countered" | "sacrificed"
         | "the target of a spell or ability" | "prevented" | "created"
@@ -738,6 +832,7 @@ def getGrammar():
         | "unattached" ("from" declarationorreference)? -> unattachedmodifier
 
         qualifier: QUALIFIER["s"]
+        | "non" QUALIFIER -> nonqualifier
         QUALIFIER: ("ability"|"abilities") | "card" | "permanent" | "source" | "spell" | "token" | "effect"
 
         characteristicexpression: characteristicterms 
@@ -754,7 +849,9 @@ def getGrammar():
         characteristicterm: modifier* characteristic
         characteristic: OBJECTCHARACTERISTIC | PLAYERCHARACTERISTIC
         PLAYERCHARACTERISTIC: "maximum hand size" | "life total"["s"] | "life" | "cards in hand"
-        OBJECTCHARACTERISTIC: "card"? "name" | "mana cost" | "converted mana cost" | "color"["s"] | "color indicator" | "type"["s"] | "card type"["s"] | "subtype"["s"] | "supertype"["s"]
+        # OBJECTCHARACTERISTIC: "card"? "name" | "mana cost" | "converted mana cost" | "color"["s"] | "color indicator" | "type"["s"] | "card type"["s"] | "subtype"["s"] | "supertype"["s"]
+        # | "rules text" | "abilities" | "power" | "toughness" | "base power" | "base toughness" | "loyalty" | "hand modifier" | "life modifier"
+        OBJECTCHARACTERISTIC: "card"? "name" | "mana value" | "color"["s"] | "color indicator" | "type"["s"] | "card type"["s"] | "subtype"["s"] | "supertype"["s"]
         | "rules text" | "abilities" | "power" | "toughness" | "base power" | "base toughness" | "loyalty" | "hand modifier" | "life modifier"
 
         //[TODO: Not quite done, there are expressions like 'a number of cards equal to [...]'. There's some overlapping responsibilities with descriptions involving cards, maybe.]
@@ -785,7 +882,7 @@ def getGrammar():
 
         countertype: ptchangeexpression | WORD
 
-        loyaltycost: (PLUS | PWMINUS)? valueterm
+        loyaltycost: "[" (PLUS | PWMINUS)? valueterm "]"
         //[NOTE: Both Scryfall and Mtgjson use a long dash, not a short dash, to indicate a minus on a planeswalker ability]
         PWMINUS: "−"
         ptchangeexpression: (PLUS | MINUS) valueterm "/" (PLUS | MINUS) valueterm

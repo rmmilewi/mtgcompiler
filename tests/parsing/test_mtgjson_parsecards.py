@@ -3,13 +3,39 @@ from mtgcompiler.frontend.JsonParser import JsonParser
 from lark.tree import pydot__tree_to_png #For rendering the parse tree.
 import mtgcompiler.midend.support.inspection as inspection
 import mtgcompiler.midend.support.binding as binding
+import mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonCompiler as MtgJsonCompiler
 
 class TestParseCards(unittest.TestCase):
         
         @classmethod
         def setUpClass(cls):
-                options = {"rulestextonly": True}
-                cls._parser = JsonParser(options)
+                # options = {"rulestextonly": True}
+                # cls._parser = JsonParser(options)
+                compiler = MtgJsonCompiler.MtgJsonCompiler(options={"parser.startRule": "cardtext", "parser.larkDebug": True})
+                parser = compiler.getParser()
+                preprocessor = compiler.getPreprocessor()
+                cls._parser = parser
+                cls._preprocessor = preprocessor
+
+
+        def test_IxalansBinding(self):
+                data = {
+                  "object": "card",
+                  "id": "5f3c8c31-ceb8-4a2c-beb6-0ff5f7b6ae07",
+                  "name": "Ixalan's Binding",
+                  "mana_cost": "{3}{W}",
+                  "cmc": 4.0,
+                  "type_line": "Enchantment",
+                  "oracle_text": "When Ixalan's Binding enters, exile target nonland permanent an opponent controls until Ixalan's Binding leaves the battlefield.\nYour opponents can't cast spells with the same name as the exiled card.",
+                  "colors": [
+                    "W"
+                  ],
+                  "color_identity": [
+                    "W"
+                  ]}
+                preprocessed = self._preprocessor.prelex(data['oracle_text'], None, data['name'])
+                # print(preprocessed)
+                card = self._parser.parse(preprocessed)
         
         
         def test_parseCard(self):
