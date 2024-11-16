@@ -4,7 +4,6 @@ appdirs==1.4.4
 attrs==21.4.0
 aw-client==0.5.7
 aw-core==0.5.7
-aw-watcher-spotify @ file:///C:/Users/pakla/Documents/aw-spotify-watcher/aw-watcher-spotify-master
 awsebcli==3.20.9
 botocore==1.31.44
 CacheControl==0.12.10
