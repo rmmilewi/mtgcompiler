@@ -2,8 +2,12 @@ import unittest,json, traceback
 from tqdm import tqdm
 import mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonCompiler as MtgJsonCompiler
 from multiprocessing import Pool
+import zipfile
+
 
 def loadAllSets(fname="tests/parsing/AllPrintings.json"):
+        with zipfile.ZipFile(fname+".zip", 'r') as zip_ref:
+                zip_ref.extractall("tests/parsing/")
         with open(fname, encoding='utf-8') as f:
                 data = json.load(f)
                 return data["data"] # in latest AllPrintings files, set data is under the 'data' prop
