@@ -13,7 +13,7 @@ from setuptools import find_packages
 if __name__ == "__main__":
     try:
         setup(use_scm_version={"version_scheme": "no-guess-dev"},
-              packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),)
+              packages=find_packages('src/mtgcompiler', exclude=["*.tests", "*.tests.*", "tests.*", "tests"]), )
     except:  # noqa
         print(
             "\n\nAn error occurred while building the project, "

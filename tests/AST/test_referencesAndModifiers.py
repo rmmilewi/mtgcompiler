@@ -1,8 +1,8 @@
 import unittest
-from mtgcompiler.frontend.AST.reference import MgName,MgItReference,MgThatReference,MgSelfReference,MgNameReference,MgQualifier
+from mtgcompiler.frontend.AST.reference import MgName, MgThatReference,MgSelfReference,MgNameReference,MgQualifier
 from mtgcompiler.frontend.AST.reference import MgAbilityModifier,MgCombatStatusModifier,MgKeywordStatusModifier,MgTapStatusModifier,MgEffectStatusModifier
 from mtgcompiler.frontend.AST.colormana import MgColorTerm
-from mtgcompiler.frontend.AST.mtypes import MgSupertype,MgSubtype,MgType
+from mtgcompiler.frontend.AST.mtypes import MgType
 from mtgcompiler.frontend.AST.expressions import MgDescriptionExpression,MgTypeExpression,MgTargetExpression,MgColorExpression
 
 class TestReferences(unittest.TestCase):

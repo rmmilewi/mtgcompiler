@@ -2,11 +2,10 @@ import unittest
 import mtgcompiler.frontend.AST.expressions
 from mtgcompiler.frontend.AST.mtypes import MgSupertype,MgSubtype,MgType
 from mtgcompiler.frontend.AST.colormana import MgManaSymbol,MgColorTerm
-from mtgcompiler.frontend.AST.expressions import MgNumberValue,MgColorExpression,MgTypeExpression,MgModalExpression
+from mtgcompiler.frontend.AST.expressions import MgNumberValue,MgColorExpression,MgTypeExpression
 from mtgcompiler.frontend.AST.expressions import MgManaExpression,MgPTExpression,MgNonExpression,MgAndExpression
-from mtgcompiler.frontend.AST.expressions import MgOrExpression,MgTargetExpression,MgAllExpression,MgEachExpression
-from mtgcompiler.frontend.AST.expressions import MgChoiceExpression,MgTapUntapExpression,MgDestroyExpression
-from mtgcompiler.frontend.AST.reference import MgQualifier
+from mtgcompiler.frontend.AST.expressions import MgTargetExpression
+
 
 class TestCommonExpressions(unittest.TestCase):
         

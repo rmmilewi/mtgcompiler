@@ -2,10 +2,11 @@ import collections, pickle
 # from mtgcompiler.parsers.baseparser import BaseParser
 from mtgcompiler.frontend.AST.reference import MgNameReference,MgThisReference
 from mtgcompiler.frontend.AST.reference import MgName,MgTapUntapSymbol,MgZone,MgQualifier
-from mtgcompiler.frontend.AST.reference import MgAbilityModifier,MgCombatStatusModifier,MgKeywordStatusModifier,MgTapStatusModifier,MgEffectStatusModifier
+from mtgcompiler.frontend.AST.reference import MgAbilityModifier,MgCombatStatusModifier,MgKeywordStatusModifier, \
+    MgEffectStatusModifier
 from mtgcompiler.frontend.AST.card import MgTypeLine,MgFlavorText,MgTextBox,MgCard
 from mtgcompiler.frontend.AST.mtypes import MgSupertype,MgSubtype,MgType
-from mtgcompiler.frontend.AST.colormana import MgManaSymbol,MgColorTerm
+from frontend.AST.colormana import MgManaSymbol,MgColorTerm
 from mtgcompiler.frontend.AST.statements import MgKeywordAbilityListStatement,MgStatementBlock,MgExpressionStatement,MgActivationStatement
 from mtgcompiler.frontend.AST.statements import MgAbilitySequenceStatement,MgQuotedAbilityStatement
 from mtgcompiler.frontend.AST.statements import MgWhenStatement
@@ -13,7 +14,7 @@ from mtgcompiler.frontend.AST.statements import MgWhenStatement
 from mtgcompiler.frontend.AST.expressions import MgNumberValue,MgPTExpression,MgManaExpression,MgTypeExpression,MgDescriptionExpression
 from mtgcompiler.frontend.AST.expressions import MgNamedExpression,MgCostSequenceExpression,MgWithExpression,MgIndefiniteSingularExpression
 from mtgcompiler.frontend.AST.expressions import MgColorExpression,MgAndExpression,MgOrExpression,MgAndOrExpression,MgTargetExpression,MgDeclarationExpression
-from mtgcompiler.frontend.AST.expressions import MgDestroyExpression,MgExileExpression,MgDealsDamageExpression,MgChangeZoneExpression,MgSacrificeExpression
+from mtgcompiler.frontend.AST.expressions import MgDestroyExpression, MgDealsDamageExpression,MgChangeZoneExpression,MgSacrificeExpression
 from mtgcompiler.frontend.AST.expressions import MgAnyColorSpecifier,MgManaSpecificationExpression,MgAddManaExpression,MgCreateTokenExpression
 
 from mtgcompiler.frontend.AST.abilities import MgReminderText,MgAbilityWord,MgRegularAbility
@@ -27,23 +28,23 @@ from mtgcompiler.frontend.AST.abilities import MgFadingAbility, MgAmplifyAbility
 from mtgcompiler.frontend.AST.abilities import MgSoulshiftAbility, MgDredgeAbility, MgBloodthirstAbility, MgGraftAbility
 from mtgcompiler.frontend.AST.abilities import MgRippleAbility, MgVanishingAbility, MgAbsorbAbility, MgFrenzyAbility
 from mtgcompiler.frontend.AST.abilities import MgPoisonousAbility, MgDevourAbility, MgAnnihilatorAbility, MgTributeAbility
-from mtgcompiler.frontend.AST.abilities import MgRenownAbility, MgCrewAbility, MgFabricateAbility, MgAfflictAbility, MgSurveilAbility
+from mtgcompiler.frontend.AST.abilities import MgRenownAbility, MgCrewAbility, MgFabricateAbility
 
 from mtgcompiler.frontend.AST.abilities import MgCumulativeUpkeepAbility, MgBuybackAbility, MgCyclingAbility, MgKickerAbility, MgMadnessAbility
 from mtgcompiler.frontend.AST.abilities import MgMorphAbility, MgNinjutsuAbility, MgTransmuteAbility, MgRecoverAbility
 from mtgcompiler.frontend.AST.abilities import MgAuraSwapAbility, MgTransfigureAbility, MgEvokeAbility, MgMiracleAbility
 from mtgcompiler.frontend.AST.abilities import MgOverloadAbility, MgScavengeAbility, MgOutlastAbility, MgSurgeAbility
-from mtgcompiler.frontend.AST.abilities import MgEmergeAbility, MgEscalateAbility, MgEnbalmAbility, MgEternalizeAbility, MgJumpStartAbility
+from mtgcompiler.frontend.AST.abilities import MgEmergeAbility, MgEscalateAbility, MgEnbalmAbility, MgEternalizeAbility
 
 from mtgcompiler.frontend.AST.abilities import MgSpliceAbility,MgEnchantAbility,MgEquipAbility,MgBandingAbility,MgAffinityAbility
-from mtgcompiler.frontend.AST.abilities import MgOfferingAbility,MgForecastAbility,MgSuspendAbility,MgChampionAbility,MgReinforceAbility
+from mtgcompiler.frontend.AST.abilities import MgOfferingAbility, MgSuspendAbility,MgChampionAbility,MgReinforceAbility
 from mtgcompiler.frontend.AST.abilities import MgHiddenAgendaAbility,MgAwakenAbility,MgPartnerAbility
 
 from lark import Lark #Lexing and parsing!
 from lark import Transformer #Converting the parse tree into something useful.
 from lark.tree import pydot__tree_to_png #For rendering the parse tree.
 from lark.lexer import Token
-from num2words import num2words #For converting English value quantities into numbers.
+
 
 #Convenience function for flattening lists (of lists)+
 def flatten(l):
