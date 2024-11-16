@@ -18,6 +18,31 @@ Arbor produces, among other things, an abstract syntax tree (AST) like this:
 
 Once cards are converted into this abstract format, Arbor provides interfaces for querying, editing, and analyzing those cards. Additionally, the Arbor IR can be unparsed to retrieve the original card text or to convert it to another format.
 
+## How To Install Arbor
+
+First, clone the repository from GitHub:
+
+```
+git clone https://github.com/rmmilewi/mtgcompiler.git
+```
+
+Then install Arbor:
+
+```
+cd mtgcompiler
+python3 -m venv ../repo-env # create a new virtual environment
+. ../repo-env/bin/activate  # activate the new virtual env
+pip install -e .            # create editable install of mtgcompiler
+```
+
+And run the test suite:
+```
+pytest -n 4 tests/AST tests/compiler tests/parsing/test_mtgjson_featureparsing.py tests/parsing/test_mtgjson_parsecards.py
+```
+
+If all tests pass, the installation was successful, and you are ready to go!
+
+
 ## What can Arbor do?
 
 Arbor aims to be a platform upon which a user can easily build their own tools for working with Magic cards. Potential use cases include:
@@ -31,5 +56,7 @@ Arbor aims to be a platform upon which a user can easily build their own tools f
 As Arbor becomes more mature and stable, we hope to provide mini-applications that demonstrate these use cases. 
 
 This project is licensed under the terms of the MIT license.
+
+
 
 
