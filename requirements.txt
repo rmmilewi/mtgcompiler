@@ -88,3 +88,5 @@ websocket-client==1.4.0
 websockets==10.1
 youtube-dl==2021.12.17
 yt-dlp==2021.12.1
+
+setuptools~=68.2.0
