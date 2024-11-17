@@ -4,6 +4,7 @@ import mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonCompiler as MtgJsonComp
 from multiprocessing import Pool
 import zipfile
 
+from collections import Counter
 
 def loadAllSets(fname="tests/parsing/AllPrintings.json"):
         with zipfile.ZipFile(fname+".zip", 'r') as zip_ref:
@@ -60,16 +61,29 @@ class TestSetParsing(unittest.TestCase):
         
         @classmethod
         def tearDownClass(cls):
-                global totalCardsParsed,totalCardsAttempted,parsednames
+                global totalCardsParsed, totalCardsAttempted, parsednames
                 print("Total MtgJsonCompiler parser support for Magic cards: {0} / {1} ({2}%)".format(totalCardsParsed,totalCardsAttempted,totalCardsParsed/totalCardsAttempted))
                 print("{0} unique cards parsed.".format(len(parsednames)))
         def parseCards(self,mset):
-                global totalCardsParsed,totalCardsAttempted,parsednames
-                numberOfCards = len(mset["cards"])
-                print(mset["name"])
-                cardsParsed = 0                
+                global totalCardsParsed, totalCardsAttempted, parsednames
+                # Count occurrences of each name
+                # Helper function to get unique card names considering 'faceName' for split cards
+                def get_unique_name(card):
+                        if 'faceName' in card:
+                                return card['faceName']
+                        return card['name']
+
+                # Count unique cards based on this adjusted logic
+                unique_cards = {get_unique_name(card): card for card in mset['cards'] if not get_unique_name(card).startswith("A-")}
+
+                # Ensure the filtered list matches the base set size
+                uniqueCards = list(unique_cards.values())
+                print("\n".join(sorted([get_unique_name(card) for card in uniqueCards])))
+                print(f"Parsing set {mset['name']} with {len(uniqueCards)} cards")
+                numberOfCards = len(uniqueCards)
+                cardsParsed = 0
                 with Pool(processes=8) as pool:
-                        for res in tqdm(pool.imap_unordered(parseWorker,mset["cards"])):
+                        for res in tqdm(pool.imap_unordered(parseWorker,uniqueCards)):
                                 name,parsed = res
                                 if parsed == True:
                                         if name not in self._parsednames:
@@ -80,23 +94,15 @@ class TestSetParsing(unittest.TestCase):
                                 else:
                                         totalCardsAttempted += 1
                 return cardsParsed,numberOfCards
-                
-        #def test_UST(self):
-        #        mset = self._sets["UST"]
-        #        cardsParsed,numberOfCards = self.parseCards(mset)
-        #        print("MtgJsonCompiler support for Unstable: {0} / {1} cards".format(cardsParsed,numberOfCards))
-        #def test_UNH(self):
-        #        mset = self._sets["UNH"]
-        #        cardsParsed,numberOfCards = self.parseCards(mset)
-        #        print("MtgJsonCompiler support for Unhinged: {0} / {1} cards".format(cardsParsed,numberOfCards))
-        #def test_UGL(self):
-        #        mset = self._sets["UGL"]
-        #        cardsParsed,numberOfCards = self.parseCards(mset)
-        #        print("MtgJsonCompiler support for Unglued: {0} / {1} cards".format(cardsParsed,numberOfCards))
+
         def test_KHM(self):
                 mset = self._sets["KHM"]
                 cardsParsed,numberOfCards = self.parseCards(mset)
                 print("MtgJsonCompiler support for Kaldheim: {0} / {1} cards".format(cardsParsed,numberOfCards))
+        def test_ELD(self):
+                mset = self._sets["ELD"]
+                cardsParsed,numberOfCards = self.parseCards(mset)
+                print("MtgJsonCompiler support for Throne of Eldraine: {0} / {1} cards".format(cardsParsed,numberOfCards))
         def test_pWOS(self):
                 mset = self._sets["pWOS"]
                 cardsParsed,numberOfCards = self.parseCards(mset)
