@@ -14,7 +14,7 @@ class MtgJsonCompiler(BaseCompiler):
                 
                 #TODO: This is just a temporary solution until we have a more elegant
                 #way of generating the grammar.
-                g = grammar.getGrammar()
+                #g = grammar.getGrammar()
                 
                 """
                 grammar = grammarian.requestGrammar(imports=
@@ -58,9 +58,19 @@ class MtgJsonCompiler(BaseCompiler):
                     larkLexer = options["parser.larkLexer"]
                 else:
                     larkLexer = "auto"
+
+                if "parser.larkParser" in options:
+                    larkParser = options["parser.larkParser"]
+                else:
+                    larkParser = "earley"
+
+                if "parser.overrideGrammar" in options:
+                    g = options["parser.overrideGrammar"]
+                else:
+                    g = grammar.getGrammar()
                 
                 try:
-                    self._larkfrontend = lark.Lark(g,start=startRule,debug=larkDebug, parser="earley", lexer=larkLexer)
+                    self._larkfrontend = lark.Lark(g,start=startRule,debug=larkDebug, parser=larkParser, lexer=larkLexer)
                 except Exception as e:
                     print("MTGJsonCompiler: Failed to instantiate Lark frontend.")
                     raise e
