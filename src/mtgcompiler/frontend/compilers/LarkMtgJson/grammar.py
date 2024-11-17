@@ -144,7 +144,7 @@ def getGrammar():
         | kwdefender | kwdoublestrike | kwenchant | kwequip | kwfirststrike
         | kwflash | kwflying | kwhaste | kwhexproof | kwindestructible
         | kwintimidate | kwlandwalk | kwlifelink | kwprotection | kwreach 
-        | kwshroud | kwtrample | kwvigilance | kwbanding 
+        | kwshroud | kwtrample | kwvigilance | kwward | kwbanding 
         | kwrampage | kwcumulativeupkeep | kwflanking | kwphasing
         | kwbuyback | kwshadow | kwcycling | kwecho | kwhorsemanship
         | kwfading | kwkicker | kwflashback | kwmadness | kwfear
@@ -196,6 +196,7 @@ def getGrammar():
         kwshroud: "shroud"
         kwtrample: "trample"
         kwvigilance: "vigilance"
+        kwward: "ward" cost
         kwbanding: "banding" | "bands" "with" "other" genericdescriptionexpression
         kwrampage: "rampage" valuenumber
         kwcumulativeupkeep: "cumulative" "upkeep" cost
@@ -441,7 +442,8 @@ def getGrammar():
         | manadescriptionexpression ("," manadescriptionexpression ",")* "and/or" manadescriptionexpression -> andormanadescriptionexpression
         manadescriptionexpression: puremanaexpression | textmanaexpression
         puremanaexpression: manasymbolexpression
-        textmanaexpression: valuecardinal "mana" anycolorexpression // E.G. "add one mana of any one color
+        // E.G. "add one mana of any one color" or "add six {g}"
+        textmanaexpression: valuecardinal (("mana" anycolorexpression) | manasymbolexpression ) 
         productionexpression: "produced" "by" declarationorreference -> producedbyexpression
         | "that" declarationorreference "could" "produce" -> couldproduceexpression
         anycolorexpression: "of" "any" "color"
@@ -638,7 +640,8 @@ def getGrammar():
         shuffleexpression: playerdeclref? ("shuffle"["s"] | "shuffled") zonedeclarationexpression? 
         tapuntapexpression: "tap" declarationorreference? -> tapexpression
         | "untap" declarationorreference? -> untapexpression
-        millexpression: "mill" valueexpression "card"["s"]
+        # millexpression: "mill" valueexpression "card"["s"]
+        millexpression: playerdeclref? "mill"["s"] cardexpression
 
         specialkeywordaction: regenerateexpression
         | scryexpression
@@ -755,14 +758,14 @@ def getGrammar():
         | "land" | "phenomenon" | "plane" | "artifact" | "scheme" | "sorcery"
         | "tribal" | "vanguard"
 
-        SUBTYPESPELL : "arcane" | "trap"
+        SUBTYPESPELL : "arcane" | "trap" | "adventure"
 
         SUBTYPELAND: "desert" | "forest" | "gate" | "island" | "lair" | "locus"
         | "mine" | "mountain" | "plains" | "power-plant" | "swamp" | "tower" | "urza's"
 
-        SUBTYPEARTIFACT: "clue" | "contraption" | "equipment" | "fortification" | "treasure" | "vehicle"
+        SUBTYPEARTIFACT: "clue" | "contraption" | "equipment" | "fortification" | "treasure" | "vehicle" | "food"
 
-        SUBTYPEENCHANTMENT: "aura" | "cartouche" | "curse" | "saga" | "shrine" | "case"
+        SUBTYPEENCHANTMENT: "aura" | "cartouche" | "curse" | "saga" | "shrine" | "rune" | "shard" | "case"
 
         SUBTYPEPLANESWALKER: "ajani" | "aminatou" | "angrath" | "arlinn" | "ashiok" | "bolas" | "chandra"
         | "dack" | "daretti" | "domri" | "dovin" | "elspeth" | "estrid" | "freyalise" | "garruk" | "gideon"
@@ -801,7 +804,7 @@ def getGrammar():
         | "surrakar" | "survivor" | "tetravite" | "thalakos" | "thopter" | "thrull" | "treefolk" | "trilobite" | "triskelavite"
         | "troll" | "turtle" | "unicorn" | "vampire" | "vedalken" | "viashino" | "volver" | "wall" | "warrior" | "weird"
         | ("werewolf"|"werewolves") | "whale" | "wizard" | ("wolf"|"wolves") | "wolverine" | "wombat" | "worm" | "wraith" | "wurm" | "yeti" 
-        | "zombie" | "zubera"
+        | "zombie" | "zubera" | "mouse"
 
         SUBTYPEPLANAR: "alara" | "arkhos" | "azgol" | "belenon" | "bolas’s meditation realm"
         | "dominaria" | "equilor" | "ergamon" | "fabacin" | "innistrad" | "iquatana" | "ir" 
