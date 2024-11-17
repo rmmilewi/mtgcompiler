@@ -68,9 +68,19 @@ class MtgJsonCompiler(BaseCompiler):
                     g = options["parser.overrideGrammar"]
                 else:
                     g = grammar.getGrammar()
-                
+
+                if "parser.strict" in options:
+                    strict = options["parser.strict"]
+                else:
+                    strict = False
+
+                if "parser.ambiguity" in options:
+                    ambiguity = options["parser.ambiguity"]
+                else:
+                    ambiguity = "resolve"
+
                 try:
-                    self._larkfrontend = lark.Lark(g,start=startRule,debug=larkDebug, parser=larkParser, lexer=larkLexer)
+                    self._larkfrontend = lark.Lark(g,start=startRule,debug=larkDebug, parser=larkParser, lexer=larkLexer,strict=strict,ambiguity=ambiguity)
                 except Exception as e:
                     print("MTGJsonCompiler: Failed to instantiate Lark frontend.")
                     raise e
