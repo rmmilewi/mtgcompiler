@@ -417,7 +417,7 @@ def getGrammar():
 
         objectdeclref: objectdeclaration | objectreference
         objectdeclaration: declarationdecorator* objectdefinition
-        objectreference: referencedecorator+ objectdefinition
+        objectreference: referencedecorator* objectdefinition
         objectdefinition: objectdescriptionexpression
         | objectdescriptionexpression ("," objectdescriptionexpression ",")* "or" objectdescriptionexpression -> orobjectdescriptionexpression
         | objectdescriptionexpression ("," objectdescriptionexpression ",")* "and" objectdescriptionexpression -> andobjectdescriptionexpression
@@ -425,7 +425,7 @@ def getGrammar():
 
         ///[TODO: Rewriting objectdescriptionexpression to respect a canonical order because it makes parsing so much faster.]
         //objectdescriptionexpression: objectdescriptionterm (","? objectdescriptionterm)*
-        objectdescriptionexpression: objectpreterm* objectpostterm*
+        objectdescriptionexpression: objectpreterm+ objectpostterm*
         objectpreterm:  colorexpression | namedexpression | manasymbolexpression | typeexpression | ptexpression | valueexpression
         | qualifier | modifier | locationexpression | valuecardinal | additionalexpression | characteristicexpression
         objectpostterm: withexpression | withoutexpression | choiceexpression | ofexpression | characteristicexpression | atrandomexpression
