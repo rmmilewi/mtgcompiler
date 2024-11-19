@@ -110,7 +110,7 @@ class TestSetParsing(unittest.TestCase):
                 print(f"MtgJsonCompiler support for {set_name}: {cardsParsed} / {numberOfCards} cards")
                 df = pd.DataFrame(results)
                 csvName = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}-{set_key}.csv"
-                outdir = 'tests/results'
+                outdir = 'setCoverageData/'
                 if not os.path.exists(outdir):
                         os.makedirs(outdir, exist_ok=True)
                 fullname = os.path.join(outdir, csvName)
@@ -580,6 +580,9 @@ class TestSetParsing(unittest.TestCase):
 
         def test_S00(self):
                 self.test_set("S00", "Starter 2000")
+
+        def test_MH3(self):
+                self.test_set("MH3", "Modern Horizons 3")
 
 
 if __name__ == '__main__':

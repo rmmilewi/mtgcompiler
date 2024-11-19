@@ -65,7 +65,7 @@ def getGrammar():
 
         expressionstatement: (effectexpression | beexpression | valueexpression) timeexpression? //[TODO: Do time expressions need to go here?]
         beexpression: ("be"|"been") modifier valueexpression? ("by" declarationorreference)? timeexpression?//[TODO: Not sure how to categorize this one yet.]
-        activationstatement: cost ":" statementblock
+        activationstatement: cost ":" statementblock 
 
         compoundstatement: statement  ("," statement)* ","? thenstatement -> compoundthenstatement
         | statement ("," statement)* untilstatement -> compounduntilstatement
@@ -417,7 +417,7 @@ def getGrammar():
 
         objectdeclref: objectdeclaration | objectreference
         objectdeclaration: declarationdecorator* objectdefinition
-        objectreference: referencedecorator* objectdefinition
+        objectreference: referencedecorator+ objectdefinition
         objectdefinition: objectdescriptionexpression
         | objectdescriptionexpression ("," objectdescriptionexpression ",")* "or" objectdescriptionexpression -> orobjectdescriptionexpression
         | objectdescriptionexpression ("," objectdescriptionexpression ",")* "and" objectdescriptionexpression -> andobjectdescriptionexpression
@@ -426,11 +426,11 @@ def getGrammar():
         ///[TODO: Rewriting objectdescriptionexpression to respect a canonical order because it makes parsing so much faster.]
         //objectdescriptionexpression: objectdescriptionterm (","? objectdescriptionterm)*
         objectdescriptionexpression: objectpreterm+ objectpostterm*
-        objectpreterm:  colorexpression | namedexpression | manasymbolexpression | typeexpression | ptexpression | valueexpression
+        objectpreterm:  colorexpression  | manasymbolexpression | typeexpression | ptexpression | valueexpression
         | qualifier | modifier | locationexpression | valuecardinal | additionalexpression | characteristicexpression
         objectpostterm: withexpression | withoutexpression | choiceexpression | ofexpression | characteristicexpression | atrandomexpression
         | "that"? dealtdamageexpression | "that" doesnthaveexpression | controlpostfix | ownpostfix | putinzonepostfix | castpostfix | "that" ispostfix | targetspostfix
-        | "that" sharepostfix
+        | "that" sharepostfix | namedexpression
 
         //[TODO: Mana type declarations. Mana is now a first-class citizen!]
         manadeclref: manadeclaration | manareference
@@ -573,7 +573,7 @@ def getGrammar():
         | declarationorreference "leaves" locationexpression -> leavezoneexpression
         skiptimeexpression: playerdeclref? "skip"["s"] timeexpression
         switchexpression: playerdeclref? "switch"["es"] declarationorreference
-        targetsexpression: objectdeclref? "target"["s"] declarationorreference?
+        targetsexpression: objectdeclref? "target"["s"] declarationorreference
         shareexpression: declarationorreference "share"["s"] declarationorreference
 
 
