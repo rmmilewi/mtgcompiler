@@ -31,7 +31,9 @@ jobs:
         python -m pip install .
     - name: Fetch copy of AllPrintings.json from Google Drive
       run: |
+        cd tests/parsing
         gdown https://drive.google.com/uc?id=1ZTTotLkZl-nLIDc7LgK6PpkVN7RzQ0DB
+        cd ../..
     - name: Test Magic set coverage with pytest
       run: |
         pytest -n 8 tests/parsing/test_mtgjson_setparsing.py
