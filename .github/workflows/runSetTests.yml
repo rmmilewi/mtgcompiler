@@ -39,9 +39,10 @@ jobs:
          pytest tests/parsing/test_mtgjson_setparsing.py::TestSetParsing::test_10E tests/parsing/test_mtgjson_setparsing.py::TestSetParsing::test_XLN tests/parsing/test_mtgjson_setparsing.py::TestSetParsing::test_ELD  tests/parsing/test_mtgjson_setparsing.py::TestSetParsing::test_MH3 tests/parsing/test_mtgjson_setparsing.py::TestSetParsing::test_SOI -v -s
     - name: Add & Commit Set Coverage Data
       uses: EndBug/add-and-commit@v9.1.4
-      add: setCoverageData/*.csv
-      message: 'Added latest weekly set coverage results'
-      push: true
+      with:
+        add: setCoverageData/*.csv
+        message: 'Added latest weekly set coverage results'
+        push: true
       
             
 
