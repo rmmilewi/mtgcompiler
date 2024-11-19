@@ -4,6 +4,7 @@
 name: Run Magic Set Test Coverage (Weekly)
 
 on:
+  workflow_dispatch: # Enables manual triggering
   schedule:
     # Runs every Sunday at 00:00 UTC
     - cron: "0 0 * * 0"
