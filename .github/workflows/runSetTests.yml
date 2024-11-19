@@ -36,5 +36,5 @@ jobs:
         cd ../..
     - name: Test Magic set coverage with pytest
       run: |
-        pytest tests/parsing/test_mtgjson_setparsing.py
+        pytest tests/parsing/test_mtgjson_setparsing.py -v -s
 
