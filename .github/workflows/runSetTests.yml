@@ -36,7 +36,7 @@ jobs:
         cd ../..
     - name: Test Magic set coverage (five selected sets for now) with pytest
       run: |
-         pytest tests/parsing/test_mtgjson_setparsing.py::TestSetParsing::test_10E -v -s
+         pytest tests/parsing/test_mtgjson_setparsing.py::TestSetParsing::test_DKM -v -s
     - name: Add & Commit Set Coverage Data
       uses: EndBug/add-and-commit@v9.1.4
       with:
