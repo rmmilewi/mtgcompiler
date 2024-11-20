@@ -37,12 +37,17 @@ jobs:
     - name: Test Magic set coverage (five selected sets for now) with pytest
       run: |
          pytest tests/parsing/test_mtgjson_setparsing.py::TestSetParsing::test_DKM -v -s
+    # - name: Add & Commit Set Coverage Data
+    #   uses: EndBug/add-and-commit@v9.1.4
+    #   with:
+    #     add: setCoverageData/*.csv
+    #     message: 'Added latest weekly set coverage results'
+    #     push: true
     - name: Add & Commit Set Coverage Data
-      uses: EndBug/add-and-commit@v9.1.4
+      uses: stefanzweifel/git-auto-commit-action@v5
       with:
-        add: setCoverageData/*.csv
-        message: 'Added latest weekly set coverage results'
-        push: true
+        branch: gh-pages
+        file_pattern: setCoverageData/*.csv
       
             
 
