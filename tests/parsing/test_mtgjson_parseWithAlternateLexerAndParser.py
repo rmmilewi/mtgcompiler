@@ -6,9 +6,9 @@ import mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonCompiler as MtgJsonComp
 import pytest
 import lark.lexer
 
-class TestWithBasicLexer(unittest.TestCase):
+class TestGrammarAndParser(unittest.TestCase):
 
-
+    """
     @classmethod
     def setUpClass(cls):
         compiler = MtgJsonCompiler.MtgJsonCompiler(options={"parser.startRule": "cardtext",
@@ -23,8 +23,10 @@ class TestWithBasicLexer(unittest.TestCase):
         preprocessor = compiler.getPreprocessor()
         cls._parser = parser
         cls._preprocessor = preprocessor
+    """""
+        
 
-    #@pytest.mark.skip(reason="Just doing some experimentation here.")
+    @pytest.mark.skip(reason="Just doing some experimentation here.")
     def test_WithBasicLexer_RunLexerOnly(self):
         def runLexer(data):
             preprocessed = self._preprocessor.prelex(data['oracle_text'], None, data['name'])
@@ -68,6 +70,177 @@ class TestWithBasicLexer(unittest.TestCase):
         print(f"Input text took {parseTimeEnd-parseTimeStart} to parse.")
         print(parseResult.pretty())
         #print(f"{dragonCard['name']} took {parseTimeEnd-parseTimeStart} to parse.")
+
+
+    def test_periodPlacementForStatements(self):
+        statementGrammar = """
+        statementblock : (statement ["."])+
+
+        //STATEMENTS
+
+        statement: compoundstatement
+        | expressionstatement
+        | conditionalstatement 
+        | activationstatement
+        | beingstatement
+        | dostatement
+        | thenstatement
+        | insteadstatement
+        | maystatement
+        | wouldstatement
+        | additionalcoststatement
+        | modalstatement
+
+        thenstatement: "then" statement
+        insteadstatement: statement "instead"
+        maystatement:  playerdeclref? ("may" | "may" "have") statement
+        wouldstatement: playerdeclref? "would" statement
+        additionalcoststatement: "as" "an" "additional" "cost" "to" statement "," statement
+        modalstatement: "choose" valuecardinal DASH (modalchoiceexpression)+
+        modalchoiceexpression: MODALCHOICE statementblock
+
+        dostatement: declarationorreference? ("do" | "does") statement? -> dostatement
+        | declarationorreference? ("do" "not" | "does" "not") statement? -> dontstatement
+
+        beingstatement: isstatement
+        | hasstatement
+        | isntstatement
+        | canstatement
+        | becomesstatement
+        | costchangestatement
+        | wherestatement
+
+        !isstatement: declarationorreference ("is" | "was" | "are" "each"?) ("still"|"not")? (declarationorreference | characteristicexpression | statement)
+        !hasstatement: declarationorreference? ("has"|"have"|"had") (abilitysequencestatement | characteristicexpression | beexpression | statement)
+        | declarationorreference?  ("has"|"have"|"had") ("a"|valueexpression) countertype "counter"["s"] "on" declarationorreference -> hascounterstatement
+        isntstatement: declarationorreference? "is" "not" statement
+        canstatement: declarationorreference? "can" statement
+        | declarationorreference? "can" "not" statement -> cantstatement
+        becomesstatement: declarationorreference? "become"["s"] genericdeclarationexpression
+        costchangestatement: declarationorreference "cost"["s"] manasymbolexpression "more" "to" ("cast" | "activate") -> costincreasestatement
+        | declarationorreference "cost"["s"] manasymbolexpression "less" "to" "cast" -> costreductionstatement
+        wherestatement: statement "," "where" statement //[Note: Used in elaborating variables.]
+
+        expressionstatement: (effectexpression | beexpression | valueexpression) timeexpression? //[TODO: Do time expressions need to go here?]
+        beexpression: ("be"|"been") modifier valueexpression? ("by" declarationorreference)? timeexpression?//[TODO: Not sure how to categorize this one yet.]
+        activationstatement: cost ":" statementblock 
+
+        compoundstatement: statement  ("," statement)* ","? thenstatement -> compoundthenstatement
+        | statement ("," statement)* untilstatement -> compounduntilstatement
+        | statement ("," statement)* ","? "and" statement -> compoundandstatement
+        | statement ("," statement)* ","? "or" statement -> compoundorstatement
+
+        conditionalstatement: ifstatement
+        | wheneverstatement
+        | whenstatement
+        | atstatement
+        | aslongasstatement
+        | forstatement
+        | untilstatement
+        | afterstatement
+        | otherwisestatement
+        | unlessstatement
+        | asstatement
+        | whilestatement
+        | duringstatement
+        | exceptstatement
+        | ratherstatement
+        | nexttimestatement
+        | beforestatement
+
+        ifstatement: "if" statement "," statement
+        | statement "only"? "if" statement -> ifstatementinv
+
+        wheneverstatement:  "whenever" statement timeexpression? "," statement 
+        | statement "whenever" statement timeexpression? -> wheneverstatementinv
+
+        whenstatement:  "when" statement "," statement 
+        | statement "when" statement -> whenstatementinv
+
+        atstatement:  "at" timeexpression "," statement 
+        | statement "at" timeexpression -> atstatementinv
+
+        aslongasstatement:  "for"? "as" "long" "as" statement "," statement
+        | statement "for"? "as" "long" "as" statement -> aslongasstatementinv
+
+        forstatement:  "for" "each" (genericdeclarationexpression | "time" statement) ("beyond" "the" "first")? "," statement 
+        | statement "for" "each" (genericdeclarationexpression | "time" statement) ("beyond" "the" "first")? -> forstatementinv
+        | "for" "each" genericdeclarationexpression -> forstatementnostatement
+
+        untilstatement: "until" effectexpression -> untileffecthappensstatement
+        | "until" timeexpression "," statement -> untiltimestatement
+        | statement "until" timeexpression -> untiltimestatementinv
+
+        afterstatement:  "after" timeexpression "," statement 
+        | statement "after" timeexpression -> afterstatementinv
+
+        otherwisestatement: "otherwise" "," statement
+
+        unlessstatement:  statement "unless" statement
+
+        asstatement: "as" statement "," statement -> asstatement
+
+        whilestatement:  "while" statement "," statement
+
+        duringstatement:  statement "during" timeexpression
+        | statement "only" "during" timeexpression -> exclusiveduringstatement
+
+        exceptstatement:  statement "except" (("by"|"for") genericdeclarationexpression | statement)
+
+        ratherstatement:  statement "rather" "than" statement
+
+        nexttimestatement: "the" "next" "time" statement timeexpression? "," statement
+
+        beforestatement: statement "before" (timeexpression | statement)
+        
+        //Non-statement related rules...
+        declarationorreference: RANDOMTEXT
+        timeexpression: RANDOMTEXT
+        effectexpression: RANDOMTEXT
+        genericdeclarationexpression: RANDOMTEXT
+        characteristicexpression: RANDOMTEXT
+        manasymbolexpression: RANDOMTEXT
+        valueexpression: RANDOMTEXT
+        countertype: RANDOMTEXT
+        valuecardinal: RANDOMTEXT
+        playerdeclref: RANDOMTEXT
+        abilitysequencestatement: RANDOMTEXT
+        cost: RANDOMTEXT
+        modifier: RANDOMTEXT
+        DASH: "—"
+        MODALCHOICE: "•"
+        RANDOMTEXT: "TEXT"
+        
+        %import common.WS -> WS
+        %ignore WS
+        """
+        compilerUsingPartialGrammar = MtgJsonCompiler.MtgJsonCompiler(
+            options={"parser.overrideGrammar": statementGrammar,
+                     "parser.startRule": "statementblock",
+                     "parser.ambiguity": "explicit"
+                     })
+        parser = compilerUsingPartialGrammar.getParser()
+
+        statementBlocksToTest = [
+            "if TEXT, TEXT instead.",
+            "whenever TEXT, TEXT until TEXT.",
+            "TEXT: TEXT is TEXT until TEXT.",
+            "TEXT. TEXT. TEXT.",
+            "TEXT, TEXT, and TEXT. TEXT.",
+            "if TEXT, TEXT during TEXT except TEXT after TEXT."
+        ]
+
+        for statementBlock in statementBlocksToTest:
+            try:
+                fullParseTimeStart = time.time()
+                parseTree = parser.parse(statementBlock)
+                fullParseTimeEnd = time.time()
+                print(f"Statement(s) ({statementBlock}) took {fullParseTimeEnd-fullParseTimeStart} to parse")
+                ambiguities = list(parseTree.find_data("_ambig"))
+                print(f"The input has {len(ambiguities)} ambiguities.")
+            except Exception as exception:
+                print(f"Encountered an exception when parsing statement(s) ({statementBlock}): {exception}" )
+        print("-----------------------")
 
 
 
