@@ -10,7 +10,7 @@ on:
     - cron: "0 0 * * 0"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -34,7 +34,21 @@ jobs:
         cd tests/parsing
         gdown https://drive.google.com/uc?id=1ZTTotLkZl-nLIDc7LgK6PpkVN7RzQ0DB
         cd ../..
-    - name: Test Magic set coverage with pytest
+    - name: Test Magic set coverage (five selected sets for now) with pytest
       run: |
-        pytest tests/parsing/test_mtgjson_setparsing.py -v -s
+         pytest \
+           tests/parsing/test_mtgjson_setparsing.py::TestSetParsing::test_10E \
+           tests/parsing/test_mtgjson_setparsing.py::TestSetParsing::test_XLN \
+           tests/parsing/test_mtgjson_setparsing.py::TestSetParsing::test_ELD \
+           tests/parsing/test_mtgjson_setparsing.py::TestSetParsing::test_MH3 \
+           tests/parsing/test_mtgjson_setparsing.py::TestSetParsing::test_SOI \
+           -v -s
+    - name: Add & Commit Set Coverage Data
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        branch: gh-pages
+        file_pattern: setCoverageData/*.csv
+        commit_message: 'Added latest weekly set coverage results'
+      
+            
 
