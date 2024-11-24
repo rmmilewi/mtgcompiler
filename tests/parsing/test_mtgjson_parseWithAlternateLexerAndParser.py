@@ -76,53 +76,60 @@ class TestGrammarAndParser(unittest.TestCase):
 
         revisedStatementGrammar = """
         
-        statementblock : (statement)+
+        statementblock : (statement)+ | activationstatement
         
-        statement: statementwithouttrailingsubstatements "." | standaloneconditionalstatement "." | compoundstatement "." | modalstatement | activationstatement
+        statement: statementwithouttrailingsubstatements "." | standaloneconditionalstatement "." | compoundstatement "." | modalstatement
 
-        statementwithouttrailingsubstatements: statementexpression | compoundconditionalstatement
+        statementwithouttrailingsubstatements: statementexpression
         
-        //NOTE: conditionalstatement with conditionalresult can't exist within a compoundstatement without causing an ambiguity
+        //Period ambiguity resolved: Periods should always occur after each statementwithouttrailingsubstatement, standaloneconditionalstatement, or compoundstatement.
+        //Radically simplified the conditional statement logic. Rather than having a separate rule for every conditional term, we have one generic rule for all of them. Note that this means we will have to check the semantics of conditionals at AST construction time to build the AST properly.
+        // IS-A and HAS-A relations ("~ IS blue", "~ HAS haste", "creatures you control BECOME dragons in addition to their other types" etc.) previously were classed as statements. They're now considered expressions since they essentially set or compute a value. This simplifies the grammar since it's now easier to determine where a statement should be produced vs. an expression.
+        //conditionalstatement with conditionalresult can't exist within a compoundstatement without causing an ambiguity. Fixed by adding compoundconditionalstatement and standaloneconditionalstatement rules.
+        //There's an ambiguity with activationstatement: it's unclear whether consecutive sentences in the RHS belong to the activation statement or the surrounding block. Fixed by changing it so an activation statement always takes up the entire block.
         
-        activationstatement: statementexpression ":" statementblock 
+        
+        activationstatement: statementexpression ("," statementexpression)* ":" statementblock 
         modalstatement: "choose" statementexpression DASH (modalchoicestatement)+
         modalchoicestatement: MODALCHOICE statementblock
         
-        compoundstatement: statementwithouttrailingsubstatements ("," statementwithouttrailingsubstatements)* ","? "then" statementwithouttrailingsubstatements -> compoundthenstatement
-        | statementwithouttrailingsubstatements ("," statementwithouttrailingsubstatements)* ","? "and" statementwithouttrailingsubstatements -> compoundandstatement
-        | statementwithouttrailingsubstatements ("," statementwithouttrailingsubstatements)* ","? "or" statementwithouttrailingsubstatements -> compoundorstatement
+        compoundstatement: (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "then" (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundthenstatement
+        | (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "and" (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundandstatement
+        | (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "or" (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundorstatement
         
         compoundconditionalstatement: condition statementexpression 
         | statementexpression condition -> compoundconditionalinv
-        | conditionalresult postfixexpression? -> compoundconditionalresult
+        | conditionalresult postfixexpression -> compoundconditionalresult
         
-        standaloneconditionalstatement: condition statementexpression "," conditionalresult postfixexpression?
-        | conditionalresult ","? condition statementexpression -> conditionalstatementinv
+        standaloneconditionalstatement: "then"? condition statementexpression postfixexpression? "," "then"? (conditionalresult postfixexpression? | standaloneconditionalstatement)
         conditionalresult: statementwithouttrailingsubstatements
-        postfixexpression: "instead" | "rather" "than" statementwithouttrailingsubstatements | "until" statementexpression | "unless" statementexpression | "except" statementexpression | "then" statementexpression
-        condition: "only"? "if"
-        | "whenever"
-        | "when"
-        | "as" "long" "as"
-        | "until"
-        | "after"
-        | "otherwise"
-        | "unless"
-        | "while"
-        | ("during" | "only during")
-        | "except"
-        | "the" "next" "time"
-        | "before"
-        | "for" "each" "time"?
-        | "otherwise"
-        | "at"
-        | "as" "an" "additional" "cost" "to"?
+        postfixexpression: "instead" | "rather" "than" statementwithouttrailingsubstatements | condition statementexpression | postfixexpression ("and" | "or" | "and/or") postfixexpression
+
+        condition: "only"? "if" -> ifcondition
+        | "whenever" -> whenevercondition
+        | "when" -> whencondition
+        | "as" -> ascondition
+        | "as" "long" "as" -> aslongascondition
+        | "until" -> untilcondition
+        | "after" -> aftercondition
+        | "otherwise" -> otherwisecondition
+        | "unless" -> unlesscondition
+        | "while" -> whilecondition
+        | ("during" | "only during") -> duringcondition
+        | "except" -> exceptcondition
+        | "the" "next" "time" -> thennexttimecondition
+        | "before" -> beforecondition
+        | "for" "each" "time"? -> beforecondition
+        | "at" -> atcondition
+        | "as" "an" "additional" "cost" "to"? -> asanadditionalcostcondition
         
-        statementexpression: expression | compoundexpression
-        expression: "TEXT"
-        compoundexpression: beingexpression postfixexpression?
-        | statementexpression ("," statementexpression)* ","? "and" statementexpression -> compoundandstatement
-        | statementexpression ("," statementexpression)* ","? "or" statementexpression -> compoundorstatement
+        statementexpression: expression
+        expression: "TEXT" | beingexpression postfixexpression?
+        
+        
+        //compoundexpression: beingexpression postfixexpression?
+        //| statementexpression ("," statementexpression)* ","? "and" statementexpression -> compoundandstatement
+        //| statementexpression ("," statementexpression)* ","? "or" statementexpression -> compoundorstatement
         
         beingexpression: statementexpression ("is" | "was" | "are" "each"?) ("still"|"not")? statementexpression -> isexpression
         | statementexpression ("has"|"have"|"had") statementexpression -> hasexpression
@@ -130,153 +137,10 @@ class TestGrammarAndParser(unittest.TestCase):
         | statementexpression "become"["s"] statementexpression -> becomesexpression
         | statementexpression "may" statementexpression -> mayexpression
         | statementexpression "would" statementexpression -> wouldexpression
-        | statementexpression ("do" | "does") "not"? -> doesexpression
+        | statementexpression (statementexpression? ("do"["es"]? | "did") "not"? statementexpression? | "doing" "so" ) -> doesexpression
         
         DASH: "—"
         MODALCHOICE: "•"
-        
-        %import common.WS -> WS
-        %ignore WS
-        """
-
-
-
-        statementGrammarOriginal = """
-        statementblock : (statement ["."])+
-        
-        //STATEMENTS
-        statement: compoundstatement
-        | expressionstatement
-        | conditionalstatement
-        | activationstatement
-        | beingstatement
-        | dostatement
-        | thenstatement
-        | insteadstatement
-        | maystatement
-        | wouldstatement
-        | additionalcoststatement
-        | modalstatement
-
-        thenstatement: "then" statement
-        insteadstatement: statement "instead"
-        maystatement:  TEXT? ("may" | "may" "have") statement
-        wouldstatement: TEXT? "would" statement
-        additionalcoststatement: "as" "an" "additional" "cost" "to" statement "," statement
-        modalstatement: "choose" TEXT DASH (modalchoiceexpression)+
-        modalchoiceexpression: MODALCHOICE statementblock
-
-        dostatement: TEXT? ("do" | "does") statement? -> dostatement
-        | TEXT? ("do" "not" | "does" "not") statement? -> dontstatement
-
-        beingstatement: isstatement
-        | hasstatement
-        | isntstatement
-        | canstatement
-        | becomesstatement
-        | costchangestatement
-        | wherestatement
-
-        !isstatement: TEXT ("is" | "was" | "are" "each"?) ("still"|"not")? (TEXT | statement)
-        !hasstatement: TEXT? ("has"|"have"|"had") (TEXT | statement)
-        | TEXT?  ("has"|"have"|"had") ("a"| TEXT ) TEXT "counter"["s"] "on" TEXT -> hascounterstatement
-        isntstatement: TEXT? "is" "not" statement
-        canstatement: TEXT? "can" statement
-        | TEXT? "can" "not" statement -> cantstatement
-        becomesstatement: TEXT? "become"["s"] TEXT
-        costchangestatement: TEXT "cost"["s"] TEXT "more" "to" ("cast" | "activate") -> costincreasestatement
-        | TEXT "cost"["s"] TEXT "less" "to" "cast" -> costreductionstatement
-        wherestatement: statement "," "where" statement //[Note: Used in elaborating variables.]
-
-        expressionstatement: TEXT
-        beexpression: ("be"|"been") TEXT ("by" TEXT)? TEXT?//[TODO: Not sure how to categorize this one yet.]
-        activationstatement: cost ":" statementblock 
-        
-        compoundstatement: statement  ("," statement)* ","? thenstatement -> compoundthenstatement
-        | statement ("," statement)* untilstatement -> compounduntilstatement
-        | statement ("," statement)* ","? "and" statement -> compoundandstatement
-        | statement ("," statement)* ","? "or" statement -> compoundorstatement
-
-        conditionalstatement: ifstatement
-        | wheneverstatement
-        | whenstatement
-        | atstatement
-        | aslongasstatement
-        | forstatement
-        | untilstatement
-        | afterstatement
-        | otherwisestatement
-        | unlessstatement
-        | asstatement
-        | whilestatement
-        | duringstatement
-        | exceptstatement
-        | ratherstatement
-        | nexttimestatement
-        | beforestatement
-
-        ifstatement: "if" statement "," statement
-        | statement "only"? "if" statement -> ifstatementinv
-
-        wheneverstatement:  "whenever" statement TEXT? "," statement 
-        | statement "whenever" statement TEXT? -> wheneverstatementinv
-
-        whenstatement:  "when" statement "," statement 
-        | statement "when" statement -> whenstatementinv
-
-        atstatement:  "at" TEXT "," statement 
-        | statement "at" TEXT -> atstatementinv
-
-        aslongasstatement:  "for"? "as" "long" "as" statement "," statement
-        | statement "for"? "as" "long" "as" statement -> aslongasstatementinv
-
-        forstatement:  "for" "each" (TEXT | "time" statement) ("beyond" "the" "first")? "," statement 
-        | statement "for" "each" (TEXT | "time" statement) ("beyond" "the" "first")? -> forstatementinv
-        | "for" "each" TEXT -> forstatementnostatement
-
-        untilstatement: "until" TEXT -> untileffecthappensstatement
-        | "until" TEXT "," statement -> untiltimestatement
-        | statement "until" TEXT -> untiltimestatementinv
-
-        afterstatement:  "after" TEXT "," statement 
-        | statement "after" TEXT -> afterstatementinv
-
-        otherwisestatement: "otherwise" "," statement
-
-        unlessstatement:  statement "unless" statement
-
-        asstatement: "as" statement "," statement -> asstatement
-
-        whilestatement:  "while" statement "," statement
-
-        duringstatement:  statement "during" TEXT
-        | statement "only" "during" TEXT -> exclusiveduringstatement
-
-        exceptstatement:  statement "except" (("by"|"for") TEXT | statement)
-
-        ratherstatement:  statement "rather" "than" statement
-
-        nexttimestatement: "the" "next" "time" statement TEXT? "," statement
-
-        beforestatement: statement "before" (TEXT | statement)
-        
-        //Non-statement related rules...
-        !declarationorreference: TEXT
-        !timeexpression: TEXT
-        !effectexpression: TEXT
-        !genericdeclarationexpression: TEXT
-        !characteristicexpression: TEXT
-        !manasymbolexpression: TEXT
-        !valueexpression: TEXT
-        !countertype: TEXT
-        !valuecardinal: TEXT
-        !playerdeclref: TEXT
-        !abilitysequencestatement: TEXT
-        !cost: TEXT
-        !modifier: TEXT
-        DASH: "—"
-        MODALCHOICE: "•"
-        TEXT: "TEXT"
         
         %import common.WS -> WS
         %ignore WS
@@ -305,10 +169,20 @@ class TestGrammarAndParser(unittest.TestCase):
             "at TEXT, TEXT.",
             "whenever TEXT, TEXT unless TEXT.",
             "TEXT. TEXT and TEXT.",
+            "TEXT or TEXT.",
             "TEXT. if TEXT is TEXT, TEXT can not TEXT, and if TEXT would TEXT, TEXT instead.", #Carbonize
-            "choose TEXT — • TEXT.\n• TEXT." #Abrade
-
+            "if TEXT would TEXT, TEXT instead.",  # Carbonize Subset
+            "choose TEXT — • TEXT.\n• TEXT.", #Abrade
+            "when TEXT, TEXT if TEXT.", #Dream Thief
+            "if TEXT except TEXT, TEXT. if TEXT, TEXT. if TEXT does not TEXT, TEXT.", #Chains of Mephistopheles
+            "TEXT. at TEXT, if TEXT, TEXT. if TEXT, TEXT and TEXT.", #All Hallows' Eve
+            "when TEXT, TEXT. then if TEXT, TEXT until TEXT. TEXT may TEXT rather than TEXT.", #Amped Raptor
+            "TEXT, TEXT, TEXT: TEXT, TEXT, then TEXT.", #Angel's Herald
+            "TEXT can not TEXT, and TEXT can not TEXT. at TEXT, if TEXT, TEXT.", #Arachnus Web
+            "TEXT and TEXT. TEXT until TEXT. TEXT if TEXT. while TEXT, TEXT can TEXT only if TEXT are TEXT and only if TEXT is TEXT. if TEXT is TEXT as TEXT, TEXT while TEXT.", #Word of Command
         ]
+
+        shouldOutputVerboseDetails = True
 
         print("\n-----------------------")
         for statementBlock in statementBlocksToTest:
@@ -319,11 +193,14 @@ class TestGrammarAndParser(unittest.TestCase):
                 ambiguities = list(parseTree.find_data("_ambig"))
                 statementBlockPrettyPrint = statementBlock.replace('\n', ' ')
                 print(f"Statement(s) ({statementBlockPrettyPrint}) took {fullParseTimeEnd-fullParseTimeStart} to parse. The input had {len(ambiguities)} ambiguities.")
-                #if len(ambiguities) > 0:
-                #    print(parseTree.pretty())
+                if shouldOutputVerboseDetails and len(ambiguities) > 0:
+                    print(parseTree.pretty())
             except Exception as exception:
                 firstLineOfException = str(exception).split('\n')[0]
-                print(f"Statement(s) ({statementBlock}) produced an exception during parsing: {firstLineOfException}...")
+                if shouldOutputVerboseDetails:
+                    print(f"Statement(s) ({statementBlock}) produced an exception during parsing: {exception}...")
+                else:
+                    print(f"Statement(s) ({statementBlock}) produced an exception during parsing: {firstLineOfException}...")
         print("-----------------------")
 
 
