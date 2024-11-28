@@ -6,6 +6,7 @@ from mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonTransformer import MtgJso
 from mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonPostprocessor import MtgJsonPostprocessor
 import cProfile
 import lark
+import re
 
 
 class MtgJsonCompiler(BaseCompiler):
@@ -80,7 +81,13 @@ class MtgJsonCompiler(BaseCompiler):
                     ambiguity = "resolve"
 
                 try:
-                    self._larkfrontend = lark.Lark(g,start=startRule,debug=larkDebug, parser=larkParser, lexer=larkLexer,strict=strict,ambiguity=ambiguity)
+                    self._larkfrontend = lark.Lark(g,start=startRule,
+                        debug=larkDebug,
+                        parser=larkParser,
+                        lexer=larkLexer,
+                        strict=strict,
+                        ambiguity=ambiguity,
+                        g_regex_flags=re.X & re.I) #To enable parsing of newline characters and toggling case insensitivity
                 except Exception as e:
                     print("MTGJsonCompiler: Failed to instantiate Lark frontend.")
                     raise e

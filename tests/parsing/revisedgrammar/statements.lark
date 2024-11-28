@@ -1,0 +1,65 @@
+cardtext: ability (NEWLINE+ ability)*
+
+ability: (abilityworddecorator | remindertextdecorator)? statementblock remindertextdecorator? -> regularability
+| keywordlist remindertextdecorator?
+abilityworddecorator: "ABILITYWORD" DASH //WORD+ DASH
+remindertextdecorator: /\(.*?\)/
+
+keywordlist: keywordsequence
+keywordsequence: keywordability (("," | ";") keywordability)*
+
+statementblock : (statement)+ | activationstatement
+
+statement: statementwithouttrailingsubstatements "." | standaloneconditionalstatement "." | compoundstatement "." | modalstatement
+
+statementwithouttrailingsubstatements: statementexpression
+
+activationstatement: statementexpression ("," statementexpression)* ":" statementblock
+modalstatement:  "choose" statementexpression DASH modalchoicestatement (NEWLINE modalchoicestatement)+
+modalchoicestatement: MODALCHOICE abilityworddecorator? statementblock remindertextdecorator?
+
+compoundstatement: (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "then" (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundthenstatement
+| (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "and" (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundandstatement
+| (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "or" (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundorstatement
+
+compoundconditionalstatement: condition statementexpression
+| statementexpression condition -> compoundconditionalinv
+| conditionalresult postfixexpression -> compoundconditionalresult
+
+standaloneconditionalstatement: "then"? condition statementexpression postfixexpression? "," "then"? (conditionalresult postfixexpression? | standaloneconditionalstatement)
+conditionalresult: statementwithouttrailingsubstatements
+postfixexpression: "instead" | "rather" "than" statementwithouttrailingsubstatements | condition statementexpression | postfixexpression ("and" | "or" | "and/or") postfixexpression
+
+condition: "only"? "if" -> ifcondition
+| "whenever" -> whenevercondition
+| "when" -> whencondition
+| "as" -> ascondition
+| "as" "long" "as" -> aslongascondition
+| "until" -> untilcondition
+| "after" -> aftercondition
+| "otherwise" -> otherwisecondition
+| "unless" -> unlesscondition
+| "while" -> whilecondition
+| ("during" | "only during") -> duringcondition
+| "except" -> exceptcondition
+| "the" "next" "time" -> thennexttimecondition
+| "before" -> beforecondition
+| "for" "each" "time"? -> beforecondition
+| "at" -> atcondition
+| "as" "an" "additional" "cost" "to"? -> asanadditionalcostcondition
+
+statementexpression: expression
+expression: effectexpression | beingexpression postfixexpression?
+
+
+//compoundexpression: beingexpression postfixexpression?
+//| statementexpression ("," statementexpression)* ","? "and" statementexpression -> compoundandstatement
+//| statementexpression ("," statementexpression)* ","? "or" statementexpression -> compoundorstatement
+
+beingexpression: statementexpression ("is" | "was" | "are" "each"?) ("still"|"not")? statementexpression -> isexpression
+| statementexpression ("has"|"have"|"had") statementexpression -> hasexpression
+| statementexpression "can" "not"? statementexpression -> canexpression
+| statementexpression "become"["s"] statementexpression -> becomesexpression
+| statementexpression "may" statementexpression -> mayexpression
+| statementexpression "would" statementexpression -> wouldexpression
+| statementexpression (statementexpression? ("do"["es"]? | "did") "not"? statementexpression? | "doing" "so" ) -> doesexpression

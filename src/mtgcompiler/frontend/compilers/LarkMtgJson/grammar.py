@@ -1,5 +1,5 @@
 def getGrammar():
-        return r"""
+        return """
         typeline: typelinesupert typelinet ("—" typelinesubt)?
         typelinesupert: SUPERTYPE*
         typelinet: TYPE*
