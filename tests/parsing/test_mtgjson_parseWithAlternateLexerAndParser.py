@@ -219,9 +219,236 @@ class TestGrammarAndParser(unittest.TestCase):
         beingexpression: "BEINGEXPRESSION"
         effectexpression: "EFFECTEXPRESSION"
         statement: "STATEMENT"
+        valueexpression: "VALUEEXPRESSION"
         
-        //
+        //A regular declaration introduces something that the card relates to or acts on.
+        //Example(s): "destroy *target nonblack creature*" and "draw *a card*"
+        //A reference points to a declaration that was made earlier or that is already assumed to exist.
+        //Example(s) : "draw a card if *that creature* had power 3 or greater" or "target creature blocks *this turn* if able"
+        declaration: regulardeclaration | referencedeclaration
+        regulardeclaration: declarationdecorator* declarationdefinition
+        referencedeclaration: referencedecorator+ declarationdefinition | personalthirdpersonreferencedefinition | namereferencedefinition
         
+        //Reference definition for third-person personal pronoun references.
+        //Example(s): "*they* can’t be regenerated." and "Sarkhan the Mad deals damage to *himself*"
+        personalthirdpersonreferencedefinition: THIRDPERSONPERSONALREFERENCE | SELFPRONOUNREFERENCE | HERAMBIGUOUSREFERENCE
+        HERAMBIGUOUSREFERENCE: "her" //This could be the possessive form or the object of a sentence.
+        THIRDPERSONPERSONALREFERENCE: ("he" | "him") | ("she") | ("they" | "them") | "it"
+        SELFPRONOUNREFERENCE:  "itself" | "himself" | "herself" | "themselves"
+        
+        //Reference form used when when a card makes a reference to itself by name. "~" is a full name reference, "~f" (rarely used) is a first name reference.
+        //Example(s): "*Chandra, Fire of Kaladesh (~)* deals 1 damage to target player or planeswalker. If *Chandra (~f)* has dealt 3 or more damage [...]"
+        namereferencedefinition: NAMEREFSYMBOL
+        NAMEREFSYMBOL: "~" | "~f"
+        
+        //Reference decorators help clarify what is being talked about. Note that reference decorators can have nested
+        //references to other defined things (like "your *opponent's* hand").
+        //Example(s): "Destroy target creature. *Its* controller [...]" and "*its owner’s* hand." "*that creature’s* toughness."
+        referencedecorator: THIRDPERSONIMPERSONALREFERENCE | POSSESSIVEPRONOUNREFERNCE | nesteddeclarationreference
+        THIRDPERSONIMPERSONALREFERENCE: ("that" | "those") | ("this"|"these")
+        POSSESSIVEPRONOUNREFERNCE: "its" | "your" | "their" | "his" //Note: "her" is handled separately to capture the ambiguity.
+        nesteddeclarationreference: (declarationdefinitionwithouttrailingsubdefinitions | namereferencedefinition) ("'s"|"'")
+        
+        //Declaration decorators. The most popular decorator is "target".
+        //Example(s): "destroy *target* nonblack creature", "*any* permanent" 
+        declarationdecorator: "each" -> eachdecorator
+        | "same" -> samedecorator
+        | "all" -> alldecorator
+        | ["an"]"other" -> otherdecorator
+        | "a"["n"] -> indefinitearticledecorator
+        | "the" -> definitearticledecorator
+        | valueexpression? "target" -> targetdecorator
+        | "any" -> anydecorator
+        anytargetexpression: "any" "target" //Special nullary variant
+        
+        declarationdefinition: declarationdefinitionwithouttrailingsubdefinitions | compounddeclarationdefinition
+        compounddeclarationdefinition:  declarationdefinitionwithouttrailingsubdefinitions ("," declarationdefinitionwithouttrailingsubdefinitions ",")* "or" declarationdefinitionwithouttrailingsubdefinitions -> orcompounddeclarationdefinition
+        | declarationdefinitionwithouttrailingsubdefinitions ("," declarationdefinitionwithouttrailingsubdefinitions ",")* "and" declarationdefinitionwithouttrailingsubdefinitions -> andcompounddeclarationdefinition
+        | declarationdefinitionwithouttrailingsubdefinitions ("," declarationdefinitionwithouttrailingsubdefinitions ",")* "and/or" declarationdefinitionwithouttrailingsubdefinitions -> andorcompounddeclarationdefinition
+        | "neither" declarationdefinitionwithouttrailingsubdefinitions "nor" declarationdefinitionwithouttrailingsubdefinitions -> neithernorcompounddeclarationdefinition
+        
+        declarationdefinitionwithouttrailingsubdefinitions: "DEFINITION" | (declarationterm | prepositionalattacheddeclaration) + //TODO: Remove "DEFINITION" placeholder
+        declarationterm : ("non""-"?)? (valueterm | manaterm | characteristicterm 
+        | typeterm | colorterm | modifierterm | qualifierterm | timeterm | damageterm | playerterm 
+        | powertoughnessterm | loyaltycostterm | counterterm | nameterm | choiceterm)
+        
+        //Declaration definitions can have prepositional phrases that add additional information
+        prepositionalattacheddeclaration: DECLARATIONPREPOSITION declaration
+        DECLARATIONPREPOSITION: "of" | ("on" | "onto") | "who" | "that" | "in" | "under"
+        
+        typeterm: (TYPE ["s"] | SUBTYPESPELL ["s"] | SUBTYPELAND ["s"] | SUBTYPEARTIFACT ["s"] | SUBTYPEENCHANTMENT ["s"] | SUBTYPEPLANESWALKER | SUBTYPECREATUREA ["s"] | SUBTYPECREATUREB ["s"] | SUBTYPEPLANAR | SUPERTYPE)
+        modifierterm: ABILITYMODIFIER | COMBATSTATUSMODIFIER | KEYWORDSTATUSMODIFIER | TAPPEDSTATUSMODIFIER | EFFECTSTATUSMODIFIER
+        qualifierterm: QUALIFIER["s"]
+        timeterm: PHASE | STEP | TURN | GAME
+        playerterm: PLAYER
+        zoneterm: ZONE
+        powertoughnessterm: valueterm "/" valueterm
+        loyaltycostterm: "[" (PLUS | PWMINUS)? valueterm "]"
+        counterterm: (COUNTERTYPE | powertoughnessterm)  "counter"["s"]
+        characteristicterm: OBJECTCHARACTERISTIC | PLAYERCHARACTERISTIC
+        nameterm: "OBJECTNAME" | NAMEREFSYMBOL //TODO: fix objectname vs. basic lexer
+        damageterm: DAMAGETYPE
+        colorterm: COLOR
+        choiceterm: "choice" //Examples: "their choice", "of your choice"
+
+
+        
+        
+        //Below are hardcoded game terms used in declarations.
+        PLAYER: "player"["s"] | "opponent"["s"] | "you" |  "teammate"["s"] | "team"["s"] | "controller"["s"] | "owner"["s"]
+        PLAYERCHARACTERISTIC: "maximum hand size" | "life total"["s"] | "life" | "cards in hand"
+        OBJECTCHARACTERISTIC: "card"? "name" | "mana value" | "color"["s"] | "color indicator" | "type"["s"] | "card type"["s"] | "subtype"["s"] | "supertype"["s"]
+        | "rules text" | "abilities" | "power" | "toughness" | "base power" | "base toughness" | "loyalty" | "hand modifier" | "life modifier"
+        ZONE: "battlefield" | "graveyard"["s"] | ("library"|"libraries") | "hand"["s"] | "stack" | "exile" | "command zone" | "outside the game" | "anywhere"
+        TYPE: "planeswalker" | "conspiracy" | "creature" | "enchantment" | "instant" | "land" | "phenomenon" | "plane" | "artifact" | "scheme" | "sorcery" | "tribal" | "vanguard"
+        SUBTYPESPELL : "arcane" | "trap" | "adventure"
+        SUBTYPELAND: "desert" | "forest" | "gate" | "island" | "lair" | "locus"
+        | "mine" | "mountain" | "plains" | "power-plant" | "swamp" | "tower" | "urza's"
+        SUBTYPEARTIFACT: "clue" | "contraption" | "equipment" | "fortification" | "treasure" | "vehicle" | "food"
+        SUBTYPEENCHANTMENT: "aura" | "cartouche" | "curse" | "saga" | "shrine" | "rune" | "shard" | "case" | "room"
+        SUBTYPEPLANESWALKER: "ajani" | "aminatou" | "angrath" | "arlinn" | "ashiok" | "bolas" | "chandra"
+        | "dack" | "daretti" | "domri" | "dovin" | "elspeth" | "estrid" | "freyalise" | "garruk" | "gideon"
+        | "huatli" | "jace" | "jaya" | "karn" | "kaya" | "kiora" | "koth" | "liliana" | "nahiri" | "narset"
+        | "nissa" | "nixilis" | "ral" | "rowan" | "saheeli" | "samut" | "sarkhan" | "sorin" | "tamiyo" | "teferi"
+        | "tezzeret" | "tibalt" | "ugin" | "venser" | "vivien" | "vraska" | "will" | "windgrace" | "xenagos"
+        | "yanggu" | "yanling"
+        //[TODO: SUBTYPECREATUREA and SUBTYPECREATUREB are split up because having such a long list of alternatives apparently]
+        //[causes Lark to suffer a recursion depth error. We should see if this is fixable.]
+        SUBTYPECREATUREA: "advisor" | "aetherborn" | ("ally"|"allies") | "angel" | "antelope" | "ape" | "archer" | "archon"
+        | "artificer" | "assassin" | "assembly-worker" | "atog" | "aurochs" | "avatar" | "azra" | "badger"
+        | "barbarian" | "basilisk" | "bat" | "bear" | "beast" | "beeble" | "berserker" | "bird" | "blinkmoth"
+        | "boar" | "bringer" | "brushwagg" | "camarid" | "camel" | "caribou" | "carrier" | "cat" | "centaur"
+        | "cephalid" | "chimera" | "citizen" | "cleric" | "cockatrice" | "construct" | "coward" | "crab"
+        | "crocodile" | "cyclops" | "dauthi" | "demon" | "deserter" | "devil" | "dinosaur" | "djinn" | "dragon"
+        | "drake" | "dreadnought" | "drone" | "druid" | "dryad" | ("dwarf"|"dwarves") | "efreet" | "egg" | "elder" | "eldrazi"
+        | "elemental" | "elephant" | ("elf"|"elves") | "elk" | "eye" | "faerie" | "ferret" | "fish" | "flagbearer" | "fox"
+        SUBTYPECREATUREB: "frog" | "fungus" | "gargoyle" | "germ" | "giant" | "gnome" | "goat" | "goblin" | "god" | "golem" | "gorgon"
+        | "graveborn" | "gremlin" | "griffin" | "hag" | "harpy" | "hellion" | "hippo" | "hippogriff" | "homarid" | "homunculus"
+        | "horror" | "horse" | "hound" | "human" | "hydra" | "hyena" | "illusion" | "imp" | "incarnation" | "insect"
+        | "jackal" | "jellyfish" | "juggernaut" | "kavu" | "kirin" | "kithkin" | "knight" | "kobold" | "kor" | "kraken"
+        | "lamia" | "lammasu" | "leech" | "leviathan" | "lhurgoyf" | "licid" | "lizard" | "manticore" | "masticore"
+        | ("mercenary"|"mercenaries") | "merfolk" | "metathran" | "minion" | "minotaur" | "mole" | "monger" | "mongoose" | "monk"
+        | "monkey" | "moonfolk" | "mutant" | "myr" | "mystic" | "naga" | "nautilus" | "nephilim" | "nightmare"
+        | "nightstalker" | "ninja" | "noggle" | "nomad" | "nymph" | ("octopus"|"octopuses") | "ogre" | "ooze" | "orb" | "orc"
+        | "orgg" | "ouphe" | "ox" | "oyster" | "pangolin" | "pegasus" | "pentavite" | "pest" | "phelddagrif" | "phoenix"
+        | "pilot" | "pincher" | "pirate" | "plant" | "praetor" | "prism" | "processor" | "rabbit" | "rat" | "rebel"
+        | "reflection" | "rhino" | "rigger" | "rogue" | "sable" | "salamander" | "samurai" | "sand" | "saproling" | "satyr"
+        | "scarecrow" | "scion" | "scorpion" | "scout" | "serf" | "serpent" | "servo" | "shade" | "shaman" | "shapeshifter"
+        | "sheep" | "siren" | "skeleton" | "slith" | "sliver" | "slug" | "snake" | "soldier" | "soltari" | "spawn" | "specter"
+        | "spellshaper" | "sphinx" | "spider" | "spike" | "spirit" | "splinter" | "sponge" | "squid" | "squirrel" | "starfish"
+        | "surrakar" | "survivor" | "tetravite" | "thalakos" | "thopter" | "thrull" | "treefolk" | "trilobite" | "triskelavite"
+        | "troll" | "turtle" | "unicorn" | "vampire" | "vedalken" | "viashino" | "volver" | "wall" | "warrior" | "weird"
+        | ("werewolf"|"werewolves") | "whale" | "wizard" | ("wolf"|"wolves") | "wolverine" | "wombat" | "worm" | "wraith" | "wurm" | "yeti"
+        | "zombie" | "zubera" | "mouse"
+        SUBTYPEPLANAR: "alara" | "arkhos" | "azgol" | "belenon" | "bolas’s meditation realm"
+        | "dominaria" | "equilor" | "ergamon" | "fabacin" | "innistrad" | "iquatana" | "ir"
+        | "kaldheim" | "kamigawa" | "karsus" | "kephalai" | "kinshala" | "kolbahan" | "kyneth"
+        | "lorwyn" | "luvion" | "mercadia" | "mirrodin" | "moag" | "mongseng" | "muraganda"
+        | "new phyrexia" | "phyrexia" | "pyrulea" | "rabiah" | "rath" | "ravnica" | "regatha"
+        | "segovia" | "serra’s realm" | "shadowmoor" | "shandalar" | "ulgrotha" | "valla"
+        | "vryn" | "wildfire" | "xerex" | "zendikar"
+        subtype: SUBTYPESPELL | SUBTYPELAND | SUBTYPEARTIFACT | SUBTYPEENCHANTMENT | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR
+        SUPERTYPE: "basic" | "legendary" | "ongoing" | "snow" | "world"
+        DAMAGETYPE: "damage" | "combat damage" | "excess damage"
+        ABILITYMODIFIER: "triggered" | "activated" | "mana" | "loyalty"
+        COMBATSTATUSMODIFIER: "attacking" | "defending" | "attacked" | "blocking" | "blocked" | "active"
+        KEYWORDSTATUSMODIFIER: "paired" | "kicked" | "face-up" | "face-down" | "transformed" | "enchanted" | "equipped"
+        | "fortified" | "monstrous" | "regenerated" | "suspended" | "flipped" | "suspected" // TODO: ensure 'suspected' works properly
+        TAPPEDSTATUSMODIFIER: ["un"]"tapped"
+        EFFECTSTATUSMODIFIER: "named" | "chosen" | "chosen at random" | "revealed" | "returned" | "destroyed" | "exiled" | "died" | "countered" | "sacrificed"
+        | "the target of a spell or ability" | "prevented" | "created"
+        QUALIFIER: ("ability"|"abilities") | "card" | "permanent" | "source" | "spell" | "token" | "effect"
+        COLOR: "white" | "blue" | "black" | "red" | "green" | "monocolored" | "multicolored" | "colorless"
+        PHASE: "beginning phase" | ("precombat" | "postcombat")? "main phase" | ("combat" | "combat phase") | "ending phase"
+        STEP: "untap step" | ("upkeep step" | "upkeep") | "draw step" | "beginning of combat" | "declare attackers step"
+        | "declare blockers step" | "combat damage step" | "end of combat" | "end step" | "cleanup step" | "step"
+        TURN: "turn"
+        GAME: "game"
+        
+        //TODO: counter types aren't formally defined in the game (like the "oil" counters doesn't have a specific rules meaning, but until we
+        //can have arbitrary names that don't confuse the basic lexer, we might spell out counter types here based on the list
+        //provided here: https://mtg.fandom.com/wiki/Counter_(marker)/Full_List.
+        COUNTERTYPE: "COUNTERTYPE" //TODO
+        
+        //COUNTERTYPE: "aegis" | "age" | "aim" | "arrow" | "arrowhead" | "awakening" | "bait" | "blaze" | "blessing" | "blight" | "blood" | "bloodline"
+        //| "bloodstain" | "book" | "bounty" | "brain" | "bribery" | "brick" | "burden" | "cage" | "carrion" | "charge" | "coin" | "collection" | "component"
+        //| "contested" | "corruption" | "crank!" | "credit" | "croak" | "corpse" | "crystal" | "cube" | "currency" | "death" | "defense" | "delay"
+        //| "depletion" | "descent" | "despair" | "devotion" | "discovery" | "divinity" | "doom" | "dream" | "echo
+        
+        //Rules for mana symbols
+        //TODO: Add in text mana descriptions here
+        manaterm: manasymbol
+        manasymbol: "{" manamarkerseq "}"
+        manamarkerseq: manamarker_color -> regularmanasymbol
+        | manamarker_halfmana manamarker_color -> halfmanasymbol
+        | manamarker_color "/" manamarker_phyrexian -> phyrexianmanasymbol
+        | manamarker_color "/" manamarker_color -> hybridmanasymbol
+        | "2" "/" manamarker_color -> alternate2manasymbol
+        | manamarker_snow -> snowmanasymbol
+        | manamarker_colorless -> colorlessmanasymbol
+        | manamarker_x -> xmanasymbol
+        | NUMBER -> genericmanasymbol
+        manamarker_halfmana: "H"i -> halfmarker
+        manamarker_color: "W"i -> whitemarker
+        | "U"i -> bluemarker
+        | "B"i -> blackmarker
+        | "R"i -> redmarker
+        | "G"i -> greenmarker
+        manamarker_snow: "S"i -> snowmarker
+        manamarker_phyrexian: "P"i -> phyrexianmarker
+        manamarker_colorless: "C"i -> colorlessmarker
+        manamarker_x: "X"i -> xmarker
+        
+        //Rules for representing numeric values and math operations
+        valueterm: (PLUS | MINUS)? NUMBER | CARDINAL "times"?| ORDINAL | FREQUENCY | VARIABLEVALUE | valueoperation
+        FREQUENCY: "once" | "twice"
+        CARDINAL: "one" | "two" | "three" | "four" | "five" | "six" | "seven" | "eight" | "nine" | "ten"
+        | "eleven" | "twelve" | "thirteen" | "fourteen" | "fifteen" | "sixteen" | "seventeen" | "eighteen" | "nineteen" | "twenty" //[TODO]
+        ORDINAL: "first" | "second" | "third" | "fourth" | "fifth" | "sixth" | "seventh" | "eighth" | "ninth" | "tenth" //[TODO]
+        VARIABLEVALUE: "x" | "*"
+        NUMBERPROPERTY: "odd" | "even" | "prime"
+        
+        //[NOTE: Both Scryfall and Mtgjson use a long dash, not a short dash, to indicate a minus on a planeswalker ability]
+        PWMINUS: "−"
+        PLUS: "+"
+        MINUS: "-"
+
+        tapuntapsymbol: TAPSYMBOL | UNTAPSYMBOL
+        TAPSYMBOL: "{T}"i
+        UNTAPSYMBOL: "{Q}"i
+        
+        valueoperation: valuecomparisonoperation | valuemathoperation | variablevalueoperation
+        valuecomparisonoperation: "equal to" valueterm // ==
+            | "less than" "or equal to"? valueterm // < ; <=
+            | "greater than" "or equal to"? valueterm // > ; >=
+            | "up to" valueterm // <=
+            | valueterm "or" ("less" | "fewer") // <=
+            | valueterm "or" ("greater" | "more") // >=
+        valuemathoperation: ("that much" | "that many") //Example: "create *that many* treasure tokens", "draw twice *that many* cards"
+        | valueterm "rounded" ("up" | "down")
+        | valueterm "divided" ("evenly" | "as you choose")
+        | valueterm "plus" valueterm //Example: "the number of Elves you control *plus* the number of Elf cards in your graveyard."
+        | valueterm "minus" valueterm //Example: "the number of cards in your hand *minus* the number of cards in that player’s hand."
+        variablevalueoperation: ("a"|"the"|"any") NUMBERPROPERTY? "number" ("of" "times"? declaration)? //example: "the number of cards you drew this term", "the number of times ~ was kicked"
+        
+        //TODO
+        //"next" valuecardinal? -> nexttimemodifier
+        // "additional" -> additionaltimemodifier
+        //valuecardinal? "extra" -> extratimemodifier
+        //time(s) could just be a variablevalue operation by itself (like "the next *time*")
+        
+        %import common.UCASE_LETTER -> UCASE_LETTER
+        %import common.LCASE_LETTER -> LCASE_LETTER
+        //%import common.WORD -> WORD
+        %import common.NEWLINE -> NEWLINE
+        %import common.SIGNED_NUMBER -> NUMBER
+        %import common.WS -> WS
+        %ignore WS
+        """
+        
+        TMP = """
+        //declarationdefinitionwithouttrailingsubdefinitions: prefixdefinitionterm* definitionterm+ postfixdefinitionterm* 
+
         //DECLARATIONS AND REFERENCES
         declarationorreference: genericdeclarationexpression | reference | playerreference | objectreference | anytargetexpression
         genericdeclarationexpression: (playerdeclaration | objectdeclaration)
@@ -276,27 +503,10 @@ class TestGrammarAndParser(unittest.TestCase):
         
         
         
-        declarationdecorator: "each" -> eachdecorator
-        | "same" -> samedecorator
-        | "all" -> alldecorator
-        | ["an"]"other" -> otherdecorator
-        | "a"["n"] -> indefinitearticledecorator
-        | "the" -> definitearticledecorator
-        | valueexpression? "target" -> targetdecorator
-        | "any" -> anydecorator
-        anytargetexpression: "any" "target" //Special nullary variant
+
         
-        reference: neutralreference | selfreference | namereference
-        neutralreference: "it" | "them"
-        selfreference: "itself" | "himself" | "herself" -> selfreference
-        namereference: NAMEREFSYMBOL
-        
-        referencedecorator: ("that" | "those") -> thatreference
-        | ("this"|"these") -> thisreference
-        | possessiveterm -> possessivereference
-        !possessiveterm: "its" | "your" | "their" | namereference ("'s"|"'") | objectdeclref ("'s"|"'")
-        | playerdeclref ("'s"|"'") | typeexpression ("'s"|"'") | genericdeclarationexpression ("'s"|"'")
-        
+       
+        //NOTE: I don't like most of these. "deal/dealt" damage could be one rule up with dealdamageexpression.
         ptexpression: valueexpression "/" valueexpression
         namedexpression: "named" (namereference | objectname)
         !locationexpression: ("into" | "onto" | "in" | "on" | "from" | "on top of" | "on bottom of")? zonedeclarationexpression
@@ -543,9 +753,9 @@ class TestGrammarAndParser(unittest.TestCase):
         MODALCHOICE: "•"
         
         NAMEREFSYMBOL: "~" | "~f"
-        PLAYERTERM: "player"["s"] | "opponent"["s"] | "you" |  "teammate"["s"] | "team"["s"] | "they" | "controller"["s"] | "owner"["s"]
+        PLAYERTERM: "player"["s"] | "opponent"["s"] | "you" |  "teammate"["s"] | "team"["s"] | "controller"["s"] | "owner"["s"]
         
-        tapuntapsymbol: TAPSYMBOL | UNTAPSYMBOL
+        tapuntapterm: TAPSYMBOL | UNTAPSYMBOL
         TAPSYMBOL: "{T}"i
         UNTAPSYMBOL: "{Q}"i
         
@@ -558,13 +768,15 @@ class TestGrammarAndParser(unittest.TestCase):
         %ignore WS
         """
 
+
         compilerUsingPartialGrammar = MtgJsonCompiler.MtgJsonCompiler(
             options={"parser.overrideGrammar": revisedDeclarationGrammar,
-                     "parser.startRule": "declarationorreference",
+                     "parser.startRule": "declaration",
                      "parser.ambiguity": "explicit",
                      "parser.larkLexer": "basic",
                      })
         parser = compilerUsingPartialGrammar.getParser()
+
 
         declarationsToTest = [
             "their hand",
@@ -575,6 +787,10 @@ class TestGrammarAndParser(unittest.TestCase):
             "all blue creatures, black creatures, and white creatures",
             "two 1/1 green elf creature tokens",
             "the exiled card",
+            "five life",
+            "outside the game"
+            "a teammate",
+            "life total",
             "a teammate's life total",
             "abilities of permanents you control",
             "this turn",
@@ -586,18 +802,26 @@ class TestGrammarAndParser(unittest.TestCase):
             "multicolored enchantments",
             "the name of the player",
             "an artifact under their control",
-            "a creature with a +1/+1 counter on it"
+            "a creature with a +1/+1 counter on it",
+            "they",
+            "himself",
+            "him",
+            "herself",
+            "her",
+            "five",
+            "three or greater",
         ]
+
 
         shouldOutputVerboseDetails = False
 
-        def getLexerResults(card):
-            lexerState = lark.lexer.LexerState(text=cardsToTest[0], line_ctr=lark.lexer.LineCounter(
-                b'\n' if isinstance(cardsToTest[0], bytes) else '\n'))
+        def getLexerResults(declaration):
+            lexerState = lark.lexer.LexerState(text=declaration, line_ctr=lark.lexer.LineCounter(
+                b'\n' if isinstance(declaration, bytes) else '\n'))
             lexTimeStart = time.time()
             lexerResults = parser.parser.lexer.lex(state=lexerState, parser_state=None)
             lexTimeEnd = time.time()
-            print(f"Card ({card}) took {lexTimeEnd - lexTimeStart} to lex.")
+            print(f"declaration ({declaration}) took {lexTimeEnd - lexTimeStart} to lex.")
             for token in lexerResults:
                 print(f"(token type: {token.type}) | {token}")
 
@@ -617,6 +841,12 @@ class TestGrammarAndParser(unittest.TestCase):
                 firstLineOfException = str(exception).split('\n')[0]
                 if shouldOutputVerboseDetails:
                     print(f"Declaration ({declaration}) produced an exception during parsing: {exception}...")
+                    print("Outputting lexer interpretation of inputs for reference...")
+                    try:
+                        getLexerResults(declaration)
+                    except Exception as lexerException:
+                        firstLineOfLexerException = str(lexerException).split('\n')[0]
+                        print(f"Lexer failed ({firstLineOfLexerException}...)")
                 else:
                     print(
                         f"Declaration ({declaration}) produced an exception during parsing: {firstLineOfException}...")
