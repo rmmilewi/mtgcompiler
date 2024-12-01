@@ -225,21 +225,21 @@ class TestGrammarAndParser(unittest.TestCase):
         //Example(s): "destroy *target nonblack creature*" and "draw *a card*"
         //A reference points to a declaration that was made earlier or that is already assumed to exist.
         //Example(s) : "draw a card if *that creature* had power 3 or greater" or "target creature blocks *this turn* if able"
-        declaration: singledeclaration | compounddeclaration 
+        declaration: singledeclaration | compounddeclaration
         compounddeclaration:  singledeclaration ("," singledeclaration ",")* "or" singledeclaration -> orcompounddeclaration
         | singledeclaration ("," singledeclaration ",")* "and" singledeclaration -> andcompounddeclaration
         | singledeclaration ("," singledeclaration ",")* "and/or" singledeclaration -> andorcompounddeclaration
         | "neither" singledeclaration "nor" singledeclaration -> neithernorcompounddeclaration
-        singledeclaration: regulardeclaration | referencedeclaration
+        singledeclaration: regulardeclaration | referencedeclaration | keywordabilitydeclaration
         regulardeclaration: declarationdecorator* declarationdefinition
         referencedeclaration: referencedecorator+ declarationdefinition | personalthirdpersonreferencedefinition | namereferencedefinition
         
         //Reference definition for third-person personal pronoun references.
         //Example(s): "*they* can’t be regenerated." and "Sarkhan the Mad deals damage to *himself*"
         personalthirdpersonreferencedefinition: THIRDPERSONPERSONALREFERENCE | SELFPRONOUNREFERENCE | HERAMBIGUOUSREFERENCE
-        HERAMBIGUOUSREFERENCE: "her" //This could be the possessive form or the object of a sentence.
-        THIRDPERSONPERSONALREFERENCE: ("he" | "him") | ("she") | ("they" | "them") | "it"
-        SELFPRONOUNREFERENCE:  "itself" | "himself" | "herself" | "themselves"
+        HERAMBIGUOUSREFERENCE.100: "her" //This could be the possessive form or the object of a sentence.
+        THIRDPERSONPERSONALREFERENCE.90: ("he" | "him") | ("she") | ("they" | "them") | "it"
+        SELFPRONOUNREFERENCE.110:  "itself" | "himself" | "herself" | "themselves"
         
         //Reference form used when when a card makes a reference to itself by name. "~" is a full name reference, "~f" (rarely used) is a first name reference.
         //Example(s): "*Chandra, Fire of Kaladesh (~)* deals 1 damage to target player or planeswalker. If *Chandra (~f)* has dealt 3 or more damage [...]"
@@ -249,9 +249,9 @@ class TestGrammarAndParser(unittest.TestCase):
         //Reference decorators help clarify what is being talked about. Note that reference decorators can have nested
         //references to other defined things (like "your *opponent's* hand").
         //Example(s): "Destroy target creature. *Its* controller [...]" and "*its owner’s* hand." "*that creature’s* toughness."
-        referencedecorator: THIRDPERSONIMPERSONALREFERENCE | POSSESSIVEPRONOUNREFERNCE
+        referencedecorator: THIRDPERSONIMPERSONALREFERENCE | POSSESSIVEPRONOUNREFERNCE | HERAMBIGUOUSREFERENCE
         THIRDPERSONIMPERSONALREFERENCE: ("that" | "those") | ("this"|"these")
-        POSSESSIVEPRONOUNREFERNCE: "its" | "your" | "their" | "his" //Note: "her" is handled separately to capture the ambiguity.
+        POSSESSIVEPRONOUNREFERNCE.100: "its" | "your" | "their" | "his" //Note: "her" is handled separately to capture the ambiguity.
         
         //Declaration decorators. The most popular decorator is "target".
         //Example(s): "destroy *target* nonblack creature", "*any* permanent" 
@@ -264,20 +264,33 @@ class TestGrammarAndParser(unittest.TestCase):
         | valueexpression? "target" -> targetdecorator
         | "any" -> anydecorator
         
-        declarationdefinition: "DEFINITION" | (declarationterm) + //TODO: Remove "DEFINITION" placeholder
-        declarationterm : ("non""-"?)? (valueterm | manaterm | characteristicterm 
+        //A declaration definition is made up of a set of descriptive terms like "a *blue permanent*" or "*two 1/1 green elf creature tokens*".
+        //There can be limited nesting of declarations inside definitions like with possessives ("its *owner's* hand") and prepositions
+        //("a creature *with a +1/+1 counter* *on it*").
+        declarationdefinition: "DEFINITION" | (nonnesteddeclarationterm | nesteddeclarationterm)+ //TODO: Remove "DEFINITION" placeholder
+        nonnesteddeclarationterm : ("non""-"?)? (valueterm | manaterm | characteristicterm 
         | typeterm | colorterm | modifierterm | qualifierterm | timeterm | damageterm | playerterm 
-        | powertoughnessterm | loyaltycostterm | counterterm | nameterm | variableterm | zoneterm | possessiveclarationreference | anytargetterm |  prepositionalattacheddeclaration)
+        | powertoughnessterm | loyaltycostterm | counterterm | nameterm | variableterm | zoneterm | anytargetterm )
+        nesteddeclarationterm: possessiveclarationreference | prepositionalattacheddeclaration
         
-        //Declaration definitions can have prepositional phrases that add additional information.
-        prepositionalattacheddeclaration: DECLARATIONPREPOSITION declaration
+        //Declaration definitions can have prepositional phrases and possessives that can contain declarations of their own.
+        //We need a special rule for embedded declarations which shouldn't have any further recursive declarations. Instead,
+        //we treat the declaration as flat and it's the job of a semantic analyzer to determine how they are really nested.
+        //For example, we parse "the owner of the creature with a +1/+1 counter on it" as 
+        //"the owner (of the creature) (with a +1/+1 counter) (on it)" rather than
+        //"the owner (of the creature (with a +1/+1 counter (on it)))", if that makes sense.
+        embeddedsingledeclaration: embeddedregulardeclaration | embeddedreferencedeclaration
+        embeddedregulardeclaration: declarationdecorator* embeddeddeclarationdefinition
+        embeddedreferencedeclaration: referencedecorator+ embeddeddeclarationdefinition | personalthirdpersonreferencedefinition | namereferencedefinition
+        embeddeddeclarationdefinition: nonnesteddeclarationterm+
+        prepositionalattacheddeclaration: DECLARATIONPREPOSITION embeddedsingledeclaration
         DECLARATIONPREPOSITION: "of" | ("on" | "onto") | "who" | "in" | "under" | "with"
+        possessiveclarationreference: (embeddeddeclarationdefinition | namereferencedefinition) ("'s"|"'")
         
         
         
-        possessiveclarationreference: (declarationdefinition | namereferencedefinition) ("'s"|"'")
         typeterm: (TYPE ["s"] | SUBTYPESPELL ["s"] | SUBTYPELAND ["s"] | SUBTYPEARTIFACT ["s"] | SUBTYPEENCHANTMENT ["s"] | SUBTYPEPLANESWALKER | SUBTYPECREATUREA ["s"] | SUBTYPECREATUREB ["s"] | SUBTYPEPLANAR | SUPERTYPE)
-        modifierterm: ABILITYMODIFIER | COMBATSTATUSMODIFIER | KEYWORDSTATUSMODIFIER | TAPPEDSTATUSMODIFIER | EFFECTSTATUSMODIFIER
+        modifierterm: ABILITYMODIFIER | COMBATSTATUSMODIFIER | KEYWORDSTATUSMODIFIER | TAPPEDSTATUSMODIFIER | EFFECTSTATUSMODIFIER | RELATIVEMODIFIER
         qualifierterm: QUALIFIER["s"]
         timeterm: PHASE | STEP | TURN | GAME
         playerterm: PLAYER["s"]
@@ -289,14 +302,50 @@ class TestGrammarAndParser(unittest.TestCase):
         nameterm: "OBJECTNAME" | NAMEREFSYMBOL //TODO: fix objectname vs. basic lexer
         damageterm: DAMAGETYPE
         colorterm: COLOR
-        variableterm: "choice"["s"] //Examples: "their choice", "of your choice"
-        | ("copy" | "copies") //Examples: "You may have Shapeshifters you control become *copies* of that creature", "choose new targets for the *copy*"
-        | "vote"["s"] // Examples: "each *vote* they receive"
-        | NUMBERPROPERTY? "number"["s"] //Examples: "the *number* of cards you drew this term", "a *prime number* of lands"
-        | "time"["s"] //Example: "the number of *times* ~ was kicked", "the first time this turn"
-        anytargetterm: "any target" //Special nullary variant.
+        variableterm: "choice"["s"] //Example(s): "their choice", "of your choice"
+        | ("copy" | "copies") //Example(s): "You may have Shapeshifters you control become *copies* of that creature", "choose new targets for the *copy*"
+        | "vote"["s"] //Example(s): "each *vote* they receive"
+        | NUMBERPROPERTY? "number"["s"] //Example(s): "the *number* of cards you drew this term", "a *prime number* of lands"
+        | "time"["s"] //Example(s): "the number of *times* ~ was kicked", "the first time this turn"
+        anytargetterm: "any target" //Special nullary variant like "~ deals three damage to *any target*"
 
         
+        //Keyworded ability declaration
+        //Regular keyworded abilities are those that are of the form "keyword (cost/description"?.
+        //Note that the parser will allow for illegal keyworded ability definitions like "flying 3", and it's the
+        //job of the semantic analyzer to check for things like this. Special keyworded abilities, meanwhile, are
+        //those that have very particular syntax around them and its easier to spell them out in a special rule.
+        keywordabilitydeclaration: regularkeywordedabilitydefinition | specialkeywordedabilitydefinition
+        
+        regularkeywordedabilitydefinition: REGULARKEYWORDEDABILITY declaration? //Example(s): "Flying", "Bushido 3", "Champion a Kithkin"
+        | REGULARKEYWORDEDABILITY declaration DASH declaration //Example(s): "Impending 4—{2}{R}{R}"
+        
+        specialkeywordedabilitydefinition: "specialkeywordedabilitydefinition" //TODO
+        
+        //need to handle past tense of keyworded actions like "kicked" or "plotted" as part of declarations
+        //special cases include...
+        //landwalk, hexproof from X and from Y, [typeexpression] "cycling" cost, "splice" "onto" typeexpression cost, typeexpression "offering"
+        //"forecast" activationstatement, "suspend" valuenumber cost, "aura swap" (if we wanted to generalize to TYPE swap)
+        //partner with objectname, kwcompanion: "companion", "craft" "with" declarationorreference cost, spree (Choose one or more additional costs.)
+        
+        REGULARKEYWORDEDABILITY: "deathtouch" | "defender" | "double strike" | "enchant" | "equip" | "first strike" | "flash" | "flying"
+        | "haste" | "indestructible" | "intimidate" | "lifelink" | "reach" | "shroud" | "trample" | "vigilance" | "ward" | "rampage"
+        | "cumulative upkeep" | "flanking" | "phasing" | "buyback" | "shadow" | "echo" | "horsemanship" | "fading" | "multi"? "kicker"
+        | "flashback" | "madness" | "fear" | "mega"? "morph" | "amplify" | "provoke" | "storm" | "affinity" "for"? | "entwine" | "modular"
+        | "sunburst" | "bushido" | "soulshift" | "ninjutsu" | "epic" | "convoke" | "dredge" | "transmute" | "bloodthirst" | "haunt"
+        | "graft" | "recover" | "ripple" | "split second" | "suspend" | "vanishing" | "absorb" | "aura swap" | "delve" | "delve"
+        | "fortify" | "frenzy" | "gravestorm" | "poisonous" | "transfigure" | "champion" | "changeling" | "evoke" | "hideaway" | "prowl"
+        | "reinforce" | "conspire" | "persist" | "wither" | "retrace" | "devour" | "exalted" | "unearth" | "cascade" | "annihilator"
+        | "level up" | "rebound" | "totem armor" | "infect" | "battle cry" | "living weapon" | "undying" | "miracle" | "soulbond"
+        | "overload" | "scavenge" | "unleash" | "cipher" | "evolve" | "extort" | "fuse" | "bestow" | "tribute" | "dethrone"
+        | "hidden agenda" | "outlast" | "prowess" | "dash" | "exploit" | "menace" | "renown" | "awaken" | "devoid" | "ingest"
+        | "myriad" | "surge" | "skulk" | "emerge" | "escalate" | "melee" | "crew" | "fabricate" | "undaunted" | "improvise" | "aftermath"
+        | "embalm" | "eternalize" | "afflict" | "ascend" | "assist" | "jump-start" | "mentor" | "afterlife" | "riot" | "spectacle"
+        | "escape" | "mutate" | "oncore" | "boast" | "foretell" | "demonstrate" | ("day" | "night") "bound" | "disturb" | "decayed"
+        | "cleave" | "training" | " compleated" | "reconfigure" | "blitz" | "casualty" | "enlist" | "read ahead" | "ravenous" | "squad"
+        | "prototype" | "living metal" | "for mirrodin!" | "toxic" | "backup" | "bargain" | "disguise" | "plot" | "saddle"
+        | "gift" | "offspring" | "impending"
+
         
         //Below are hardcoded game terms used in declarations.
         PLAYER: "player" | "opponent" | "you" |  "teammate" | "team" | "controller" | "owner"
@@ -355,7 +404,8 @@ class TestGrammarAndParser(unittest.TestCase):
         SUPERTYPE: "basic" | "legendary" | "ongoing" | "snow" | "world"
         DAMAGETYPE: "damage" | "combat damage" | "excess damage"
         ABILITYMODIFIER: "triggered" | "activated" | "mana" | "loyalty"
-        COMBATSTATUSMODIFIER: "attacking" | "defending" | "attacked" | "blocking" | "blocked" | "active"
+        RELATIVEMODIFIER: "next" | "additional" | "extra" //Example(s): "an *additional* +1/+1 counter", "take an *extra* turn"
+        COMBATSTATUSMODIFIER: "attacking" | "defending" | "attacked" | "blocking" | "blocked" | "active" //Example(s): "the *active* player", "*attacking* creatures you control"
         KEYWORDSTATUSMODIFIER: "paired" | "kicked" | "face-up" | "face-down" | "transformed" | "enchanted" | "equipped"
         | "fortified" | "monstrous" | "regenerated" | "suspended" | "flipped" | "suspected" // TODO: ensure 'suspected' works properly
         TAPPEDSTATUSMODIFIER: ["un"]"tapped"
@@ -434,12 +484,8 @@ class TestGrammarAndParser(unittest.TestCase):
         | valueterm "plus" valueterm //Example: "the number of Elves you control *plus* the number of Elf cards in your graveyard."
         | valueterm "minus" valueterm //Example: "the number of cards in your hand *minus* the number of cards in that player’s hand."
         
-        //TODO
-        //"next" valuecardinal? -> nexttimemodifier
-        // "additional" -> additionaltimemodifier
-        //valuecardinal? "extra" -> extratimemodifier
-        //time(s) could just be a variablevalue operation by itself (like "the next *time*")
-        
+        DASH: "—"
+        MODALCHOICE: "•"
         %import common.UCASE_LETTER -> UCASE_LETTER
         %import common.LCASE_LETTER -> LCASE_LETTER
         //%import common.WORD -> WORD
@@ -448,7 +494,8 @@ class TestGrammarAndParser(unittest.TestCase):
         %import common.WS -> WS
         %ignore WS
         """
-        
+
+        #TMP contains chunks of rules that I should port over to
         TMP = """
         //declarationdefinitionwithouttrailingsubdefinitions: prefixdefinitionterm* definitionterm+ postfixdefinitionterm* 
 
@@ -782,7 +829,15 @@ class TestGrammarAndParser(unittest.TestCase):
 
 
         declarationsToTest = [
+            "haste or flying",
+            "bushido 3",
+            "{R}{R}{2}",
+            "{2}{R}{R}",
+            "impending 4 — {2}{R}{R}",
+            "champion a kithkin",
+            "a creature with a +1/+1 counter",
             "a creature with a +1/+1 counter on it",
+            "the owner of the creature with a +1/+1 counter on it",
             "that teammate's life total",
             "hands",
             "their hand",
@@ -791,7 +846,6 @@ class TestGrammarAndParser(unittest.TestCase):
             "its owner's hand",
             "that hand",
             "that player",
-            "creatures you control",
             "{W}{W}{1}",
             "{G} or {U}",
             "all blue creatures, black creatures, and white creatures",
@@ -800,12 +854,9 @@ class TestGrammarAndParser(unittest.TestCase):
             "five life",
             "outside the game",
             "a teammate's life total",
-            "each card drawn",
-            "each spirit sacrificed this way",
             "abilities",
             "permanents",
             "abilities of permanents",
-            "abilities of permanents you control",
             "this turn",
             "combat damage",
             "each draw step",
@@ -814,12 +865,13 @@ class TestGrammarAndParser(unittest.TestCase):
             "a spell on the stack",
             "multicolored enchantments",
             "the name of the player",
-            "an artifact under their control",
             "they",
+            "his hand",
             "himself",
             "him",
             "herself",
             "her",
+            "her enchantment",
             "five",
             "three or greater",
             "a cat, a scarecrow, and a construct",
@@ -828,13 +880,16 @@ class TestGrammarAndParser(unittest.TestCase):
             "a creature on the battlefield of your teammate's game",
             "one of three",
             "one with two",
-            "a player who DEFINITION",
             "the first time",
-            "a prime number"
+            "a prime number",
+            "creatures you control",
+            "an artifact under their control",
+            "abilities of permanents you control",
+            "each card drawn"
         ]
 
 
-        shouldOutputVerboseDetails = True
+        shouldOutputVerboseDetails = False
 
         def getLexerResults(declaration):
             lexerState = lark.lexer.LexerState(text=declaration, line_ctr=lark.lexer.LineCounter(
