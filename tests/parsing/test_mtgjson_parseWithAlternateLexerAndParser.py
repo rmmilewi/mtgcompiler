@@ -225,7 +225,12 @@ class TestGrammarAndParser(unittest.TestCase):
         //Example(s): "destroy *target nonblack creature*" and "draw *a card*"
         //A reference points to a declaration that was made earlier or that is already assumed to exist.
         //Example(s) : "draw a card if *that creature* had power 3 or greater" or "target creature blocks *this turn* if able"
-        declaration: regulardeclaration | referencedeclaration
+        declaration: singledeclaration | compounddeclaration 
+        compounddeclaration:  singledeclaration ("," singledeclaration ",")* "or" singledeclaration -> orcompounddeclaration
+        | singledeclaration ("," singledeclaration ",")* "and" singledeclaration -> andcompounddeclaration
+        | singledeclaration ("," singledeclaration ",")* "and/or" singledeclaration -> andorcompounddeclaration
+        | "neither" singledeclaration "nor" singledeclaration -> neithernorcompounddeclaration
+        singledeclaration: regulardeclaration | referencedeclaration
         regulardeclaration: declarationdecorator* declarationdefinition
         referencedeclaration: referencedecorator+ declarationdefinition | personalthirdpersonreferencedefinition | namereferencedefinition
         
@@ -244,10 +249,9 @@ class TestGrammarAndParser(unittest.TestCase):
         //Reference decorators help clarify what is being talked about. Note that reference decorators can have nested
         //references to other defined things (like "your *opponent's* hand").
         //Example(s): "Destroy target creature. *Its* controller [...]" and "*its owner’s* hand." "*that creature’s* toughness."
-        referencedecorator: THIRDPERSONIMPERSONALREFERENCE | POSSESSIVEPRONOUNREFERNCE | nesteddeclarationreference
+        referencedecorator: THIRDPERSONIMPERSONALREFERENCE | POSSESSIVEPRONOUNREFERNCE
         THIRDPERSONIMPERSONALREFERENCE: ("that" | "those") | ("this"|"these")
         POSSESSIVEPRONOUNREFERNCE: "its" | "your" | "their" | "his" //Note: "her" is handled separately to capture the ambiguity.
-        nesteddeclarationreference: (declarationdefinitionwithouttrailingsubdefinitions | namereferencedefinition) ("'s"|"'")
         
         //Declaration decorators. The most popular decorator is "target".
         //Example(s): "destroy *target* nonblack creature", "*any* permanent" 
@@ -259,28 +263,24 @@ class TestGrammarAndParser(unittest.TestCase):
         | "the" -> definitearticledecorator
         | valueexpression? "target" -> targetdecorator
         | "any" -> anydecorator
-        anytargetexpression: "any" "target" //Special nullary variant
         
-        declarationdefinition: declarationdefinitionwithouttrailingsubdefinitions | compounddeclarationdefinition
-        compounddeclarationdefinition:  declarationdefinitionwithouttrailingsubdefinitions ("," declarationdefinitionwithouttrailingsubdefinitions ",")* "or" declarationdefinitionwithouttrailingsubdefinitions -> orcompounddeclarationdefinition
-        | declarationdefinitionwithouttrailingsubdefinitions ("," declarationdefinitionwithouttrailingsubdefinitions ",")* "and" declarationdefinitionwithouttrailingsubdefinitions -> andcompounddeclarationdefinition
-        | declarationdefinitionwithouttrailingsubdefinitions ("," declarationdefinitionwithouttrailingsubdefinitions ",")* "and/or" declarationdefinitionwithouttrailingsubdefinitions -> andorcompounddeclarationdefinition
-        | "neither" declarationdefinitionwithouttrailingsubdefinitions "nor" declarationdefinitionwithouttrailingsubdefinitions -> neithernorcompounddeclarationdefinition
-        
-        declarationdefinitionwithouttrailingsubdefinitions: "DEFINITION" | (declarationterm | prepositionalattacheddeclaration) + //TODO: Remove "DEFINITION" placeholder
+        declarationdefinition: "DEFINITION" | (declarationterm) + //TODO: Remove "DEFINITION" placeholder
         declarationterm : ("non""-"?)? (valueterm | manaterm | characteristicterm 
         | typeterm | colorterm | modifierterm | qualifierterm | timeterm | damageterm | playerterm 
-        | powertoughnessterm | loyaltycostterm | counterterm | nameterm | choiceterm)
+        | powertoughnessterm | loyaltycostterm | counterterm | nameterm | variableterm | zoneterm | possessiveclarationreference | anytargetterm |  prepositionalattacheddeclaration)
         
-        //Declaration definitions can have prepositional phrases that add additional information
+        //Declaration definitions can have prepositional phrases that add additional information.
         prepositionalattacheddeclaration: DECLARATIONPREPOSITION declaration
-        DECLARATIONPREPOSITION: "of" | ("on" | "onto") | "who" | "that" | "in" | "under"
+        DECLARATIONPREPOSITION: "of" | ("on" | "onto") | "who" | "in" | "under" | "with"
         
+        
+        
+        possessiveclarationreference: (declarationdefinition | namereferencedefinition) ("'s"|"'")
         typeterm: (TYPE ["s"] | SUBTYPESPELL ["s"] | SUBTYPELAND ["s"] | SUBTYPEARTIFACT ["s"] | SUBTYPEENCHANTMENT ["s"] | SUBTYPEPLANESWALKER | SUBTYPECREATUREA ["s"] | SUBTYPECREATUREB ["s"] | SUBTYPEPLANAR | SUPERTYPE)
         modifierterm: ABILITYMODIFIER | COMBATSTATUSMODIFIER | KEYWORDSTATUSMODIFIER | TAPPEDSTATUSMODIFIER | EFFECTSTATUSMODIFIER
         qualifierterm: QUALIFIER["s"]
         timeterm: PHASE | STEP | TURN | GAME
-        playerterm: PLAYER
+        playerterm: PLAYER["s"]
         zoneterm: ZONE
         powertoughnessterm: valueterm "/" valueterm
         loyaltycostterm: "[" (PLUS | PWMINUS)? valueterm "]"
@@ -289,16 +289,20 @@ class TestGrammarAndParser(unittest.TestCase):
         nameterm: "OBJECTNAME" | NAMEREFSYMBOL //TODO: fix objectname vs. basic lexer
         damageterm: DAMAGETYPE
         colorterm: COLOR
-        choiceterm: "choice" //Examples: "their choice", "of your choice"
-
+        variableterm: "choice"["s"] //Examples: "their choice", "of your choice"
+        | ("copy" | "copies") //Examples: "You may have Shapeshifters you control become *copies* of that creature", "choose new targets for the *copy*"
+        | "vote"["s"] // Examples: "each *vote* they receive"
+        | NUMBERPROPERTY? "number"["s"] //Examples: "the *number* of cards you drew this term", "a *prime number* of lands"
+        | "time"["s"] //Example: "the number of *times* ~ was kicked", "the first time this turn"
+        anytargetterm: "any target" //Special nullary variant.
 
         
         
         //Below are hardcoded game terms used in declarations.
-        PLAYER: "player"["s"] | "opponent"["s"] | "you" |  "teammate"["s"] | "team"["s"] | "controller"["s"] | "owner"["s"]
+        PLAYER: "player" | "opponent" | "you" |  "teammate" | "team" | "controller" | "owner"
         PLAYERCHARACTERISTIC: "maximum hand size" | "life total"["s"] | "life" | "cards in hand"
         OBJECTCHARACTERISTIC: "card"? "name" | "mana value" | "color"["s"] | "color indicator" | "type"["s"] | "card type"["s"] | "subtype"["s"] | "supertype"["s"]
-        | "rules text" | "abilities" | "power" | "toughness" | "base power" | "base toughness" | "loyalty" | "hand modifier" | "life modifier"
+        | "rules text" | ("ability" | "abilities" ) | "power" | "toughness" | "base power" | "base toughness" | "loyalty" | "hand modifier" | "life modifier"
         ZONE: "battlefield" | "graveyard"["s"] | ("library"|"libraries") | "hand"["s"] | "stack" | "exile" | "command zone" | "outside the game" | "anywhere"
         TYPE: "planeswalker" | "conspiracy" | "creature" | "enchantment" | "instant" | "land" | "phenomenon" | "plane" | "artifact" | "scheme" | "sorcery" | "tribal" | "vanguard"
         SUBTYPESPELL : "arcane" | "trap" | "adventure"
@@ -319,7 +323,7 @@ class TestGrammarAndParser(unittest.TestCase):
         | "barbarian" | "basilisk" | "bat" | "bear" | "beast" | "beeble" | "berserker" | "bird" | "blinkmoth"
         | "boar" | "bringer" | "brushwagg" | "camarid" | "camel" | "caribou" | "carrier" | "cat" | "centaur"
         | "cephalid" | "chimera" | "citizen" | "cleric" | "cockatrice" | "construct" | "coward" | "crab"
-        | "crocodile" | "cyclops" | "dauthi" | "demon" | "deserter" | "devil" | "dinosaur" | "djinn" | "dragon"
+        | "crocodile" | "cyclops" | "dauthi" | "demon" | "deserter" | "detective" | "devil" | "dinosaur" | "djinn" | "dragon"
         | "drake" | "dreadnought" | "drone" | "druid" | "dryad" | ("dwarf"|"dwarves") | "efreet" | "egg" | "elder" | "eldrazi"
         | "elemental" | "elephant" | ("elf"|"elves") | "elk" | "eye" | "faerie" | "ferret" | "fish" | "flagbearer" | "fox"
         SUBTYPECREATUREB: "frog" | "fungus" | "gargoyle" | "germ" | "giant" | "gnome" | "goat" | "goblin" | "god" | "golem" | "gorgon"
@@ -337,7 +341,7 @@ class TestGrammarAndParser(unittest.TestCase):
         | "sheep" | "siren" | "skeleton" | "slith" | "sliver" | "slug" | "snake" | "soldier" | "soltari" | "spawn" | "specter"
         | "spellshaper" | "sphinx" | "spider" | "spike" | "spirit" | "splinter" | "sponge" | "squid" | "squirrel" | "starfish"
         | "surrakar" | "survivor" | "tetravite" | "thalakos" | "thopter" | "thrull" | "treefolk" | "trilobite" | "triskelavite"
-        | "troll" | "turtle" | "unicorn" | "vampire" | "vedalken" | "viashino" | "volver" | "wall" | "warrior" | "weird"
+        | "troll" | "turtle" | "unicorn" | "vampire" | "vedalken" | "viashino" | "volver" | "wall" | "warrior" | "warlock" | "weird"
         | ("werewolf"|"werewolves") | "whale" | "wizard" | ("wolf"|"wolves") | "wolverine" | "wombat" | "worm" | "wraith" | "wurm" | "yeti"
         | "zombie" | "zubera" | "mouse"
         SUBTYPEPLANAR: "alara" | "arkhos" | "azgol" | "belenon" | "bolas’s meditation realm"
@@ -357,7 +361,7 @@ class TestGrammarAndParser(unittest.TestCase):
         TAPPEDSTATUSMODIFIER: ["un"]"tapped"
         EFFECTSTATUSMODIFIER: "named" | "chosen" | "chosen at random" | "revealed" | "returned" | "destroyed" | "exiled" | "died" | "countered" | "sacrificed"
         | "the target of a spell or ability" | "prevented" | "created"
-        QUALIFIER: ("ability"|"abilities") | "card" | "permanent" | "source" | "spell" | "token" | "effect"
+        QUALIFIER: "card" | "permanent" | "source" | "spell" | "token" | "effect"
         COLOR: "white" | "blue" | "black" | "red" | "green" | "monocolored" | "multicolored" | "colorless"
         PHASE: "beginning phase" | ("precombat" | "postcombat")? "main phase" | ("combat" | "combat phase") | "ending phase"
         STEP: "untap step" | ("upkeep step" | "upkeep") | "draw step" | "beginning of combat" | "declare attackers step"
@@ -417,7 +421,7 @@ class TestGrammarAndParser(unittest.TestCase):
         TAPSYMBOL: "{T}"i
         UNTAPSYMBOL: "{Q}"i
         
-        valueoperation: valuecomparisonoperation | valuemathoperation | variablevalueoperation
+        valueoperation: valuecomparisonoperation | valuemathoperation
         valuecomparisonoperation: "equal to" valueterm // ==
             | "less than" "or equal to"? valueterm // < ; <=
             | "greater than" "or equal to"? valueterm // > ; >=
@@ -429,7 +433,6 @@ class TestGrammarAndParser(unittest.TestCase):
         | valueterm "divided" ("evenly" | "as you choose")
         | valueterm "plus" valueterm //Example: "the number of Elves you control *plus* the number of Elf cards in your graveyard."
         | valueterm "minus" valueterm //Example: "the number of cards in your hand *minus* the number of cards in that player’s hand."
-        variablevalueoperation: ("a"|"the"|"any") NUMBERPROPERTY? "number" ("of" "times"? declaration)? //example: "the number of cards you drew this term", "the number of times ~ was kicked"
         
         //TODO
         //"next" valuecardinal? -> nexttimemodifier
@@ -779,7 +782,14 @@ class TestGrammarAndParser(unittest.TestCase):
 
 
         declarationsToTest = [
+            "a creature with a +1/+1 counter on it",
+            "that teammate's life total",
+            "hands",
             "their hand",
+            "their owner",
+            "its owner",
+            "its owner's hand",
+            "that hand",
             "that player",
             "creatures you control",
             "{W}{W}{1}",
@@ -788,10 +798,13 @@ class TestGrammarAndParser(unittest.TestCase):
             "two 1/1 green elf creature tokens",
             "the exiled card",
             "five life",
-            "outside the game"
-            "a teammate",
-            "life total",
+            "outside the game",
             "a teammate's life total",
+            "each card drawn",
+            "each spirit sacrificed this way",
+            "abilities",
+            "permanents",
+            "abilities of permanents",
             "abilities of permanents you control",
             "this turn",
             "combat damage",
@@ -802,7 +815,6 @@ class TestGrammarAndParser(unittest.TestCase):
             "multicolored enchantments",
             "the name of the player",
             "an artifact under their control",
-            "a creature with a +1/+1 counter on it",
             "they",
             "himself",
             "him",
@@ -810,10 +822,19 @@ class TestGrammarAndParser(unittest.TestCase):
             "her",
             "five",
             "three or greater",
+            "a cat, a scarecrow, and a construct",
+            "a detective and a case",
+            "one or two",
+            "a creature on the battlefield of your teammate's game",
+            "one of three",
+            "one with two",
+            "a player who DEFINITION",
+            "the first time",
+            "a prime number"
         ]
 
 
-        shouldOutputVerboseDetails = False
+        shouldOutputVerboseDetails = True
 
         def getLexerResults(declaration):
             lexerState = lark.lexer.LexerState(text=declaration, line_ctr=lark.lexer.LineCounter(
