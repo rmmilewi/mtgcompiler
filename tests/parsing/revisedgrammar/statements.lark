@@ -49,17 +49,16 @@ condition: "only"? "if" -> ifcondition
 | "as" "an" "additional" "cost" "to"? -> asanadditionalcostcondition
 
 statementexpression: expression
-expression: effectexpression | beingexpression postfixexpression?
-
+//expression: effectexpression | beingexpression postfixexpression?
 
 //compoundexpression: beingexpression postfixexpression?
 //| statementexpression ("," statementexpression)* ","? "and" statementexpression -> compoundandstatement
 //| statementexpression ("," statementexpression)* ","? "or" statementexpression -> compoundorstatement
 
-beingexpression: statementexpression ("is" | "was" | "are" "each"?) ("still"|"not")? statementexpression -> isexpression
-| statementexpression ("has"|"have"|"had") statementexpression -> hasexpression
-| statementexpression "can" "not"? statementexpression -> canexpression
-| statementexpression "become"["s"] statementexpression -> becomesexpression
-| statementexpression "may" statementexpression -> mayexpression
-| statementexpression "would" statementexpression -> wouldexpression
-| statementexpression (statementexpression? ("do"["es"]? | "did") "not"? statementexpression? | "doing" "so" ) -> doesexpression
+//beingexpression: statementexpression ("is" | "was" | "are" "each"?) ("still"|"not")? statementexpression -> isexpression
+//| statementexpression ("has"|"have"|"had") statementexpression -> hasexpression
+//| statementexpression "can" "not"? statementexpression -> canexpression
+//| statementexpression "become"["s"] statementexpression -> becomesexpression
+//| statementexpression "may" statementexpression -> mayexpression
+//| statementexpression "would" statementexpression -> wouldexpression
+//| statementexpression (statementexpression? ("do"["es"]? | "did") "not"? statementexpression? | "doing" "so" ) -> doesexpression

@@ -24,53 +24,6 @@ class TestGrammarAndParser(unittest.TestCase):
         cls._parser = parser
         cls._preprocessor = preprocessor
     """""
-        
-
-    @pytest.mark.skip(reason="Just doing some experimentation here.")
-    def test_WithBasicLexer_RunLexerOnly(self):
-        def runLexer(data):
-            preprocessed = self._preprocessor.prelex(data['oracle_text'], None, data['name'])
-            lexerState = lark.lexer.LexerState(text=preprocessed, line_ctr=lark.lexer.LineCounter(
-                b'\n' if isinstance(preprocessed, bytes) else '\n'))
-            lexTimeStart = time.time()
-            lexerResults = self._parser.parser.lexer.lex(state=lexerState, parser_state=None)
-            lexTimeEnd = time.time()
-            print(f"{data['name']} took {lexTimeEnd - lexTimeStart} to lex.")
-            print(f"Lexer Results for {data['name']}...")
-            print("Full Text:",data['oracle_text'])
-            for token in lexerResults:
-                print(f"(token type: {token.type}) | {token}")
-
-        ragingGoblin = {
-            "object": "card",
-            "name": "Raging Goblin",
-            "oracle_text": "Haste (This creature can attack and {T} as soon as it comes under your control.)"
-            }
-        #runLexer(ragingGoblin)
-
-        dragonCard = {
-            "object": "card",
-            "name": "Dragon Card",
-            "oracle_text": "If you control a dragon, draw a card."
-            }
-        #runLexer(dragonCard)
-
-        dragonCard2 = {
-            "object": "card",
-            "name": "Other Card",
-            "oracle_text": "they draw a card."
-        }
-        #runLexer(dragonCard)
-
-
-        parseTimeStart = time.time()
-        #parseResult = self._parser.parse("if you control a dragon, draw a card.")
-        parseResult = self._parser.parse("sacrifice a permanent named target creature")
-        parseTimeEnd = time.time()
-        print(f"Input text took {parseTimeEnd-parseTimeStart} to parse.")
-        print(parseResult.pretty())
-        #print(f"{dragonCard['name']} took {parseTimeEnd-parseTimeStart} to parse.")
-
 
     def test_improveStatementLevelOfGrammar(self):
         """
@@ -213,6 +166,363 @@ class TestGrammarAndParser(unittest.TestCase):
                     print(f"Statement(s) ({statementBlock}) produced an exception during parsing: {firstLineOfException}...")
         print("-----------------------")
 
+    def test_improveExpressionLevelOfGrammar(self):
+        revisedExpressionGrammar = """
+        
+        declaration: "DECLARATION"
+
+        //Expressions make things happen in the game. When spell states "~ *deals* 3 damage to target creature", "nonbasic lands *are* mountains",
+        //or "target player *loses* the game", damage is dealt, lands become mountains, and a player loses the game. Expressions take declarations
+        //or other expressions (like who deals the damage and to whom is the damage dealt). Meanwhile, statements can contain expressions, like the
+        //if statement "if you control a modified creature, draw a card" is equivalent to (if the expression "you control a modified creature" evaluates
+        //to true, make the expression "draw a card" happen.
+        expression: beingexpression | basickeywordactionexpression
+        !expressionordeclaration: expression | declaration
+
+        beingexpression: expressionordeclaration ("is" | "was" | "are" "each"?) ("still"|"not")? expressionordeclaration -> isexpression
+        | expressionordeclaration ("has"|"have"|"had") expressionordeclaration -> hasexpression
+        | expressionordeclaration "can" "not"? expressionordeclaration -> canexpression
+        | expressionordeclaration "become"["s"] expressionordeclaration -> becomesexpression
+        | expressionordeclaration "may" expressionordeclaration -> mayexpression
+        | expressionordeclaration "would" expressionordeclaration -> wouldexpression
+        | expressionordeclaration (expressionordeclaration? ("do"["es"]? | "did") "not"? expressionordeclaration? | "doing" "so" ) -> doesexpression
+        | "be" expressionordeclaration -> beexpression //Example(s): "*be* attacked", "*be* sacrificed"
+        
+        basickeywordactionexpression: expressionordeclaration? BASICKEYWORDACTION expressionordeclaration?
+        
+        //basickeywordaction: activateexpression
+        //| attacksexpression
+        //| blocksexpression
+        //| attachexpression
+        //| castexpression
+        //| chooseexpression
+        //| controlsexpression
+        //| gaincontrolexpression
+        //| uncastexpression
+        //| createexpression
+        //| destroyexpression
+        //| drawexpression
+        //| discardexpression
+        //| doubleexpression
+        //| exchangeexpression
+        //| exileexpression
+        //| fightexpression
+        //| playexpression
+        //| revealexpression
+        //| sacrificeexpression
+        //| searchexpression
+        //| shuffleexpression
+        //| tapuntapexpression
+        //| millexpression
+        
+        BASICKEYWORDACTION: "activate"["s" | "d"]
+        | "attack"["s" | "ed"]
+        
+        DASH: "—"
+        MODALCHOICE: "•"
+        %import common.UCASE_LETTER -> UCASE_LETTER
+        %import common.LCASE_LETTER -> LCASE_LETTER
+        //%import common.WORD -> WORD
+        %import common.NEWLINE -> NEWLINE
+        //%import common.NUMBER -> NUMBER
+        %import common.SIGNED_NUMBER -> NUMBER
+        %import common.WS -> WS
+        %ignore WS
+        """
+
+        expressionGrammarOld = """
+
+        effectexpression: keywordactionexpression
+        | dealsdamageexpression
+        | preventdamageexpression
+        | returnexpression
+        | putinzoneexpression
+        | putcounterexpression
+        | removecounterexpression
+        | spendmanaexpression
+        | paylifeexpression
+        | addmanaexpression
+        | paymanaexpression
+        | payexpression
+        | gainlifeexpression
+        | loselifeexpression
+        | getsptexpression
+        | diesexpression
+        | gainabilityexpression
+        | loseabilityexpression
+        | lookexpression
+        | takeextraturnexpression
+        | flipcoinsexpression
+        | winloseeventexpression
+        | remainsexpression
+        | assigndamageexpression
+        | ableexpression
+        | changezoneexpression
+        | skiptimeexpression
+        | switchexpression
+        | targetsexpression
+        | shareexpression
+
+        // dealsdamageexpression:  declarationorreference? ("deal"["s"]|"dealt") valueexpression? DAMAGETYPE ("to" declarationorreference)? (","? quantityrulemodification)* -> dealsdamagevarianta
+        // | valueexpression DAMAGETYPE ("to" declarationorreference)?  (","? quantityrulemodification)* -> dealsdamagevariantaimplied //variant a, implied antecedent
+        // | declarationorreference ("deal"["s"]|"dealt") DAMAGETYPE valueexpression ("to" declarationorreference)?  (","? quantityrulemodification)* -> dealsdamagevariantb
+        // | declarationorreference ("deal"["s"]|"dealt") DAMAGETYPE ("to" declarationorreference)?  valueexpression  (","? quantityrulemodification)* -> dealsdamagevariantc
+        dealsdamageexpression: declarationorreference? "deal"["s"] valueexpression? DAMAGETYPE ("to" declarationorreference)? (","? quantityrulemodification)*
+        | valueexpression DAMAGETYPE ("to" declarationorreference)?  (","? quantityrulemodification)*
+        preventdamageexpression: "prevent" "the" "next" valueexpression DAMAGETYPE "that" "would" "be" "dealt" "to" declarationorreference timeexpression? -> preventdamagevarianta
+        | "prevent" "the" "next" valueexpression DAMAGETYPE "that" declarationorreference "would" "deal" "to" declarationorreference timeexpression? -> preventdamagevariantb
+        | "prevent" "all" DAMAGETYPE "that" "would" "be" "dealt" ("to" declarationorreference)? timeexpression? -> preventdamagevariantc
+        | "prevent" "all" DAMAGETYPE "that" "would" "be" "dealt" "to" "or" "dealt" "by" (declarationorreference)? timeexpression? -> preventdamagevariantd
+        | "prevent" "all" DAMAGETYPE "that"? (declarationorreference)? "would" "deal" timeexpression? -> preventdamagevariante
+        | "prevent" valueexpression "of" "that" DAMAGETYPE -> preventdamagevariantd
+        | "prevent" "that" DAMAGETYPE -> preventdamagevariante
+        | DAMAGETYPE "is" "prevented" "this" "way" -> preventdamagevariantf //[TODO: There may be a more general is-statement for stuff like 'damage'.]
+
+        returnexpression: playerdeclref? "return"["s"] declarationorreference atrandomexpression? ("from" zonedeclarationexpression)? "to" zonedeclarationexpression genericdeclarationexpression? zoneplacementmodifier?//[TODO]
+
+        putinzoneexpression: playerdeclref? "put"["s"] (declarationorreference | cardexpression) (locationexpression | "back" | zoneplacementmodifier) (objectdefinition | playerdefinition | zoneplacementmodifier)?
+        putcounterexpression: playerdeclref? "put"["s"] ("a"|valueexpression) countertype "counter"["s"] "on" declarationorreference
+        removecounterexpression: playerdeclref? "remove"["s"] ("a"|valueexpression) countertype "counter"["s"] "from" declarationorreference
+        spendmanaexpression: "spend" "mana" //[TODO: this is just a stub]
+        paylifeexpression: playerdeclref? "pay"["s"] valueexpression? "life"
+        addmanaexpression: playerdeclref? "add"["s"] manadeclref
+        paymanaexpression: playerdeclref? "pay"["s"] manadeclref
+        payexpression: playerdeclref? "pay"["s"] declarationorreference //[TODO: This might change. Added for 'rather than pay this spell's mana cost'.]
+        gainlifeexpression: playerdeclref? "gain"["s"] (valueexpression? "life" | "life" valueexpression)
+        | playerdeclref "gained" (valueexpression? "life" | "life" valueexpression) timeexpression?
+        loselifeexpression: playerdeclref? "lose"["s"] (valueexpression? "life" | "life" valueexpression)
+        | playerdeclref "lost" (valueexpression? "life" | "life" valueexpression) timeexpression?
+        getsptexpression: declarationorreference? "get"["s"] ptchangeexpression
+        diesexpression: declarationorreference? "die"["s"] timeexpression?
+        gainabilityexpression: declarationorreference? "gain"["s"]  abilitysequencestatement
+        loseabilityexpression: declarationorreference? "lose"["s"] abilitysequencestatement
+        lookexpression: playerdeclref? ("look"["s"]|"looked") "at" (declarationorreference | cardexpression)
+        takeextraturnexpression: playerdeclref? "take"["s"] timeexpression
+        flipcoinsexpression: playerdeclref? "flip"["s"] ("a" | valuecardinal) "coin"["s"]
+        !winloseeventexpression: playerdeclref? ("lose"|"win")["s"] ("the" "flip" | "the" "game")?
+        remainsexpression: declarationorreference? "remain"["s"] (modifier | locationexpression)
+        assigndamageexpression: declarationorreference? "assign"["s"] DAMAGETYPE "to" declarationorreference -> damageredirectionexpression
+        | declarationorreference? "assign"["s"] "no" DAMAGETYPE timeexpression -> nodamageassignedexpression
+        | declarationorreference? "assign"["s"] DAMAGETYPE valueexpression -> alternatedamageassignmentexpression
+        ableexpression: declarationorreference? "able" ("to" statement "do" "so")?
+        changezoneexpression: declarationorreference "enter"["s"] locationexpression? genericdeclarationexpression? zoneplacementmodifier? timeexpression? -> enterzoneexpression
+        | declarationorreference "leaves" locationexpression -> leavezoneexpression
+        skiptimeexpression: playerdeclref? "skip"["s"] timeexpression
+        switchexpression: playerdeclref? "switch"["es"] declarationorreference
+        targetsexpression: objectdeclref? "target"["s"] declarationorreference
+        shareexpression: declarationorreference "share"["s"] declarationorreference
+
+
+        keywordactionexpression: basickeywordaction | specialkeywordaction
+        basickeywordaction: activateexpression
+        | attacksexpression
+        | blocksexpression
+        | attachexpression
+        | castexpression
+        | chooseexpression
+        | controlsexpression
+        | gaincontrolexpression
+        | uncastexpression
+        | createexpression
+        | destroyexpression
+        | drawexpression
+        | discardexpression
+        | doubleexpression
+        | exchangeexpression
+        | exileexpression
+        | fightexpression
+        | playexpression
+        | revealexpression
+        | sacrificeexpression
+        | searchexpression
+        | shuffleexpression
+        | tapuntapexpression
+        | millexpression
+
+        activateexpression: "activate" declarationorreference
+        !attacksexpression: declarationorreference? "only"? "attack"["s"] "only"? (timeexpression? declarationorreference?| declarationorreference? timeexpression?) "alone"?
+        | declarationorreference? "attacked" (timeexpression? declarationorreference?| declarationorreference? timeexpression?) "alone"? -> attackedexpression
+        | declarationorreference? "attack"["s"] "with" declarationorreference -> attackswithexpression
+        //| "be" "attacked" "by" declarationorreference? timeexpression? -> beattackedexpression
+        !blocksexpression: declarationorreference? "only"? "block"["s"] "only"? (timeexpression? declarationorreference? | declarationorreference? timeexpression?) "alone"?
+        | declarationorreference? "blocked" (timeexpression? declarationorreference? | declarationorreference? timeexpression?) "alone"? -> blockedexpression
+        //| "be" "blocked" "by" declarationorreference? timeexpression? -> beattackedexpression
+
+        attachexpression: "attach" declarationorreference "to" declarationorreference
+        | "unattach" declarationorreference ("from" declarationorreference)? -> unattachexpression
+        | playerdeclref "attaches" declarationorreference "to" declarationorreference -> playerattachesexpression
+
+        castexpression: playerdeclref? "cast"["s"] declarationorreference (castmodifier ("and" castmodifier)?)* timeexpression?
+        castmodifier: "without" "paying" "its" "mana" "cost" -> castwithoutpaying //[TODO: We may be able to fold this into the pay-expression]
+        | "as" "though" beingexpression -> castasthough
+        chooseexpression: playerdeclref? ("choose"["s"]|"chose") declarationorreference ("from" "it")? atrandomexpression? //[TODO]
+        controlsexpression: playerdeclref? ("control"["s"] | "controlled") genericdeclarationexpression
+        gaincontrolexpression: playerdeclref? ("gain"["s"] | "gained") "control" "of" declarationorreference
+
+        uncastexpression: "counter" declarationorreference
+        createexpression: playerdeclref? "create"["s"] declarationorreference
+        destroyexpression: "destroy" declarationorreference
+        drawexpression: playerdeclref? ("draw"["s"]|"drew") cardexpression //[("a" "card" | valueexpression "card"["s"] | "cards"["s"] valueexpression)]
+        discardexpression: playerdeclref? ("discard"["s"] | "discarded") (declarationorreference | "a" "card" | valueexpression "card"["s"] | "card"["s"] valueexpression) "at random"?
+        doubleexpression: "double" //[TODO]
+        exchangeexpression: "exchange" characteristicexpression //[TODO]
+        exileexpression: "exile" declarationorreference
+        fightexpression: declarationorreference? "fight"["s"] declarationorreference?
+        playexpression: playerdeclref? ("play"["s"] | "played") declarationorreference timeexpression?
+        revealexpression: playerdeclref? ("reveal"["s"] | "revealed") (cardexpression | declarationorreference)
+        sacrificeexpression: playerdeclref? ("sacrifice"["s"] | "sacrificed") declarationorreference
+        searchexpression: playerdeclref? ("search"["es"] | "searched") zonedeclarationexpression? "for" declarationorreference
+        // used to be mandatory to specify a zone for shuffling, now default deck shuffling doesn't specify it.
+        shuffleexpression: playerdeclref? ("shuffle"["s"] | "shuffled") zonedeclarationexpression?
+        tapuntapexpression: "tap" declarationorreference? -> tapexpression
+        | "untap" declarationorreference? -> untapexpression
+        # millexpression: "mill" valueexpression "card"["s"]
+        millexpression: playerdeclref? "mill"["s"] cardexpression
+
+        specialkeywordaction: regenerateexpression
+        | scryexpression
+        | fatesealexpression
+        | clashexpression
+        | detainexpression
+        | planeswalkexpression
+        | setinmotionexpression
+        | abandonexpression
+        | proliferateexpression
+        | transformexpression
+        | populateexpression
+        | voteexpression
+        | bolsterexpression
+        | manifestexpression
+        | supportexpression
+        | investigateexpression
+        | meldexpression
+        | goadexpression
+        | exertexpression
+        | exploreexpression
+        | turnfaceexpression
+        | cycleexpression
+        | levelupexpression~2
+        | surveilexpression
+        | conniveexpression
+        | monstrosityexpression
+        | adaptexpression
+        | amassexpression
+        | learnexpression
+        | ventureexpression
+        | convertexpression
+        | incubateexpression
+        | theringtemptsexpression
+        | timetravelexpression
+        | discoverexpression
+        | cloakexpression
+        | collectevidenceexpression
+        | suspectexpression
+        | forageexpression
+        | manifestdreadexpression
+
+        regenerateexpression: "regenerate" declarationorreference
+        scryexpression: "scry" valueexpression
+        fatesealexpression: "fateseal" valueexpression
+        clashexpression: playerdeclref? "clash" "with" playerdeclref
+        detainexpression: "detain" objectdeclref
+        planeswalkexpression: playerdeclref "planeswalk"["s"] "to" SUBTYPEPLANAR
+        setinmotionexpression: playerdeclref "set"["s"] declarationorreference "in" "motion"
+        abandonexpression: playerterm? "abandon"["s"] declarationorreference //[Note: Has never been used]
+        proliferateexpression: "proliferate"
+        transformexpression: "transform" declarationorreference
+        populateexpression: "populate"
+        voteexpression: playerdeclref "vote"["s"] "for" (objectname "or" objectname | declarationorreference) //[TODO]
+        bolsterexpression: "bolster" valueexpression
+        manifestexpression: playerdeclref? "manifest"["s"] cardexpression
+        supportexpression: "support" valueexpression
+        investigateexpression: "investigate"
+        meldexpression: "meld" "them" "into" objectname
+        goadexpression: "goad" declarationorreference
+        exertexpression: playerdeclref? "exert"["s"] declarationorreference
+        exploreexpression: declarationorreference? "explores"
+        //[This one below is a bit weird because it's not 'becomes turned face up', it's 'is turned face up'.]
+        //[It's a passive construction, but it's not a modifier like face-up.]
+        !turnfaceexpression: playerdeclref? "turn"["s"] declarationorreference "face" ("down" | "up")
+        | "turned" "face" ("down" | "up") -> turnedfaceexpression
+        cycleexpression: playerdeclref? ("cycle"["s"] | "cycled") declarationorreference?
+
+        levelupexpression: ("level" levelrangeexpression ptexpression ability*)
+        levelrangeexpression: NUMBER "-" NUMBER | NUMBER "+"
+        surveilexpression: "surveil" valueexpression
+        conniveexpression: "connive" valueexpression
+        monstrosityexpression: "monstrosity" valueexpression
+        adaptexpression: "adapt" valueexpression
+        amassexpression: "amass" typeterm? valueexpression
+        learnexpression: "learn"
+        ventureexpression: "venture into the dungeon"
+        convertexpression: "convert" namereference
+        incubateexpression: "incubate" valueexpression
+        theringtemptsexpression: "the ring tempts you"
+        timetravelexpression: "time travel" valuefrequency?
+        discoverexpression: "discover" valueexpression
+        # // TODO: not sure this works, e.g. "cloak the top card of your library"
+        cloakexpression: "cloak" declarationorreference
+        collectevidenceexpression: "collect evidence" valueexpression
+        suspectexpression: "suspect" reference
+        forageexpression: "forage"
+        manifestdreadexpression: "manifest dread"
+
+        """
+        
+
+        compilerUsingPartialGrammar = MtgJsonCompiler.MtgJsonCompiler(
+            options={"parser.overrideGrammar": revisedExpressionGrammar,
+                     "parser.startRule": "expression",
+                     "parser.ambiguity": "explicit",
+                     "parser.larkLexer": "basic",
+                     })
+        parser = compilerUsingPartialGrammar.getParser()
+
+        expressionsToTest = [
+            "DECLARATION attacks DECLARATION",
+            "DECLARATION can not be attacked"
+        ]
+
+
+        shouldOutputVerboseDetails = False
+
+        def getLexerResults(declaration):
+            lexerState = lark.lexer.LexerState(text=declaration, line_ctr=lark.lexer.LineCounter(
+                b'\n' if isinstance(declaration, bytes) else '\n'))
+            lexTimeStart = time.time()
+            lexerResults = parser.parser.lexer.lex(state=lexerState, parser_state=None)
+            lexTimeEnd = time.time()
+            print(f"declaration ({declaration}) took {lexTimeEnd - lexTimeStart} to lex.")
+            for token in lexerResults:
+                print(f"(token type: {token.type}) | {token}")
+
+        print("\n-----------------------")
+        for expression in expressionsToTest:
+            try:
+                fullParseTimeStart = time.time()
+                parseTree = parser.parse(expression)
+                fullParseTimeEnd = time.time()
+                ambiguities = list(parseTree.find_data("_ambig"))
+                expressionPrettyPrint = expression.replace('\n', ' ')
+                print(
+                    f"Expression ({expressionPrettyPrint}) took {fullParseTimeEnd - fullParseTimeStart} to parse. The input had {len(ambiguities)} ambiguities.")
+                if shouldOutputVerboseDetails and len(ambiguities) > 0:
+                    print(parseTree.pretty())
+            except Exception as exception:
+                firstLineOfException = str(exception).split('\n')[0]
+                if shouldOutputVerboseDetails:
+                    print(f"Expression ({expression}) produced an exception during parsing: {exception}...")
+                    print("Outputting lexer interpretation of inputs for reference...")
+                    try:
+                        getLexerResults(expression)
+                    except Exception as lexerException:
+                        firstLineOfLexerException = str(lexerException).split('\n')[0]
+                        print(f"Lexer failed ({firstLineOfLexerException}...)")
+                else:
+                    print(
+                        f"Expression ({expression}) produced an exception during parsing: {firstLineOfException}...")
+        print("-----------------------")
+
     def test_improveDeclarationLevelOfGrammar(self):
         revisedDeclarationGrammar = """
         abilitysequencestatement: "ABILITYSEQUENCESTATEMENT"
@@ -259,9 +569,9 @@ class TestGrammarAndParser(unittest.TestCase):
         | "same" -> samedecorator
         | "all" -> alldecorator
         | ["an"]"other" -> otherdecorator
-        | "a"["n"] -> indefinitearticledecorator
+        | ("a" | "an") -> indefinitearticledecorator
         | "the" -> definitearticledecorator
-        | valueexpression? "target" -> targetdecorator
+        | valueterm? "target" -> targetdecorator
         | "any" -> anydecorator
         
         //A declaration definition is made up of a set of descriptive terms like "a *blue permanent*" or "*two 1/1 green elf creature tokens*".
@@ -353,7 +663,7 @@ class TestGrammarAndParser(unittest.TestCase):
         OBJECTCHARACTERISTIC: "card"? "name" | "mana value" | "color"["s"] | "color indicator" | "type"["s"] | "card type"["s"] | "subtype"["s"] | "supertype"["s"]
         | "rules text" | ("ability" | "abilities" ) | "power" | "toughness" | "base power" | "base toughness" | "loyalty" | "hand modifier" | "life modifier"
         ZONE: "battlefield" | "graveyard"["s"] | ("library"|"libraries") | "hand"["s"] | "stack" | "exile" | "command zone" | "outside the game" | "anywhere"
-        TYPE: "planeswalker" | "conspiracy" | "creature" | "enchantment" | "instant" | "land" | "phenomenon" | "plane" | "artifact" | "scheme" | "sorcery" | "tribal" | "vanguard"
+        TYPE.100: "planeswalker" | "conspiracy" | "creature" | "enchantment" | "instant" | "land" | "phenomenon" | "plane" | "artifact" | "scheme" | "sorcery" | "tribal" | "vanguard"
         SUBTYPESPELL : "arcane" | "trap" | "adventure"
         SUBTYPELAND: "desert" | "forest" | "gate" | "island" | "lair" | "locus"
         | "mine" | "mountain" | "plains" | "power-plant" | "swamp" | "tower" | "urza's"
@@ -381,7 +691,7 @@ class TestGrammarAndParser(unittest.TestCase):
         | "jackal" | "jellyfish" | "juggernaut" | "kavu" | "kirin" | "kithkin" | "knight" | "kobold" | "kor" | "kraken"
         | "lamia" | "lammasu" | "leech" | "leviathan" | "lhurgoyf" | "licid" | "lizard" | "manticore" | "masticore"
         | ("mercenary"|"mercenaries") | "merfolk" | "metathran" | "minion" | "minotaur" | "mole" | "monger" | "mongoose" | "monk"
-        | "monkey" | "moonfolk" | "mutant" | "myr" | "mystic" | "naga" | "nautilus" | "nephilim" | "nightmare"
+        | "monkey" | "moonfolk" | "mouse" | "mutant" | "myr" | "mystic" | "naga" | "nautilus" | "nephilim" | "nightmare"
         | "nightstalker" | "ninja" | "noggle" | "nomad" | "nymph" | ("octopus"|"octopuses") | "ogre" | "ooze" | "orb" | "orc"
         | "orgg" | "ouphe" | "ox" | "oyster" | "pangolin" | "pegasus" | "pentavite" | "pest" | "phelddagrif" | "phoenix"
         | "pilot" | "pincher" | "pirate" | "plant" | "praetor" | "prism" | "processor" | "rabbit" | "rat" | "rebel"
@@ -392,7 +702,7 @@ class TestGrammarAndParser(unittest.TestCase):
         | "surrakar" | "survivor" | "tetravite" | "thalakos" | "thopter" | "thrull" | "treefolk" | "trilobite" | "triskelavite"
         | "troll" | "turtle" | "unicorn" | "vampire" | "vedalken" | "viashino" | "volver" | "wall" | "warrior" | "warlock" | "weird"
         | ("werewolf"|"werewolves") | "whale" | "wizard" | ("wolf"|"wolves") | "wolverine" | "wombat" | "worm" | "wraith" | "wurm" | "yeti"
-        | "zombie" | "zubera" | "mouse"
+        | "zombie" | "zubera"
         SUBTYPEPLANAR: "alara" | "arkhos" | "azgol" | "belenon" | "bolas’s meditation realm"
         | "dominaria" | "equilor" | "ergamon" | "fabacin" | "innistrad" | "iquatana" | "ir"
         | "kaldheim" | "kamigawa" | "karsus" | "kephalai" | "kinshala" | "kolbahan" | "kyneth"
@@ -406,11 +716,11 @@ class TestGrammarAndParser(unittest.TestCase):
         ABILITYMODIFIER: "triggered" | "activated" | "mana" | "loyalty"
         RELATIVEMODIFIER: "next" | "additional" | "extra" //Example(s): "an *additional* +1/+1 counter", "take an *extra* turn"
         COMBATSTATUSMODIFIER: "attacking" | "defending" | "attacked" | "blocking" | "blocked" | "active" //Example(s): "the *active* player", "*attacking* creatures you control"
-        KEYWORDSTATUSMODIFIER: "paired" | "kicked" | "face-up" | "face-down" | "transformed" | "enchanted" | "equipped"
+        KEYWORDSTATUSMODIFIER: "paired" | "kicked" | "face-up" | "face-down" | "transformed" | "enchanted" | "equipped" //TODO: This will need to be generalized more.
         | "fortified" | "monstrous" | "regenerated" | "suspended" | "flipped" | "suspected" // TODO: ensure 'suspected' works properly
         TAPPEDSTATUSMODIFIER: ["un"]"tapped"
         EFFECTSTATUSMODIFIER: "named" | "chosen" | "chosen at random" | "revealed" | "returned" | "destroyed" | "exiled" | "died" | "countered" | "sacrificed"
-        | "the target of a spell or ability" | "prevented" | "created"
+        | "prevented" | "created"
         QUALIFIER: "card" | "permanent" | "source" | "spell" | "token" | "effect"
         COLOR: "white" | "blue" | "black" | "red" | "green" | "monocolored" | "multicolored" | "colorless"
         PHASE: "beginning phase" | ("precombat" | "postcombat")? "main phase" | ("combat" | "combat phase") | "ending phase"
@@ -434,14 +744,14 @@ class TestGrammarAndParser(unittest.TestCase):
         manaterm: manasymbol
         manasymbol: "{" manamarkerseq "}"
         manamarkerseq: manamarker_color -> regularmanasymbol
+        | NUMBER -> genericmanasymbol
         | manamarker_halfmana manamarker_color -> halfmanasymbol
         | manamarker_color "/" manamarker_phyrexian -> phyrexianmanasymbol
         | manamarker_color "/" manamarker_color -> hybridmanasymbol
-        | "2" "/" manamarker_color -> alternate2manasymbol
+        | NUMBER "/" manamarker_color -> alternate2manasymbol
         | manamarker_snow -> snowmanasymbol
         | manamarker_colorless -> colorlessmanasymbol
         | manamarker_x -> xmanasymbol
-        | NUMBER -> genericmanasymbol
         manamarker_halfmana: "H"i -> halfmarker
         manamarker_color: "W"i -> whitemarker
         | "U"i -> bluemarker
@@ -454,7 +764,7 @@ class TestGrammarAndParser(unittest.TestCase):
         manamarker_x: "X"i -> xmarker
         
         //Rules for representing numeric values and math operations
-        valueterm: (PLUS | MINUS)? NUMBER | CARDINAL "times"?| ORDINAL | FREQUENCY | VARIABLEVALUE | valueoperation
+        valueterm: NUMBER  | CARDINAL ("time"["s"])?| ORDINAL | FREQUENCY | VARIABLEVALUE | valueoperation
         FREQUENCY: "once" | "twice"
         CARDINAL: "one" | "two" | "three" | "four" | "five" | "six" | "seven" | "eight" | "nine" | "ten"
         | "eleven" | "twelve" | "thirteen" | "fourteen" | "fifteen" | "sixteen" | "seventeen" | "eighteen" | "nineteen" | "twenty" //[TODO]
@@ -490,334 +800,11 @@ class TestGrammarAndParser(unittest.TestCase):
         %import common.LCASE_LETTER -> LCASE_LETTER
         //%import common.WORD -> WORD
         %import common.NEWLINE -> NEWLINE
+        //%import common.NUMBER -> NUMBER
         %import common.SIGNED_NUMBER -> NUMBER
         %import common.WS -> WS
         %ignore WS
         """
-
-        #TMP contains chunks of rules that I should port over to
-        TMP = """
-        //declarationdefinitionwithouttrailingsubdefinitions: prefixdefinitionterm* definitionterm+ postfixdefinitionterm* 
-
-        //DECLARATIONS AND REFERENCES
-        declarationorreference: genericdeclarationexpression | reference | playerreference | objectreference | anytargetexpression
-        genericdeclarationexpression: (playerdeclaration | objectdeclaration)
-        | declarationorreference ("," declarationorreference ",")* "or" declarationorreference -> orgenericdeclarationexpression
-        | declarationorreference ("," declarationorreference ",")* "and" declarationorreference -> andgenericdeclarationexpression
-        | declarationorreference ("," declarationorreference ",")* "and/or" declarationorreference -> andorgenericdeclarationexpression
-        
-        genericdescriptionexpression: objectdescriptionexpression | playerdescriptionexpression
-        
-        playerdeclref: playerdeclaration | playerreference
-        playerdeclaration: declarationdecorator* playerdefinition
-        playerreference: referencedecorator+ playerdefinition
-        playerdefinition: playerdescriptionexpression
-        playerdescriptionexpression : playerdescriptionterm (","? playerdescriptionterm)*
-        playerdescriptionterm: valueordinal | modifier | playerterm | withexpression | withoutexpression //| whoexpression
-        playerterm: PLAYERTERM
-        //whoexpression: "who" statementexpression
-        
-        objectdeclref: objectdeclaration | objectreference
-        objectdeclaration: declarationdecorator* objectdefinition
-        objectreference: referencedecorator+ objectdefinition
-        objectdefinition: objectdescriptionexpression
-        | objectdescriptionexpression ("," objectdescriptionexpression ",")* "or" objectdescriptionexpression -> orobjectdescriptionexpression
-        | objectdescriptionexpression ("," objectdescriptionexpression ",")* "and" objectdescriptionexpression -> andobjectdescriptionexpression
-        | objectdescriptionexpression ("," objectdescriptionexpression ",")* "and/or" objectdescriptionexpression -> andorobjectdescriptionexpression
-        
-        ///[TODO: Rewriting objectdescriptionexpression to respect a canonical order because it makes parsing so much faster.]
-        //objectdescriptionexpression: objectdescriptionterm (","? objectdescriptionterm)*
-        objectdescriptionexpression: objectpreterm+ objectpostterm*
-        objectpreterm:  colorexpression  | manasymbolexpression | typeexpression | ptexpression | valueexpression
-        | qualifier | modifier | locationexpression | valuecardinal | additionalexpression | characteristicexpression
-        objectpostterm: withexpression | withoutexpression | choiceexpression | ofexpression | characteristicexpression | atrandomexpression
-        | "that"? dealtdamageexpression | "that" doesnthaveexpression | controlpostfix | ownpostfix | putinzonepostfix | castpostfix | targetspostfix
-        | "that" sharepostfix | namedexpression | "that" beingexpression 
-        
-        //[TODO: Mana type declarations. Mana is now a first-class citizen!]
-        manadeclref: manadeclaration | manareference
-        manadeclaration: declarationdecorator* manadefinition
-        manareference: referencedecorator+ manadefinition
-        manadefinition: manadescriptionexpression
-        | manadescriptionexpression ("," manadescriptionexpression ",")* "or" manadescriptionexpression -> ormanadescriptionexpression
-        | manadescriptionexpression ("," manadescriptionexpression ",")* "and" manadescriptionexpression -> andmanadescriptionexpression
-        | manadescriptionexpression ("," manadescriptionexpression ",")* "and/or" manadescriptionexpression -> andormanadescriptionexpression
-        manadescriptionexpression: puremanaexpression | textmanaexpression
-        puremanaexpression: manasymbolexpression
-        // E.G. "add one mana of any one color" or "add six {g}"
-        textmanaexpression: valuecardinal (("mana" anycolorexpression) | manasymbolexpression )
-        productionexpression: "produced" "by" declarationorreference -> producedbyexpression
-        | "that" declarationorreference "could" "produce" -> couldproduceexpression
-        anycolorexpression: "of" "any" "color"
-        | "of" "any" "one" "color" -> anyonecolorexpression
-        
-        
-        
-
-        
-       
-        //NOTE: I don't like most of these. "deal/dealt" damage could be one rule up with dealdamageexpression.
-        ptexpression: valueexpression "/" valueexpression
-        namedexpression: "named" (namereference | objectname)
-        !locationexpression: ("into" | "onto" | "in" | "on" | "from" | "on top of" | "on bottom of")? zonedeclarationexpression
-        withexpression: "with" (reference | abilitysequencestatement | characteristicexpression | (valueexpression | "a"["n"])? countertype "counter"["s"] "on" reference)
-        withoutexpression: "without" (reference | abilitysequencestatement | characteristicexpression | (valueexpression | "a"["n"])? countertype "counter"["s"] "on" reference)
-        doesnthaveexpression: "does" "not" "have" declarationorreference //[Basically equivalent to 'without']
-        dealtdamageexpression: "dealt" DAMAGETYPE ("this" "way")? ("by" declarationorreference)? timeexpression?
-        choiceexpression: "of" possessiveterm "choice"
-        ofexpression: "of" declarationorreference
-        additionalexpression: "additional"
-        controlpostfix: playerdeclref "control"["s"]
-        | playerdeclref ("do" "not" | "does" "not") "control"["s"] -> negativecontrolpostfix
-        ownpostfix: playerdeclref "own"["s"]
-        | playerdeclref ("do" "not" | "does" "not") "own"["s"] -> negativeownpostfix
-        castpostfix: playerdeclref "cast"
-        putinzonepostfix: "put" locationexpression zoneplacementmodifier? ("this" "way")?
-        targetspostfix: "that" "target"["s"] declarationorreference
-        atrandomexpression: "at" "random" //[TODO: Need to find out where to put this.]
-        //ispostfix: isstatement
-        sharepostfix: "share"["s"] declarationorreference
-                
-                
-                
-        //TYPE/MANA/COLOR EXPRESSIONS, MODIFIERS, AND MISCELLANEOUS
-        timeexpression: startendspecifier? timeterm ("of" timeexpression)? ("on" possessiveterm timemodifier* PHASE)?
-        startendspecifier: "the"? "beginning" "of" -> timebeginmodifier
-        | "the"? "end" "of" -> timeendmodifier
-        timeterm: (referencedecorator* | declarationdecorator*) possessiveterm* timemodifier* (PHASE | STEP | TURN | GAME |  "one")
-        timemodifier: "next" valuecardinal? -> nexttimemodifier
-        | "additional" -> additionaltimemodifier
-        | valuecardinal? "extra" -> extratimemodifier
-        PHASE: "beginning phase" | ("precombat" | "postcombat")? "main phase" | ("combat" | "combat phase") | "ending phase"
-        STEP: "untap step" | ("upkeep step" | "upkeep") | "draw step" | "beginning of combat" | "declare attackers step"
-        | "declare blockers step" | "combat damage step" | "end of combat" | "end step" | "cleanup step" | "step"
-        TURN: "turn"
-        GAME: "game"
-        
-        //[TODO: What about comma-delimited type expressions?]
-        typeexpression: (typeterm)+ | typeterm ("," typeterm)+
-        | typeterm ("," typeterm ",")* "or" typeterm -> ortypeexpression
-        
-        typeterm: (TYPE ["s"] | SUBTYPESPELL ["s"] | SUBTYPELAND ["s"] | SUBTYPEARTIFACT ["s"] | SUBTYPEENCHANTMENT ["s"] | SUBTYPEPLANESWALKER | SUBTYPECREATUREA ["s"] | SUBTYPECREATUREB ["s"] | SUBTYPEPLANAR | SUPERTYPE)
-        | "non"["-"] typeterm -> nontypeterm
-        
-        TYPE: "planeswalker" | "conspiracy" | "creature" | "enchantment" | "instant"
-        | "land" | "phenomenon" | "plane" | "artifact" | "scheme" | "sorcery"
-        | "tribal" | "vanguard"
-        
-        SUBTYPESPELL : "arcane" | "trap" | "adventure"
-        
-        SUBTYPELAND: "desert" | "forest" | "gate" | "island" | "lair" | "locus"
-        | "mine" | "mountain" | "plains" | "power-plant" | "swamp" | "tower" | "urza's"
-        
-        SUBTYPEARTIFACT: "clue" | "contraption" | "equipment" | "fortification" | "treasure" | "vehicle" | "food"
-        
-        SUBTYPEENCHANTMENT: "aura" | "cartouche" | "curse" | "saga" | "shrine" | "rune" | "shard" | "case"
-        
-        SUBTYPEPLANESWALKER: "ajani" | "aminatou" | "angrath" | "arlinn" | "ashiok" | "bolas" | "chandra"
-        | "dack" | "daretti" | "domri" | "dovin" | "elspeth" | "estrid" | "freyalise" | "garruk" | "gideon"
-        | "huatli" | "jace" | "jaya" | "karn" | "kaya" | "kiora" | "koth" | "liliana" | "nahiri" | "narset"
-        | "nissa" | "nixilis" | "ral" | "rowan" | "saheeli" | "samut" | "sarkhan" | "sorin" | "tamiyo" | "teferi"
-        | "tezzeret" | "tibalt" | "ugin" | "venser" | "vivien" | "vraska" | "will" | "windgrace" | "xenagos"
-        | "yanggu" | "yanling"
-        
-        
-        //[TODO: SUBTYPECREATUREA and SUBTYPECREATUREB are split up because having such a long list of alternatives apparently]
-        //[causes Lark to suffer a recursion depth error. We should see if this is fixable.]
-        
-        SUBTYPECREATUREA: "advisor" | "aetherborn" | ("ally"|"allies") | "angel" | "antelope" | "ape" | "archer" | "archon"
-        | "artificer" | "assassin" | "assembly-worker" | "atog" | "aurochs" | "avatar" | "azra" | "badger"
-        | "barbarian" | "basilisk" | "bat" | "bear" | "beast" | "beeble" | "berserker" | "bird" | "blinkmoth"
-        | "boar" | "bringer" | "brushwagg" | "camarid" | "camel" | "caribou" | "carrier" | "cat" | "centaur"
-        | "cephalid" | "chimera" | "citizen" | "cleric" | "cockatrice" | "construct" | "coward" | "crab"
-        | "crocodile" | "cyclops" | "dauthi" | "demon" | "deserter" | "devil" | "dinosaur" | "djinn" | "dragon"
-        | "drake" | "dreadnought" | "drone" | "druid" | "dryad" | ("dwarf"|"dwarves") | "efreet" | "egg" | "elder" | "eldrazi"
-        | "elemental" | "elephant" | ("elf"|"elves") | "elk" | "eye" | "faerie" | "ferret" | "fish" | "flagbearer" | "fox"
-        
-        SUBTYPECREATUREB: "frog" | "fungus" | "gargoyle" | "germ" | "giant" | "gnome" | "goat" | "goblin" | "god" | "golem" | "gorgon"
-        | "graveborn" | "gremlin" | "griffin" | "hag" | "harpy" | "hellion" | "hippo" | "hippogriff" | "homarid" | "homunculus"
-        | "horror" | "horse" | "hound" | "human" | "hydra" | "hyena" | "illusion" | "imp" | "incarnation" | "insect"
-        | "jackal" | "jellyfish" | "juggernaut" | "kavu" | "kirin" | "kithkin" | "knight" | "kobold" | "kor" | "kraken"
-        | "lamia" | "lammasu" | "leech" | "leviathan" | "lhurgoyf" | "licid" | "lizard" | "manticore" | "masticore"
-        | ("mercenary"|"mercenaries") | "merfolk" | "metathran" | "minion" | "minotaur" | "mole" | "monger" | "mongoose" | "monk"
-        | "monkey" | "moonfolk" | "mutant" | "myr" | "mystic" | "naga" | "nautilus" | "nephilim" | "nightmare"
-        | "nightstalker" | "ninja" | "noggle" | "nomad" | "nymph" | ("octopus"|"octopuses") | "ogre" | "ooze" | "orb" | "orc"
-        | "orgg" | "ouphe" | "ox" | "oyster" | "pangolin" | "pegasus" | "pentavite" | "pest" | "phelddagrif" | "phoenix"
-        | "pilot" | "pincher" | "pirate" | "plant" | "praetor" | "prism" | "processor" | "rabbit" | "rat" | "rebel"
-        | "reflection" | "rhino" | "rigger" | "rogue" | "sable" | "salamander" | "samurai" | "sand" | "saproling" | "satyr"
-        | "scarecrow" | "scion" | "scorpion" | "scout" | "serf" | "serpent" | "servo" | "shade" | "shaman" | "shapeshifter"
-        | "sheep" | "siren" | "skeleton" | "slith" | "sliver" | "slug" | "snake" | "soldier" | "soltari" | "spawn" | "specter"
-        | "spellshaper" | "sphinx" | "spider" | "spike" | "spirit" | "splinter" | "sponge" | "squid" | "squirrel" | "starfish"
-        | "surrakar" | "survivor" | "tetravite" | "thalakos" | "thopter" | "thrull" | "treefolk" | "trilobite" | "triskelavite"
-        | "troll" | "turtle" | "unicorn" | "vampire" | "vedalken" | "viashino" | "volver" | "wall" | "warrior" | "weird"
-        | ("werewolf"|"werewolves") | "whale" | "wizard" | ("wolf"|"wolves") | "wolverine" | "wombat" | "worm" | "wraith" | "wurm" | "yeti"
-        | "zombie" | "zubera" | "mouse"
-        
-        SUBTYPEPLANAR: "alara" | "arkhos" | "azgol" | "belenon" | "bolas’s meditation realm"
-        | "dominaria" | "equilor" | "ergamon" | "fabacin" | "innistrad" | "iquatana" | "ir"
-        | "kaldheim" | "kamigawa" | "karsus" | "kephalai" | "kinshala" | "kolbahan" | "kyneth"
-        | "lorwyn" | "luvion" | "mercadia" | "mirrodin" | "moag" | "mongseng" | "muraganda"
-        | "new phyrexia" | "phyrexia" | "pyrulea" | "rabiah" | "rath" | "ravnica" | "regatha"
-        | "segovia" | "serra’s realm" | "shadowmoor" | "shandalar" | "ulgrotha" | "valla"
-        | "vryn" | "wildfire" | "xerex" | "zendikar"
-        
-        subtype: SUBTYPESPELL | SUBTYPELAND | SUBTYPEARTIFACT | SUBTYPEENCHANTMENT | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR
-        
-        SUPERTYPE: "basic" | "legendary" | "ongoing" | "snow" | "world"
-        
-        DAMAGETYPE: "damage" | "combat damage" | "noncombat damage"
-        
-        modifier: ABILITYMODIFIER | COMBATSTATUSMODIFIER | KEYWORDSTATUSMODIFIER | TAPPEDSTATUSMODIFIER | EFFECTSTATUSMODIFIER
-        | controlmodifier | attachmentmodifier
-        
-        ABILITYMODIFIER: "triggered" | "activated" | "mana" | "loyalty"
-        COMBATSTATUSMODIFIER: "attacking" | "defending" | "attacked" | "blocking" | "blocked" | "active"
-        KEYWORDSTATUSMODIFIER: "paired" | "kicked" | "face-up" | "face-down" | "transformed" | "enchanted" | "equipped"
-        | "fortified" | "monstrous" | "regenerated" | "suspended" | "flipped" | "suspected" // TODO: ensure 'suspected' works properly
-        TAPPEDSTATUSMODIFIER: "tapped" | "untapped"
-        EFFECTSTATUSMODIFIER: "named" | "chosen" | "chosen at random" | "revealed" | "returned" | "destroyed" | "exiled" | "died" | "countered" | "sacrificed"
-        | "the target of a spell or ability" | "prevented" | "created"
-        controlmodifier: "under" referencedecorator+ "control"
-        attachmentmodifier: "attached" ("only"? "to" declarationorreference)? -> attachedmodifier
-        | "unattached" ("from" declarationorreference)? -> unattachedmodifier
-        
-        qualifier: QUALIFIER["s"]
-        | "non" QUALIFIER -> nonqualifier
-        QUALIFIER: ("ability"|"abilities") | "card" | "permanent" | "source" | "spell" | "token" | "effect"
-        
-        characteristicexpression: characteristicterms
-        | (characteristicterms (valueexpression|ptexpression) | (valueexpression|ptexpression) characteristicterms) -> characteristicvaluecompexpr
-        
-        characteristicterms: characteristicterm
-        | possessiveterm+ characteristicterm -> characteristicpossessiveexpr
-        | "the" characteristicterm -> characteristicthereference
-        | characteristicterm  ("," characteristicterm ",")* "or" characteristicterm -> characteristicorexpr
-        | characteristicterm  ("," characteristicterm ",")* "and" characteristicterm -> characteristicandexpr
-        | characteristicterm  ("," characteristicterm ",")* "and/or" characteristicterm -> characteristicandorexpr
-        | "no" characteristicterm -> nocharacteristicexpr //[example: no maximum hand size]
-        
-        characteristicterm: modifier* characteristic
-        characteristic: OBJECTCHARACTERISTIC | PLAYERCHARACTERISTIC
-        PLAYERCHARACTERISTIC: "maximum hand size" | "life total"["s"] | "life" | "cards in hand"
-        # OBJECTCHARACTERISTIC: "card"? "name" | "mana cost" | "converted mana cost" | "color"["s"] | "color indicator" | "type"["s"] | "card type"["s"] | "subtype"["s"] | "supertype"["s"]
-        # | "rules text" | "abilities" | "power" | "toughness" | "base power" | "base toughness" | "loyalty" | "hand modifier" | "life modifier"
-        OBJECTCHARACTERISTIC: "card"? "name" | "mana value" | "color"["s"] | "color indicator" | "type"["s"] | "card type"["s"] | "subtype"["s"] | "supertype"["s"]
-        | "rules text" | "abilities" | "power" | "toughness" | "base power" | "base toughness" | "loyalty" | "hand modifier" | "life modifier"
-        
-        //[TODO: Not quite done, there are expressions like 'a number of cards equal to [...]'. There's some overlapping responsibilities with descriptions involving cards, maybe.]
-        !cardexpression: ("the" "top" | "the" "bottom")? (valueterm | thatmanyexpression | "a")? "card"["s"] ("from" "the" "top" | "from" "the" "bottom")? ("of" zonedeclarationexpression)?
-        
-        zonedeclarationexpression: (declarationdecorator* | referencedecorator*) zone
-        zoneplacementmodifier: "in" "any" "order" -> anyorderplacement
-        | "in" "a" "random" "order" -> randomorderplacement
-        | ORDINAL "from" "the" "top" -> fromtopplacement
-        | ORDINAL "from" "the" "bottom" -> frombottomplacement
-        zone: ZONE
-        ZONE: "the battlefield" | "graveyard"["s"] | ("library"|"libraries") | "hand"["s"] | "stack" | "exile" | "command zone" | "outside the game" | "anywhere"
-        
-        colorexpression: colorterm -> colorsingleexpr
-        | colorterm  ("," colorterm ",")* "or" colorterm -> colororexpr
-        | colorterm ("," colorterm ",")* "and" colorterm -> colorandexpr
-        | colorterm ("," colorterm ",")* "and/or" colorterm -> colorandorexpr
-        
-        colorterm: COLORTERM
-        | "non" COLORTERM -> noncolorterm
-        
-        COLORTERM: "white" | "blue" | "black" | "red" | "green" | "monocolored" | "multicolored" | "colorless"
-        
-        objectname: OBJECTNAME //[TODO: No demarcations around names is difficult also. Need preprocessor help here.]
-        OBJECTNAME: "OBJECTNAME" //[TODO: Temporarily commenting this out] //NAMEWORD ((WS | ",") NAMEWORD)* //[TODO: commas in names? This is problematic. Need preprocessor help here.]
-        //NAMEWORD: (UCASE_LETTER | LCASE_LETTER)+
-        
-        countertype: ptchangeexpression //| WORD //[TODO: Should we enumerate all the common counter types?]
-        
-        loyaltycost: "[" (PLUS | PWMINUS)? valueterm "]"
-        //[NOTE: Both Scryfall and Mtgjson use a long dash, not a short dash, to indicate a minus on a planeswalker ability]
-        PWMINUS: "−"
-        ptchangeexpression: (PLUS | MINUS) valueterm "/" (PLUS | MINUS) valueterm
-        PLUS: "+"
-        MINUS: "-"
-        
-        manaspecificationexpression: valueterm "mana" manaspecifier+
-        manaspecifier: anycolorexpression //[TODO: Need to add the rest of these]
-        
-        manasymbolexpression: manasymbol+
-        | manasymbolexpression "or" manasymbolexpression -> ormanaexpression
-        manasymbol: "{" manamarkerseq "}"
-        manamarkerseq: manamarker_color -> regularmanasymbol
-        | manamarker_halfmana manamarker_color -> halfmanasymbol
-        | manamarker_color "/" manamarker_phyrexian -> phyrexianmanasymbol
-        | manamarker_color "/" manamarker_color -> hybridmanasymbol
-        | "2" "/" manamarker_color -> alternate2manasymbol
-        | manamarker_snow -> snowmanasymbol
-        | manamarker_colorless -> colorlessmanasymbol
-        | manamarker_x -> xmanasymbol
-        | NUMBER -> genericmanasymbol
-        
-        manamarker_halfmana: "H"i -> halfmarker
-        manamarker_color: "W"i -> whitemarker
-        | "U"i -> bluemarker
-        | "B"i -> blackmarker
-        | "R"i -> redmarker
-        | "G"i -> greenmarker
-        manamarker_snow: "S"i -> snowmarker
-        manamarker_phyrexian: "P"i -> phyrexianmarker
-        manamarker_colorless: "C"i -> colorlessmarker
-        manamarker_x: "X"i -> xmarker
-        
-        
-        ///VALUE EXPRESSIONS
-
-        //[TODO: Need to account for custom values, variables, 'equals to' expressions, etc.]
-        valueexpression: valueterm | equaltoexpression | numberofexpression | uptoexpression | thatmanyexpression
-        | ltexpression | lteqexpression | gtexpression | gteqexpression | timesexpression
-        ltexpression: effectexpression? "less" "than" (valueexpression | declarationorreference)
-        lteqexpression: effectexpression? (valueexpression "or" ("less" | "fewer") | "less" "than" "or" "equal" "to" valueexpression)
-        gtexpression: effectexpression? "greater" "than" (valueexpression | declarationorreference)
-        | "more" "than" valueexpression
-        gteqexpression: effectexpression? (valueexpression "or" ("greater" | "more")  | "greater" "than" "or" "equal" "to" valueexpression)
-        | CARDINAL "or" "more" "times"-> gteqfrequencyexpression
-        equaltoexpression: effectexpression? "equal" "to" (valueexpression | declarationorreference)
-        uptoexpression: "up" "to" valueterm
-        !thatmanyexpression: valuefrequency? "that" ("much"|"many")
-        !numberofexpression: ("a"|"the"|"any") "number" "of" declarationorreference
-        timesexpression: "times" statement? //[example: the number of times ~ was kicked]
-        valueterm: valuenumber | valuecardinal | valueordinal | valuefrequency | valuecustom
-        valuenumber: NUMBER
-        valuecardinal: CARDINAL
-        valueordinal: ORDINAL
-        valuefrequency: FREQUENCY | CARDINAL "times"
-        FREQUENCY: "once" | "twice"
-        CARDINAL: "one" | "two" | "three" | "four" | "five" | "six" | "seven" | "eight" | "nine" | "ten"
-        | "eleven" | "twelve" | "thirteen" | "fourteen" | "fifteen" | "sixteen" | "seventeen" | "eighteen" | "nineteen" | "twenty" //[TODO]
-        ORDINAL: "first" | "second" | "third" | "fourth" | "fifth" //[TODO]
-        valuecustom: "x" | "*"
-        quantityrulemodification: "rounded" "up" -> roundedupmod
-        | "rounded" "down" -> roundeddownmod
-        | "divided" "evenly" -> dividedevenlymod
-        | "divided" "as" "you" "choose" -> dividedfreelymod
-        | "plus" valueterm -> plusmod
-        | "minus" valueterm -> minusmod
-        
-        DASH: "—"
-        MODALCHOICE: "•"
-        
-        NAMEREFSYMBOL: "~" | "~f"
-        PLAYERTERM: "player"["s"] | "opponent"["s"] | "you" |  "teammate"["s"] | "team"["s"] | "controller"["s"] | "owner"["s"]
-        
-        tapuntapterm: TAPSYMBOL | UNTAPSYMBOL
-        TAPSYMBOL: "{T}"i
-        UNTAPSYMBOL: "{Q}"i
-        
-        %import common.UCASE_LETTER -> UCASE_LETTER
-        %import common.LCASE_LETTER -> LCASE_LETTER
-        //%import common.WORD -> WORD
-        %import common.NEWLINE -> NEWLINE
-        %import common.SIGNED_NUMBER -> NUMBER
-        %import common.WS -> WS
-        %ignore WS
-        """
-
 
         compilerUsingPartialGrammar = MtgJsonCompiler.MtgJsonCompiler(
             options={"parser.overrideGrammar": revisedDeclarationGrammar,
@@ -829,6 +816,10 @@ class TestGrammarAndParser(unittest.TestCase):
 
 
         declarationsToTest = [
+            "the target of a spell or ability",
+            "a creature",
+            "a land",
+            "an artifact",
             "haste or flying",
             "bushido 3",
             "{R}{R}{2}",
