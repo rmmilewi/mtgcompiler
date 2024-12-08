@@ -6,7 +6,7 @@ def getGrammar():
         typelinesubt: (SUBTYPESPELL | SUBTYPELAND | SUBTYPEARTIFACT | SUBTYPEENCHANTMENT | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR)*
 
         //[NOTE: Added support for starting reminder text, but what does it attach to?]
-        cardtext : remindertext? (ability "\n"*)*
+        cardtext : remindertext? (ability NEWLINE*)*
         remindertext : /\(.*?\)/
 
         ability : abilityword? statementblock remindertext? -> regularability
@@ -137,8 +137,9 @@ def getGrammar():
 
         //KEYWORD ABILITIES
 
-        abilitysequencestatement: (keywordability | quotedabilitystatement) (("," (keywordability | quotedabilitystatement) ",")* ("and" (keywordability | quotedabilitystatement)))?
-        quotedabilitystatement: "\"" statementblock "\""
+        //abilitysequencestatement: (keywordability | quotedabilitystatement) (("," (keywordability | quotedabilitystatement) ",")* ("and" (keywordability | quotedabilitystatement)))?
+        abilitysequencestatement: (keywordability) (("," (keywordability ) ",")* ("and" (keywordability )))?
+        //quotedabilitystatement: "\"" statementblock "\""
 
         keywordability: kwdeathtouch
         | kwdefender | kwdoublestrike | kwenchant | kwequip | kwfirststrike
@@ -933,6 +934,7 @@ def getGrammar():
         %import common.LCASE_LETTER -> LCASE_LETTER
         %import common.WORD -> WORD
         %import common.SIGNED_NUMBER -> NUMBER
+        %import common.NEWLINE -> NEWLINE
         %import common.WS -> WS
         %ignore WS
         """

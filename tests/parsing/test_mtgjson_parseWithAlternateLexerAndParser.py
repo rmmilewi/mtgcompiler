@@ -5,6 +5,7 @@ import mtgcompiler.midend.support.binding as binding
 import mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonCompiler as MtgJsonCompiler
 import pytest
 import lark.lexer
+import mtgcompiler.frontend.compilers.LarkMtgJson.grammar as oldGrammar
 
 class TestGrammarAndParser(unittest.TestCase):
 
@@ -176,7 +177,7 @@ class TestGrammarAndParser(unittest.TestCase):
         //or other expressions (like who deals the damage and to whom is the damage dealt). Meanwhile, statements can contain expressions, like the
         //if statement "if you control a modified creature, draw a card" is equivalent to (if the expression "you control a modified creature" evaluates
         //to true, make the expression "draw a card" happen.
-        expression: beingexpression | basickeywordactionexpression
+        expression: beingexpression | keywordactionexpression
         !expressionordeclaration: expression | declaration
 
         beingexpression: expressionordeclaration ("is" | "was" | "are" "each"?) ("still"|"not")? expressionordeclaration -> isexpression
@@ -188,36 +189,103 @@ class TestGrammarAndParser(unittest.TestCase):
         | expressionordeclaration (expressionordeclaration? ("do"["es"]? | "did") "not"? expressionordeclaration? | "doing" "so" ) -> doesexpression
         | "be" expressionordeclaration -> beexpression //Example(s): "*be* attacked", "*be* sacrificed"
         
-        basickeywordactionexpression: expressionordeclaration? BASICKEYWORDACTION expressionordeclaration?
+        keywordactionexpression: keywordactionsubject? keywordactionverb keywordactionobjectsandmodifiers*
+        keywordactionsubject: expressionordeclaration
+        keywordactionverb: keywordactionadverb? KEYWORDACTION
+        keywordactionadverb: "secretly"
+        keywordactionobjectsandmodifiers: KEYWORDACTIONPREPOSITION? expressionordeclaration | "this way"
+        KEYWORDACTIONPREPOSITION: "on" | "from" | "to" | "with"["out"] | "as" "though"? | "into" //TODO: Do we handle "as (though)" at the statement level?
         
-        //basickeywordaction: activateexpression
-        //| attacksexpression
-        //| blocksexpression
-        //| attachexpression
-        //| castexpression
-        //| chooseexpression
-        //| controlsexpression
-        //| gaincontrolexpression
-        //| uncastexpression
-        //| createexpression
-        //| destroyexpression
-        //| drawexpression
-        //| discardexpression
-        //| doubleexpression
-        //| exchangeexpression
-        //| exileexpression
-        //| fightexpression
-        //| playexpression
-        //| revealexpression
-        //| sacrificeexpression
-        //| searchexpression
-        //| shuffleexpression
-        //| tapuntapexpression
-        //| millexpression
+        //"on" "from" "to" "without"
+        //"as though" "as an additional cost to"
+        //"able" (see ableexpression)
+        //"a spell *targets* a player"
         
-        BASICKEYWORDACTION: "activate"["s" | "d"]
-        | "attack"["s" | "ed"]
-        
+        KEYWORDACTION: "activat"["es" | "ed"] 
+        | "attack"["s" | "ed" | "ing"]
+        | "block"["s" | "ed" | "ing"]
+        | "attach"["es" | "ed" | "ing"]
+        | "cast"["s" | "ing"]
+        | ("choos"["e"]["s" | "ing"] | "chose")
+        | "control"["s" | "led" | "ling" ]
+        | "gain"["s" | "ed" | "ing"]
+        | ("los"["e"]["s" | "d" | "ing"] | "lost")
+        | "counter"["s" | "ed" | "ing"]
+        | "creat"["e"]["s" | "d" | "ing"]
+        | "destroy"["s" | "ed" | "ing"]
+        | "draw"["s" | "n" | "ing"]
+        | "discard"["s" | "ed" | "ing"]
+        | "doubl"["e"]["s" | "d" | "ing"]
+        | "exchang"["e"]["s" | "d" | "ing"]
+        | "exil"["e"]["s" | "d" | "ing"]
+        | ("fight"["s" | "ing"] | "fought")
+        | "play"["s" | "ed" | "ing"]
+        | "reveal"["s" | "ed" | "ing"]
+        | "sacrific"["e"]["s" | "d" | "ing"]
+        | "search"["es" | "ed" | "ing"]
+        | "shuffl"["es" | "ed" | "ing"]
+        | "un"? "tap"["s" | "ped" | "ping"]
+        | "milL"["s" | "ed" | "ing"]
+        | "declar"["e"]["s" | "d" | "ing"]
+        | "deal"["s" | "t" | "ing"]
+        | "prevent"["s" | "ed" | "ing"]
+        | "return"["s" | "ed" | "ing" ]
+        | "put"["s" | "ing"]
+        | "remov"["es" | "ed" | "ing"]
+        | ("spend"["s" | "ing"] | "spent")
+        | ("pay"["s" | "ing"] | "paid")
+        | ("get"["s" | "ing"] | "got")
+        | ("tak"["es" | "ing"] | "took")
+        | ("die"["s" | "d"] | "dying")
+        | "add"["s" | "ed" | "ing"]
+        | "look"["s" | "ed" | "ing"]
+        | "flip"["s" | "ped" | "ping"]
+        | ("win"["s" | "ning"] | "won")
+        | "remain"["s" | "ing"]
+        | "look"["s" | "ed" | "ing"]
+        | "assign"["s" | "ed" | "ing"]
+        | "chang"["e"]["s" | "d" | "ing"]
+        | "skip"["s" | "ped" | "ing"]
+        | "switch"["es" | "ed" | "ing"]
+        | "shar"["es" | "ed" | "ing"] //TODO: conflict with "shard"?
+        | "regenerat"["e"]["s" | "d" | "ing"]
+        | "scry"["s" | "ed" | "ing"]
+        | "fateseal"
+        | "clash"["es" | "ed" | "ing"]
+        | "detain"["s" | "ed" | "ing"]
+        | "planeswalk"["s" | "ed" | "ing"]
+        | "set in motion"
+        | "abandon"["s" | "ed" | "ing"]
+        | "proliferat"["e"]["s" | "d" | "ing"]
+        | "transform"["s" | "ed" | "ing"]
+        | "populate"["s" | "d" | "ing"]
+        | "vote"["s" | "d" | "ing"]
+        | "bolster"["s" | "ed" | "ing"]
+        | "manifest"["s" | "ed" | "ing"] "dread"?
+        | "support"["s" | "ed" | "ing"]
+        | "investigat"["e"]["s" | "d" | "ing"]
+        | "meld"
+        | "goad"["s" | "ed" | "ing"]
+        | "exert"["s" | "ed" | "ing"]
+        | "explor"["e"]["s" | "d" | "ing"]
+        | "turn"["s" | "ed" | "ing"] //TODO: conflict with turn as in time
+        | "cycl"["e"]["s" | "d" | "ing"] //TODO: conflict with, say, "wizardcycling"
+        | "surveil"["s" | "ed" | "ing"]
+        | "conniv"["e"]["s" | "d" | "ing"]
+        | "adapt"["s" | "ed" | "ing"]
+        | "amass"["es" | "ed" | "ing"]
+        | "learn"["s" | "ed" | "ing"]
+        | "incubat"["e"]["s" | "d" | "ing"]
+        | "tempt"["s" | "ed" | "ing"]
+        | "time travel"["s" | "ed" | "ing"]
+        | "discover"["s"]
+        | "time travel"["s" | "ed" | "ing"]
+        | "cloak"["s" | "ed" | "ing"]
+        | "collect"["s" | "ed" | "ing"] //As in collecting evidence
+        | "suspect"["s" | "ed" | "ing"]
+        | "forage"["e"]["s" | "d" | "ing"]
+        | "gift"["s" | "ed" | "ing"]
+
         DASH: "—"
         MODALCHOICE: "•"
         %import common.UCASE_LETTER -> UCASE_LETTER
@@ -480,7 +548,9 @@ class TestGrammarAndParser(unittest.TestCase):
 
         expressionsToTest = [
             "DECLARATION attacks DECLARATION",
-            "DECLARATION can not be attacked"
+            "DECLARATION can not be attacked",
+            "DECLARATION sacrifices DECLARATION", #Cruel Edict"
+            "DECLARATION can not be prevented DECLARATION"
         ]
 
 
@@ -919,27 +989,53 @@ class TestGrammarAndParser(unittest.TestCase):
                         f"Declaration ({declaration}) produced an exception during parsing: {firstLineOfException}...")
         print("-----------------------")
 
-    def test_integratingStatementLevelChangesToGrammar(self):
+    def test_integratingChangesToGrammar(self):
+        shouldOutputVerboseDetails = False
+        useRevisedGrammar = True
+
         integratedGrammar = """"""
-        revisedGrammarDirectory = "tests/parsing/revisedgrammar/"
-        for fileName in os.listdir(revisedGrammarDirectory):
-            filePath = os.path.join(revisedGrammarDirectory, fileName)
-            with open(filePath) as f:
-                integratedGrammar = integratedGrammar + "\n" + f.read()
+        if useRevisedGrammar:
+            revisedGrammarDirectory = "tests/parsing/revisedgrammar/"
+            for fileName in os.listdir(revisedGrammarDirectory):
+                filePath = os.path.join(revisedGrammarDirectory, fileName)
+                if fileName == "remainder.lark":
+                    continue
+                with open(filePath) as f:
+                    integratedGrammar = integratedGrammar + "\n" + f.read()
+            lexerType = "basic"
+        else:
+            integratedGrammar = oldGrammar.getGrammar()
+            lexerType = "dynamic"
+
 
         compilerUsingIntegratedGrammar = MtgJsonCompiler.MtgJsonCompiler(
             options={"parser.overrideGrammar": integratedGrammar,
                      "parser.startRule": "cardtext",
                      "parser.ambiguity": "explicit",
-                     "parser.larkLexer": "basic",
+                     "parser.larkLexer": lexerType,
                      })
         parser = compilerUsingIntegratedGrammar.getParser()
 
         print("\n-----------------------")
-        shouldOutputVerboseDetails = True
 
         cardsToTest = [
-        "sacrifice all blue creatures, black creatures, and white creatures."
+            #"when ~ enters, exile target nonland permanent an opponent controls until ~ leaves the battlefield.\nyour opponents can not cast spells with the same name as the exiled card.",  # Ixalan's binding
+            "{t}, sacrifice ~: add three mana of any one color.",  # Black Lotus
+            "−1: target player draws a card.",
+            "+2: each player draws a card.\n+1: target player draws a card.\n+10: target player puts the top twenty cards of their library into their graveyard.", # Jace Beleren
+            "{t}: draw a card, then discard a card.", #Merfolk Looter
+            "destroy target nonblack creature.", #Doom Blade
+            "for each land you control, you gain 1 life.", #Bountiful Harvest
+            "draw two cards.", #Divination
+            "{1}{u}{r}: return ~ to its owner's hand.\ncascade (when you cast this spell, exile cards from the top of your library until you exile a nonland card that costs less. You may cast it without paying its mana cost. Put the exiled cards on the bottom in a random order.)", #Etherium-Horn Sorcerer
+            "{t}: put a +1/+1 counter on each artifact creature you control.",
+            "when ~ enters, mill three cards.\nwhen ~ dies, you may exile it. when you do, return target creature card from your graveyard to your hand.",
+            "sacrifice all blue creatures, black creatures, and white creatures.",
+            "flying, vigilance, lifelink", #Aerial Responder
+            "enchant creature\nenchanted creature is a treefolk with base power and toughness 0/4 and loses all abilities.", #Lignify,
+            "when ~ enters, tap target creature.",
+            "if a player would draw a card except the first one they draw in each of their draw steps, that player discards a card instead.", #Chains of Mephistopheles
+            "at the beginning of your end step, choose one — • you gain 1 life.\n• return target creature card with mana value 1 from your graveyard to the battlefield." #Abiding Grace
         ]
 
         def getLexerResults(card):
@@ -955,14 +1051,20 @@ class TestGrammarAndParser(unittest.TestCase):
         for card in cardsToTest:
             cardPrettyPrint = card.replace('\n', ' ')
             try:
-                getLexerResults(card)
+                if shouldOutputVerboseDetails:
+                    getLexerResults(card)
 
                 fullParseTimeStart = time.time()
                 parseTree = parser.parse(card)
                 fullParseTimeEnd = time.time()
                 ambiguities = list(parseTree.find_data("_ambig"))
+                if len(ambiguities) > 0:
+                    nodesInTree = parseTree.pretty().count('\n')
+                    ambiguityTreeSizeStatement = f"Number of lines in pretty printed tree is {nodesInTree}."
+                else:
+                    ambiguityTreeSizeStatement = ""
                 print(
-                    f"Card ({cardPrettyPrint}) took {fullParseTimeEnd - fullParseTimeStart} to parse. The input had {len(ambiguities)} ambiguities.")
+                    f"Card ({cardPrettyPrint}) took {fullParseTimeEnd - fullParseTimeStart} to parse. The input had {len(ambiguities)} ambiguities. {ambiguityTreeSizeStatement}")
                 if shouldOutputVerboseDetails and len(ambiguities) > 0:
                     print(parseTree.pretty())
             except Exception as exception:

@@ -6,7 +6,7 @@ abilityworddecorator: "ABILITYWORD" DASH //WORD+ DASH
 remindertextdecorator: /\(.*?\)/
 
 keywordlist: keywordsequence
-keywordsequence: keywordability (("," | ";") keywordability)*
+keywordsequence: keywordabilitydeclaration (("," | ";") keywordabilitydeclaration)*
 
 statementblock : (statement)+ | activationstatement
 
@@ -48,17 +48,15 @@ condition: "only"? "if" -> ifcondition
 | "at" -> atcondition
 | "as" "an" "additional" "cost" "to"? -> asanadditionalcostcondition
 
-statementexpression: expression
-//expression: effectexpression | beingexpression postfixexpression?
+statementexpression: expressionordeclaration
 
-//compoundexpression: beingexpression postfixexpression?
-//| statementexpression ("," statementexpression)* ","? "and" statementexpression -> compoundandstatement
-//| statementexpression ("," statementexpression)* ","? "or" statementexpression -> compoundorstatement
-
-//beingexpression: statementexpression ("is" | "was" | "are" "each"?) ("still"|"not")? statementexpression -> isexpression
-//| statementexpression ("has"|"have"|"had") statementexpression -> hasexpression
-//| statementexpression "can" "not"? statementexpression -> canexpression
-//| statementexpression "become"["s"] statementexpression -> becomesexpression
-//| statementexpression "may" statementexpression -> mayexpression
-//| statementexpression "would" statementexpression -> wouldexpression
-//| statementexpression (statementexpression? ("do"["es"]? | "did") "not"? statementexpression? | "doing" "so" ) -> doesexpression
+DASH: "—"
+MODALCHOICE: "•"
+%import common.UCASE_LETTER -> UCASE_LETTER
+%import common.LCASE_LETTER -> LCASE_LETTER
+//%import common.WORD -> WORD
+%import common.NEWLINE -> NEWLINE
+//%import common.NUMBER -> NUMBER
+%import common.SIGNED_NUMBER -> NUMBER
+%import common.WS -> WS
+%ignore WS
