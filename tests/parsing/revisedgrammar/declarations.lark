@@ -189,8 +189,7 @@ COMBATSTATUSMODIFIER: "attacking" | "defending" | "attacked" | "blocking" | "blo
 KEYWORDSTATUSMODIFIER: "paired" | "kicked" | "face-up" | "face-down" | "transformed" | "enchanted" | "equipped" //TODO: This will need to be generalized more.
 | "fortified" | "monstrous" | "regenerated" | "suspended" | "flipped" | "suspected" // TODO: ensure 'suspected' works properly
 TAPPEDSTATUSMODIFIER: ["un"]"tapped"
-effectstatusmodifier: KEYWORDACTION | "named" | "chosen" | "chosen at random" | "revealed" | "returned" | "destroyed" | "exiled" | "died" | "countered" | "sacrificed"
-| "prevented" | "created"
+effectstatusmodifier: reservedverb_pastonly
 QUALIFIER: "card" | "permanent" | "source" | "spell" | "token" | "effect"
 COLOR: "white" | "blue" | "black" | "red" | "green" | "monocolored" | "multicolored" | "colorless"
 PHASE: "beginning" | "beginning phase" | ("precombat" | "postcombat")? "main phase" | ("combat" | "combat phase") | "ending phase"
