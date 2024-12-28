@@ -952,13 +952,13 @@ class TestGrammarAndParser(unittest.TestCase):
 
         shouldOutputVerboseDetails = False
 
-        def getLexerResults(declaration):
-            lexerState = lark.lexer.LexerState(text=declaration, line_ctr=lark.lexer.LineCounter(
-                b'\n' if isinstance(declaration, bytes) else '\n'))
+        def getLexerResults(declarationToLex):
+            lexerState = lark.lexer.LexerState(text=declarationToLex, line_ctr=lark.lexer.LineCounter(
+                b'\n' if isinstance(declarationToLex, bytes) else '\n'))
             lexTimeStart = time.time()
             lexerResults = parser.parser.lexer.lex(state=lexerState, parser_state=None)
             lexTimeEnd = time.time()
-            print(f"declaration ({declaration}) took {lexTimeEnd - lexTimeStart} to lex.")
+            print(f"declaration ({declarationToLex}) took {lexTimeEnd - lexTimeStart} to lex.")
             for token in lexerResults:
                 print(f"(token type: {token.type}) | {token}")
 
@@ -971,7 +971,7 @@ class TestGrammarAndParser(unittest.TestCase):
                 ambiguities = list(parseTree.find_data("_ambig"))
                 declarationPrettyPrint = declaration.replace('\n', ' ')
                 print(
-                    f"Declaration ({declarationPrettyPrint}) took {fullParseTimeEnd - fullParseTimeStart} to parse. The input had {len(ambiguities)} ambiguities.")
+                    f"Declaration ({declarationPrettyPrint}) took {fullParseTimeEnd - fullParseTimeStart} seconds to parse. The input had {len(ambiguities)} ambiguities.")
                 if shouldOutputVerboseDetails and len(ambiguities) > 0:
                     print(parseTree.pretty())
             except Exception as exception:
@@ -990,7 +990,7 @@ class TestGrammarAndParser(unittest.TestCase):
         print("-----------------------")
 
     def test_integratingChangesToGrammar(self):
-        shouldOutputVerboseDetails = False
+        shouldOutputVerboseDetails = True
         useRevisedGrammar = True
 
         integratedGrammar = """"""
@@ -1020,27 +1020,39 @@ class TestGrammarAndParser(unittest.TestCase):
 
         cardsToTest = [
             #"when ~ enters, exile target nonland permanent an opponent controls until ~ leaves the battlefield.\nyour opponents can not cast spells with the same name as the exiled card.",  # Ixalan's binding
+            "when this creature dies, create a 1/1 black and green insect creature token with flying.", #Infestation Sage
+            "{T}: add {C}.\n{G/W}, {T}: add {G}{G}, {G}{W}, or {W}{W}.", #Wooded Bastion
+            "~ deals 4 damage to target creature and each other creature with the same name as that creature.", #Homing Lightning
+            "discard your hand.", #One With Nothing
+            "at the beginning of your upkeep, each opponent chooses money, friends, or secrets. for each player who chose money, you and that player each create a treasure token. for each player who chose friends, you and that player each create a 1/1 green and white citizen creature token. for each player who chose secrets, you and that player each draw a card.", #Master of Ceremonies
+            "~ can not be the target of white spells or abilities from white sources.\n{3}: put target nontoken rebel on the bottom of its owner's library.", #Rebel Informer
+            "clues you control are equipment in addition to their other types", #Armed with Proof
+            "return target creature card from your graveyard to the battlefield. if {G} was spent to cast this spell, that creature enters with an additional +1/+1 counter on it.", #Vigor Mortis
+            "{T}: add {G}.\n{T}: target 1/1 creature gets +1/+2 until end of turn.", #Pendlehaven
+            "reach\nwhenever ~ or another cat you control enters, you may destroy target artifact or enchantment.", #Qasali Slingers
+            "target nonattacking creature gains reach and deathtouch until end of turn. untap it.", #Ruthless Instincts
+            "destroy target nonblack creature.",  # Doom Blade
+            "sacrifice all blue creatures, black creatures, and white creatures.",
+            "draw two cards.",  # Divination
             "{t}, sacrifice ~: add three mana of any one color.",  # Black Lotus
             "−1: target player draws a card.",
             "+2: each player draws a card.\n+1: target player draws a card.\n+10: target player puts the top twenty cards of their library into their graveyard.", # Jace Beleren
             "{t}: draw a card, then discard a card.", #Merfolk Looter
-            "destroy target nonblack creature.", #Doom Blade
             "for each land you control, you gain 1 life.", #Bountiful Harvest
-            "draw two cards.", #Divination
             "{1}{u}{r}: return ~ to its owner's hand.\ncascade (when you cast this spell, exile cards from the top of your library until you exile a nonland card that costs less. You may cast it without paying its mana cost. Put the exiled cards on the bottom in a random order.)", #Etherium-Horn Sorcerer
             "{t}: put a +1/+1 counter on each artifact creature you control.",
             "when ~ enters, mill three cards.\nwhen ~ dies, you may exile it. when you do, return target creature card from your graveyard to your hand.",
-            "sacrifice all blue creatures, black creatures, and white creatures.",
             "flying, vigilance, lifelink", #Aerial Responder
             "enchant creature\nenchanted creature is a treefolk with base power and toughness 0/4 and loses all abilities.", #Lignify,
             "when ~ enters, tap target creature.",
             "if a player would draw a card except the first one they draw in each of their draw steps, that player discards a card instead.", #Chains of Mephistopheles
-            "at the beginning of your end step, choose one — • you gain 1 life.\n• return target creature card with mana value 1 from your graveyard to the battlefield." #Abiding Grace
+            "at the beginning of your end step, choose one — • you gain 1 life.\n• return target creature card with mana value 1 from your graveyard to the battlefield.", #Abiding Grace
+            "create a 2/2 white cat soldier creature token named OBJECTNAME with \“whenever you gain life, put a +1/+1 counter on OBJECTNAME.\”" #Ajani, Strength of the Pride
         ]
 
         def getLexerResults(card):
-            lexerState = lark.lexer.LexerState(text=cardsToTest[0], line_ctr=lark.lexer.LineCounter(
-                b'\n' if isinstance(cardsToTest[0], bytes) else '\n'))
+            lexerState = lark.lexer.LexerState(text=card, line_ctr=lark.lexer.LineCounter(
+                b'\n' if isinstance(card, bytes) else '\n'))
             lexTimeStart = time.time()
             lexerResults = parser.parser.lexer.lex(state=lexerState, parser_state=None)
             lexTimeEnd = time.time()

@@ -15,11 +15,12 @@ beingexpression: expressionordeclaration ("is" | "was" | "are" "each"?) ("still"
 | expressionordeclaration (expressionordeclaration? ("do"["es"]? | "did") "not"? expressionordeclaration? | "doing" "so" ) -> doesexpression
 | "be" expressionordeclaration -> beexpression //Example(s): "*be* attacked", "*be* sacrificed"
 
-keywordactionexpression: keywordactionsubject? keywordactionverb keywordactionobjectsandmodifiers*
+keywordactionexpression: keywordactionsubject? keywordactionverb keywordactionobject? keywordactionmodifiers*
 keywordactionsubject: expressionordeclaration
 keywordactionverb: keywordactionadverb? RESERVEDVERB
 keywordactionadverb: "secretly"
-keywordactionobjectsandmodifiers: KEYWORDACTIONPREPOSITION? expressionordeclaration | "this way"
+keywordactionobject: expressionordeclaration
+keywordactionmodifiers: KEYWORDACTIONPREPOSITION expressionordeclaration | "this way"
 KEYWORDACTIONPREPOSITION.10: "on" | "from" | "to" | "with"["out"] | "as" "though"? | "into" //TODO: Do we handle "as (though)" at the statement level?
 
 //"on" "from" "to" "without"
@@ -481,9 +482,9 @@ TRIGGERPRESENT: "trigger"i["s"i]
 TRIGGERPAST: "triggered"i
 TRIGGERPARTICIPLEORGERUND: "triggering"i
 
-VERB_TURN: TURNPRESENT | TURNPAST | TURNPARTICIPLEORGERUND //TOOD
-TURNPRESENT: "turn"i["s"i]
-TURNPAST: "turned"i
+VERB_TURN: TURNPRESENT | TURNPAST | TURNPARTICIPLEORGERUND
+TURNPRESENT: "turn"i["s"i] ("face-up" | "face-down")
+TURNPAST: "turned"i ("face-up" | "face-down")
 TURNPARTICIPLEORGERUND: "turning"i
 
 VERB_VOTE: VOTEPRESENT | VOTEPAST | VOTEPARTICIPLEORGERUND

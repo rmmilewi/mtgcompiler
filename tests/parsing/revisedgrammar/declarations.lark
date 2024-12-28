@@ -28,7 +28,7 @@ NAMEREFSYMBOL: "~" | "~f"
 //Example(s): "Destroy target creature. *Its* controller [...]" and "*its owner’s* hand." "*that creature’s* toughness."
 referencedecorator: THIRDPERSONIMPERSONALREFERENCE | POSSESSIVEPRONOUNREFERNCE | HERAMBIGUOUSREFERENCE
 THIRDPERSONIMPERSONALREFERENCE: ("that" | "those") | ("this"|"these")
-POSSESSIVEPRONOUNREFERNCE.100: "its" | "your" | "their" | "his" //Note: "her" is handled separately to capture the ambiguity.
+POSSESSIVEPRONOUNREFERNCE.150: "its" | "your" | "their" | "his" //Note: "her" is handled separately to capture the ambiguity.
 
 //Declaration decorators. The most popular decorator is "target".
 //Example(s): "destroy *target* nonblack creature", "*any* permanent"
@@ -45,10 +45,14 @@ declarationdecorator: "each" -> eachdecorator
 //There can be limited nesting of declarations inside definitions like with possessives ("its *owner's* hand") and prepositions
 //("a creature *with a +1/+1 counter* *on it*").
 declarationdefinition: "DEFINITION" | (nonnesteddeclarationterm | nesteddeclarationterm)+ //TODO: Remove "DEFINITION" placeholder
-nonnesteddeclarationterm : ("non""-"?)? (valueterm | manaterm | characteristicterm
+nonnesteddeclarationterm : (valueterm | manaterm | characteristicterm
 | typeterm | colorterm | modifierterm | qualifierterm | timeterm | damageterm | playerterm
 | powertoughnessterm | loyaltycostterm | counterterm | nameterm | variableterm | zoneterm | anytargetterm  | tapuntapsymbol | specialterm)
 nesteddeclarationterm: possessiveclarationreference | prepositionalattacheddeclaration
+
+
+
+
 
 //Declaration definitions can have prepositional phrases and possessives that can contain declarations of their own.
 //We need a special rule for embedded declarations which shouldn't have any further recursive declarations. Instead,
@@ -64,24 +68,32 @@ prepositionalattacheddeclaration: DECLARATIONPREPOSITION embeddedsingledeclarati
 DECLARATIONPREPOSITION: "of" | ("on" | "onto") | "who" | "in" | "under" | "with"
 possessiveclarationreference: (embeddeddeclarationdefinition | namereferencedefinition) ("'s"|"'")
 
-specialterm: "ring" //Example: "the ring has tempted you two or more times this game"
+specialterm: MECHANICSPECIFICTERM | TIMERELATIVETERM | OTHERTERM
+
+OTHERTERM: "pile" //Example: "target opponent looks at the top three cards of your library and separates them into a face-down pile and a face-up pile."
+| "result" //Example: "draw cards equal to the *result*"
+| "rest" //Example: "You have no maximum hand size for the *rest* of the game."
+| "order" //Example: "Put that card onto the battlefield and the rest on the bottom of your library in a random *order*."
+MECHANICSPECIFICTERM: "ring" //Example: "the ring has tempted you two or more times this game"
 | "dungeon" //Example: "venture into the dungeon"
 | "city's blessing" //Example: "As long as you have the city’s blessing"
 | "evidence" //Example: "If you collected evidence"
+TIMERELATIVETERM: "beginning" | "end"
 
-typeterm: (TYPE ["s"] | SUBTYPESPELL ["s"] | SUBTYPELAND ["s"] | SUBTYPEARTIFACT ["s"] | SUBTYPEENCHANTMENT ["s"] | SUBTYPEPLANESWALKER | SUBTYPECREATUREA ["s"] | SUBTYPECREATUREB ["s"] | SUBTYPEPLANAR | SUPERTYPE)
-modifierterm: ABILITYMODIFIER | COMBATSTATUSMODIFIER | KEYWORDSTATUSMODIFIER | TAPPEDSTATUSMODIFIER  | RELATIVEMODIFIER | effectstatusmodifier
-qualifierterm: QUALIFIER["s"]
+negationofterm: "non" ("-")?
+typeterm: negationofterm? (TYPE ["s"] | SUBTYPESPELL ["s"] | SUBTYPELAND ["s"] | SUBTYPEARTIFACT ["s"] | SUBTYPEENCHANTMENT ["s"] | SUBTYPEPLANESWALKER | SUBTYPECREATUREA ["s"] | SUBTYPECREATUREB ["s"] | SUBTYPEPLANAR | SUPERTYPE)
+modifierterm: negationofterm? (ABILITYMODIFIER | COMBATSTATUSMODIFIER | KEYWORDSTATUSMODIFIER | TAPPEDSTATUSMODIFIER  | RELATIVEMODIFIER | effectstatusmodifier)
+qualifierterm: negationofterm? QUALIFIER["s"]
 timeterm: PHASE | STEP | TURN | GAME
 playerterm: PLAYER["s"]
 zoneterm: ZONE
 powertoughnessterm: valueterm "/" valueterm
-loyaltycostterm: (PLUS | MINUS)? valueterm
+loyaltycostterm: (PLUS | MINUS) valueterm
 counterterm: (COUNTERTYPE | powertoughnessterm)  "counter"["s"]
-characteristicterm: OBJECTCHARACTERISTIC | PLAYERCHARACTERISTIC
-nameterm: "OBJECTNAME" | NAMEREFSYMBOL //TODO: fix objectname vs. basic lexer
-damageterm: DAMAGETYPE
-colorterm: COLOR
+characteristicterm: negationofterm? (OBJECTCHARACTERISTIC | PLAYERCHARACTERISTIC)
+nameterm: "OBJECTNAME"
+damageterm: negationofterm? DAMAGETYPE
+colorterm: negationofterm? COLOR
 variableterm: "choice"["s"] //Example(s): "their choice", "of your choice"
 | ("copy" | "copies") //Example(s): "You may have Shapeshifters you control become *copies* of that creature", "choose new targets for the *copy*"
 | "vote"["s"] //Example(s): "each *vote* they receive"
@@ -122,24 +134,24 @@ REGULARKEYWORDEDABILITY: "deathtouch" | "defender" | "double strike" | "enchant"
 | "myriad" | "surge" | "skulk" | "emerge" | "escalate" | "melee" | "crew" | "fabricate" | "undaunted" | "improvise" | "aftermath"
 | "embalm" | "eternalize" | "afflict" | "ascend" | "assist" | "jump-start" | "mentor" | "afterlife" | "riot" | "spectacle"
 | "escape" | "mutate" | "oncore" | "boast" | "foretell" | "demonstrate" | ("day" | "night") "bound" | "disturb" | "decayed"
-| "cleave" | "training" | " compleated" | "reconfigure" | "blitz" | "casualty" | "enlist" | "read ahead" | "ravenous" | "squad"
+| "cleave" | "training" | "compleated" | "reconfigure" | "blitz" | "casualty" | "enlist" | "read ahead" | "ravenous" | "squad"
 | "prototype" | "living metal" | "for mirrodin!" | "toxic" | "backup" | "bargain" | "disguise" | "plot" | "saddle"
 | "gift" | "offspring" | "impending" | "time travel"
 
 
 //Below are hardcoded game terms used in declarations.
 PLAYER.100: "player" | "opponent" | "you" |  "teammate" | "team" | "controller" | "owner"
-PLAYERCHARACTERISTIC: "maximum hand size" | "life total"["s"] | "life" | "cards in hand"
-OBJECTCHARACTERISTIC: "card"? "name" | "mana value" | "color"["s"] | "color indicator" | "type"["s"] | "card type"["s"] | "subtype"["s"] | "supertype"["s"]
+PLAYERCHARACTERISTIC.100: "maximum hand size" | "life total"["s"] | "life" | "cards in hand"
+OBJECTCHARACTERISTIC.100: "card"? "name"["s"] | "mana value"["s"] | "color"["s"] | "color indicator"["s"] | "type"["s"] | "card type"["s"] | "subtype"["s"] | "supertype"["s"]
 | "rules text" | ("ability" | "abilities" ) | "power" | "toughness" | "base power" | "base toughness" | "loyalty" | "hand modifier" | "life modifier"
 ZONE: "battlefield" | "graveyard"["s"] | ("library"|"libraries") | "hand"["s"] | "stack" | "exile" | "command zone" | "outside the game" | "anywhere"
 TYPE.100: "planeswalker" | "conspiracy" | "creature" | "enchantment" | "instant" | "land" | "phenomenon" | "plane" | "artifact" | "scheme" | "sorcery" | "tribal" | "vanguard"
-SUBTYPESPELL : "arcane" | "trap" | "adventure"
-SUBTYPELAND: "desert" | "forest" | "gate" | "island" | "lair" | "locus"
+SUBTYPESPELL.100: "arcane" | "trap" | "adventure"
+SUBTYPELAND.100: "desert" | "forest" | "gate" | "island" | "lair" | "locus"
 | "mine" | "mountain" | "plains" | "power-plant" | "swamp" | "tower" | "urza's"
-SUBTYPEARTIFACT: "clue" | "contraption" | "equipment" | "fortification" | "treasure" | "vehicle" | "food"
-SUBTYPEENCHANTMENT: "aura" | "cartouche" | "curse" | "saga" | "shrine" | "rune" | "shard" | "case" | "room"
-SUBTYPEPLANESWALKER: "ajani" | "aminatou" | "angrath" | "arlinn" | "ashiok" | "bolas" | "chandra"
+SUBTYPEARTIFACT.100: "clue" | "contraption" | "equipment" | "fortification" | "treasure" | "vehicle" | "food"
+SUBTYPEENCHANTMENT.100: "aura" | "cartouche" | "curse" | "saga" | "shrine" | "rune" | "shard" | "case" | "room"
+SUBTYPEPLANESWALKER.100: "ajani" | "aminatou" | "angrath" | "arlinn" | "ashiok" | "bolas" | "chandra"
 | "dack" | "daretti" | "domri" | "dovin" | "elspeth" | "estrid" | "freyalise" | "garruk" | "gideon"
 | "huatli" | "jace" | "jaya" | "karn" | "kaya" | "kiora" | "koth" | "liliana" | "nahiri" | "narset"
 | "nissa" | "nixilis" | "ral" | "rowan" | "saheeli" | "samut" | "sarkhan" | "sorin" | "tamiyo" | "teferi"
@@ -182,21 +194,36 @@ SUBTYPEPLANAR: "alara" | "arkhos" | "azgol" | "belenon" | "bolas’s meditation 
 | "vryn" | "wildfire" | "xerex" | "zendikar"
 subtype: SUBTYPESPELL | SUBTYPELAND | SUBTYPEARTIFACT | SUBTYPEENCHANTMENT | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR
 SUPERTYPE: "basic" | "legendary" | "ongoing" | "snow" | "world"
-DAMAGETYPE: "damage" | "combat damage" | "excess damage"
-ABILITYMODIFIER: "triggered" | "activated" | "mana" | "loyalty"
+DAMAGETYPE.100: "damage" | "combat damage" | "excess damage"
+ABILITYMODIFIER: "mana" | "loyalty"
 RELATIVEMODIFIER.100: "next" | "additional" | "extra" | "top" | "bottom" //Example(s): "an *additional* +1/+1 counter", "take an *extra* turn"
 COMBATSTATUSMODIFIER: "attacking" | "defending" | "attacked" | "blocking" | "blocked" | "active" //Example(s): "the *active* player", "*attacking* creatures you control"
 KEYWORDSTATUSMODIFIER: "paired" | "kicked" | "face-up" | "face-down" | "transformed" | "enchanted" | "equipped" //TODO: This will need to be generalized more.
 | "fortified" | "monstrous" | "regenerated" | "suspended" | "flipped" | "suspected" // TODO: ensure 'suspected' works properly
 TAPPEDSTATUSMODIFIER: ["un"]"tapped"
 effectstatusmodifier: reservedverb_pastonly
-QUALIFIER: "card" | "permanent" | "source" | "spell" | "token" | "effect"
+QUALIFIER.100: "card" | "permanent" | "source" | "spell" | "token" | "effect"
 COLOR: "white" | "blue" | "black" | "red" | "green" | "monocolored" | "multicolored" | "colorless"
-PHASE: "beginning" | "beginning phase" | ("precombat" | "postcombat")? "main phase" | ("combat" | "combat phase") | "ending phase"
-STEP: "untap step" | ("upkeep step" | "upkeep") | "draw step" | "beginning of combat" | "declare attackers step"
-| "declare blockers step" | "combat damage step" | "end of combat" | "end step" | "cleanup step" | "step"
-TURN: "turn"
-GAME: "game"
+PHASE.100: BEGINNINGPHASE | MAINPHASE | COMBATPHASE | ENDINGPHASE | PHASEGENERIC
+BEGINNINGPHASE: "beginning phrase"
+MAINPHASE: ("precombat" | "postcombat")? "main phase"
+COMBATPHASE: "combat" "phase"?
+ENDINGPHASE: "ending phase"
+PHASEGENERIC: "phase"["s"]
+STEP.100: UNTAPSTEP | UPKEEPSTEP | DRAWSTEP | BEGINNINGOFCOMBATSTEP
+| DECLAREATTACKERSSTEP | DECLAREBLOCKERSSTEP | COMBATDAMAGESTEP | ENDSTEP | CLEANUPSTEP | STEPGENERIC
+UNTAPSTEP: "untap step"
+UPKEEPSTEP: "upkeep" "step"?
+DRAWSTEP: "draw step"
+BEGINNINGOFCOMBATSTEP: "beginning of combat" "step"?
+DECLAREATTACKERSSTEP: "declare attackers step"
+COMBATDAMAGESTEP: "combat damage step"
+DECLAREBLOCKERSSTEP: "declare blockers step"
+ENDSTEP: "end step"
+CLEANUPSTEP: "cleanup step"
+STEPGENERIC: "step"
+TURN: "turn"["s"]
+GAME: "game"["s"]
 
 //TODO: counter types aren't formally defined in the game (like the "oil" counters doesn't have a specific rules meaning, but until we
 //can have arbitrary names that don't confuse the basic lexer, we might spell out counter types here based on the list
