@@ -1,36 +1,36 @@
-cardtext: ability (NEWLINE+ ability)*
+cardtext.5: ability (NEWLINE+ ability)*
 
-ability: (abilityworddecorator | remindertextdecorator)? statementblock remindertextdecorator? -> regularability
+ability.5: (abilityworddecorator  | remindertextdecorator)? statementblock remindertextdecorator? -> regularability
 | keywordlist remindertextdecorator?
-abilityworddecorator: "ABILITYWORD" DASH //WORD+ DASH
-remindertextdecorator: /\(.*?\)/
+abilityworddecorator.5: ARBITRARYWORD+ DASH
+remindertextdecorator.5: /\(.*?\)/
 
-keywordlist: keywordsequence
-keywordsequence: keywordabilitydeclaration (("," | ";") keywordabilitydeclaration)*
+keywordlist.5: keywordsequence
+keywordsequence.5: keywordabilitydeclaration (("," | ";") keywordabilitydeclaration)*
 
 statementblock : (statement)+ | activationstatement
 
-statement: statementwithouttrailingsubstatements "." | standaloneconditionalstatement "." | compoundstatement "." | modalstatement
+statement.5: statementwithouttrailingsubstatements "." | standaloneconditionalstatement "." | compoundstatement "." | modalstatement
 
-statementwithouttrailingsubstatements: statementexpression
+statementwithouttrailingsubstatements.5: statementexpression
 
-activationstatement: statementexpression ("," statementexpression)* ":" statementblock
-modalstatement:  "choose" statementexpression DASH modalchoicestatement (NEWLINE modalchoicestatement)+
-modalchoicestatement: MODALCHOICE abilityworddecorator? statementblock remindertextdecorator?
+activationstatement.5: statementexpression ("," statementexpression)* ":" statementblock
+modalstatement.5:  "choose" statementexpression DASH modalchoicestatement (NEWLINE modalchoicestatement)+
+modalchoicestatement.5: MODALCHOICE abilityworddecorator? statementblock remindertextdecorator?
 
-compoundstatement: (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "then" (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundthenstatement
+compoundstatement.5: (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "then" (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundthenstatement
 | (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "and" (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundandstatement
 | (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "or" (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundorstatement
 
-compoundconditionalstatement: condition statementexpression
+compoundconditionalstatement.5: condition statementexpression
 | statementexpression condition -> compoundconditionalinv
 | conditionalresult postfixexpression -> compoundconditionalresult
 
-standaloneconditionalstatement: "then"? condition statementexpression postfixexpression? "," "then"? (conditionalresult postfixexpression? | standaloneconditionalstatement)
-conditionalresult: statementwithouttrailingsubstatements
-postfixexpression: "instead" | "rather" "than" statementwithouttrailingsubstatements | condition statementexpression | postfixexpression ("and" | "or" | "and/or") postfixexpression
+standaloneconditionalstatement.5: "then"? condition statementexpression postfixexpression? "," "then"? (conditionalresult postfixexpression? | standaloneconditionalstatement)
+conditionalresult.5: statementwithouttrailingsubstatements
+postfixexpression.5: "instead" | "rather" "than" statementwithouttrailingsubstatements | condition statementexpression | postfixexpression ("and" | "or" | "and/or") postfixexpression
 
-condition: "only"? "if" -> ifcondition
+condition.5: "only"? "if" -> ifcondition
 | "whenever" -> whenevercondition
 | "when" -> whencondition
 | "as" -> ascondition
@@ -42,19 +42,19 @@ condition: "only"? "if" -> ifcondition
 | "while" -> whilecondition
 | ("during" | "only during") -> duringcondition
 | "except" -> exceptcondition
-| "the" "next" "time" -> thennexttimecondition
+| "the" "next" "time" -> thennexttimecondition //TODO: "This condition may be able to be removed, with "the next time..." being a declaration
 | "before" -> beforecondition
-| "for" "each" "time"? -> beforecondition
+| "for" "each" "time"? -> beforecondition //TODO: This probably can just be "for", with "each time" being a declaration.
 | "at" -> atcondition
-| "as" "an" "additional" "cost" "to"? -> asanadditionalcostcondition
+| "as" "an" "additional" "cost" "to"? -> asanadditionalcostcondition //TODO: This probably can just be "as", with "an additional cost to..." being a declaration.
 
-statementexpression: expressionordeclaration
+statementexpression.5: expressionordeclaration
 
-DASH: "—"
-MODALCHOICE: "•"
+DASH.100: "‒" | "—"
+MODALCHOICE.100: "•"
 %import common.UCASE_LETTER -> UCASE_LETTER
 %import common.LCASE_LETTER -> LCASE_LETTER
-//%import common.WORD -> WORD
+%import common.WORD -> WORD
 %import common.NEWLINE -> NEWLINE
 //%import common.NUMBER -> NUMBER
 %import common.SIGNED_NUMBER -> NUMBER

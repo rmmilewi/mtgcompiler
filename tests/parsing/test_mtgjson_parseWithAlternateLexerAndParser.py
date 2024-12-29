@@ -5,6 +5,7 @@ import mtgcompiler.midend.support.binding as binding
 import mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonCompiler as MtgJsonCompiler
 import pytest
 import lark.lexer
+import lark
 import mtgcompiler.frontend.compilers.LarkMtgJson.grammar as oldGrammar
 
 class TestGrammarAndParser(unittest.TestCase):
@@ -972,7 +973,7 @@ class TestGrammarAndParser(unittest.TestCase):
                 declarationPrettyPrint = declaration.replace('\n', ' ')
                 print(
                     f"Declaration ({declarationPrettyPrint}) took {fullParseTimeEnd - fullParseTimeStart} seconds to parse. The input had {len(ambiguities)} ambiguities.")
-                if shouldOutputVerboseDetails and len(ambiguities) > 0:
+                if shouldOutputVerboseDetails:
                     print(parseTree.pretty())
             except Exception as exception:
                 firstLineOfException = str(exception).split('\n')[0]
@@ -1000,7 +1001,7 @@ class TestGrammarAndParser(unittest.TestCase):
                 filePath = os.path.join(revisedGrammarDirectory, fileName)
                 if fileName == "remainder.lark":
                     continue
-                with open(filePath) as f:
+                with open(filePath,encoding='utf-8') as f:
                     integratedGrammar = integratedGrammar + "\n" + f.read()
             lexerType = "basic"
         else:
@@ -1020,6 +1021,16 @@ class TestGrammarAndParser(unittest.TestCase):
 
         cardsToTest = [
             #"when ~ enters, exile target nonland permanent an opponent controls until ~ leaves the battlefield.\nyour opponents can not cast spells with the same name as the exiled card.",  # Ixalan's binding
+            "counter target spell unless its controller pays {2}.", #Quench
+            "flash\nward {2}\nprobing telepathy — whenever a creature entering under an opponent's control causes a triggered ability of that creature to trigger, you may copy that ability. You may choose new targets for the copy.", #Aboleth Spawn
+            "haste (haste is an ability)",
+            "booksmarts — draw a card. if you control a wizard, draw an additional card. (aren't you clever!)",
+            "destroy each bird on the battlefield.",
+            "draw a card for each bird on the battlefield.", #Airborne Aid
+            "reveal the player you chose.",
+            "when ~ enters, secretly choose an opponent.", #Stalking Leonin part 1
+            "reveal the player you chose: exile target creature that is attacking you if it is controlled by the chosen player. activate only once.", #Stalking Leonin part 2
+            "destroy target nonattacking creature.",
             "when this creature dies, create a 1/1 black and green insect creature token with flying.", #Infestation Sage
             "{T}: add {C}.\n{G/W}, {T}: add {G}{G}, {G}{W}, or {W}{W}.", #Wooded Bastion
             "~ deals 4 damage to target creature and each other creature with the same name as that creature.", #Homing Lightning
@@ -1065,7 +1076,11 @@ class TestGrammarAndParser(unittest.TestCase):
             try:
                 if shouldOutputVerboseDetails:
                     getLexerResults(card)
-
+            except Exception as lexingException:
+                lexingException = str(lexingException)[0:200]
+                print(f"Card ({cardPrettyPrint}) produced an exception during lexing: {lexingException}...")
+                continue
+            try:
                 fullParseTimeStart = time.time()
                 parseTree = parser.parse(card)
                 fullParseTimeEnd = time.time()
@@ -1077,16 +1092,40 @@ class TestGrammarAndParser(unittest.TestCase):
                     ambiguityTreeSizeStatement = ""
                 print(
                     f"Card ({cardPrettyPrint}) took {fullParseTimeEnd - fullParseTimeStart} to parse. The input had {len(ambiguities)} ambiguities. {ambiguityTreeSizeStatement}")
-                if shouldOutputVerboseDetails and len(ambiguities) > 0:
+                if shouldOutputVerboseDetails:
                     print(parseTree.pretty())
             except Exception as exception:
-                firstLineOfException = str(exception).split('\n')[0]
+                firstLineOfException = str(exception).split('\n')
                 if shouldOutputVerboseDetails:
+                    exception = str(exception)[0:200]
                     print(f"Card ({cardPrettyPrint}) produced an exception during parsing: {exception}...")
                 else:
                     print(
                         f"Card ({cardPrettyPrint}) produced an exception during parsing: {firstLineOfException}...")
         print("-----------------------")
+
+    def test_MorseCodeTest(self):
+        morseCodeGrammar = """
+        start: (DOT | DASH)+
+        DOT: ("." | "•")
+        DASH: ("-" | "—")
+        
+        %import common.UCASE_LETTER -> UCASE_LETTER
+        %import common.LCASE_LETTER -> LCASE_LETTER
+        %import common.WORD -> WORD
+        %import common.NEWLINE -> NEWLINE
+        //%import common.NUMBER -> NUMBER
+        %import common.SIGNED_NUMBER -> NUMBER
+        %import common.WS -> WS
+        %ignore WS
+        """
+        parser = lark.Lark(morseCodeGrammar, parser='earley', lexer='basic')
+        messageA = ".-...-.-.-.-"
+        messageB = "•—•••—•—•—•—"
+        print("Message parsed: {message}".format(message=parser.parse(messageA)))
+        print("Message parsed: {message}".format(message=parser.parse(messageB)))
+
+
 
 
 
