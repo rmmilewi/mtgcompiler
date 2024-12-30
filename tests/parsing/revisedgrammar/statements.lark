@@ -3,52 +3,93 @@ cardtext.5: ability (NEWLINE+ ability)*
 ability.5: (abilityworddecorator  | remindertextdecorator)? statementblock remindertextdecorator? -> regularability
 | keywordlist remindertextdecorator?
 abilityworddecorator.5: ARBITRARYWORD+ DASH
-remindertextdecorator.5: /\(.*?\)/
+remindertextdecorator.5: REMINDERTEXT
+REMINDERTEXT.5: /\(.*?\)/
 
 keywordlist.5: keywordsequence
 keywordsequence.5: keywordabilitydeclaration (("," | ";") keywordabilitydeclaration)*
 
-statementblock : (statement)+ | activationstatement
+statementblock : (statement remindertextdecorator?)+ | activationstatement
 
 statement.5: statementwithouttrailingsubstatements "." | standaloneconditionalstatement "." | compoundstatement "." | modalstatement
 
 statementwithouttrailingsubstatements.5: statementexpression
 
-activationstatement.5: statementexpression ("," statementexpression)* ":" statementblock
-modalstatement.5:  "choose" statementexpression DASH modalchoicestatement (NEWLINE modalchoicestatement)+
+activationstatement.5: expressionordeclaration ("," expressionordeclaration)* ":" statementblock
+modalstatement.5:  CHOOSEPRESENT expressionordeclaration DASH modalchoicestatement (NEWLINE modalchoicestatement)+
 modalchoicestatement.5: MODALCHOICE abilityworddecorator? statementblock remindertextdecorator?
 
-compoundstatement.5: (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "then" (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundthenstatement
-| (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "and" (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundandstatement
-| (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "or" (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundorstatement
+compoundstatement.5: (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? PREPOSITION_THEN (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundthenstatement
+| (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "and"i (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundandstatement
+| (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "or"i (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundorstatement
 
 compoundconditionalstatement.5: condition statementexpression
 | statementexpression condition -> compoundconditionalinv
 | conditionalresult postfixexpression -> compoundconditionalresult
 
-standaloneconditionalstatement.5: "then"? condition statementexpression postfixexpression? "," "then"? (conditionalresult postfixexpression? | standaloneconditionalstatement)
+standaloneconditionalstatement.5: PREPOSITION_THEN? condition statementexpression postfixexpression? "," PREPOSITION_THEN? (conditionalresult postfixexpression? | standaloneconditionalstatement)
+| PREPOSITION_THEN? statementexpression condition statementexpression postfixexpression?
 conditionalresult.5: statementwithouttrailingsubstatements
-postfixexpression.5: "instead" | "rather" "than" statementwithouttrailingsubstatements | condition statementexpression | postfixexpression ("and" | "or" | "and/or") postfixexpression
+postfixexpression.5: PREPOSITION_INSTEAD | PREPOSITION_RATHER statementwithouttrailingsubstatements | condition statementexpression | postfixexpression ("and"i | "or"i | "and/or"i) postfixexpression
 
-condition.5: "only"? "if" -> ifcondition
-| "whenever" -> whenevercondition
-| "when" -> whencondition
-| "as" -> ascondition
-| "as" "long" "as" -> aslongascondition
-| "until" -> untilcondition
-| "after" -> aftercondition
-| "otherwise" -> otherwisecondition
-| "unless" -> unlesscondition
-| "while" -> whilecondition
-| ("during" | "only during") -> duringcondition
-| "except" -> exceptcondition
-| "the" "next" "time" -> thennexttimecondition //TODO: "This condition may be able to be removed, with "the next time..." being a declaration
-| "before" -> beforecondition
-| "for" "each" "time"? -> beforecondition //TODO: This probably can just be "for", with "each time" being a declaration.
-| "at" -> atcondition
-| "as" "an" "additional" "cost" "to"? -> asanadditionalcostcondition //TODO: This probably can just be "as", with "an additional cost to..." being a declaration.
+condition.5: ONLY? (PREPOSITION_IF | PREPOSITION_WHENEVER | PREPOSITION_WHEN | PREPOSITION_AS
+| PREPOSITION_UNTIL | PREPOSITION_AFTER | PREPOSITION_OTHERWISE | PREPOSITION_UNLESS | PREPOSITION_WHILE
+| PREPOSITION_DURING | PREPOSITION_EXCEPT | PREPOSITION_BEFORE | PREPOSITION_FOR | PREPOSITION_AT)
 
-statementexpression.5: expressionordeclaration
+
+//"draw a card for each bird on the battlefield."
+//"counter target spell unless its controller pays {2}"
+
+ONLY.5: "only"i
+//Prepositions are variously used by statements (like conditional statements such as "*if* you control a wizard")
+//expressions (like "return target card *from* your graveyard *to* your hand" and declarations (creatures *with* haste). We list them out here.
+PREPOSITION.5: PREPOSITION_AFTER | PREPOSITION_AS | PREPOSITION_AT | PREPOSITION_BEFORE
+| PREPOSITION_DURING | PREPOSITION_EXCEPT | PREPOSITION_FOR | PREPOSITION_FROM | PREPOSITION_IF
+| PREPOSITION_IN | PREPOSITION_INSTEAD | PREPOSITION_INTO | PREPOSITION_OF
+| PREPOSITION_ON | PREPOSITION_ONTO | PREPOSITION_OTHERWISE | PREPOSITION_RATHER
+| PREPOSITION_THEN | PREPOSITION_TO | PREPOSITION_UNDER | PREPOSITION_UNLESS | PREPOSITION_UNTIL
+| PREPOSITION_WHEN | PREPOSITION_WHENEVER | PREPOSITION_WHILE | PREPOSITION_WHO | PREPOSITION_WITHOUT
+
+PREPOSITION_AFTER.5: "after"i
+PREPOSITION_AS.5: "as"i ("though"i | "long as"i)?
+PREPOSITION_AT.5: "at"i
+PREPOSITION_BEFORE.5: "before"i
+PREPOSITION_DURING.5: "during"i
+PREPOSITION_EXCEPT.5: "except"i
+PREPOSITION_FOR.5: "for"i
+PREPOSITION_FROM.5: "from"i
+PREPOSITION_IF.5: "if"i
+PREPOSITION_IN.0: "in"i
+PREPOSITION_INSTEAD.5: "instead"i
+PREPOSITION_INTO.10: "into"i
+PREPOSITION_OF.5: "of"i
+PREPOSITION_ON.0: "on"i
+PREPOSITION_ONTO.10: "onto"i
+PREPOSITION_OTHERWISE.5: "otherwise"i
+PREPOSITION_RATHER.5: "rather"i "than"i?
+PREPOSITION_THEN.5: "then"i
+PREPOSITION_TO.0: "to"i
+PREPOSITION_UNDER.5: "under"i
+PREPOSITION_UNLESS.5: "unless"i
+PREPOSITION_UNTIL.5: "until"i
+PREPOSITION_WHEN.5: "when"i
+PREPOSITION_WHENEVER.10: "whenever"i
+PREPOSITION_WHILE.5: "while"i
+PREPOSITION_WHO.5: "who"i
+PREPOSITION_WITH.5: "with"i
+PREPOSITION_WITHOUT.10: "without"i
+
+CONJUNCTIONS.5: CONJUNCTION_AND | CONJUNCTION_OR | CONJUNCTION_ANDOR | CONJUNCTION_NOR | CONJUNCTION_NEITHER
+CONJUNCTION_AND.0: "and"i
+CONJUNCTION_OR.0: "or"i
+CONJUNCTION_ANDOR.5: "and/or"i
+CONJUNCTION_NOR.0: "nor"i
+CONJUNCTION_NEITHER.5: "neither"i
+
+
+
+
+statementexpression.5: expression //TODO: Should this be only expressions or "expressionordeclaration"? There's an ambiguity with compound statements vs. compound declarations.
 
 DASH.100: "‒" | "—"
 MODALCHOICE.100: "•"

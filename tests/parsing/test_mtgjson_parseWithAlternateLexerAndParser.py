@@ -1021,7 +1021,10 @@ class TestGrammarAndParser(unittest.TestCase):
 
         cardsToTest = [
             #"when ~ enters, exile target nonland permanent an opponent controls until ~ leaves the battlefield.\nyour opponents can not cast spells with the same name as the exiled card.",  # Ixalan's binding
-            "counter target spell unless its controller pays {2}.", #Quench
+            "create a 1/1 green elf creature token under your control. gain control of all elves.", #control as noun test
+            "unless its controller pays {2}, counter target spell.",  # Quench (inverted)
+            "counter target spell unless its controller pays {2}.",  # Quench
+            "{t}: draw a card, then discard a card.",  # Merfolk Looter
             "flash\nward {2}\nprobing telepathy — whenever a creature entering under an opponent's control causes a triggered ability of that creature to trigger, you may copy that ability. You may choose new targets for the copy.", #Aboleth Spawn
             "haste (haste is an ability)",
             "booksmarts — draw a card. if you control a wizard, draw an additional card. (aren't you clever!)",
@@ -1048,7 +1051,6 @@ class TestGrammarAndParser(unittest.TestCase):
             "{t}, sacrifice ~: add three mana of any one color.",  # Black Lotus
             "−1: target player draws a card.",
             "+2: each player draws a card.\n+1: target player draws a card.\n+10: target player puts the top twenty cards of their library into their graveyard.", # Jace Beleren
-            "{t}: draw a card, then discard a card.", #Merfolk Looter
             "for each land you control, you gain 1 life.", #Bountiful Harvest
             "{1}{u}{r}: return ~ to its owner's hand.\ncascade (when you cast this spell, exile cards from the top of your library until you exile a nonland card that costs less. You may cast it without paying its mana cost. Put the exiled cards on the bottom in a random order.)", #Etherium-Horn Sorcerer
             "{t}: put a +1/+1 counter on each artifact creature you control.",
@@ -1069,7 +1071,8 @@ class TestGrammarAndParser(unittest.TestCase):
             lexTimeEnd = time.time()
             print(f"Card ({card}) took {lexTimeEnd - lexTimeStart} to lex.")
             for token in lexerResults:
-                print(f"(token type: {token.type}) | {token}")
+                print(f"{token} ({token.type}) ",end='')
+            print("\n")
 
         for card in cardsToTest:
             cardPrettyPrint = card.replace('\n', ' ')
@@ -1095,7 +1098,7 @@ class TestGrammarAndParser(unittest.TestCase):
                 if shouldOutputVerboseDetails:
                     print(parseTree.pretty())
             except Exception as exception:
-                firstLineOfException = str(exception).split('\n')
+                firstLineOfException = str(exception).split('\n')[0]
                 if shouldOutputVerboseDetails:
                     exception = str(exception)[0:200]
                     print(f"Card ({cardPrettyPrint}) produced an exception during parsing: {exception}...")

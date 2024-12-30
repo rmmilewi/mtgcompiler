@@ -3,20 +3,22 @@
 //A reference points to a declaration that was made earlier or that is already assumed to exist.
 //Example(s) : "draw a card if *that creature* had power 3 or greater" or "target creature blocks *this turn* if able"
 declaration.5: singledeclaration | compounddeclaration
-compounddeclaration.5:  singledeclaration ("," singledeclaration ",")* "or" singledeclaration -> orcompounddeclaration
-| singledeclaration ("," singledeclaration ",")* "and" singledeclaration -> andcompounddeclaration
-| singledeclaration ("," singledeclaration ",")* "and/or" singledeclaration -> andorcompounddeclaration
-| "neither" singledeclaration "nor" singledeclaration -> neithernorcompounddeclaration
-singledeclaration.5: regulardeclaration | referencedeclaration | keywordabilitydeclaration
-regulardeclaration.5: declarationdecorator* declarationdefinition
+compounddeclaration.5:  singledeclaration ("," singledeclaration ",")* CONJUNCTION_OR singledeclaration -> orcompounddeclaration
+| singledeclaration ("," singledeclaration ",")* CONJUNCTION_AND singledeclaration -> andcompounddeclaration
+| singledeclaration ("," singledeclaration ",")* CONJUNCTION_ANDOR singledeclaration -> andorcompounddeclaration
+| CONJUNCTION_NEITHER singledeclaration CONJUNCTION_NOR singledeclaration -> neithernorcompounddeclaration
+singledeclaration.5: decorateddeclaration | keywordabilitydeclaration | nakeddeclaration
+decorateddeclaration.5: regulardeclaration | referencedeclaration
+regulardeclaration.5: declarationdecorator+ declarationdefinition
 referencedeclaration.5: referencedecorator+ declarationdefinition | personalpronounreferencedefinition | namereferencedefinition
+nakeddeclaration: declarationdefinition
 
 //Reference definition for third-person personal pronoun references.
 //Example(s): "*they* can’t be regenerated." and "Sarkhan the Mad deals damage to *himself*"
 personalpronounreferencedefinition.5: PERSONALPRONOUNREFERENCE | SELFPRONOUNREFERENCE | HERAMBIGUOUSREFERENCE
-HERAMBIGUOUSREFERENCE.100: "her" //This could be the possessive form or the object of a sentence.
-PERSONALPRONOUNREFERENCE.90: ("he" | "him") | ("she") | ("they" | "them") | "it" | "you"
-SELFPRONOUNREFERENCE.110:  "itself" | "himself" | "herself" | "themselves"
+HERAMBIGUOUSREFERENCE.10: "her"i //This could be the possessive form or the object of a sentence.
+PERSONALPRONOUNREFERENCE.90: ("he"i | "him"i) | ("she"i) | ("they"i | "them"i) | "it"i | "you"i
+SELFPRONOUNREFERENCE.110:  "itself"i | "himself"i | "herself"i | "themselves"i
 
 //Reference form used when when a card makes a reference to itself by name. "~" is a full name reference, "~f" (rarely used) is a first name reference.
 //Example(s): "*Chandra, Fire of Kaladesh (~)* deals 1 damage to target player or planeswalker. If *Chandra (~f)* has dealt 3 or more damage [...]"
@@ -27,25 +29,25 @@ NAMEREFSYMBOL.5: "~" | "~f"
 //references to other defined things (like "your *opponent's* hand").
 //Example(s): "Destroy target creature. *Its* controller [...]" and "*its owner’s* hand." "*that creature’s* toughness."
 referencedecorator.5: THIRDPERSONIMPERSONALREFERENCE | POSSESSIVEPRONOUNREFERNCE | HERAMBIGUOUSREFERENCE
-THIRDPERSONIMPERSONALREFERENCE.5: ("that" | "those") | ("this"|"these")
-POSSESSIVEPRONOUNREFERNCE.150: "its" | "your" | "their" | "his" //Note.5: "her" is handled separately to capture the ambiguity.
+THIRDPERSONIMPERSONALREFERENCE.5: ("that"i | "those"i) | ("this"i|"these"i)
+POSSESSIVEPRONOUNREFERNCE.150: "its"i | "your"i | "their"i | "his"i //Note.5: "her"i is handled separately to capture the ambiguity.
 
 //Declaration decorators. The most popular decorator is "target".
 //Example(s): "destroy *target* nonblack creature", "*any* permanent"
-declarationdecorator.5: "each" -> eachdecorator
-| "same" -> samedecorator
-| "all" -> alldecorator
-| "other" -> otherdecorator
-| "another" -> anotherdecorator
-| ("a" | "an") -> indefinitearticledecorator
-| "the" -> definitearticledecorator
-| valueterm? "target" -> targetdecorator
-| "any" -> anydecorator
+declarationdecorator.5: "each"i -> eachdecorator
+| "same"i -> samedecorator
+| "all"i -> alldecorator
+| "other"i -> otherdecorator
+| "another"i -> anotherdecorator
+| ("a"i | "an"i) -> indefinitearticledecorator
+| "the"i -> definitearticledecorator
+| valueterm? "target"i -> targetdecorator
+| "any"i -> anydecorator
 
 //A declaration definition is made up of a set of descriptive terms like "a *blue permanent*" or "*two 1/1 green elf creature tokens*".
 //There can be limited nesting of declarations inside definitions like with possessives ("its *owner's* hand") and prepositions
 //("a creature *with a +1/+1 counter* *on it*").
-//declarationdefinition.5: "DEFINITION" | (nonnesteddeclarationterm | nesteddeclarationterm)+ //TODO.5: Remove "DEFINITION" placeholder
+//declarationdefinition.5: (nonnesteddeclarationterm | nesteddeclarationterm)+
 declarationdefinition.5: declarationdefinition_standardorder //| declarationdefinition_nonstandardorder
 nonnesteddeclarationterm : (valueterm | manaterm | characteristicterm
 | typeterm | colorterm | modifierterm | qualifierterm | timeterm | damageterm | playerterm
@@ -64,11 +66,12 @@ nesteddeclarationterm.5: possessiveclarationreference | prepositionalattacheddec
 //a blue, black, or red spell
 //Noninstant, nonsorcery cards
 //each foretold card you own in exile
-declarationdefinition_standardorder.100: possessiveclarationreference* valueterm? powertoughnessterm? modifierterm* colorterm* (damageterm | playerterm | typeterm | loyaltycostterm | tapuntapsymbol | zoneterm | timeterm | manaterm | characteristicterm | qualifierterm)+ prepositionalattacheddeclaration*
+declarationdefinition_standardorder.10: possessiveclarationreference* valueterm? powertoughnessterm? modifierterm* colorterm* (damageterm | playerterm | typeterm | loyaltycostterm | tapuntapsymbol | zoneterm | timeterm | manaterm | characteristicterm | qualifierterm)+ prepositionalattacheddeclaration*
 | anytargetterm
 | valueterm? counterterm
 | nameterm
 | specialterm
+| possessiveclarationreference* CONTROLPRESENT //Example(s): Control here is used as a noun, like "under your *control*", "gain *control* of [...]"
 //declarationdefinition_nonstandardorder.0: (nonnesteddeclarationterm | nesteddeclarationterm)+ //This one should only be used if we're misinterpreting the declaration, like saying "create *a 1/1 black* and *green insect creature token with flying*." has two declarations in it.
 
 
@@ -86,54 +89,47 @@ embeddedregulardeclaration.5: declarationdecorator* embeddeddeclarationdefinitio
 embeddedreferencedeclaration.5: referencedecorator+ embeddeddeclarationdefinition | personalpronounreferencedefinition | namereferencedefinition
 embeddeddeclarationdefinition.5: declarationdefinition_standardorder
 prepositionalattacheddeclaration.5: DECLARATIONPREPOSITION embeddedsingledeclaration
-DECLARATIONPREPOSITION.5: PREPOSITION_OF | PREPOSITION_ON | PREPOSITION_WHO | PREPOSITION_IN | PREPOSITION_UNDER | PREPOSITION_WITHOUT | PREPOSITION_WITH | "as" "though"? //TODO: Do we handle "as (though)" at the statement level?
+DECLARATIONPREPOSITION.5: ONLY? (PREPOSITION_OF | PREPOSITION_ON | PREPOSITION_WHO | PREPOSITION_IN | PREPOSITION_UNDER | PREPOSITION_WITHOUT | PREPOSITION_WITH | PREPOSITION_AS | PREPOSITION_EXCEPT)
 
-PREPOSITION_OF.5: "of"
-PREPOSITION_ON.5: "on"
-PREPOSITION_WHO.5: "who"
-PREPOSITION_IN.5: "in"
-PREPOSITION_UNDER.5: "under"
-PREPOSITION_WITHOUT.10: "without"
-PREPOSITION_WITH.5: "with"
 
 
 possessiveclarationreference.5: (embeddeddeclarationdefinition | namereferencedefinition) ("'s"|"'")
-
 specialterm.5: MECHANICSPECIFICTERM
-MECHANICSPECIFICTERM.5: "ring" //Example: "the ring has tempted you two or more times this game"
-| "dungeon" //Example: "venture into the dungeon"
-| "city's blessing" //Example: "As long as you have the city’s blessing"
-| "evidence" //Example: "If you collected evidence"
+MECHANICSPECIFICTERM.5: "ring"i //Example: "the *ring* has tempted you two or more times this game"
+| "dungeon"i //Example: "venture into the *dungeon*"
+| "city's blessing"i //Example: "As long as you have the *city’s blessing*"
+| "evidence"i //Example: "If you collected *evidence*"
 
 negationofterm.5: NONPREFIX
-NONPREFIX.5: "non" ("-")?
-typeterm.5: negationofterm? (TYPE ["s"] | SUBTYPESPELL ["s"] | SUBTYPELAND ["s"] | SUBTYPEARTIFACT ["s"] | SUBTYPEENCHANTMENT ["s"] | SUBTYPEPLANESWALKER | SUBTYPECREATUREA ["s"] | SUBTYPECREATUREB ["s"] | SUBTYPEPLANAR | SUPERTYPE)
+NONPREFIX.5: "non"i ("-")?
+typeterm.5: negationofterm? (TYPE ["s"i] | SUBTYPESPELL ["s"i] | SUBTYPELAND ["s"i] | SUBTYPEARTIFACT ["s"i] | SUBTYPEENCHANTMENT ["s"i] | SUBTYPEPLANESWALKER | SUBTYPECREATUREA ["s"i] | SUBTYPECREATUREB ["s"i] | SUBTYPEPLANAR | SUPERTYPE)
 modifierterm.5: negationofterm? (ABILITYMODIFIER | KEYWORDSTATUSMODIFIER  | RELATIVEMODIFIER | effectstatusmodifier | playerstatusmodifier)
-qualifierterm.5: negationofterm? QUALIFIER["s"]
+qualifierterm.5: negationofterm? QUALIFIER["s"i]
 timeterm.5: PHASE | STEP | TURN | GAME
-playerterm.5: PLAYER["s"]
+playerterm.5: PLAYER["s"i]
 zoneterm.5: ZONE
 powertoughnessterm.5: valueterm "/" valueterm
 loyaltycostterm.5: (PLUS | MINUS) valueterm
-counterterm.5: (countertype | powertoughnessterm)  "counter"["s"]
+counterterm.5: (countertype | powertoughnessterm)  "counter"i["s"i]
 characteristicterm.5: negationofterm? (OBJECTCHARACTERISTIC | PLAYERCHARACTERISTIC)
-nameterm.5: "OBJECTNAME" | ARBITRARYWORD
+nameterm.5: "OBJECTNAME"i | ARBITRARYWORD ","? ARBITRARYWORD* //TODO: Remove "OBJECTNAME" placeholder
 damageterm.5: negationofterm? DAMAGETYPE
 colorterm.5: negationofterm? COLOR
 
-variableterm.5: "choice"["s"] //Example(s): "their choice", "of your choice"
-| ("copy" | "copies") //Example(s): "You may have Shapeshifters you control become *copies* of that creature", "choose new targets for the *copy*"
-| "vote"["s"] //Example(s): "each *vote* they receive"
-| NUMBERPROPERTY? "number"["s"] //Example(s): "the *number* of cards you drew this term", "a *prime number* of lands"
-| "time"["s"] //Example(s): "the number of *times* ~ was kicked", "the first time this turn"
-| "pile" //Example: "target opponent looks at the top three cards of your library and separates them into a face-down pile and a face-up pile."
-| "result" //Example: "draw cards equal to the *result*"
-| "rest" //Example: "You have no maximum hand size for the *rest* of the game."
-| "order" //Example: "Put that card onto the battlefield and the rest on the bottom of your library in a random *order*."
-| "way" //Example: "Creatures destroyed this *way* can't be regenerated."
-| "beginning" //Example: "the *beginning* of your next upkeep"
-| "end" //Example: "until *end* of turn"
-anytargetterm.5: "any target" //Special nullary variant like "~ deals three damage to *any target*"
+variableterm.5: "beginning"i //Example: "the *beginning* of your next upkeep"
+| "both"i //Example(s): "you may choose *both*"
+| "choice"i["s"i] //Example(s): "their *choice*", "of your *choice*"
+| "end"i //Example: "until *end* of turn"
+| "order"i //Example: "Put that card onto the battlefield and the rest on the bottom of your library in a random *order*."
+| "pile"i["s"i] //Example: "target opponent looks at the top three cards of your library and separates them into a face-down pile and a face-up pile."
+| "rest"i //Example: "You have no maximum hand size for the *rest* of the game."
+| "result"i["s"] //Example: "draw cards equal to the *result*"
+| "time"i["s"i] //Example(s): "the number of *times* ~ was kicked", "the first time this turn"
+| "vote"i["s"i] //Example(s): "each *vote* they receive"
+| "way"i //Example: "Creatures destroyed this *way* can't be regenerated."
+| ("copy"i | "copies"i) //Example(s): "You may have Shapeshifters you control become *copies* of that creature", "choose new targets for the *copy*"
+| NUMBERPROPERTY? "number"i["s"i] //Example(s): "the *number* of cards you drew this term", "a *prime number* of lands"
+anytargetterm.5: "any target"i //Special nullary variant like "~ deals three damage to *any target*"
 
 
 //Keyworded ability declaration
@@ -143,126 +139,123 @@ anytargetterm.5: "any target" //Special nullary variant like "~ deals three dama
 //those that have very particular syntax around them and its easier to spell them out in a special rule.
 keywordabilitydeclaration.5: regularkeywordedabilitydefinition | specialkeywordedabilitydefinition
 
-regularkeywordedabilitydefinition.5: REGULARKEYWORDEDABILITY declaration? //Example(s): "Flying", "Bushido 3", "Champion a Kithkin"
+regularkeywordedabilitydefinition.5: REGULARKEYWORDEDABILITY declaration? //Example(s): "Flying"i, "Bushido 3", "Champion a Kithkin"
 | REGULARKEYWORDEDABILITY declaration DASH declaration //Example(s): "Impending 4—{2}{R}{R}"
 
-specialkeywordedabilitydefinition.5: "specialkeywordedabilitydefinition" //TODO
-
-//need to handle past tense of keyworded actions like "kicked" or "plotted" as part of declarations
 //special cases include...
-//landwalk, hexproof from X and from Y, [typeexpression] "cycling" cost, "splice" "onto" typeexpression cost, typeexpression "offering"
-//"forecast" activationstatement, "suspend" valuenumber cost, "aura swap" (if we wanted to generalize to TYPE swap)
-//partner with objectname, kwcompanion.5: "companion", "craft" "with" declarationorreference cost, spree (Choose one or more additional costs.)
+//TODO: landwalk, hexproof from X and from Y, [typeexpression] "cycling"i cost, "splice"i "onto"i typeexpression cost, typeexpression "offering"i
+//TODO: "forecast"i activationstatement, "suspend"i valuenumber cost, "aura swap" (if we wanted to generalize to TYPE swap)
+//TODO: partner with objectname, kwcompanion.5: "companion"i, "craft"i "with"i declarationorreference cost, spree (Choose one or more additional costs.)
+specialkeywordedabilitydefinition.5: "specialkeywordedabilitydefinition"i //TODO: Add support for special keyworded ability definitions.
 
-REGULARKEYWORDEDABILITY.5: "deathtouch" | "defender" | "double strike" | "enchant" | "equip" | "first strike" | "flash" | "flying"
-| "haste" | "indestructible" | "intimidate" | "lifelink" | "reach" | "shroud" | "trample" | "vigilance" | "ward" | "rampage"
-| "cumulative upkeep" | "flanking" | "phasing" | "buyback" | "shadow" | "echo" | "horsemanship" | "fading" | "multi"? "kicker"
-| "flashback" | "madness" | "fear" | "mega"? "morph" | "amplify" | "provoke" | "storm" | "affinity" "for"? | "entwine" | "modular"
-| "sunburst" | "bushido" | "soulshift" | "ninjutsu" | "epic" | "convoke" | "dredge" | "transmute" | "bloodthirst" | "haunt"
-| "graft" | "recover" | "ripple" | "split second" | "suspend" | "vanishing" | "absorb" | "aura swap" | "delve" | "delve"
-| "fortify" | "frenzy" | "gravestorm" | "poisonous" | "transfigure" | "champion" | "changeling" | "evoke" | "hideaway" | "prowl"
-| "reinforce" | "conspire" | "persist" | "wither" | "retrace" | "devour" | "exalted" | "unearth" | "cascade" | "annihilator"
-| "level up" | "rebound" | "totem armor" | "infect" | "battle cry" | "living weapon" | "undying" | "miracle" | "soulbond"
-| "overload" | "scavenge" | "unleash" | "cipher" | "evolve" | "extort" | "fuse" | "bestow" | "tribute" | "dethrone"
-| "hidden agenda" | "outlast" | "prowess" | "dash" | "exploit" | "menace" | "renown" | "awaken" | "devoid" | "ingest"
-| "myriad" | "surge" | "skulk" | "emerge" | "escalate" | "melee" | "crew" | "fabricate" | "undaunted" | "improvise" | "aftermath"
-| "embalm" | "eternalize" | "afflict" | "ascend" | "assist" | "jump-start" | "mentor" | "afterlife" | "riot" | "spectacle"
-| "escape" | "mutate" | "oncore" | "boast" | "foretell" | "demonstrate" | ("day" | "night") "bound" | "disturb" | "decayed"
-| "cleave" | "training" | "compleated" | "reconfigure" | "blitz" | "casualty" | "enlist" | "read ahead" | "ravenous" | "squad"
-| "prototype" | "living metal" | "for mirrodin!" | "toxic" | "backup" | "bargain" | "disguise" | "plot" | "saddle"
-| "gift" | "offspring" | "impending" | "time travel"
+
+REGULARKEYWORDEDABILITY.15: "deathtouch"i | "defender"i | "double strike" | "enchant"i | "equip"i | "first strike" | "flash"i | "flying"i
+| "haste"i | "indestructible"i | "intimidate"i | "lifelink"i | "reach"i | "shroud"i | "trample"i | "vigilance"i | "ward"i | "rampage"i
+| "cumulative upkeep" | "flanking"i | "phasing"i | "buyback"i | "shadow"i | "echo"i | "horsemanship"i | "fading"i | "multi"i? "kicker"i
+| "flashback"i | "madness"i | "fear"i | "mega"i? "morph"i | "amplify"i | "provoke"i | "storm"i | "affinity"i "for"i? | "entwine"i | "modular"i
+| "sunburst"i | "bushido"i | "soulshift"i | "ninjutsu"i | "epic"i | "convoke"i | "dredge"i | "transmute"i | "bloodthirst"i | "haunt"i
+| "graft"i | "recover"i | "ripple"i | "split second" | "suspend"i | "vanishing"i | "absorb"i | "aura swap" | "delve"i | "delve"i
+| "fortify"i | "frenzy"i | "gravestorm"i | "poisonous"i | "transfigure"i | "champion"i | "changeling"i | "evoke"i | "hideaway"i | "prowl"i
+| "reinforce"i | "conspire"i | "persist"i | "wither"i | "retrace"i | "devour"i | "exalted"i | "unearth"i | "cascade"i | "annihilator"i
+| "level up" | "rebound"i | "totem armor" | "infect"i | "battle cry" | "living weapon" | "undying"i | "miracle"i | "soulbond"i
+| "overload"i | "scavenge"i | "unleash"i | "cipher"i | "evolve"i | "extort"i | "fuse"i | "bestow"i | "tribute"i | "dethrone"i
+| "hidden agenda" | "outlast"i | "prowess"i | "dash"i | "exploit"i | "menace"i | "renown"i | "awaken"i | "devoid"i | "ingest"i
+| "myriad"i | "surge"i | "skulk"i | "emerge"i | "escalate"i | "melee"i | "crew"i | "fabricate"i | "undaunted"i | "improvise"i | "aftermath"i
+| "embalm"i | "eternalize"i | "afflict"i | "ascend"i | "assist"i | "jump-start" | "mentor"i | "afterlife"i | "riot"i | "spectacle"i
+| "escape"i | "mutate"i | "oncore"i | "boast"i | "foretell"i | "demonstrate"i | ("day"i | "night"i) "bound"i | "disturb"i | "decayed"i
+| "cleave"i | "training"i | "compleated"i | "reconfigure"i | "blitz"i | "casualty"i | "enlist"i | "read ahead" | "ravenous"i | "squad"i
+| "prototype"i | "living metal" | "for mirrodin!" | "toxic"i | "backup"i | "bargain"i | "disguise"i | "plot"i | "saddle"i
+| "gift"i | "offspring"i | "impending"i | "time travel"
 
 
 //Below are hardcoded game terms used in declarations.
-PLAYER.100: "player" | "opponent" |  "teammate" | "team" | "controller" | "owner"
-PLAYERCHARACTERISTIC.100: "maximum hand size" | "life total"["s"] | "life" | "cards in hand"
-OBJECTCHARACTERISTIC.100: "card"? "name"["s"] | "mana value"["s"] | "color"["s"] | "color indicator"["s"] | "type"["s"] | "card type"["s"] | "subtype"["s"] | "supertype"["s"]
-| "rules text" | ("ability" | "abilities" ) | "power" | "toughness" | "base power" | "base toughness" | "loyalty" | "hand modifier" | "life modifier"
-ZONE.5: "battlefield" | "graveyard"["s"] | ("library"|"libraries") | "hand"["s"] | "stack" | "exile" | "command zone" | "outside the game" | "anywhere"
-TYPE.100: "planeswalker" | "conspiracy" | "creature" | "enchantment" | "instant" | "land" | "phenomenon" | "plane" | "artifact" | "scheme" | "sorcery" | "tribal" | "vanguard"
-SUBTYPESPELL.100: "arcane" | "trap" | "adventure"
-SUBTYPELAND.100: "desert" | "forest" | "gate" | "island" | "lair" | "locus"
-| "mine" | "mountain" | "plains" | "power-plant" | "swamp" | "tower" | "urza's"
-SUBTYPEARTIFACT.100: "clue" | "contraption" | "equipment" | "fortification" | "treasure" | "vehicle" | "food"
-SUBTYPEENCHANTMENT.100: "aura" | "cartouche" | "curse" | "saga" | "shrine" | "rune" | "shard" | "case" | "room"
-SUBTYPEPLANESWALKER.100: "ajani" | "aminatou" | "angrath" | "arlinn" | "ashiok" | "bolas" | "chandra"
-| "dack" | "daretti" | "domri" | "dovin" | "elspeth" | "estrid" | "freyalise" | "garruk" | "gideon"
-| "huatli" | "jace" | "jaya" | "karn" | "kaya" | "kiora" | "koth" | "liliana" | "nahiri" | "narset"
-| "nissa" | "nixilis" | "ral" | "rowan" | "saheeli" | "samut" | "sarkhan" | "sorin" | "tamiyo" | "teferi"
-| "tezzeret" | "tibalt" | "ugin" | "venser" | "vivien" | "vraska" | "will" | "windgrace" | "xenagos"
-| "yanggu" | "yanling"
+PLAYER.10: "player"i | "opponent"i |  "teammate"i | "team"i | "controller"i | "owner"i
+PLAYERCHARACTERISTIC.10: "maximum hand size" | "life total"["s"i] | "life"i | "cards in hand" | "deck"i | "priority"i
+OBJECTCHARACTERISTIC.10: "card"i? "name"i["s"i] | "mana value"["s"i] | "color"i["s"i] | "color indicator"["s"i] | "type"i["s"i] | "card type"["s"i] | "subtype"i["s"i] | "supertype"i["s"i]
+| "rules text" | ("ability"i | "abilities"i ) | "power"i | "toughness"i | "base power" | "base toughness" | "loyalty"i | "hand modifier" | "life modifier"
+ZONE.10: "battlefield"i | "graveyard"i["s"i] | ("library"i|"libraries"i) | "hand"i["s"i] | "stack"i | "exile"i | "command zone" | "outside the game" | "anywhere"i
+TYPE.10: "planeswalker"i | "conspiracy"i | "creature"i | "enchantment"i | "instant"i | "land"i | "phenomenon"i | "plane"i | "artifact"i | "scheme"i | "sorcery"i | "tribal"i | "vanguard"i
+SUBTYPESPELL.10: "arcane"i | "trap"i | "adventure"i
+SUBTYPELAND.10: "desert"i | "forest"i | "gate"i | "island"i | "lair"i | "locus"i
+| "mine"i | "mountain"i | "plains"i | "power-plant" | "swamp"i | "tower"i | "urza's"
+SUBTYPEARTIFACT.10: "clue"i | "contraption"i | "equipment"i | "fortification"i | "treasure"i | "vehicle"i | "food"i
+SUBTYPEENCHANTMENT.10: "aura"i | "cartouche"i | "curse"i | "saga"i | "shrine"i | "rune"i | "shard"i | "case"i | "room"i
+SUBTYPEPLANESWALKER.10: "ajani"i | "aminatou"i | "angrath"i | "arlinn"i | "ashiok"i | "bolas"i | "chandra"i
+| "dack"i | "daretti"i | "domri"i | "dovin"i | "elspeth"i | "estrid"i | "freyalise"i | "garruk"i | "gideon"i
+| "huatli"i | "jace"i | "jaya"i | "karn"i | "kaya"i | "kiora"i | "koth"i | "liliana"i | "nahiri"i | "narset"i
+| "nissa"i | "nixilis"i | "ral"i | "rowan"i | "saheeli"i | "samut"i | "sarkhan"i | "sorin"i | "tamiyo"i | "teferi"i
+| "tezzeret"i | "tibalt"i | "ugin"i | "venser"i | "vivien"i | "vraska"i | "will"i | "windgrace"i | "xenagos"i
+| "yanggu"i | "yanling"i
 //[TODO.5: SUBTYPECREATUREA and SUBTYPECREATUREB are split up because having such a long list of alternatives apparently]
 //[causes Lark to suffer a recursion depth error. We should see if this is fixable.]
-SUBTYPECREATUREA.100: "advisor" | "aetherborn" | ("ally"|"allies") | "angel" | "antelope" | "ape" | "archer" | "archon"
-| "artificer" | "assassin" | "assembly-worker" | "atog" | "aurochs" | "avatar" | "azra" | "badger"
-| "barbarian" | "basilisk" | "bat" | "bear" | "beast" | "beeble" | "berserker" | "bird" | "blinkmoth"
-| "boar" | "bringer" | "brushwagg" | "camarid" | "camel" | "caribou" | "carrier" | "cat" | "centaur"
-| "cephalid" | "chimera" | "citizen" | "cleric" | "cockatrice" | "construct" | "coward" | "crab"
-| "crocodile" | "cyclops" | "dauthi" | "demon" | "deserter" | "detective" | "devil" | "dinosaur" | "djinn" | "dragon"
-| "drake" | "dreadnought" | "drone" | "druid" | "dryad" | ("dwarf"|"dwarves") | "efreet" | "egg" | "elder" | "eldrazi"
-| "elemental" | "elephant" | ("elf"|"elves") | "elk" | "eye" | "faerie" | "ferret" | "fish" | "flagbearer" | "fox"
-SUBTYPECREATUREB.5: "frog" | "fungus" | "gargoyle" | "germ" | "giant" | "gnome" | "goat" | "goblin" | "god" | "golem" | "gorgon"
-| "graveborn" | "gremlin" | "griffin" | "hag" | "harpy" | "hellion" | "hippo" | "hippogriff" | "homarid" | "homunculus"
-| "horror" | "horse" | "hound" | "human" | "hydra" | "hyena" | "illusion" | "imp" | "incarnation" | "insect"
-| "jackal" | "jellyfish" | "juggernaut" | "kavu" | "kirin" | "kithkin" | "knight" | "kobold" | "kor" | "kraken"
-| "lamia" | "lammasu" | "leech" | "leviathan" | "lhurgoyf" | "licid" | "lizard" | "manticore" | "masticore"
-| ("mercenary"|"mercenaries") | "merfolk" | "metathran" | "minion" | "minotaur" | "mole" | "monger" | "mongoose" | "monk"
-| "monkey" | "moonfolk" | "mouse" | "mutant" | "myr" | "mystic" | "naga" | "nautilus" | "nephilim" | "nightmare"
-| "nightstalker" | "ninja" | "noggle" | "nomad" | "nymph" | ("octopus"|"octopuses") | "ogre" | "ooze" | "orb" | "orc"
-| "orgg" | "ouphe" | "ox" | "oyster" | "pangolin" | "pegasus" | "pentavite" | "pest" | "phelddagrif" | "phoenix"
-| "pilot" | "pincher" | "pirate" | "plant" | "praetor" | "prism" | "processor" | "rabbit" | "rat" | "rebel"
-| "reflection" | "rhino" | "rigger" | "rogue" | "sable" | "salamander" | "samurai" | "sand" | "saproling" | "satyr"
-| "scarecrow" | "scion" | "scorpion" | "scout" | "serf" | "serpent" | "servo" | "shade" | "shaman" | "shapeshifter"
-| "sheep" | "siren" | "skeleton" | "slith" | "sliver" | "slug" | "snake" | "soldier" | "soltari" | "spawn" | "specter"
-| "spellshaper" | "sphinx" | "spider" | "spike" | "spirit" | "splinter" | "sponge" | "squid" | "squirrel" | "starfish"
-| "surrakar" | "survivor" | "tetravite" | "thalakos" | "thopter" | "thrull" | "treefolk" | "trilobite" | "triskelavite"
-| "troll" | "turtle" | "unicorn" | "vampire" | "vedalken" | "viashino" | "volver" | "wall" | "warrior" | "warlock" | "weird"
-| ("werewolf"|"werewolves") | "whale" | "wizard" | ("wolf"|"wolves") | "wolverine" | "wombat" | "worm" | "wraith" | "wurm" | "yeti"
-| "zombie" | "zubera"
-SUBTYPEPLANAR.100: "alara" | "arkhos" | "azgol" | "belenon" | "bolas’s meditation realm"
-| "dominaria" | "equilor" | "ergamon" | "fabacin" | "innistrad" | "iquatana" | "ir"
-| "kaldheim" | "kamigawa" | "karsus" | "kephalai" | "kinshala" | "kolbahan" | "kyneth"
-| "lorwyn" | "luvion" | "mercadia" | "mirrodin" | "moag" | "mongseng" | "muraganda"
-| "new phyrexia" | "phyrexia" | "pyrulea" | "rabiah" | "rath" | "ravnica" | "regatha"
-| "segovia" | "serra’s realm" | "shadowmoor" | "shandalar" | "ulgrotha" | "valla"
-| "vryn" | "wildfire" | "xerex" | "zendikar"
+SUBTYPECREATUREA.10: "advisor"i | "aetherborn"i | ("ally"i|"allies"i) | "angel"i | "antelope"i | "ape"i | "archer"i | "archon"i
+| "artificer"i | "assassin"i | "assembly-worker" | "atog"i | "aurochs"i | "avatar"i | "azra"i | "badger"i
+| "barbarian"i | "basilisk"i | "bat"i | "bear"i | "beast"i | "beeble"i | "berserker"i | "bird"i | "blinkmoth"i
+| "boar"i | "bringer"i | "brushwagg"i | "camarid"i | "camel"i | "caribou"i | "carrier"i | "cat"i | "centaur"i
+| "cephalid"i | "chimera"i | "citizen"i | "cleric"i | "cockatrice"i | "construct"i | "coward"i | "crab"i
+| "crocodile"i | "cyclops"i | "dauthi"i | "demon"i | "deserter"i | "detective"i | "devil"i | "dinosaur"i | "djinn"i | "dragon"i
+| "drake"i | "dreadnought"i | "drone"i | "druid"i | "dryad"i | ("dwarf"i|"dwarves"i) | "efreet"i | "egg"i | "elder"i | "eldrazi"i
+| "elemental"i | "elephant"i | ("elf"i|"elves"i) | "elk"i | "eye"i | "faerie"i | "ferret"i | "fish"i | "flagbearer"i | "fox"i
+SUBTYPECREATUREB.5: "frog"i | "fungus"i | "gargoyle"i | "germ"i | "giant"i | "gnome"i | "goat"i | "goblin"i | "god"i | "golem"i | "gorgon"i
+| "graveborn"i | "gremlin"i | "griffin"i | "hag"i | "harpy"i | "hellion"i | "hippo"i | "hippogriff"i | "homarid"i | "homunculus"i
+| "horror"i | "horse"i | "hound"i | "human"i | "hydra"i | "hyena"i | "illusion"i | "imp"i | "incarnation"i | "insect"i
+| "jackal"i | "jellyfish"i | "juggernaut"i | "kavu"i | "kirin"i | "kithkin"i | "knight"i | "kobold"i | "kor"i | "kraken"i
+| "lamia"i | "lammasu"i | "leech"i | "leviathan"i | "lhurgoyf"i | "licid"i | "lizard"i | "manticore"i | "masticore"i
+| ("mercenary"i|"mercenaries"i) | "merfolk"i | "metathran"i | "minion"i | "minotaur"i | "mole"i | "monger"i | "mongoose"i | "monk"i
+| "monkey"i | "moonfolk"i | "mouse"i | "mutant"i | "myr"i | "mystic"i | "naga"i | "nautilus"i | "nephilim"i | "nightmare"i
+| "nightstalker"i | "ninja"i | "noggle"i | "nomad"i | "nymph"i | ("octopus"i|"octopuses"i) | "ogre"i | "ooze"i | "orb"i | "orc"i
+| "orgg"i | "ouphe"i | "ox"i | "oyster"i | "pangolin"i | "pegasus"i | "pentavite"i | "pest"i | "phelddagrif"i | "phoenix"i
+| "pilot"i | "pincher"i | "pirate"i | "plant"i | "praetor"i | "prism"i | "processor"i | "rabbit"i | "rat"i | "rebel"i
+| "reflection"i | "rhino"i | "rigger"i | "rogue"i | "sable"i | "salamander"i | "samurai"i | "sand"i | "saproling"i | "satyr"i
+| "scarecrow"i | "scion"i | "scorpion"i | "scout"i | "serf"i | "serpent"i | "servo"i | "shade"i | "shaman"i | "shapeshifter"i
+| "sheep"i | "siren"i | "skeleton"i | "slith"i | "sliver"i | "slug"i | "snake"i | "soldier"i | "soltari"i | "spawn"i | "specter"i
+| "spellshaper"i | "sphinx"i | "spider"i | "spike"i | "spirit"i | "splinter"i | "sponge"i | "squid"i | "squirrel"i | "starfish"i
+| "surrakar"i | "survivor"i | "tetravite"i | "thalakos"i | "thopter"i | "thrull"i | "treefolk"i | "trilobite"i | "triskelavite"i
+| "troll"i | "turtle"i | "unicorn"i | "vampire"i | "vedalken"i | "viashino"i | "volver"i | "wall"i | "warrior"i | "warlock"i | "weird"i
+| ("werewolf"i|"werewolves"i) | "whale"i | "wizard"i | ("wolf"i|"wolves"i) | "wolverine"i | "wombat"i | "worm"i | "wraith"i | "wurm"i | "yeti"i
+| "zombie"i | "zubera"i
+SUBTYPEPLANAR.10: "alara"i | "arkhos"i | "azgol"i | "belenon"i | "bolas’s meditation realm"
+| "dominaria"i | "equilor"i | "ergamon"i | "fabacin"i | "innistrad"i | "iquatana"i | "ir"i
+| "kaldheim"i | "kamigawa"i | "karsus"i | "kephalai"i | "kinshala"i | "kolbahan"i | "kyneth"i
+| "lorwyn"i | "luvion"i | "mercadia"i | "mirrodin"i | "moag"i | "mongseng"i | "muraganda"i
+| "new phyrexia" | "phyrexia"i | "pyrulea"i | "rabiah"i | "rath"i | "ravnica"i | "regatha"i
+| "segovia"i | "serra’s realm" | "shadowmoor"i | "shandalar"i | "ulgrotha"i | "valla"i
+| "vryn"i | "wildfire"i | "xerex"i | "zendikar"i
 subtype.5: SUBTYPESPELL | SUBTYPELAND | SUBTYPEARTIFACT | SUBTYPEENCHANTMENT | SUBTYPEPLANESWALKER | SUBTYPECREATUREA | SUBTYPECREATUREB | SUBTYPEPLANAR
-SUPERTYPE.5: "basic" | "legendary" | "ongoing" | "snow" | "world"
-DAMAGETYPE.100: "damage" | "combat damage" | "excess damage"
-ABILITYMODIFIER.5: "mana" | "loyalty"
-RELATIVEMODIFIER.100: "next" | "additional" | "extra" | "top" | "bottom" | "new" //Example(s): "an *additional* +1/+1 counter", "take an *extra* turn"
-playerstatusmodifier.5: negationofterm? "active" | "defending" //Example(s): "the *active* player", "the *defending* player"
-KEYWORDSTATUSMODIFIER.5: "paired" | "kicked" | "face-up" | "face-down" //TODO.5: This will need to be generalized more.
-| "fortified" | "monstrous"
+SUPERTYPE.5: "basic"i | "legendary"i | "ongoing"i | "snow"i | "world"i
+DAMAGETYPE.10: "damage"i | "combat damage" | "excess damage"
+ABILITYMODIFIER.5: "mana"i | "loyalty"i | "intrinsic"i //Example(s): "*mana* abilities", "*loyalty* abilities", "this permanent has the *intrinsic* mana ability '{T}: Add {W}.'"
+RELATIVEMODIFIER.10: "next"i | "additional"i | "extra"i | "top"i | "bottom"i | "new"i //Example(s): "an *additional* +1/+1 counter", "take an *extra* turn"
+playerstatusmodifier.5: negationofterm? "active"i | "defending"i //Example(s): "the *active* player", "the *defending* player"
+KEYWORDSTATUSMODIFIER.5: "paired"i | "kicked"i | "face-up" | "face-down" //TODO.5: This will need to be generalized more.
+| "fortified"i | "monstrous"i
 effectstatusmodifier.5: reservedverb_pastonly | reservedverb_participleorgerundonly
-QUALIFIER.100: "card" | "permanent" | "source" | "spell" | "token" | "effect"
-COLOR.5: "white" | "blue" | "black" | "red" | "green" | "monocolored" | "multicolored" | "colorless"
-PHASE.100: BEGINNINGPHASE | MAINPHASE | COMBATPHASE | ENDINGPHASE | PHASEGENERIC
+QUALIFIER.10: "card"i | "permanent"i | "source"i | "spell"i | "token"i | "effect"i
+COLOR.5: "white"i | "blue"i | "black"i | "red"i | "green"i | "monocolored"i | "multicolored"i | "colorless"i
+PHASE.10: BEGINNINGPHASE | MAINPHASE | COMBATPHASE | ENDINGPHASE | PHASEGENERIC
 BEGINNINGPHASE.5: "beginning phrase"
-MAINPHASE.5: ("precombat" | "postcombat")? "main phase"
-COMBATPHASE.5: "combat" "phase"?
+MAINPHASE.5: ("precombat"i | "postcombat"i)? "main phase"
+COMBATPHASE.5: "combat"i "phase"i?
 ENDINGPHASE.5: "ending phase"
-PHASEGENERIC.5: "phase"["s"]
-STEP.100: UNTAPSTEP | UPKEEPSTEP | DRAWSTEP | BEGINNINGOFCOMBATSTEP
+PHASEGENERIC.5: "phase"i["s"i]
+STEP.10: UNTAPSTEP | UPKEEPSTEP | DRAWSTEP | BEGINNINGOFCOMBATSTEP
 | DECLAREATTACKERSSTEP | DECLAREBLOCKERSSTEP | COMBATDAMAGESTEP | ENDSTEP | CLEANUPSTEP | STEPGENERIC
 UNTAPSTEP.5: "untap step"
-UPKEEPSTEP.5: "upkeep" "step"?
+UPKEEPSTEP.5: "upkeep"i "step"i?
 DRAWSTEP.5: "draw step"
-BEGINNINGOFCOMBATSTEP.5: "beginning of combat" "step"?
+BEGINNINGOFCOMBATSTEP.5: "beginning of combat" "step"i?
 DECLAREATTACKERSSTEP.5: "declare attackers step"
 COMBATDAMAGESTEP.5: "combat damage step"
 DECLAREBLOCKERSSTEP.5: "declare blockers step"
 ENDSTEP.5: "end step"
 CLEANUPSTEP.5: "cleanup step"
-STEPGENERIC.5: "step"
-TURN.5: "turn"
-GAME.5: "game"
+STEPGENERIC.5: "step"i
+TURN.5: "turn"i
+GAME.5: "game"i
 
 
 //For a list of all the counter types in Magic to date, see here: https://mtg.fandom.com/wiki/Counter_(marker)/Full_List.
-countertype.5: "COUNTERTYPE" | ARBITRARYWORD//TODO
-
-
+countertype.5: "COUNTERTYPE"i | ARBITRARYWORD//TODO
 ARBITRARYWORD.0: WORD //TODO
 
 
@@ -291,16 +284,14 @@ manamarker_colorless.5: "C"i -> colorlessmarker
 manamarker_x.5: "X"i -> xmarker
 
 //Rules for representing numeric values and math operations
-valueterm.5: NUMBER  | CARDINAL ("time"["s"])?| ORDINAL | FREQUENCY | VARIABLEVALUE | valueoperation
-FREQUENCY.5: "once" | "twice"
-CARDINAL.100: "one" | "two" | "three" | "four" | "five" | "six" | "seven" | "eight" | "nine" | "ten"
-| "eleven" | "twelve" | "thirteen" | "fourteen" | "fifteen" | "sixteen" | "seventeen" | "eighteen" | "nineteen" | "twenty" //[TODO]
-ORDINAL.5: "first" | "second" | "third" | "fourth" | "fifth" | "sixth" | "seventh" | "eighth" | "ninth" | "tenth" //[TODO]
-VARIABLEVALUE.5: "x" | "*"
-NUMBERPROPERTY.5: "odd" | "even" | "prime"
+valueterm.5: NUMBER  | CARDINAL ("time"i["s"i])?| ORDINAL | FREQUENCY | VARIABLEVALUE | valueoperation
+FREQUENCY.5: "once"i | "twice"i
+CARDINAL.10: "one"i | "two"i | "three"i | "four"i | "five"i | "six"i | "seven"i | "eight"i | "nine"i | "ten"i
+| "eleven"i | "twelve"i | "thirteen"i | "fourteen"i | "fifteen"i | "sixteen"i | "seventeen"i | "eighteen"i | "nineteen"i | "twenty"i //[TODO]
+ORDINAL.5: "first"i | "second"i | "third"i | "fourth"i | "fifth"i | "sixth"i | "seventh"i | "eighth"i | "ninth"i | "tenth"i //[TODO]
+VARIABLEVALUE.5: "x"i | "*"
+NUMBERPROPERTY.5: "odd"i | "even"i | "prime"i
 
-//[NOTE.5: Both Scryfall and Mtgjson use a long dash, not a short dash, to indicate a minus on a planeswalker ability]
-//PWMINUS.5: "−"
 PLUS.5: "+"
 MINUS.5: "-"
 
@@ -313,10 +304,10 @@ valuecomparisonoperation.5: "equal to" valueterm // ==
     | "less than" "or equal to"? valueterm // < ; <=
     | "greater than" "or equal to"? valueterm // > ; >=
     | "up to" valueterm // <=
-    | valueterm "or" ("less" | "fewer") // <=
-    | valueterm "or" ("greater" | "more") // >=
+    | valueterm CONJUNCTION_OR ("less"i | "fewer"i) // <=
+    | valueterm CONJUNCTION_OR ("greater"i | "more"i) // >=
 valuemathoperation.5: ("that much" | "that many") //Example: "create *that many* treasure tokens", "draw twice *that many* cards"
-| valueterm "rounded" ("up" | "down")
-| valueterm "divided" ("evenly" | "as you choose")
-| valueterm "plus" valueterm //Example: "the number of Elves you control *plus* the number of Elf cards in your graveyard."
-| valueterm "minus" valueterm //Example: "the number of cards in your hand *minus* the number of cards in that player’s hand."
+| valueterm "rounded"i ("up"i | "down"i)
+| valueterm "divided"i ("evenly"i | "as you choose")
+| valueterm "plus"i valueterm //Example: "the number of Elves you control *plus* the number of Elf cards in your graveyard."
+| valueterm "minus"i valueterm //Example: "the number of cards in your hand *minus* the number of cards in that player’s hand."
