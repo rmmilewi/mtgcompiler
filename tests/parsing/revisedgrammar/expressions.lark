@@ -6,38 +6,37 @@
 expression.5: beingexpression | reservedverbexpression
 !expressionordeclaration.5: expression | declaration
 
-beingexpression.5: expressionordeclaration ("is" | "was" | "are" "each"?) ("still"|"not")? expressionordeclaration -> isexpression
-| expressionordeclaration ("has"|"have"|"had") expressionordeclaration -> hasexpression
-| expressionordeclaration "can" "not"? expressionordeclaration -> canexpression
-| expressionordeclaration "become"["s"] expressionordeclaration -> becomesexpression
-| expressionordeclaration "may" expressionordeclaration -> mayexpression
-| expressionordeclaration "would" expressionordeclaration -> wouldexpression
-| expressionordeclaration (expressionordeclaration? ("do"["es"]? | "did") "not"? expressionordeclaration? | "doing" "so" ) -> doesexpression
+beingexpression.5: expressionordeclaration? ("is" | "was" | "are" "each"?) ("still"|"not")? expressionordeclaration -> isexpression
+| expressionordeclaration? ("has"|"have"|"had") expressionordeclaration -> hasexpression
+| expressionordeclaration? "can" "not"? expressionordeclaration -> canexpression
+| expressionordeclaration? "become"["s"] expressionordeclaration -> becomesexpression
+| expressionordeclaration? "may" expressionordeclaration -> mayexpression
+| expressionordeclaration? "would" expressionordeclaration -> wouldexpression
+| expressionordeclaration? (expressionordeclaration? ("do"["es"]? | "did") "not"? expressionordeclaration? | "doing" "so" ) -> doesexpression
 | "be" expressionordeclaration -> beexpression //Example(s): "*be* attacked", "*be* sacrificed"
 
-reservedverbexpression.5: reservedverbsubject+ reservedverbverb reservedverbobject? reservedverbmodifiers* //Example(s): "target player sacrifices a creature"
+reservedverbexpression.5: reservedverbsubjects reservedverbverb reservedverbobject? reservedverbmodifiers* //Example(s): "target player sacrifices a creature"
 | reservedverbverb reservedverbobject reservedverbmodifiers* //Example(s): "Destroy target creature"
 | reservedverbverb_simplepresentonly //Example(s): "Proliferate", "Populate"
+reservedverbsubjects.5: singledeclaration | compounddeclaration | singledeclaration pronounonlyreferencedeclaration
 
-
-reservedverbsubject.5: declaration //TODO: Should this be "expressionordeclaration" or only declarations?
 reservedverbverb.5: reservedverbadverb? (reservedverb_presentonly | reservedverb_pastonly) reservedverbadverb?
 reservedverbverb_simplepresentonly.5: reservedverb_presentonly
 reservedverbadverb.5: "secretly" //Example(s): "*secretly* choose Human, Merfolk, or Goblin."
 | "continuously" //Example(s): "controlled *continuously* since the beginning of the turn",
 | "again" //Example(s): Whenever you discover, discover *again* for the same value.
+| "at random" //Example(s): "Return a card at random from your graveyard to your hand" //TODO: "this doesn't work with Ghoulraiser.
 reservedverbobject.5: declaration
 reservedverbmodifiers.5: EXPRESSIONPREPOSITION expressionordeclaration | decorateddeclaration
 EXPRESSIONPREPOSITION.10: ONLY? (PREPOSITION_FROM //Example(s): "return target creature *from* your graveyard to the battlefield"
 | PREPOSITION_INTO //Example(s): "put that card *into* your graveyard"
 | PREPOSITION_ONTO //Example(s): "put that card *onto* the battlefield"
 | PREPOSITION_TO //Examples(s): "this spell costs {1} less *to* cast for each [...]", "~ deals 3 damage *to* target creature"
-| PREPOSITION_OF) //Example(s): "gain control *of* target creature"
+| PREPOSITION_OF //Example(s): "gain control *of* target creature"
+| PREPOSITION_HOW) //Example(s): "you choose which creatures block this turn and *how* those creatures block"
 
-//"on" "from" "to" "without"
-//"as though" "as an additional cost to"
-//"able" (see ableexpression)
-//"a spell *targets* a player"
+//TODO: "able"
+
 
 RESERVEDVERB.10: VERB_ABANDON | VERB_ACTIVATE | VERB_ADAPT | VERB_ADD | VERB_AMASS | VERB_ASSIGN | VERB_ATTACH | VERB_ATTACK | VERB_BLOCK | VERB_BOLSTER | VERB_CAST
 | VERB_CAUSE | VERB_CHANGE | VERB_CHOOSE | VERB_CLASH | VERB_CLOAK | VERB_COLLECT | VERB_CONNIVE | VERB_CONTROL | VERB_COPY | VERB_COUNTER | VERB_CREATE | VERB_CYCLE

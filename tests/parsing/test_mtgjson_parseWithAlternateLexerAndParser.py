@@ -1021,7 +1021,16 @@ class TestGrammarAndParser(unittest.TestCase):
 
         cardsToTest = [
             #"when ~ enters, exile target nonland permanent an opponent controls until ~ leaves the battlefield.\nyour opponents can not cast spells with the same name as the exiled card.",  # Ixalan's binding
+            "Roll a d6, a d8, and a d12.",  # coins and dice
+            "Roll a d6 and flip a coin.",  # coins and dice
+            "Choose an elf, goblin, and merfolk.",
+            "Roll a d6 and a d8.",
+            "Sacrifice all blue creatures, black creatures, and white creatures.",
+            "Sacrifice all blue creatures and black creatures, then draw a card.",
+            "Planeswalkers' loyalty abilities you activate cost an additional [+1] to activate.", #Carth the Lion
             "create a 1/1 green elf creature token under your control. gain control of all elves.", #control as noun test
+            "−1: target player draws a card.",
+            "{t}: put a +1/+1 counter on each artifact creature you control.", #Steel Overseer
             "unless its controller pays {2}, counter target spell.",  # Quench (inverted)
             "counter target spell unless its controller pays {2}.",  # Quench
             "{t}: draw a card, then discard a card.",  # Merfolk Looter
@@ -1046,14 +1055,11 @@ class TestGrammarAndParser(unittest.TestCase):
             "reach\nwhenever ~ or another cat you control enters, you may destroy target artifact or enchantment.", #Qasali Slingers
             "target nonattacking creature gains reach and deathtouch until end of turn. untap it.", #Ruthless Instincts
             "destroy target nonblack creature.",  # Doom Blade
-            "sacrifice all blue creatures, black creatures, and white creatures.",
             "draw two cards.",  # Divination
             "{t}, sacrifice ~: add three mana of any one color.",  # Black Lotus
-            "−1: target player draws a card.",
             "+2: each player draws a card.\n+1: target player draws a card.\n+10: target player puts the top twenty cards of their library into their graveyard.", # Jace Beleren
             "for each land you control, you gain 1 life.", #Bountiful Harvest
             "{1}{u}{r}: return ~ to its owner's hand.\ncascade (when you cast this spell, exile cards from the top of your library until you exile a nonland card that costs less. You may cast it without paying its mana cost. Put the exiled cards on the bottom in a random order.)", #Etherium-Horn Sorcerer
-            "{t}: put a +1/+1 counter on each artifact creature you control.",
             "when ~ enters, mill three cards.\nwhen ~ dies, you may exile it. when you do, return target creature card from your graveyard to your hand.",
             "flying, vigilance, lifelink", #Aerial Responder
             "enchant creature\nenchanted creature is a treefolk with base power and toughness 0/4 and loses all abilities.", #Lignify,

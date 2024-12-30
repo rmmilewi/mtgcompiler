@@ -11,6 +11,7 @@ singledeclaration.5: decorateddeclaration | keywordabilitydeclaration | nakeddec
 decorateddeclaration.5: regulardeclaration | referencedeclaration
 regulardeclaration.5: declarationdecorator+ declarationdefinition
 referencedeclaration.5: referencedecorator+ declarationdefinition | personalpronounreferencedefinition | namereferencedefinition
+pronounonlyreferencedeclaration.5: personalpronounreferencedefinition
 nakeddeclaration: declarationdefinition
 
 //Reference definition for third-person personal pronoun references.
@@ -28,7 +29,7 @@ NAMEREFSYMBOL.5: "~" | "~f"
 //Reference decorators help clarify what is being talked about. Note that reference decorators can have nested
 //references to other defined things (like "your *opponent's* hand").
 //Example(s): "Destroy target creature. *Its* controller [...]" and "*its owner’s* hand." "*that creature’s* toughness."
-referencedecorator.5: THIRDPERSONIMPERSONALREFERENCE | POSSESSIVEPRONOUNREFERNCE | HERAMBIGUOUSREFERENCE
+referencedecorator.5: THIRDPERSONIMPERSONALREFERENCE | POSSESSIVEPRONOUNREFERNCE | HERAMBIGUOUSREFERENCE | "which"
 THIRDPERSONIMPERSONALREFERENCE.5: ("that"i | "those"i) | ("this"i|"these"i)
 POSSESSIVEPRONOUNREFERNCE.150: "its"i | "your"i | "their"i | "his"i //Note.5: "her"i is handled separately to capture the ambiguity.
 
@@ -51,7 +52,8 @@ declarationdecorator.5: "each"i -> eachdecorator
 declarationdefinition.5: declarationdefinition_standardorder //| declarationdefinition_nonstandardorder
 nonnesteddeclarationterm : (valueterm | manaterm | characteristicterm
 | typeterm | colorterm | modifierterm | qualifierterm | timeterm | damageterm | playerterm
-| powertoughnessterm | loyaltycostterm | counterterm | nameterm | variableterm | zoneterm | anytargetterm  | tapuntapsymbol | specialterm)
+| powertoughnessterm | loyaltycostterm | counterterm | nameterm | variableterm | zoneterm | anytargetterm  | tapuntapsymbol | specialterm
+| cointerm | diceterm )
 nesteddeclarationterm.5: possessiveclarationreference | prepositionalattacheddeclaration
 
 //a 1/1 white Human creature token
@@ -66,7 +68,7 @@ nesteddeclarationterm.5: possessiveclarationreference | prepositionalattacheddec
 //a blue, black, or red spell
 //Noninstant, nonsorcery cards
 //each foretold card you own in exile
-declarationdefinition_standardorder.10: possessiveclarationreference* valueterm? powertoughnessterm? modifierterm* colorterm* (damageterm | playerterm | typeterm | loyaltycostterm | tapuntapsymbol | zoneterm | timeterm | manaterm | characteristicterm | qualifierterm)+ prepositionalattacheddeclaration*
+declarationdefinition_standardorder.10: possessiveclarationreference* valueterm? powertoughnessterm? modifierterm* colorterm* (damageterm | playerterm | typeterm | loyaltycostterm | tapuntapsymbol | zoneterm | timeterm | manaterm | characteristicterm | qualifierterm | cointerm | diceterm)+ prepositionalattacheddeclaration*
 | anytargetterm
 | valueterm? counterterm
 | nameterm
@@ -109,13 +111,18 @@ timeterm.5: PHASE | STEP | TURN | GAME
 playerterm.5: PLAYER["s"i]
 zoneterm.5: ZONE
 powertoughnessterm.5: valueterm "/" valueterm
-loyaltycostterm.5: (PLUS | MINUS) valueterm
+
+//NOTE: Planeswalker loyalty costs are sometimes written with brackets when its not a cost (like with Carth the Lion),
+//but without brackets on planeswalker cards.
+loyaltycostterm.5: "[" ((SIGNED_INT) | ((PLUS | MINUS) variableterm)) "]" | ((SIGNED_INT) | ((PLUS | MINUS) variableterm))
 counterterm.5: (countertype | powertoughnessterm)  "counter"i["s"i]
 characteristicterm.5: negationofterm? (OBJECTCHARACTERISTIC | PLAYERCHARACTERISTIC)
 nameterm.5: "OBJECTNAME"i | ARBITRARYWORD ","? ARBITRARYWORD* //TODO: Remove "OBJECTNAME" placeholder
 damageterm.5: negationofterm? DAMAGETYPE
 colorterm.5: negationofterm? COLOR
 
+//Rules for terms that don't stand by themselves but refer to something else on the card, like "this *way* (the way just described)"
+//Or "if *able* (able to block)".
 variableterm.5: "beginning"i //Example: "the *beginning* of your next upkeep"
 | "both"i //Example(s): "you may choose *both*"
 | "choice"i["s"i] //Example(s): "their *choice*", "of your *choice*"
@@ -128,9 +135,14 @@ variableterm.5: "beginning"i //Example: "the *beginning* of your next upkeep"
 | "vote"i["s"i] //Example(s): "each *vote* they receive"
 | "way"i //Example: "Creatures destroyed this *way* can't be regenerated."
 | ("copy"i | "copies"i) //Example(s): "You may have Shapeshifters you control become *copies* of that creature", "choose new targets for the *copy*"
+| "able" //Example(s): "Target creature blocks this turn if *able*"
 | NUMBERPROPERTY? "number"i["s"i] //Example(s): "the *number* of cards you drew this term", "a *prime number* of lands"
 anytargetterm.5: "any target"i //Special nullary variant like "~ deals three damage to *any target*"
 
+//Some cards instruct you to roll dice and/or flip coins. These rules cover those declarations.
+cointerm.5: "coin"i["s"i] //Example: "flip three *coins*"
+diceterm.5: DIE //Example: "roll a *d20*", "roll 3*d6*"
+DIE.5: "d" INT
 
 //Keyworded ability declaration
 //Regular keyworded abilities are those that are of the form "keyword (cost/description"?.
@@ -264,11 +276,11 @@ ARBITRARYWORD.0: WORD //TODO
 manaterm.5: manasymbol
 manasymbol.5: "{" manamarkerseq "}"
 manamarkerseq.5: manamarker_color -> regularmanasymbol
-| NUMBER -> genericmanasymbol
+| INT -> genericmanasymbol
 | manamarker_halfmana manamarker_color -> halfmanasymbol
 | manamarker_color "/" manamarker_phyrexian -> phyrexianmanasymbol
 | manamarker_color "/" manamarker_color -> hybridmanasymbol
-| NUMBER "/" manamarker_color -> alternate2manasymbol
+| INT "/" manamarker_color -> alternate2manasymbol
 | manamarker_snow -> snowmanasymbol
 | manamarker_colorless -> colorlessmanasymbol
 | manamarker_x -> xmanasymbol
@@ -283,21 +295,19 @@ manamarker_phyrexian.5: "P"i -> phyrexianmarker
 manamarker_colorless.5: "C"i -> colorlessmarker
 manamarker_x.5: "X"i -> xmarker
 
-//Rules for representing numeric values and math operations
-valueterm.5: NUMBER  | CARDINAL ("time"i["s"i])?| ORDINAL | FREQUENCY | VARIABLEVALUE | valueoperation
-FREQUENCY.5: "once"i | "twice"i
-CARDINAL.10: "one"i | "two"i | "three"i | "four"i | "five"i | "six"i | "seven"i | "eight"i | "nine"i | "ten"i
-| "eleven"i | "twelve"i | "thirteen"i | "fourteen"i | "fifteen"i | "sixteen"i | "seventeen"i | "eighteen"i | "nineteen"i | "twenty"i //[TODO]
-ORDINAL.5: "first"i | "second"i | "third"i | "fourth"i | "fifth"i | "sixth"i | "seventh"i | "eighth"i | "ninth"i | "tenth"i //[TODO]
-VARIABLEVALUE.5: "x"i | "*"
-NUMBERPROPERTY.5: "odd"i | "even"i | "prime"i
-
-PLUS.5: "+"
-MINUS.5: "-"
-
+//Rules for the tap and untap symbols
 tapuntapsymbol.5: TAPSYMBOL | UNTAPSYMBOL
 TAPSYMBOL.5: "{T}"i
 UNTAPSYMBOL.5: "{Q}"i
+
+//Rules for representing numeric values and math operations
+valueterm.5: INT | SIGNED_INT  | CARDINAL ("time"i["s"i])?| ORDINAL | FREQUENCY | VARIABLEVALUE | valueoperation
+FREQUENCY.5: "once"i | "twice"i
+CARDINAL.10: "one"i | "two"i | "three"i | "four"i | "five"i | "six"i | "seven"i | "eight"i | "nine"i | "ten"i
+| "eleven"i | "twelve"i | "thirteen"i | "fourteen"i | "fifteen"i | "sixteen"i | "seventeen"i | "eighteen"i | "nineteen"i | "twenty"i //TODO: Extend this list.
+ORDINAL.5: "first"i | "second"i | "third"i | "fourth"i | "fifth"i | "sixth"i | "seventh"i | "eighth"i | "ninth"i | "tenth"i //TODO: Extend this list.
+VARIABLEVALUE.5: "x"i | "*"
+NUMBERPROPERTY.5: "odd"i | "even"i | "prime"i
 
 valueoperation.5: valuecomparisonoperation | valuemathoperation
 valuecomparisonoperation.5: "equal to" valueterm // ==
