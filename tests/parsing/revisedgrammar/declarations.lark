@@ -10,9 +10,11 @@ compounddeclaration.5:  singledeclaration ("," singledeclaration ",")* CONJUNCTI
 singledeclaration.5: decorateddeclaration | keywordabilitydeclaration | nakeddeclaration
 decorateddeclaration.5: regulardeclaration | referencedeclaration
 regulardeclaration.5: declarationdecorator+ declarationdefinition
-referencedeclaration.5: referencedecorator+ declarationdefinition | personalpronounreferencedefinition | namereferencedefinition
+referencedeclaration.5: referencedecorator+ declarationdefinition
 pronounonlyreferencedeclaration.5: personalpronounreferencedefinition
-nakeddeclaration: declarationdefinition
+nakeddeclaration: nakedreferencedeclaration | nakedregulardeclaration //"Naked" declarations are not preceded by decorators (e.g., articles).
+nakedreferencedeclaration: personalpronounreferencedefinition | namereferencedefinition
+nakedregulardeclaration: declarationdefinition
 
 //Reference definition for third-person personal pronoun references.
 //Example(s): "*they* can’t be regenerated." and "Sarkhan the Mad deals damage to *himself*"
@@ -114,8 +116,9 @@ powertoughnessterm.5: valueterm "/" valueterm
 
 //NOTE: Planeswalker loyalty costs are sometimes written with brackets when its not a cost (like with Carth the Lion),
 //but without brackets on planeswalker cards.
-loyaltycostterm.5: "[" ((SIGNED_INT) | ((PLUS | MINUS) variableterm)) "]" | ((SIGNED_INT) | ((PLUS | MINUS) variableterm))
-counterterm.5: (countertype | powertoughnessterm)  "counter"i["s"i]
+loyaltycostterm.5: "[" ((SIGNED_INT | INT) | ((PLUS | MINUS) VARIABLEVALUE)) "]" | ((SIGNED_INT | INT) | ((PLUS | MINUS) VARIABLEVALUE))
+counterterm.5: (countertype | powertoughnessterm) COUNTERASNOUN
+COUNTERASNOUN.5: COUNTERPRESENT
 characteristicterm.5: negationofterm? (OBJECTCHARACTERISTIC | PLAYERCHARACTERISTIC)
 nameterm.5: "OBJECTNAME"i | ARBITRARYWORD ","? ARBITRARYWORD* //TODO: Remove "OBJECTNAME" placeholder
 damageterm.5: negationofterm? DAMAGETYPE
@@ -185,7 +188,7 @@ PLAYER.10: "player"i | "opponent"i |  "teammate"i | "team"i | "controller"i | "o
 PLAYERCHARACTERISTIC.10: "maximum hand size" | "life total"["s"i] | "life"i | "cards in hand" | "deck"i | "priority"i
 OBJECTCHARACTERISTIC.10: "card"i? "name"i["s"i] | "mana value"["s"i] | "color"i["s"i] | "color indicator"["s"i] | "type"i["s"i] | "card type"["s"i] | "subtype"i["s"i] | "supertype"i["s"i]
 | "rules text" | ("ability"i | "abilities"i ) | "power"i | "toughness"i | "base power" | "base toughness" | "loyalty"i | "hand modifier" | "life modifier"
-ZONE.10: "battlefield"i | "graveyard"i["s"i] | ("library"i|"libraries"i) | "hand"i["s"i] | "stack"i | "exile"i | "command zone" | "outside the game" | "anywhere"i
+ZONE.10: "battlefield"i | "graveyard"i["s"i] | ("library"i|"libraries"i) | "hand"i["s"i] | "stack"i | EXILEPRESENT | "command zone" | "outside the game" | "anywhere"i
 TYPE.10: "planeswalker"i | "conspiracy"i | "creature"i | "enchantment"i | "instant"i | "land"i | "phenomenon"i | "plane"i | "artifact"i | "scheme"i | "sorcery"i | "tribal"i | "vanguard"i
 SUBTYPESPELL.10: "arcane"i | "trap"i | "adventure"i
 SUBTYPELAND.10: "desert"i | "forest"i | "gate"i | "island"i | "lair"i | "locus"i

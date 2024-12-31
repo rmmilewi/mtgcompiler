@@ -3,39 +3,41 @@
 //or other expressions (like who deals the damage and to whom is the damage dealt). Meanwhile, statements can contain expressions, like the
 //if statement "if you control a modified creature, draw a card" is equivalent to (if the expression "you control a modified creature" evaluates
 //to true, make the expression "draw a card" happen.
-expression.5: beingexpression | reservedverbexpression
-!expressionordeclaration.5: expression | declaration
 
-beingexpression.5: expressionordeclaration? ("is" | "was" | "are" "each"?) ("still"|"not")? expressionordeclaration -> isexpression
-| expressionordeclaration? ("has"|"have"|"had") expressionordeclaration -> hasexpression
-| expressionordeclaration? "can" "not"? expressionordeclaration -> canexpression
-| expressionordeclaration? "become"["s"] expressionordeclaration -> becomesexpression
-| expressionordeclaration? "may" expressionordeclaration -> mayexpression
-| expressionordeclaration? "would" expressionordeclaration -> wouldexpression
-| expressionordeclaration? (expressionordeclaration? ("do"["es"]? | "did") "not"? expressionordeclaration? | "doing" "so" ) -> doesexpression
-| "be" expressionordeclaration -> beexpression //Example(s): "*be* attacked", "*be* sacrificed"
+TEST.100: "TEST"
+expression.5: simpleverbexpression | reservedverbexpression
+expressionordeclaration.5: expression | declaration
 
-reservedverbexpression.5: reservedverbsubjects reservedverbverb reservedverbobject? reservedverbmodifiers* //Example(s): "target player sacrifices a creature"
+simpleverbexpression.5: expressionordeclaration? ( ((BEPRESENT | BEPAST | BEFUTURESUBJUNCTIVE) ("not")? expressionordeclaration) | (("not")? (BEPARTICIPLEORGERUND | BEPLAIN) expressionordeclaration) ) -> beexpression
+| expressionordeclaration? VERB_HAVE ("not")? expressionordeclaration -> haveexpression
+| expressionordeclaration? VERB_CAN ("not")? expressionordeclaration -> canexpression
+| expressionordeclaration? VERB_BECOME expressionordeclaration -> becomeexpression
+| expressionordeclaration? (VERB_MAY | VERB_MUST) ("not")? expressionordeclaration -> maymustexpression
+| expressionordeclaration? (expressionordeclaration? VERB_DO ("not")? expressionordeclaration?) -> doexpression
+
+reservedverbexpression.5: reservedverbsubjects reservedverbverb (reservedverbprepositionmodifiers* | reservedverbobject reservedverbmodifiers*) //Example(s): "target player sacrifices a creature"
 | reservedverbverb reservedverbobject reservedverbmodifiers* //Example(s): "Destroy target creature"
-| reservedverbverb_simplepresentonly //Example(s): "Proliferate", "Populate"
+| reservedverbverb_verbonly //Example(s): "Proliferate", "Populate", "they can not be *attacked*"
 reservedverbsubjects.5: singledeclaration | compounddeclaration | singledeclaration pronounonlyreferencedeclaration
 
 reservedverbverb.5: reservedverbadverb? (reservedverb_presentonly | reservedverb_pastonly) reservedverbadverb?
-reservedverbverb_simplepresentonly.5: reservedverb_presentonly
+reservedverbverb_verbonly.5: reservedverb_presentonly | reservedverb_pastonly
 reservedverbadverb.5: "secretly" //Example(s): "*secretly* choose Human, Merfolk, or Goblin."
 | "continuously" //Example(s): "controlled *continuously* since the beginning of the turn",
 | "again" //Example(s): Whenever you discover, discover *again* for the same value.
-| "at random" //Example(s): "Return a card at random from your graveyard to your hand" //TODO: "this doesn't work with Ghoulraiser.
+| "at random" //Example(s): "Return a card at random from your graveyard to your hand" //TODO: this doesn't work with Ghoulraiser, adverbs can be placed elsewhere.
+| "still" //Example(s): "It is *still* a land"
+| "so" //Example(s): "While doing *so*, the player can activate mana abilities [...]"
 reservedverbobject.5: declaration
-reservedverbmodifiers.5: EXPRESSIONPREPOSITION expressionordeclaration | decorateddeclaration
-EXPRESSIONPREPOSITION.10: ONLY? (PREPOSITION_FROM //Example(s): "return target creature *from* your graveyard to the battlefield"
+reservedverbmodifiers.5: reservedverbprepositionmodifiers | reservedverbdeclarationmodifiers | reservedverbexpression //TODO: I put a 'reservedverbexpression' rule here to capture things like "exile target creature *you control*", but is that the right way to do this?
+reservedverbprepositionmodifiers.5: EXPRESSIONPREPOSITION expressionordeclaration //Example(s): "Return target creature card *from your graveyard* *to the battlefield*."
+reservedverbdeclarationmodifiers.5: decorateddeclaration //Example(s): "Up to two target creatures can’t block *this turn*."
+EXPRESSIONPREPOSITION.0: ONLY? (PREPOSITION_FROM //Example(s): "return target creature *from* your graveyard to the battlefield"
 | PREPOSITION_INTO //Example(s): "put that card *into* your graveyard"
 | PREPOSITION_ONTO //Example(s): "put that card *onto* the battlefield"
 | PREPOSITION_TO //Examples(s): "this spell costs {1} less *to* cast for each [...]", "~ deals 3 damage *to* target creature"
 | PREPOSITION_OF //Example(s): "gain control *of* target creature"
 | PREPOSITION_HOW) //Example(s): "you choose which creatures block this turn and *how* those creatures block"
-
-//TODO: "able"
 
 
 RESERVEDVERB.10: VERB_ABANDON | VERB_ACTIVATE | VERB_ADAPT | VERB_ADD | VERB_AMASS | VERB_ASSIGN | VERB_ATTACH | VERB_ATTACK | VERB_BLOCK | VERB_BOLSTER | VERB_CAST
@@ -57,7 +59,7 @@ reservedverb_presentonly.5: ABANDONPRESENT | ACTIVATEPRESENT | ADAPTPRESENT | AD
 | SUSPECTPRESENT | SWITCHPRESENT | TAKEPRESENT | TAPPRESENT | TEMPTPRESENT | TIMETRAVELPRESENT | TRANSFORMPRESENT | TRIGGERPRESENT | TURNPRESENT | VOTEPRESENT | WINPRESENT
 
 reservedverb_pastonly.5: ABANDONPAST | ACTIVATEPAST | ADAPTPAST | ADDPAST | AMASSPAST | ASSIGNPAST | ATTACHPAST | ATTACKPAST | BLOCKPAST | BOLSTERPAST | CASTPAST
-| CAUSEPAST | CHANGEPAST | CHOOSEPAST | CLASHPAST | CLOAKPAST | COLLECTPAST | CONNIVEPAST | CONTROLPAST | COPYPAST | COUNTERPAST | CREATEPAST | CYCLEPAST
+| CAUSEPAST | CHANGEPAST | CHOOSEPAST | CLASHPAST | CLOAKPAST | COLLECTPAST | CONNIVEPAST | CONTROLPAST | COPYPAST | COUNTERPAST | CREATEPAST | COSTPRESENT | CYCLEPAST
 | DEALPAST | DECLAREPAST | DESTROYPAST | DETAINPAST | DIEPAST | DISCARDPAST | DISCOVERPAST | DOUBLEPAST | DRAWPAST | ENTERPAST | ENCHANTPAST
 | EXCHANGEPAST | EXERTPAST | EXILEPAST | EXPLOREPAST | FATESEALPAST | FIGHTPAST | FLIPPAST | FORAGEPAST | GAINPAST | GETPAST | GIFTPAST
 | GOADPAST | INCUBATEPAST | INVESTIGATEPAST | LEARNPAST | LEAVEPAST | LOOKPAST | LOSEPAST | MANIFESTPAST | MELDPAST | MILLPAST | PAYPAST
@@ -66,13 +68,43 @@ reservedverb_pastonly.5: ABANDONPAST | ACTIVATEPAST | ADAPTPAST | ADDPAST | AMAS
 | SUSPECTPAST | SWITCHPAST | TAKEPAST | TAPPAST | TEMPTPAST | TIMETRAVELPAST | TRANSFORMPAST | TRIGGERPAST | TURNPAST | VOTEPAST | WINPAST
 
 reservedverb_participleorgerundonly.5: ABANDONPARTICIPLEORGERUND | ACTIVATEPARTICIPLEORGERUND | ADAPTPARTICIPLEORGERUND | ADDPARTICIPLEORGERUND | AMASSPARTICIPLEORGERUND | ASSIGNPARTICIPLEORGERUND | ATTACHPARTICIPLEORGERUND | ATTACKPARTICIPLEORGERUND | BLOCKPARTICIPLEORGERUND | BOLSTERPARTICIPLEORGERUND | CASTPARTICIPLEORGERUND
-| CAUSEPARTICIPLEORGERUND | CHANGEPARTICIPLEORGERUND | CHOOSEPARTICIPLEORGERUND | CLASHPARTICIPLEORGERUND | CLOAKPARTICIPLEORGERUND | COLLECTPARTICIPLEORGERUND | CONNIVEPARTICIPLEORGERUND | CONTROLPARTICIPLEORGERUND | COPYPARTICIPLEORGERUND | COUNTERPARTICIPLEORGERUND | CREATEPARTICIPLEORGERUND | CYCLEPARTICIPLEORGERUND
+| CAUSEPARTICIPLEORGERUND | CHANGEPARTICIPLEORGERUND | CHOOSEPARTICIPLEORGERUND | CLASHPARTICIPLEORGERUND | CLOAKPARTICIPLEORGERUND | COLLECTPARTICIPLEORGERUND | CONNIVEPARTICIPLEORGERUND | CONTROLPARTICIPLEORGERUND | COPYPARTICIPLEORGERUND | COUNTERPARTICIPLEORGERUND | CREATEPARTICIPLEORGERUND | COSTPARTICIPLEORGERUND | CYCLEPARTICIPLEORGERUND
 | DEALPARTICIPLEORGERUND | DECLAREPARTICIPLEORGERUND | DESTROYPARTICIPLEORGERUND | DETAINPARTICIPLEORGERUND | DIEPARTICIPLEORGERUND | DISCARDPARTICIPLEORGERUND | DISCOVERPARTICIPLEORGERUND | DOUBLEPARTICIPLEORGERUND | DRAWPARTICIPLEORGERUND | ENTERPARTICIPLEORGERUND | ENCHANTPARTICIPLEORGERUND
 | EXCHANGEPARTICIPLEORGERUND | EXERTPARTICIPLEORGERUND | EXILEPARTICIPLEORGERUND | EXPLOREPARTICIPLEORGERUND | FATESEALPARTICIPLEORGERUND | FIGHTPARTICIPLEORGERUND | FLIPPARTICIPLEORGERUND | FORAGEPARTICIPLEORGERUND | GAINPARTICIPLEORGERUND | GETPARTICIPLEORGERUND | GIFTPARTICIPLEORGERUND
 | GOADPARTICIPLEORGERUND | INCUBATEPARTICIPLEORGERUND | INVESTIGATEPARTICIPLEORGERUND | LEARNPARTICIPLEORGERUND | LEAVEPARTICIPLEORGERUND | LOOKPARTICIPLEORGERUND | LOSEPARTICIPLEORGERUND | MANIFESTPARTICIPLEORGERUND | MELDPARTICIPLEORGERUND | MILLPARTICIPLEORGERUND | PAYPARTICIPLEORGERUND
 | PLANESWALKPARTICIPLEORGERUND | PLAYPARTICIPLEORGERUND | POPULATEPARTICIPLEORGERUND | PREVENTPARTICIPLEORGERUND | PROLIFERATEPARTICIPLEORGERUND | PUTPARTICIPLEORGERUND | REGENERATEPARTICIPLEORGERUND | REMAINPARTICIPLEORGERUND | REMOVEPARTICIPLEORGERUND | RETURNPARTICIPLEORGERUND
 | ROLLPARTICIPLEORGERUND | REVEALPARTICIPLEORGERUND | SACRIFICEPARTICIPLEORGERUND | SCRYPARTICIPLEORGERUND | SEARCHPARTICIPLEORGERUND | SEPARATEPARTICIPLEORGERUND | SHAREPARTICIPLEORGERUND | SHUFFLEPARTICIPLEORGERUND | SKIPPARTICIPLEORGERUND | SPENDPARTICIPLEORGERUND | SUPPORTPARTICIPLEORGERUND | SURVEILPARTICIPLEORGERUND
 | SUSPECTPARTICIPLEORGERUND | SWITCHPARTICIPLEORGERUND | TAKEPARTICIPLEORGERUND | TAPPARTICIPLEORGERUND | TEMPTPARTICIPLEORGERUND | TIMETRAVELPARTICIPLEORGERUND | TRANSFORMPARTICIPLEORGERUND | TRIGGERPARTICIPLEORGERUND | TURNPARTICIPLEORGERUND | VOTEPARTICIPLEORGERUND | WINPARTICIPLEORGERUND
+
+
+VERB_BE.5: BEPRESENT | BEPAST | BEPARTICIPLEORGERUND | BEFUTURESUBJUNCTIVE | BEPLAIN
+BEPRESENT.5: ("is"i | "are"i)
+BEPAST.5: ("was"i | "were"i)
+BEPARTICIPLEORGERUND.5: ("being"i | "been"i)
+BEFUTURESUBJUNCTIVE.5: "would"i
+BEPLAIN.0: "be"i
+
+VERB_HAVE.5: HAVEPRESENT | HAVEPAST | HAVEPARTICIPLEORGERUND
+HAVEPRESENT.5: ("have"i | "has"i)
+HAVEPAST.5: "had"i
+HAVEPARTICIPLEORGERUND.5: "having"i
+
+VERB_DO.5: DOPRESENT | DOPAST | DOPARTICIPLEORGERUND
+DOPRESENT.5: ("do"i | "does"i)
+DOPAST.5: "did"i
+DOPARTICIPLEORGERUND.5: ("doing"i | "done"i)
+
+VERB_MAY.5: "may"i
+VERB_MUST.5: "must"i
+
+VERB_BECOME.5: BECOMEPRESENT | BECOMEPAST | BECOMEPARTICIPLEORGERUND
+BECOMEPRESENT.5: "become"i["s"i]
+BECOMEPAST.5: "became"i
+BECOMEPARTICIPLEORGERUND.5: "becoming"i
+
+VERB_CAN.5: CANPRESENT | CANPAST
+CANPRESENT.5: "can"i
+CANPAST.5: "could"i
 
 VERB_ABANDON.5: ABANDONPRESENT | ABANDONPAST | ABANDONPARTICIPLEORGERUND
 ABANDONPRESENT.5: "abandon"i["s"i]
@@ -184,6 +216,10 @@ CREATEPRESENT.5: "create"i["s"i]
 CREATEPAST.5: "created"i
 CREATEPARTICIPLEORGERUND.5: "creating"i
 
+VERB_COST.5: COSTPRESENT | COSTPARTICIPLEORGERUND
+COSTPRESENT.5: "cost"i["s"i]
+COSTPARTICIPLEORGERUND.5: "costing"i
+
 VERB_CYCLE.5: CYCLEPRESENT | CYCLEPAST | CYCLEPARTICIPLEORGERUND
 CYCLEPRESENT.5: "cycle"i["s"i]
 CYCLEPAST.5: "cycled"i
@@ -255,8 +291,8 @@ EXERTPAST.5: "exerted"i
 EXERTPARTICIPLEORGERUND.5: "exerting"i
 
 VERB_EXILE.5: EXILEPRESENT | EXILEPAST | EXILEPARTICIPLEORGERUND
-EXILEPRESENT.5: "exile"i["s"i]
-EXILEPAST.5: "exiled"i
+EXILEPRESENT.15: "exile"i["s"i]
+EXILEPAST.20: "exiled"i
 EXILEPARTICIPLEORGERUND.5: "exiling"i
 
 VERB_EXPLORE.5: EXPLOREPRESENT | EXPLOREPAST | EXPLOREPARTICIPLEORGERUND
