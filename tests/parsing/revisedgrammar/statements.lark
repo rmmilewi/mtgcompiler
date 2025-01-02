@@ -65,7 +65,7 @@ PREPOSITION_ONTO.10: "onto"i
 PREPOSITION_OTHERWISE.5: "otherwise"i
 PREPOSITION_RATHER.5: "rather"i "than"i?
 PREPOSITION_THEN.5: "then"i
-PREPOSITION_TO.0: "to"i
+PREPOSITION_TO.1: "to"i
 PREPOSITION_UNDER.5: "under"i
 PREPOSITION_UNLESS.5: "unless"i
 PREPOSITION_UNTIL.5: "until"i
@@ -86,8 +86,9 @@ CONJUNCTION_NEITHER.5: "neither"i
 
 
 
-statementexpression.5: expression //TODO: Should this be only expressions or "expressionordeclaration"? There's an ambiguity with compound statements vs. compound declarations.
+statementexpression.5: expressionordeclaration //TODO: Should this be only expressions or "expressionordeclaration"? There's an ambiguity with compound statements vs. compound declarations.
 
+ARBITRARYWORD.0: WORD //TODO
 DASH.100: "‒" | "—"
 MODALCHOICE.100: "•"
 %import common.WORD -> WORD

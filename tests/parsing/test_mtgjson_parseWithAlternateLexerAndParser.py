@@ -6,13 +6,16 @@ import mtgcompiler.frontend.compilers.LarkMtgJson.MtgJsonCompiler as MtgJsonComp
 import pytest
 import lark.lexer
 import lark
+import json
 import mtgcompiler.frontend.compilers.LarkMtgJson.grammar as oldGrammar
 
 class TestGrammarAndParser(unittest.TestCase):
 
     def test_integratingChangesToGrammar(self):
-        shouldOutputVerboseDetails = True
-        useRevisedGrammar = True
+        shouldOutputVerboseDetails = False #Enables printing of lexer results and parse trees.
+        useRevisedGrammar = True #Set to False if you want to see how much progress we made over the original grammar
+        testAgainstFoundations = True #Set to True if you want to run against all the cards in the Foundations set, False for custom list of strings
+        lexerTypeToUse = "basic" #Note: If using the original grammar, lexing will always be done in dynamic mode.
 
         integratedGrammar = """"""
         if useRevisedGrammar:
@@ -23,7 +26,7 @@ class TestGrammarAndParser(unittest.TestCase):
                     continue
                 with open(filePath,encoding='utf-8') as f:
                     integratedGrammar = integratedGrammar + "\n" + f.read()
-            lexerType = "basic"
+            lexerType = lexerTypeToUse
         else:
             integratedGrammar = oldGrammar.getGrammar()
             lexerType = "dynamic"
@@ -35,11 +38,18 @@ class TestGrammarAndParser(unittest.TestCase):
                      "parser.larkLexer": lexerType,
                      })
         parser = compilerUsingIntegratedGrammar.getParser()
-
+        preprocessor = compilerUsingIntegratedGrammar.getPreprocessor()
         print("\n===================================================================================================")
-
         cardsToTest = [
-            "Creatures you control have haste.",
+            "Clues you control are equipment in addition to their other types.",  # Armed with Proof
+            "If two cards that share all their card types were milled this way, sacrifice ~.", #Demonic Covenant
+            "During your next turn, you may draw a card.",
+            "For each artifact and/or enchantment you control, that creature gets +1/+1.",
+            "For each artifact you control, draw a card.",
+            "For each artifact and/or enchantment you control, enchanted creature gets +1/+1.",
+            "Enchanted creature gets +1/+1 for each artifact and/or enchantment you control.", #All That Glitters
+            "As ~ enters, it becomes your choice of a 3/3 artifact creature, a 2/2 artifact creature with flying, or a 1/6 Wall artifact creature with defender.",
+            "As ~ enters, it becomes your choice of a 3/3 artifact creature, a 2/2 artifact creature with flying, or a 1/6 Wall artifact creature with defender in addition to its other types.", #Primal Clay
             "Exile target nonland permanent you control.",
             "Exile target nonland permanent an opponent controls until ~ leaves the battlefield.",
             "when ~ enters, exile target nonland permanent an opponent controls until ~ leaves the battlefield.\nyour opponents can not cast spells with the same name as the exiled card.",  # Ixalan's binding
@@ -53,14 +63,15 @@ class TestGrammarAndParser(unittest.TestCase):
             "Roll a d6 and flip a coin.",  # coins and dice
             "Choose an elf, goblin, and merfolk.",
             "Roll a d6 and a d8.",
+            "Create a 1/1 red Mercenary creature token with \"{T}: Target creature you control gets +1/+0 until end of turn. Activate only as a sorcery.\".", #Quoted ability test.
             "Sacrifice all blue creatures and black creatures, then draw a card.",
             "Planeswalkers' loyalty abilities you activate cost an additional [+1] to activate.", #Carth the Lion
-            "create a 1/1 green elf creature token under your control. gain control of all elves.", #control as noun test
             "{t}: put a +1/+1 counter on each artifact creature you control.", #Steel Overseer
             "unless its controller pays {2}, counter target spell.",  # Quench (inverted)
             "counter target spell unless its controller pays {2}.",  # Quench
             "{t}: draw a card, then discard a card.",  # Merfolk Looter
             "haste (haste is an ability)",
+            "Create a 1/1 green elf creature token under your control. Gain control of all elves.",# control as noun test
             "destroy each bird on the battlefield.",
             "draw a card for each bird on the battlefield.", #Airborne Aid
             "reveal the player you chose.",
@@ -73,7 +84,6 @@ class TestGrammarAndParser(unittest.TestCase):
             "discard your hand.", #One With Nothing
             "at the beginning of your upkeep, each opponent chooses money, friends, or secrets. for each player who chose money, you and that player each create a treasure token. for each player who chose friends, you and that player each create a 1/1 green and white citizen creature token. for each player who chose secrets, you and that player each draw a card.", #Master of Ceremonies
             "~ can not be the target of white spells or abilities from white sources.\n{3}: put target nontoken rebel on the bottom of its owner's library.", #Rebel Informer
-            "clues you control are equipment in addition to their other types", #Armed with Proof
             "return target creature card from your graveyard to the battlefield. if {G} was spent to cast this spell, that creature enters with an additional +1/+1 counter on it.", #Vigor Mortis
             "{T}: add {G}.\n{T}: target 1/1 creature gets +1/+2 until end of turn.", #Pendlehaven
             "reach\nwhenever ~ or another cat you control enters, you may destroy target artifact or enchantment.", #Qasali Slingers
@@ -92,7 +102,23 @@ class TestGrammarAndParser(unittest.TestCase):
             "at the beginning of your end step, choose one — • you gain 1 life.\n• return target creature card with mana value 1 from your graveyard to the battlefield.", #Abiding Grace
             "create a 2/2 white cat soldier creature token named OBJECTNAME with \“whenever you gain life, put a +1/+1 counter on OBJECTNAME.\”" #Ajani, Strength of the Pride
         ]
-
+        if testAgainstFoundations:
+            with open("tests/parsing/FDN.json", encoding='utf-8') as f:
+                foundationsSet = json.load(f)
+            cardsToTest = []
+            def get_unique_name(card):
+                if 'faceName' in card:
+                    return card['faceName']
+                return card['name']
+            unique_cards = {get_unique_name(card): card for card in foundationsSet['data']['cards'] if
+                            not get_unique_name(card).startswith("A-")}
+            print(len(unique_cards))
+            for name in unique_cards:
+                cardDict = unique_cards[name]
+                if "text" in cardDict:
+                    preprocessedText = preprocessor.prelex(cardDict['text'], None, name)
+                    cardsToTest.append((name,preprocessedText))
+        print("Total card texts to test against: {total}".format(total=len(cardsToTest)))
         def getLexerResults(card):
             lexerState = lark.lexer.LexerState(text=card, line_ctr=lark.lexer.LineCounter(
                 b'\n' if isinstance(card, bytes) else '\n'))
@@ -104,10 +130,10 @@ class TestGrammarAndParser(unittest.TestCase):
                 print(f"{token} ({token.type}) ",end='')
             print("\n")
 
-        for card in cardsToTest:
+        for cardName,card in cardsToTest:
             cardPrettyPrint = card.replace('\n', ' ')
             try:
-                if shouldOutputVerboseDetails:
+                if shouldOutputVerboseDetails and lexerType != "dynamic":
                     getLexerResults(card)
             except Exception as lexingException:
                 lexingException = str(lexingException)[0:200]
@@ -126,15 +152,15 @@ class TestGrammarAndParser(unittest.TestCase):
                 if shouldOutputVerboseDetails:
                     print(parseTree.pretty())
                 print(
-                    f"Card ({cardPrettyPrint}) took {fullParseTimeEnd - fullParseTimeStart} to parse. The input had {len(ambiguities)} ambiguities. {ambiguityTreeSizeStatement}")
+                    f"Card {cardName} ({cardPrettyPrint}) took {fullParseTimeEnd - fullParseTimeStart} to parse. The input had {len(ambiguities)} ambiguities. {ambiguityTreeSizeStatement}")
             except Exception as exception:
                 firstLineOfException = str(exception).split('\n')[0]
                 if shouldOutputVerboseDetails:
                     exception = str(exception)[0:200]
-                    print(f"Card ({cardPrettyPrint}) produced an exception during parsing: {exception}...")
+                    print(f"Card {cardName} ({cardPrettyPrint}) produced an exception during parsing: {exception}...")
                 else:
                     print(
-                        f"Card ({cardPrettyPrint}) produced an exception during parsing: {firstLineOfException}...")
+                        f"Card {cardName} ({cardPrettyPrint}) produced an exception during parsing: {firstLineOfException}...")
             if shouldOutputVerboseDetails:
                 print("===================================================================================================")
 

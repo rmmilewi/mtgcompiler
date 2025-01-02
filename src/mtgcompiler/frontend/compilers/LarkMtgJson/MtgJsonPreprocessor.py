@@ -16,20 +16,27 @@ class MtgJsonPreprocessor(BasePreprocessor):
                     else:
                         inputobj = inputobj.replace(name,"~")
 
-                inputobj = inputobj.lower()
+                def caseInsensitiveReplace(old, new, text):
+                        idx = 0
+                        while idx < len(text):
+                                index_l = text.lower().find(old.lower(), idx)
+                                if index_l == -1:
+                                        return text
+                                text = text[:index_l] + new + text[index_l + len(old):]
+                                idx = index_l + len(new)
+                        return text
 
-                inputobj = inputobj.replace("his or her", "their")
-
+                inputobj = caseInsensitiveReplace("his or her","their",inputobj)
                 # Preprocessing step: Expand pronoun-related contractions.
-                inputobj = inputobj.replace("it's", "it is")
-                inputobj = inputobj.replace("you're", "you are")
-                inputobj = inputobj.replace("they're", "they are")
-                inputobj = inputobj.replace("you've", "you have")
-                inputobj = inputobj.replace("isn't", "is not")
-                inputobj = inputobj.replace("aren't", "are not")
-                inputobj = inputobj.replace("don't", "do not")
-                inputobj = inputobj.replace("doesn't", "does not")
-                inputobj = inputobj.replace("can't", "can not")
+                inputobj = caseInsensitiveReplace("it's","it is",inputobj)
+                inputobj = caseInsensitiveReplace("you're","you are",inputobj)
+                inputobj = caseInsensitiveReplace("they're","they are",inputobj)
+                inputobj = caseInsensitiveReplace("you've","you have",inputobj)
+                inputobj = caseInsensitiveReplace("isn't","is not",inputobj)
+                inputobj = caseInsensitiveReplace("aren't","are not",inputobj)
+                inputobj = caseInsensitiveReplace("don't","do not",inputobj)
+                inputobj = caseInsensitiveReplace("doesn't","does not",inputobj)
+                inputobj = caseInsensitiveReplace("can't","can not",inputobj)
 
                 # Preprocessing step: Some 20-or-so cards use 'each' before a verb to emphasize that a subject is plural
                 # For our purposes, this is just syntactic sugar, so we will remove it. Examples include:
@@ -37,12 +44,12 @@ class MtgJsonPreprocessor(BasePreprocessor):
                 #       * "Up to X target creatures each gain [...]"
                 #       * "Those players each discard two cards at random."
                 # Only a couple of effects use this wording. If I'm missing any, I'll go back and add them here later.
-                inputobj = inputobj.replace("each get", "get")
-                inputobj = inputobj.replace("each gain", "gain")
-                inputobj = inputobj.replace("each lose", "lose")
-                inputobj = inputobj.replace("each draw", "draw")
-                inputobj = inputobj.replace("each discard", "discard")
-                inputobj = inputobj.replace("each sacrifice", "sacrifice")
+                inputobj = caseInsensitiveReplace("each get","get",inputobj)
+                inputobj = caseInsensitiveReplace("each gain","gain",inputobj)
+                inputobj = caseInsensitiveReplace("each lose","lose",inputobj)
+                inputobj = caseInsensitiveReplace("each draw","draw",inputobj)
+                inputobj = caseInsensitiveReplace("each discard","discard",inputobj)
+                inputobj = caseInsensitiveReplace("each sacrifice","sacrifice",inputobj)
                 
                 return inputobj
                 
