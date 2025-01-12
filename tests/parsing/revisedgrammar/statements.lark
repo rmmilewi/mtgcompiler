@@ -1,15 +1,12 @@
 cardtext.5: ability (NEWLINE+ ability)*
 
 ability.5: (abilityworddecorator  | remindertextdecorator)? statementblock remindertextdecorator? -> regularability
-| keywordlist remindertextdecorator?
 abilityworddecorator.5: ARBITRARYWORD+ DASH
 remindertextdecorator.5: REMINDERTEXT
 REMINDERTEXT.5: /\(.*?\)/
 
-keywordlist.5: keywordsequence
-keywordsequence.5: keywordabilitydeclaration (("," | ";") keywordabilitydeclaration)*
-
-statementblock : (statement remindertextdecorator?)+ | activationstatement
+statementblock : (statement remindertextdecorator? | keywordlist remindertextdecorator?)+ | activationstatement
+keywordlist.5: keywordabilitydeclaration (("," | ";") keywordabilitydeclaration)*
 
 statement.5: statementwithouttrailingsubstatements "." | standaloneconditionalstatement "." | compoundstatement "." | modalstatement
 
@@ -23,11 +20,12 @@ compoundstatement.5: (statementwithouttrailingsubstatements | compoundconditiona
 | (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "and"i (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundandstatement
 | (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "or"i (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundorstatement
 
-compoundconditionalstatement.5: condition statementexpression
+//Examples: "*Whenever you gain life* *for the first time* *during each of your turns*" (chained conditionals)
+compoundconditionalstatement.5: (condition statementexpression)+
 | statementexpression condition -> compoundconditionalinv
 | conditionalresult postfixexpression -> compoundconditionalresult
 
-standaloneconditionalstatement.5: PREPOSITION_THEN? condition statementexpression postfixexpression? "," PREPOSITION_THEN? (conditionalresult postfixexpression? | standaloneconditionalstatement)
+standaloneconditionalstatement.5: PREPOSITION_THEN? (condition statementexpression)+ postfixexpression? "," PREPOSITION_THEN? (conditionalresult postfixexpression? | standaloneconditionalstatement)
 | PREPOSITION_THEN? statementexpression condition statementexpression postfixexpression?
 conditionalresult.5: statementwithouttrailingsubstatements
 postfixexpression.5: PREPOSITION_INSTEAD | PREPOSITION_RATHER statementwithouttrailingsubstatements | condition statementexpression | postfixexpression ("and"i | "or"i | "and/or"i) postfixexpression

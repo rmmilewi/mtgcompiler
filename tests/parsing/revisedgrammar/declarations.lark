@@ -42,7 +42,7 @@ POSSESSIVEPRONOUNREFERNCE.150: "its"i | "your"i | "their"i | "his"i //Note.5: "h
 
 //Declaration decorators. The most popular decorator is "target".
 //Example(s): "destroy *target* nonblack creature", "*any* permanent"
-declarationdecorator.5: "each"i -> eachdecorator
+declarationdecorator.5: "each"i PREPOSITION_OF? -> eachdecorator
 | "same"i -> samedecorator
 | "all"i -> alldecorator
 | "other"i -> otherdecorator
@@ -103,8 +103,8 @@ embeddedreferencedeclaration.5: referencedecorator+ embeddeddeclarationdefinitio
 embeddeddeclarationdefinition.5: declarationdefinition_standardorder
 
 
-prepositionalattacheddeclaration.5: DECLARATIONPREPOSITION declaration //TODO: Temporarily removed embeddeddeclaration.
-DECLARATIONPREPOSITION.2: ONLY? (PREPOSITION_OF | PREPOSITION_ON | PREPOSITION_WHO | PREPOSITION_IN | PREPOSITION_UNDER | PREPOSITION_WITHOUT | PREPOSITION_WITH | PREPOSITION_AS | PREPOSITION_EXCEPT | PREPOSITION_TO)
+prepositionalattacheddeclaration.5: declarationpreposition declaration //TODO: Temporarily removed embeddeddeclaration.
+declarationpreposition.2: ONLY? (PREPOSITION_OF | PREPOSITION_ON | PREPOSITION_WHO | PREPOSITION_IN | PREPOSITION_UNDER | PREPOSITION_WITHOUT | PREPOSITION_WITH | PREPOSITION_AS | PREPOSITION_EXCEPT | PREPOSITION_TO)
 possessiveclarationreference.5: (embeddeddeclarationdefinition | namereferencedefinition) ("'s"|"'")
 specialterm.5: MECHANICSPECIFICTERM
 MECHANICSPECIFICTERM.5: "ring"i //Example: "the *ring* has tempted you two or more times this game"
@@ -128,7 +128,7 @@ powertoughnessterm.5: valueterm "/" valueterm
 
 //NOTE: Planeswalker loyalty costs are sometimes written with brackets when its not a cost (like with Carth the Lion),
 //but without brackets on planeswalker cards.
-loyaltycostterm.5: "[" ((SIGNED_INT | INT) | ((PLUS | MINUS) VARIABLEVALUE)) "]" | ((SIGNED_INT | INT) | ((PLUS | MINUS) VARIABLEVALUE))
+loyaltycostterm.5: "[" ((SIGNED_INT | "0") | ((PLUS | MINUS) VARIABLEVALUE)) "]" | ((SIGNED_INT | "0") | ((PLUS | MINUS) VARIABLEVALUE))
 counterterm.5: (countertype | powertoughnessterm) COUNTERPRESENT
 characteristicterm.5: negationofterm? (OBJECTCHARACTERISTIC | PLAYERCHARACTERISTIC)
 nameterm.5: "OBJECTNAME"i | ARBITRARYWORD ","? ARBITRARYWORD* //TODO: Remove "OBJECTNAME" placeholder
@@ -170,31 +170,257 @@ keywordabilitydeclaration.5: regularkeywordedabilitydefinition | specialkeyworde
 
 regularkeywordedabilitydefinition.5: regularkeywordedability declaration? //Example(s): "Flying"i, "Bushido 3", "Champion a Kithkin"
 | regularkeywordedability declaration DASH declaration //Example(s): "Impending 4—{2}{R}{R}"
+| regularkeywordedability DASH expressionordeclaration //Example(s): "Ward—Pay 7 life"
 
 //special cases include...
 //TODO: landwalk, hexproof from X and from Y, [typeexpression] "cycling"i cost, "splice"i "onto"i typeexpression cost, typeexpression "offering"i
-//TODO: "forecast"i activationstatement, "suspend"i valuenumber cost, "aura swap" (if we wanted to generalize to TYPE swap)
+//TODO: "forecast"i activationstatement, "aura swap" (if we wanted to generalize to TYPE swap), banding, protection
 //TODO: partner with objectname, kwcompanion.5: "companion"i, "craft"i "with"i declarationorreference cost, spree (Choose one or more additional costs.)
-specialkeywordedabilitydefinition.5: "specialkeywordedabilitydefinition"i //TODO: Add support for special keyworded ability definitions.
+specialkeywordedabilitydefinition.5: specialkeywordedabilitydefinition_hexproof | specialkeywordedabilitydefinition_landwalk | specialkeywordedabilitydefinition_cycling
+| specialkeywordedabilitydefinition_auraswap | specialkeywordedabilitydefinition_forecast | specialkeywordedabilitydefinition_affinity
+| specialkeywordedabilitydefinition_partner | specialkeywordedabilitydefinition_companion | specialkeywordedabilitydefinition_craft
+| specialkeywordedabilitydefinition_spree | specialkeywordedabilitydefinition_banding | specialkeywordedabilitydefinition_protection
+
+//Example(s): "Hexproof", "Hexproof from", "Hexproof from artifacts, creatures, and enchantments"
+specialkeywordedabilitydefinition_hexproof.5: KEYWORDEDABILITY_HEXPROOF (PREPOSITION_FROM declaration ("and" PREPOSITION_FROM declaration)? )?
+
+//Example(s): "Target creature loses all *landwalk* abilities until end of turn." (generic reference to landwalk abilities), "Islandwalk", "Legendary landwalk",
+specialkeywordedabilitydefinition_landwalk.5: typeterm+ "walk"i
+
+//Example(s): "Cycling {2}", "Swampcycling {2}", "Cycling—Sacrifice a land."
+specialkeywordedabilitydefinition_cycling.5: typeterm* CYCLEPARTICIPLEORGERUND (declaration | DASH expression)
+
+//Example(s): "Aura swap {2}{U} ({2}{U}: Exchange this Aura with an Aura card in your hand.)"
+specialkeywordedabilitydefinition_auraswap.5: typeterm "swap"i
+
+//Example(s): "Forecast — {2}{W}, Reveal Piercing Rays from your hand: Tap target untapped creature."
+specialkeywordedabilitydefinition_forecast: KEYWORDEDABILITY_FORECAST DASH activationstatement
+
+//Example(s): Affinity for artifacts", "Affinity for historic permanents"
+specialkeywordedabilitydefinition_affinity: KEYWORDEDABILITY_AFFINITY PREPOSITION_FOR declaration
+
+//Example(s): "Partner (You can have two commanders if both have partner.)", "Partner with Amy Pond"
+specialkeywordedabilitydefinition_partner: KEYWORDEDABILITY_PARTNER (PREPOSITION_WITH nameterm)?
+
+//Example(s): "Companion — Each creature card in your starting deck is a Cat, Elemental, Nightmare, Dinosaur, or Beast card.", "Doctor's Companion"
+specialkeywordedabilitydefinition_companion: KEYWORDEDABILITY_COMPANION DASH statementblock | "Doctor's"i KEYWORDEDABILITY_COMPANION
+
+//Example(s): "Craft with one or more creatures {2}{B}{B}", "Craft with four or more red instant and/or sorcery cards {3}{R}{R}"
+specialkeywordedabilitydefinition_craft: KEYWORDEDABILITY_CRAFT PREPOSITION_WITH declaration manaterm+
+
+//Example(s): "Spree (Choose one or more additional costs.)"
+//"+ {2} — Return target creature card from your graveyard to the battlefield."
+//"+ {1} — Return target Mount or Vehicle card from your graveyard to the battlefield."
+//"+ {1} — Return target Aura or Equipment card from your graveyard to the battlefield attached to a creature you control."
+specialkeywordedabilitydefinition_spree: KEYWORDEDABILITY_SPREE (NEWLINE spreestatement)+
+spreestatement: PLUS declaration DASH statementblock
+
+//Example: "Banding", "Green legendary creatures you control have 'bands with other legendary creatures'.", "Target creature loses banding and all 'bands with other' abilities until end of turn." (Tolaria)
+specialkeywordedabilitydefinition_banding: KEYWORDEDABILITY_BANDING | "bands"i PREPOSITION_WITH declaration
+
+//Example: "protection from blue", protection from everything", ""Permanents your opponents control lose hexproof, indestructible, *protection*, shroud, and ward until end of turn."
+specialkeywordedabilitydefinition_protection: KEYWORDEDABILITY_PROTECTION (PREPOSITION_FROM declaration)?
 
 
-regularkeywordedability.15: "deathtouch"i | "defender"i | "double strike" | ENCHANTPRESENT | "equip"i | "first strike" | "flash"i | "flying"i
-| "haste"i | "indestructible"i | "intimidate"i | "lifelink"i | "reach"i | "shroud"i | "trample"i | "vigilance"i | "ward"i | "rampage"i
-| "cumulative upkeep" | "flanking"i | "phasing"i | "buyback"i | "shadow"i | "echo"i | "horsemanship"i | "fading"i | "multi"i? "kicker"i
-| "flashback"i | "madness"i | "fear"i | "mega"i? "morph"i | "amplify"i | "provoke"i | "storm"i | "affinity"i "for"i? | "entwine"i | "modular"i
-| "sunburst"i | "bushido"i | "soulshift"i | "ninjutsu"i | "epic"i | "convoke"i | "dredge"i | "transmute"i | "bloodthirst"i | "haunt"i
-| "graft"i | "recover"i | "ripple"i | "split second" | "suspend"i | "vanishing"i | "absorb"i | "aura swap" | "delve"i | "delve"i
-| "fortify"i | "frenzy"i | "gravestorm"i | "poisonous"i | "transfigure"i | "champion"i | "changeling"i | "evoke"i | "hideaway"i | "prowl"i
-| "reinforce"i | "conspire"i | "persist"i | "wither"i | "retrace"i | "devour"i | "exalted"i | "unearth"i | "cascade"i | "annihilator"i
-| "level up" | "rebound"i | "totem armor" | "infect"i | "battle cry" | "living weapon" | "undying"i | "miracle"i | "soulbond"i
-| "overload"i | "scavenge"i | "unleash"i | "cipher"i | "evolve"i | "extort"i | "fuse"i | "bestow"i | "tribute"i | "dethrone"i
-| "hidden agenda" | "outlast"i | "prowess"i | "dash"i | "exploit"i | "menace"i | "renown"i | "awaken"i | "devoid"i | "ingest"i
-| "myriad"i | "surge"i | "skulk"i | "emerge"i | "escalate"i | "melee"i | "crew"i | "fabricate"i | "undaunted"i | "improvise"i | "aftermath"i
-| "embalm"i | "eternalize"i | "afflict"i | "ascend"i | "assist"i | "jump-start" | "mentor"i | "afterlife"i | "riot"i | "spectacle"i
-| "escape"i | "mutate"i | "oncore"i | "boast"i | "foretell"i | "demonstrate"i | ("day"i | "night"i) "bound"i | "disturb"i | "decayed"i
-| "cleave"i | "training"i | "compleated"i | "reconfigure"i | "blitz"i | "casualty"i | "enlist"i | "read ahead" | "ravenous"i | "squad"i
-| "prototype"i | "living metal" | "for mirrodin!" | "toxic"i | "backup"i | "bargain"i | "disguise"i | "plot"i | "saddle"i
-| "gift"i | "offspring"i | "impending"i | "time travel"
+regularkeywordedability.15: KEYWORDEDABILITY_ABSORB | KEYWORDEDABILITY_AFFLICT | KEYWORDEDABILITY_AFTERLIFE | KEYWORDEDABILITY_AFTERMATH
+| KEYWORDEDABILITY_AMPLIFY | KEYWORDEDABILITY_ANNIHILATOR | KEYWORDEDABILITY_ASCEND | KEYWORDEDABILITY_ASSIST | KEYWORDEDABILITY_AURASWAP
+| KEYWORDEDABILITY_AWAKEN | KEYWORDEDABILITY_BACKUP | KEYWORDEDABILITY_BARGAIN | KEYWORDEDABILITY_BATTLECRY | KEYWORDEDABILITY_BESTOW
+| KEYWORDEDABILITY_BLITZ | KEYWORDEDABILITY_BLOODTHIRST | KEYWORDEDABILITY_BOAST | KEYWORDEDABILITY_BUSHIDO | KEYWORDEDABILITY_BUYBACK
+| KEYWORDEDABILITY_CASCADE | KEYWORDEDABILITY_CASUALTY | KEYWORDEDABILITY_CHAMPION | KEYWORDEDABILITY_CHANGELING | KEYWORDEDABILITY_CIPHER
+| KEYWORDEDABILITY_CLEAVE | KEYWORDEDABILITY_COMPLEATED | KEYWORDEDABILITY_CONSPIRE | KEYWORDEDABILITY_CONVOKE | KEYWORDEDABILITY_CREW
+| KEYWORDEDABILITY_CUMULATIVEUPKEEP | KEYWORDEDABILITY_DASH | KEYWORDEDABILITY_DAYANDNIGHTBOUND | KEYWORDEDABILITY_DEATHTOUCH | KEYWORDEDABILITY_DECAYED
+| KEYWORDEDABILITY_DEFENDER | KEYWORDEDABILITY_DELVE | KEYWORDEDABILITY_DEMONSTRATE | KEYWORDEDABILITY_DETHRONE | KEYWORDEDABILITY_DEVOID
+| KEYWORDEDABILITY_DEVOUR | KEYWORDEDABILITY_DISGUISE | KEYWORDEDABILITY_DISTURB | KEYWORDEDABILITY_DOUBLESTRIKE | KEYWORDEDABILITY_DREDGE
+| KEYWORDEDABILITY_ECHO | KEYWORDEDABILITY_EMBALM | KEYWORDEDABILITY_EMERGE | keywordedability_enchant | KEYWORDEDABILITY_ENCORE
+| KEYWORDEDABILITY_ENLIST | KEYWORDEDABILITY_ENTWINE | KEYWORDEDABILITY_EPIC | keywordedability_equip | KEYWORDEDABILITY_ESCALATE
+| KEYWORDEDABILITY_ESCAPE | KEYWORDEDABILITY_ETERNALIZE | KEYWORDEDABILITY_EVOKE | KEYWORDEDABILITY_EVOLVE | KEYWORDEDABILITY_EXALTED
+| KEYWORDEDABILITY_EXPLOIT | KEYWORDEDABILITY_EXTORT | KEYWORDEDABILITY_FABRICATE | KEYWORDEDABILITY_FADING | KEYWORDEDABILITY_FEAR
+| KEYWORDEDABILITY_FIRSTSTRIKE | KEYWORDEDABILITY_FLANKING | KEYWORDEDABILITY_FLASH | KEYWORDEDABILITY_FLASHBACK | KEYWORDEDABILITY_FLYING
+| KEYWORDEDABILITY_FORETELL | KEYWORDEDABILITY_FORMIRRODIN | KEYWORDEDABILITY_FORTIFY | KEYWORDEDABILITY_FRENZY | KEYWORDEDABILITY_FUSE
+| KEYWORDEDABILITY_GIFT | KEYWORDEDABILITY_GRAFT | KEYWORDEDABILITY_GRAVESTORM | KEYWORDEDABILITY_HASTE | KEYWORDEDABILITY_HAUNT
+| KEYWORDEDABILITY_HIDDENAGENDA | KEYWORDEDABILITY_HIDEAWAY | KEYWORDEDABILITY_HORSEMANSHIP | KEYWORDEDABILITY_IMPENDING | KEYWORDEDABILITY_IMPROVISE
+| KEYWORDEDABILITY_INDESTRUCTIBLE | KEYWORDEDABILITY_INFECT | KEYWORDEDABILITY_INGEST | KEYWORDEDABILITY_INTIMIDATE | KEYWORDEDABILITY_JUMPSTART
+| KEYWORDEDABILITY_KICKER | KEYWORDEDABILITY_LEVELUP | KEYWORDEDABILITY_LIFELINK | KEYWORDEDABILITY_LIVINGWEAPON | KEYWORDEDABILITY_LIVINGMETAL
+| KEYWORDEDABILITY_MADNESS | KEYWORDEDABILITY_MELEE | KEYWORDEDABILITY_MENACE | KEYWORDEDABILITY_MENTOR | KEYWORDEDABILITY_MIRACLE
+| KEYWORDEDABILITY_MODULAR | KEYWORDEDABILITY_MORPH | KEYWORDEDABILITY_MUTATE | KEYWORDEDABILITY_MYRIAD | KEYWORDEDABILITY_NINJUTSU
+| KEYWORDEDABILITY_OFFSPRING | KEYWORDEDABILITY_OUTLAST | KEYWORDEDABILITY_OVERLOAD | KEYWORDEDABILITY_PERSIST | KEYWORDEDABILITY_PHASING
+| KEYWORDEDABILITY_PLOT | KEYWORDEDABILITY_POISONOUS | KEYWORDEDABILITY_PROTOTYPE | KEYWORDEDABILITY_PROVOKE | KEYWORDEDABILITY_PROWESS
+| KEYWORDEDABILITY_PROWL | KEYWORDEDABILITY_RAMPAGE | KEYWORDEDABILITY_RAVENOUS | KEYWORDEDABILITY_REACH | KEYWORDEDABILITY_READAHEAD
+| KEYWORDEDABILITY_REBOUND | KEYWORDEDABILITY_RECONFIGURE | KEYWORDEDABILITY_RECOVER | KEYWORDEDABILITY_REINFORCE | KEYWORDEDABILITY_RENOWN
+| KEYWORDEDABILITY_RETRACE | KEYWORDEDABILITY_RIOT | KEYWORDEDABILITY_RIPPLE | KEYWORDEDABILITY_SADDLE | KEYWORDEDABILITY_SCAVENGE
+| KEYWORDEDABILITY_SHADOW | KEYWORDEDABILITY_SHROUD | KEYWORDEDABILITY_SKULK | KEYWORDEDABILITY_SOULBOND | KEYWORDEDABILITY_SOULSHIFT
+| KEYWORDEDABILITY_SPECTACLE | KEYWORDEDABILITY_SPLITSECOND | KEYWORDEDABILITY_SQUAD | KEYWORDEDABILITY_STORM | KEYWORDEDABILITY_SUNBURST
+| KEYWORDEDABILITY_SURGE | keywordedability_suspend | KEYWORDEDABILITY_TIMETRAVEL | KEYWORDEDABILITY_TOTEMARMOR | KEYWORDEDABILITY_TOXIC
+| KEYWORDEDABILITY_TRAINING | KEYWORDEDABILITY_TRAMPLE | KEYWORDEDABILITY_TRANSFIGURE | KEYWORDEDABILITY_TRANSMUTE | KEYWORDEDABILITY_TRIBUTE
+| KEYWORDEDABILITY_UNDAUNTED | KEYWORDEDABILITY_UNDYING | KEYWORDEDABILITY_UNEARTH | KEYWORDEDABILITY_UNLEASH | KEYWORDEDABILITY_VANISHING
+| KEYWORDEDABILITY_VIGILANCE | KEYWORDEDABILITY_WARD | KEYWORDEDABILITY_WITHER
+
+KEYWORDEDABILITY_ABSORB.5: "absorb"i
+KEYWORDEDABILITY_AFFINITY.5: "affinity"i
+KEYWORDEDABILITY_AFFLICT.5: "afflict"i
+KEYWORDEDABILITY_AFTERLIFE.5: "afterlife"i
+KEYWORDEDABILITY_AFTERMATH.5: "aftermath"i
+KEYWORDEDABILITY_AMPLIFY.5: "amplify"i
+KEYWORDEDABILITY_ANNIHILATOR.5: "annihilator"i
+KEYWORDEDABILITY_ASCEND.5: "ascend"i
+KEYWORDEDABILITY_ASSIST.5: "assist"i
+KEYWORDEDABILITY_AURASWAP.5: "aura swap"i
+KEYWORDEDABILITY_AWAKEN.5: "awaken"i
+KEYWORDEDABILITY_BACKUP.5: "backup"i
+KEYWORDEDABILITY_BANDING.5: "banding"i
+KEYWORDEDABILITY_BARGAIN.5: "bargain"i
+KEYWORDEDABILITY_BATTLECRY.5: "battle cry"i
+KEYWORDEDABILITY_BESTOW.5: "bestow"i
+KEYWORDEDABILITY_BLITZ.5: "blitz"i
+KEYWORDEDABILITY_BLOODTHIRST.5: "bloodthirst"i
+KEYWORDEDABILITY_BOAST.5: "boast"i
+KEYWORDEDABILITY_BUSHIDO.5: "bushido"i
+KEYWORDEDABILITY_BUYBACK.5: "buyback"i
+KEYWORDEDABILITY_CASCADE.5: "cascade"i
+KEYWORDEDABILITY_CASUALTY.5: "casualty"i
+KEYWORDEDABILITY_CHAMPION.5: "champion"i
+KEYWORDEDABILITY_CHANGELING.5: "changeling"i
+KEYWORDEDABILITY_CIPHER.5: "cipher"i
+KEYWORDEDABILITY_CLEAVE.5: "cleave"i
+KEYWORDEDABILITY_COMPANION.5: "companion"i
+KEYWORDEDABILITY_COMPLEATED.5: "compleated"i
+KEYWORDEDABILITY_CONSPIRE.5: "conspire"i
+KEYWORDEDABILITY_CONVOKE.5: "convoke"i
+KEYWORDEDABILITY_CRAFT.5: "craft"i
+KEYWORDEDABILITY_CREW.5: "crew"i
+KEYWORDEDABILITY_CUMULATIVEUPKEEP.5: "cumulative upkeep"i
+KEYWORDEDABILITY_DASH.5: "dash"i
+KEYWORDEDABILITY_DAYANDNIGHTBOUND.5: ("day"i | "night"i) "bound"i
+KEYWORDEDABILITY_DEATHTOUCH.5: "deathtouch"i
+KEYWORDEDABILITY_DECAYED.5: "decayed"i
+KEYWORDEDABILITY_DEFENDER.5: "defender"i
+KEYWORDEDABILITY_DELVE.5: "delve"i
+KEYWORDEDABILITY_DEMONSTRATE.5: "demonstrate"i
+KEYWORDEDABILITY_DETHRONE.5: "dethrone"i
+KEYWORDEDABILITY_DEVOID.5: "devoid"i
+KEYWORDEDABILITY_DEVOUR.5: "devour"i
+KEYWORDEDABILITY_DISGUISE.5: "disguise"i
+KEYWORDEDABILITY_DISTURB.5: "disturb"i
+KEYWORDEDABILITY_DOUBLESTRIKE.5: "double strike"i
+KEYWORDEDABILITY_DREDGE.5: "dredge"i
+KEYWORDEDABILITY_ECHO.5: "echo"i
+KEYWORDEDABILITY_EMBALM.5: "embalm"i
+KEYWORDEDABILITY_EMERGE.5: "emerge"i
+keywordedability_enchant.5: ENCHANTPRESENT
+KEYWORDEDABILITY_ENCORE.5: "encore"i
+KEYWORDEDABILITY_ENLIST.5: "enlist"i
+KEYWORDEDABILITY_ENTWINE.5: "entwine"i
+KEYWORDEDABILITY_EPIC.5: "epic"i
+keywordedability_equip.5: EQUIPPRESENT
+KEYWORDEDABILITY_ESCALATE.5: "escalate"i
+KEYWORDEDABILITY_ESCAPE.5: "escape"i
+KEYWORDEDABILITY_ETERNALIZE.5: "eternalize"i
+KEYWORDEDABILITY_EVOKE.5: "evoke"i
+KEYWORDEDABILITY_EVOLVE.5: "evolve"i
+KEYWORDEDABILITY_EXALTED.5: "exalted"i
+KEYWORDEDABILITY_EXPLOIT.5: "exploit"i
+KEYWORDEDABILITY_EXTORT.5: "extort"i
+KEYWORDEDABILITY_FABRICATE.5: "fabricate"i
+KEYWORDEDABILITY_FADING.5: "fading"i
+KEYWORDEDABILITY_FEAR.5: "fear"i
+KEYWORDEDABILITY_FIRSTSTRIKE.5: "first strike"i
+KEYWORDEDABILITY_FLANKING.5: "flanking"i
+KEYWORDEDABILITY_FLASH.5: "flash"i
+KEYWORDEDABILITY_FLASHBACK.5: "flashback"i
+KEYWORDEDABILITY_FLYING.5: "flying"i
+KEYWORDEDABILITY_FORECAST.5: "forecast"i
+KEYWORDEDABILITY_FORETELL.5: "foretell"i
+KEYWORDEDABILITY_FORMIRRODIN.5: "for mirrodin!"i
+KEYWORDEDABILITY_FORTIFY.5: "fortify"i
+KEYWORDEDABILITY_FRENZY.5: "frenzy"i
+KEYWORDEDABILITY_FUSE.5: "fuse"i
+KEYWORDEDABILITY_GIFT.5: GIFTPRESENT
+KEYWORDEDABILITY_GRAFT.5: "graft"i
+KEYWORDEDABILITY_GRAVESTORM.5: "gravestorm"i
+KEYWORDEDABILITY_HASTE.5: "haste"i
+KEYWORDEDABILITY_HAUNT.5: "haunt"i
+KEYWORDEDABILITY_HEXPROOF.200: "hexproof"i
+KEYWORDEDABILITY_HIDDENAGENDA.5: "hidden agenda"i
+KEYWORDEDABILITY_HIDEAWAY.5: "hideaway"i
+KEYWORDEDABILITY_HORSEMANSHIP.5: "horsemanship"i
+KEYWORDEDABILITY_IMPENDING.5: "impending"i
+KEYWORDEDABILITY_IMPROVISE.5: "improvise"i
+KEYWORDEDABILITY_INDESTRUCTIBLE.5: "indestructible"i
+KEYWORDEDABILITY_INFECT.5: "infect"i
+KEYWORDEDABILITY_INGEST.5: "ingest"i
+KEYWORDEDABILITY_INTIMIDATE.5: "intimidate"i
+KEYWORDEDABILITY_JUMPSTART.5: "jump-start"i
+KEYWORDEDABILITY_KICKER.5: "multi"i? "kicker"i
+KEYWORDEDABILITY_LEVELUP.5: "level up"i
+KEYWORDEDABILITY_LIFELINK.20: "lifelink"i
+KEYWORDEDABILITY_LIVINGWEAPON.5: "living weapon"i
+KEYWORDEDABILITY_LIVINGMETAL.5: "living metal"i
+KEYWORDEDABILITY_MADNESS.5: "madness"i
+KEYWORDEDABILITY_MELEE.5: "melee"i
+KEYWORDEDABILITY_MENACE.5: "menace"i
+KEYWORDEDABILITY_MENTOR.5: "mentor"i
+KEYWORDEDABILITY_MIRACLE.5: "miracle"i
+KEYWORDEDABILITY_MODULAR.5: "modular"i
+KEYWORDEDABILITY_MORPH.5: "mega"i? "morph"i
+KEYWORDEDABILITY_MUTATE.5: "mutate"i
+KEYWORDEDABILITY_MYRIAD.5: "myriad"i
+KEYWORDEDABILITY_NINJUTSU.5: "ninjutsu"i
+KEYWORDEDABILITY_OFFSPRING.5: "offspring"i
+KEYWORDEDABILITY_OUTLAST.5: "outlast"i
+KEYWORDEDABILITY_OVERLOAD.5: "overload"i
+KEYWORDEDABILITY_PARTNER.5: "partner"i
+KEYWORDEDABILITY_PERSIST.5: "persist"i
+KEYWORDEDABILITY_PHASING.5: "phasing"i
+KEYWORDEDABILITY_PLOT.5: "plot"i
+KEYWORDEDABILITY_POISONOUS.5: "poisonous"i
+KEYWORDEDABILITY_PROTECTION.5: "protection"i
+KEYWORDEDABILITY_PROTOTYPE.5: "prototype"i
+KEYWORDEDABILITY_PROVOKE.5: "provoke"i
+KEYWORDEDABILITY_PROWESS.5: "prowess"i
+KEYWORDEDABILITY_PROWL.5: "prowl"i
+KEYWORDEDABILITY_RAMPAGE.5: "rampage"i
+KEYWORDEDABILITY_RAVENOUS.5: "ravenous"i
+KEYWORDEDABILITY_REACH.5: "reach"i
+KEYWORDEDABILITY_READAHEAD.5: "read ahead"i
+KEYWORDEDABILITY_REBOUND.5: "rebound"i
+KEYWORDEDABILITY_RECONFIGURE.5: "reconfigure"i
+KEYWORDEDABILITY_RECOVER.5: "recover"i
+KEYWORDEDABILITY_REINFORCE.5: "reinforce"i
+KEYWORDEDABILITY_RENOWN.5: "renown"i
+KEYWORDEDABILITY_RETRACE.5: "retrace"i
+KEYWORDEDABILITY_RIOT.5: "riot"i
+KEYWORDEDABILITY_RIPPLE.5: "ripple"i
+KEYWORDEDABILITY_SADDLE.5: "saddle"i
+KEYWORDEDABILITY_SCAVENGE.5: "scavenge"i
+KEYWORDEDABILITY_SHADOW.5: "shadow"i
+KEYWORDEDABILITY_SHROUD.5: "shroud"i
+KEYWORDEDABILITY_SKULK.5: "skulk"i
+KEYWORDEDABILITY_SOULBOND.5: "soulbond"i
+KEYWORDEDABILITY_SOULSHIFT.5: "soulshift"i
+KEYWORDEDABILITY_SPECTACLE.5: "spectacle"i
+KEYWORDEDABILITY_SPLITSECOND.5: "split second"i
+KEYWORDEDABILITY_SPREE.5: "spree"i
+KEYWORDEDABILITY_SQUAD.5: "squad"i
+KEYWORDEDABILITY_STORM.5: "storm"i
+KEYWORDEDABILITY_SUNBURST.5: "sunburst"i
+KEYWORDEDABILITY_SURGE.5: "surge"i
+keywordedability_suspend.5: SUSPENDPRESENT
+KEYWORDEDABILITY_TIMETRAVEL.5: "time travel"i
+KEYWORDEDABILITY_TOTEMARMOR.5: "totem armor"i
+KEYWORDEDABILITY_TOXIC.5: "toxic"i
+KEYWORDEDABILITY_TRAINING.5: "training"i
+KEYWORDEDABILITY_TRAMPLE.5: "trample"i
+KEYWORDEDABILITY_TRANSFIGURE.5: "transfigure"i
+KEYWORDEDABILITY_TRANSMUTE.5: "transmute"i
+KEYWORDEDABILITY_TRIBUTE.5: "tribute"i
+KEYWORDEDABILITY_UNDAUNTED.5: "undaunted"i
+KEYWORDEDABILITY_UNDYING.5: "undying"i
+KEYWORDEDABILITY_UNEARTH.5: "unearth"i
+KEYWORDEDABILITY_UNLEASH.5: "unleash"i
+KEYWORDEDABILITY_VANISHING.5: "vanishing"i
+KEYWORDEDABILITY_VIGILANCE.5: "vigilance"i
+KEYWORDEDABILITY_WARD.5: "ward"i
+KEYWORDEDABILITY_WITHER.5: "wither"i
 
 
 //Below are hardcoded game terms used in declarations.
@@ -279,8 +505,8 @@ DECLAREBLOCKERSSTEP.5: "declare blockers step"
 ENDSTEP.5: "end step"
 CLEANUPSTEP.5: "cleanup step"
 STEPGENERIC.5: "step"i
-TURN.5: "turn"i
-GAME.5: "game"i
+TURN.5: "turn"i ["s"i]
+GAME.5: "game"i ["s"i]
 
 
 //For a list of all the counter types in Magic to date, see here: https://mtg.fandom.com/wiki/Counter_(marker)/Full_List.
@@ -326,10 +552,10 @@ VARIABLEVALUE.5: "x"i | "*"
 NUMBERPROPERTY.5: "odd"i | "even"i | "prime"i
 
 valueoperation.5: valuecomparisonoperation | valuemathoperation
-valuecomparisonoperation.5: "equal to" valueterm // ==
-    | "less than" "or equal to"? valueterm // < ; <=
-    | "greater than" "or equal to"? valueterm // > ; >=
-    | "up to" valueterm // <=
+valuecomparisonoperation.5: "equal" PREPOSITION_TO valueterm // ==
+    | "less"i "than"i (CONJUNCTION_OR "equal"i PREPOSITION_TO)? valueterm // < ; <=
+    | ("greater"i | "more"i) "than" ("or equal"i PREPOSITION_TO)? valueterm // > ; >=
+    | "up to"i valueterm // <=
     | valueterm CONJUNCTION_OR ("less"i | "fewer"i) // <=
     | valueterm CONJUNCTION_OR ("greater"i | "more"i) // >=
 valuemathoperation.5: ("that much" | "that many") //Example: "create *that many* treasure tokens", "draw twice *that many* cards"

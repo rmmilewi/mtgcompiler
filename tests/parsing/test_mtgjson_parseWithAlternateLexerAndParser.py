@@ -12,10 +12,11 @@ import mtgcompiler.frontend.compilers.LarkMtgJson.grammar as oldGrammar
 class TestGrammarAndParser(unittest.TestCase):
 
     def test_integratingChangesToGrammar(self):
-        shouldOutputVerboseDetails = False #Enables printing of lexer results and parse trees.
+        shouldOutputVerboseDetails = True #Enables printing of lexer results and parse trees.
         useRevisedGrammar = True #Set to False if you want to see how much progress we made over the original grammar
         testAgainstFoundations = True #Set to True if you want to run against all the cards in the Foundations set, False for custom list of strings
         lexerTypeToUse = "basic" #Note: If using the original grammar, lexing will always be done in dynamic mode.
+        skipCardsThatPreviouslyPassed = True #When testing against Foundations cards, output a file with a list of cards that previously passed, and skip those that passed before.
 
         integratedGrammar = """"""
         if useRevisedGrammar:
@@ -31,6 +32,14 @@ class TestGrammarAndParser(unittest.TestCase):
             integratedGrammar = oldGrammar.getGrammar()
             lexerType = "dynamic"
 
+        if testAgainstFoundations and skipCardsThatPreviouslyPassed:
+            if os.path.exists("tests/parsing/foundationsPassedCardList.tmp"):
+                passedCardsFile = open("tests/parsing/foundationsPassedCardList.tmp","r+",encoding='utf-8')
+                passedCardsList = [cardName.rstrip('\n') for cardName in passedCardsFile.readlines()]
+            else:
+                passedCardsFile = open("tests/parsing/foundationsPassedCardList.tmp", "w", encoding='utf-8')
+                passedCardsList = []
+
         compilerUsingIntegratedGrammar = MtgJsonCompiler.MtgJsonCompiler(
             options={"parser.overrideGrammar": integratedGrammar,
                      "parser.startRule": "cardtext",
@@ -39,8 +48,7 @@ class TestGrammarAndParser(unittest.TestCase):
                      })
         parser = compilerUsingIntegratedGrammar.getParser()
         preprocessor = compilerUsingIntegratedGrammar.getPreprocessor()
-        print("\n===================================================================================================")
-        cardsToTest = [
+        cardsToTest = [ #TODO: Each card now needs to have a card name tuple (name,text), so these won't work as written.
             "Clues you control are equipment in addition to their other types.",  # Armed with Proof
             "If two cards that share all their card types were milled this way, sacrifice ~.", #Demonic Covenant
             "During your next turn, you may draw a card.",
@@ -112,29 +120,36 @@ class TestGrammarAndParser(unittest.TestCase):
                 return card['name']
             unique_cards = {get_unique_name(card): card for card in foundationsSet['data']['cards'] if
                             not get_unique_name(card).startswith("A-")}
-            print(len(unique_cards))
+            print(f"There are {len(unique_cards)} unique cards in the set.")
             for name in unique_cards:
                 cardDict = unique_cards[name]
                 if "text" in cardDict:
                     preprocessedText = preprocessor.prelex(cardDict['text'], None, name)
                     cardsToTest.append((name,preprocessedText))
         print("Total card texts to test against: {total}".format(total=len(cardsToTest)))
-        def getLexerResults(card):
+        def getLexerResults(card,name):
             lexerState = lark.lexer.LexerState(text=card, line_ctr=lark.lexer.LineCounter(
                 b'\n' if isinstance(card, bytes) else '\n'))
             lexTimeStart = time.time()
             lexerResults = parser.parser.lexer.lex(state=lexerState, parser_state=None)
             lexTimeEnd = time.time()
-            print(f"Card ({card}) took {lexTimeEnd - lexTimeStart} to lex.")
+            print(f"Card {name} ({card}) took {lexTimeEnd - lexTimeStart} to lex.")
             for token in lexerResults:
                 print(f"{token} ({token.type}) ",end='')
             print("\n")
 
-        for cardName,card in cardsToTest:
+        for i in range(len(cardsToTest)):
+            cardName,card = cardsToTest[i]
+            if testAgainstFoundations and skipCardsThatPreviouslyPassed:
+                if cardName in passedCardsList:
+                    print(f"Skipping {cardName} ({i}/{len(cardsToTest)})")
+                    continue
+            print("===================================================================================================")
+            print(f"Parsing {cardName} ({i}/{len(cardsToTest)})...")
             cardPrettyPrint = card.replace('\n', ' ')
             try:
                 if shouldOutputVerboseDetails and lexerType != "dynamic":
-                    getLexerResults(card)
+                    getLexerResults(card,cardName)
             except Exception as lexingException:
                 lexingException = str(lexingException)[0:200]
                 print(f"Card ({cardPrettyPrint}) produced an exception during lexing: {lexingException}...")
@@ -151,8 +166,10 @@ class TestGrammarAndParser(unittest.TestCase):
                     ambiguityTreeSizeStatement = ""
                 if shouldOutputVerboseDetails:
                     print(parseTree.pretty())
-                print(
-                    f"Card {cardName} ({cardPrettyPrint}) took {fullParseTimeEnd - fullParseTimeStart} to parse. The input had {len(ambiguities)} ambiguities. {ambiguityTreeSizeStatement}")
+                print(f"Card {cardName} ({cardPrettyPrint}) took {fullParseTimeEnd - fullParseTimeStart} to parse. The input had {len(ambiguities)} ambiguities. {ambiguityTreeSizeStatement}")
+                if testAgainstFoundations and skipCardsThatPreviouslyPassed:
+                    passedCardsList.append(cardName)
+                    passedCardsFile.write(f"{cardName}\n")
             except Exception as exception:
                 firstLineOfException = str(exception).split('\n')[0]
                 if shouldOutputVerboseDetails:
