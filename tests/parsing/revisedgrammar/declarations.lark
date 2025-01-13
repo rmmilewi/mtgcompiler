@@ -51,6 +51,7 @@ declarationdecorator.5: "each"i PREPOSITION_OF? -> eachdecorator
 | "the"i -> definitearticledecorator
 | valueterm? "target"i -> targetdecorator
 | "any"i -> anydecorator
+| ONLY FREQUENCY? -> onlydecorator //Example: "*Only twice* each turn", "*only* your opponents"
 
 //A declaration definition is made up of a set of descriptive terms like "a *blue permanent*" or "*two 1/1 green elf creature tokens*".
 //There can be limited nesting of declarations inside definitions like with possessives ("its *owner's* hand") and prepositions
@@ -121,7 +122,7 @@ NONPREFIX.5: "non"i ("-")?
 typeterm.5: negationofterm? (TYPE ["s"i] | SUBTYPESPELL ["s"i] | SUBTYPELAND ["s"i] | SUBTYPEARTIFACT ["s"i] | SUBTYPEENCHANTMENT ["s"i] | SUBTYPEPLANESWALKER | SUBTYPECREATUREA ["s"i] | SUBTYPECREATUREB ["s"i] | SUBTYPEPLANAR | SUPERTYPE)
 modifierterm.5: negationofterm? (ABILITYMODIFIER | KEYWORDSTATUSMODIFIER  | RELATIVEMODIFIER | effectstatusmodifier | playerstatusmodifier)
 qualifierterm.5: negationofterm? QUALIFIER["s"i]
-timeterm.5: PHASE | STEP | TURN | GAME
+timeterm.5: negationofterm? (PHASE | STEP | TURN | GAME)
 playerterm.5: PLAYER["s"i]
 zoneterm.5: ZONE
 powertoughnessterm.5: valueterm "/" valueterm
@@ -558,6 +559,7 @@ valuecomparisonoperation.5: "equal" PREPOSITION_TO valueterm // ==
     | "up to"i valueterm // <=
     | valueterm CONJUNCTION_OR ("less"i | "fewer"i) // <=
     | valueterm CONJUNCTION_OR ("greater"i | "more"i) // >=
+    | valueterm ("less"i | "more"i) //Example(s): "This costs *{1} less* to cast"
 valuemathoperation.5: ("that much" | "that many") //Example: "create *that many* treasure tokens", "draw twice *that many* cards"
 | valueterm "rounded"i ("up"i | "down"i)
 | valueterm "divided"i ("evenly"i | "as you choose")

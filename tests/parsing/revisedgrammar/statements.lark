@@ -20,7 +20,6 @@ compoundstatement.5: (statementwithouttrailingsubstatements | compoundconditiona
 | (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "and"i (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundandstatement
 | (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "or"i (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundorstatement
 
-//Examples: "*Whenever you gain life* *for the first time* *during each of your turns*" (chained conditionals)
 compoundconditionalstatement.5: (condition statementexpression)+
 | statementexpression condition -> compoundconditionalinv
 | conditionalresult postfixexpression -> compoundconditionalresult
