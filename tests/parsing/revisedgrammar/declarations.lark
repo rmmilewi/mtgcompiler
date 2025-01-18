@@ -31,7 +31,7 @@ NAMEREFSYMBOL.5: "~" | "~f"
 //Reference decorators help clarify what is being talked about. Note that reference decorators can have nested
 //references to other defined things (like "your *opponent's* hand").
 //Example(s): "Destroy target creature. *Its* controller [...]" and "*its owner’s* hand." "*that creature’s* toughness."
-referencedecorator.5: thirdpersonimpersonalreference | POSSESSIVEPRONOUNREFERNCE | HERAMBIGUOUSREFERENCE | "which"
+referencedecorator.5: thirdpersonimpersonalreference | POSSESSIVEPRONOUNREFERNCE | HERAMBIGUOUSREFERENCE | "which"i
 thirdpersonimpersonalreference.5: (PRONOUN_THAT | PRONOUN_THOSE) | (PRONOUN_THIS | PRONOUN_THESE)
 PRONOUN_THAT.5: "that"i
 PRONOUN_THOSE.5: "those"i
@@ -58,25 +58,13 @@ declarationdecorator.5: "each"i PREPOSITION_OF? -> eachdecorator
 //("a creature *with a +1/+1 counter* *on it*").
 //declarationdefinition.5: (nonnesteddeclarationterm | nesteddeclarationterm)+
 declarationdefinition.5: declarationdefinition_standardorder //| declarationdefinition_nonstandardorder
-nonnesteddeclarationterm : (valueterm | manaterm | characteristicterm
+nonnesteddeclarationterm : (valueterm | characteristicterm
 | typeterm | colorterm | modifierterm | qualifierterm | timeterm | damageterm | playerterm
 | powertoughnessterm | loyaltycostterm | counterterm | nameterm | variableterm | zoneterm | anytargetterm  | tapuntapsymbol | specialterm
 | cointerm | diceterm | quotedabilityterm)
 nesteddeclarationterm.5: possessiveclarationreference | prepositionalattacheddeclaration
 
-//a 1/1 white Human creature token
-//a 1/1 white Spirit creature token with flying
-//a 1/1 red Mercenary creature token with "{T}: Target creature you control gets +1/+0 until end of turn. Activate only as a sorcery."
-//permanents you control
-//up to one target non-Aura enchantment card
-//a Knight, Aura, Equipment, or legendary artifact card
-//a 1/1 black and green Insect creature token
-//its controller’s graveyard, hand, and library
-// target nonwhite, nonblack creature.
-//a blue, black, or red spell
-//Noninstant, nonsorcery cards
-//each foretold card you own in exile
-declarationdefinition_standardorder.10: possessiveclarationreference* valueterm? powertoughnessterm? modifierterm* (colorterm | damageterm | playerterm | typeterm | powertoughnessterm | loyaltycostterm | tapuntapsymbol | zoneterm | timeterm | manaterm | characteristicterm | qualifierterm | cointerm | diceterm | variableterm | quotedabilityterm)+ (prepositionalattacheddeclaration | declarationverbexpression)*
+declarationdefinition_standardorder.10: possessiveclarationreference* valueterm? powertoughnessterm? modifierterm* (colorterm | damageterm | playerterm | typeterm | powertoughnessterm | loyaltycostterm | tapuntapsymbol | zoneterm | timeterm | valueterm | characteristicterm | qualifierterm | cointerm | diceterm | variableterm | quotedabilityterm)+ (prepositionalattacheddeclaration | declarationverbexpression)*
 | anytargetterm
 | valueterm? counterterm
 | nameterm
@@ -103,9 +91,10 @@ embeddedregulardeclaration.5: declarationdecorator* embeddeddeclarationdefinitio
 embeddedreferencedeclaration.5: referencedecorator+ embeddeddeclarationdefinition | personalpronounreferencedefinition | namereferencedefinition
 embeddeddeclarationdefinition.5: declarationdefinition_standardorder
 
-
-prepositionalattacheddeclaration.5: declarationpreposition declaration //TODO: Temporarily removed embeddeddeclaration.
-declarationpreposition.2: ONLY? (PREPOSITION_OF | PREPOSITION_ON | PREPOSITION_WHO | PREPOSITION_IN | PREPOSITION_UNDER | PREPOSITION_WITHOUT | PREPOSITION_WITH | PREPOSITION_AS | PREPOSITION_EXCEPT | PREPOSITION_TO)
+//TODO: Temporarily removed embeddeddeclaration.
+//TODO: Temporarily expanded prepositionalattacheddeclaration to include expressions like 'damage that *would be dealt*'. Need to clean up this rule.
+prepositionalattacheddeclaration.5: declarationpreposition expressionordeclaration
+declarationpreposition.2: ONLY? (PREPOSITION_OF | PREPOSITION_ON | PREPOSITION_WHO | PREPOSITION_IN | PREPOSITION_UNDER | PREPOSITION_WITHOUT | PREPOSITION_WITH | PREPOSITION_AS | PREPOSITION_EXCEPT | PREPOSITION_TO | PRONOUN_THAT)
 possessiveclarationreference.5: (embeddeddeclarationdefinition | namereferencedefinition) ("'s"|"'")
 specialterm.5: MECHANICSPECIFICTERM
 MECHANICSPECIFICTERM.5: "ring"i //Example: "the *ring* has tempted you two or more times this game"
@@ -129,7 +118,7 @@ powertoughnessterm.5: valueterm "/" valueterm
 
 //NOTE: Planeswalker loyalty costs are sometimes written with brackets when its not a cost (like with Carth the Lion),
 //but without brackets on planeswalker cards.
-loyaltycostterm.5: "[" ((SIGNED_INT | "0") | ((PLUS | MINUS) VARIABLEVALUE)) "]" | ((SIGNED_INT | "0") | ((PLUS | MINUS) VARIABLEVALUE))
+loyaltycostterm.5: "[" ((SIGNED_INT | "0") | ((PLUS | MINUS) VARIABLEVALUESYMBOL)) "]" | ((SIGNED_INT | "0") | ((PLUS | MINUS) VARIABLEVALUESYMBOL))
 counterterm.5: (countertype | powertoughnessterm) COUNTERPRESENT
 characteristicterm.5: negationofterm? (OBJECTCHARACTERISTIC | PLAYERCHARACTERISTIC)
 nameterm.5: "OBJECTNAME"i | ARBITRARYWORD ","? ARBITRARYWORD* //TODO: Remove "OBJECTNAME" placeholder
@@ -151,7 +140,6 @@ variableterm.20: "beginning"i //Example: "the *beginning* of your next upkeep"
 | "way"i //Example: "Creatures destroyed this *way* can't be regenerated."
 | COPYPRESENT //Example(s): "You may have Shapeshifters you control become *copies* of that creature", "choose new targets for the *copy*"
 | "able"i//Example(s): "Target creature blocks this turn if *able*"
-| NUMBERPROPERTY? "number"i["s"i] //Example(s): "the *number* of cards you drew this term", "a *prime number* of lands"
 | ADDITION //Example(s): "This creature is the chosen type in *addition* to its other types." //TODO: This may be the wrong place to put "addition".
 anytargetterm.5: "any target"i //Special nullary variant like "~ deals three damage to *any target*"
 ADDITION.10: "addition"i
@@ -183,7 +171,7 @@ specialkeywordedabilitydefinition.5: specialkeywordedabilitydefinition_hexproof 
 | specialkeywordedabilitydefinition_spree | specialkeywordedabilitydefinition_banding | specialkeywordedabilitydefinition_protection
 
 //Example(s): "Hexproof", "Hexproof from", "Hexproof from artifacts, creatures, and enchantments"
-specialkeywordedabilitydefinition_hexproof.5: KEYWORDEDABILITY_HEXPROOF (PREPOSITION_FROM declaration ("and" PREPOSITION_FROM declaration)? )?
+specialkeywordedabilitydefinition_hexproof.5: KEYWORDEDABILITY_HEXPROOF (PREPOSITION_FROM declaration (CONJUNCTION_AND PREPOSITION_FROM declaration)? )?
 
 //Example(s): "Target creature loses all *landwalk* abilities until end of turn." (generic reference to landwalk abilities), "Islandwalk", "Legendary landwalk",
 specialkeywordedabilitydefinition_landwalk.5: typeterm+ "walk"i
@@ -427,7 +415,7 @@ KEYWORDEDABILITY_WITHER.5: "wither"i
 //Below are hardcoded game terms used in declarations.
 PLAYER.10: "player"i | "opponent"i |  "teammate"i | "team"i | "controller"i | "owner"i
 PLAYERCHARACTERISTIC.10: "maximum hand size" | "life total"["s"i] | "life"i | "cards in hand" | "deck"i | "priority"i
-OBJECTCHARACTERISTIC.10: "card"i? "name"i["s"i] | "mana value"["s"i] | "color"i["s"i] | "color indicator"["s"i] | "type"i["s"i] | "card type"["s"i] | "subtype"i["s"i] | "supertype"i["s"i]
+OBJECTCHARACTERISTIC.5: "card"i? NAMEPRESENT | "mana value"["s"i] | "color"i["s"i] | "color indicator"["s"i] | "type"i["s"i] | "card type"["s"i] | "subtype"i["s"i] | "supertype"i["s"i]
 | "rules text" | ("ability"i | "abilities"i ) | "power"i | "toughness"i | "base power" | "base toughness" | "loyalty"i | "hand modifier" | "life modifier"
 ZONE.10: "battlefield"i | "graveyard"i["s"i] | ("library"i|"libraries"i) | "hand"i["s"i] | "stack"i | EXILEPRESENT | "command zone" | "outside the game" | "anywhere"i
 TYPE.10: "planeswalker"i | "conspiracy"i | "creature"i | "enchantment"i | "instant"i | "land"i | "phenomenon"i | "plane"i | "artifact"i | "scheme"i | "sorcery"i | "tribal"i | "vanguard"i
@@ -483,7 +471,7 @@ DAMAGETYPE.10: "damage"i | "combat damage" | "excess damage"
 ABILITYMODIFIER.5: "mana"i | "loyalty"i | "intrinsic"i //Example(s): "*mana* abilities", "*loyalty* abilities", "this permanent has the *intrinsic* mana ability '{T}: Add {W}.'"
 RELATIVEMODIFIER.10: "next"i | "additional"i | "extra"i | "top"i | "bottom"i | "new"i //Example(s): "an *additional* +1/+1 counter", "take an *extra* turn"
 playerstatusmodifier.5: negationofterm? "active"i | "defending"i //Example(s): "the *active* player", "the *defending* player"
-KEYWORDSTATUSMODIFIER.5: "paired"i | "kicked"i | "face-up" | "face-down" //TODO.5: This will need to be generalized more.
+KEYWORDSTATUSMODIFIER.5: "paired"i | "face-up" | "face-down" //TODO.5: This will need to be generalized more.
 | "fortified"i | "monstrous"i
 effectstatusmodifier.5: reservedverb_pastonly | reservedverb_participleorgerundonly
 QUALIFIER.10: "card"i | "permanent"i | "source"i | "spell"i | "token"i | "effect"i
@@ -544,24 +532,26 @@ TAPSYMBOL.5: "{T}"i
 UNTAPSYMBOL.5: "{Q}"i
 
 //Rules for representing numeric values and math operations
-valueterm.5: INT | SIGNED_INT  | CARDINAL ("time"i["s"i])?| ORDINAL | FREQUENCY | VARIABLEVALUE | valueoperation
+valueterm.5: INT | SIGNED_INT  | CARDINAL ("time"i["s"i])?| ORDINAL | FREQUENCY | variablevalue | valueoperation | manaterm
 FREQUENCY.5: "once"i | "twice"i
 CARDINAL.10: "one"i | "two"i | "three"i | "four"i | "five"i | "six"i | "seven"i | "eight"i | "nine"i | "ten"i
 | "eleven"i | "twelve"i | "thirteen"i | "fourteen"i | "fifteen"i | "sixteen"i | "seventeen"i | "eighteen"i | "nineteen"i | "twenty"i //TODO: Extend this list.
 ORDINAL.5: "first"i | "second"i | "third"i | "fourth"i | "fifth"i | "sixth"i | "seventh"i | "eighth"i | "ninth"i | "tenth"i //TODO: Extend this list.
-VARIABLEVALUE.5: "x"i | "*"
+variablevalue.5: VARIABLEVALUESYMBOL | definednumberterm
+definednumberterm.5: NUMBERPROPERTY? "number"i["s"i] //Example(s): "the *number* of cards you drew this term", "a *prime number* of lands"
+VARIABLEVALUESYMBOL.5: "x"i | "*"
 NUMBERPROPERTY.5: "odd"i | "even"i | "prime"i
 
 valueoperation.5: valuecomparisonoperation | valuemathoperation
-valuecomparisonoperation.5: "equal" PREPOSITION_TO valueterm // ==
-    | "less"i "than"i (CONJUNCTION_OR "equal"i PREPOSITION_TO)? valueterm // < ; <=
-    | ("greater"i | "more"i) "than" ("or equal"i PREPOSITION_TO)? valueterm // > ; >=
-    | "up to"i valueterm // <=
-    | valueterm CONJUNCTION_OR ("less"i | "fewer"i) // <=
-    | valueterm CONJUNCTION_OR ("greater"i | "more"i) // >=
-    | valueterm ("less"i | "more"i) //Example(s): "This costs *{1} less* to cast"
+valuecomparisonoperation.5: "equal"i PREPOSITION_TO (valueterm | declaration) // ==
+    | "less"i "than"i (CONJUNCTION_OR "equal"i PREPOSITION_TO)? (valueterm | declaration) // < ; <=
+    | ("greater"i | "more"i) "than" ("or equal"i PREPOSITION_TO)? (valueterm | declaration) // > ; >=
+    | "up"i PREPOSITION_TO (valueterm | declaration) // <=
+    | (valueterm | declaration) CONJUNCTION_OR ("less"i | "fewer"i) // <=
+    | (valueterm | declaration) CONJUNCTION_OR ("greater"i | "more"i) // >=
+    | (valueterm | declaration) ("less"i | "more"i) //Example(s): "This costs *{1} less* to cast"
 valuemathoperation.5: ("that much" | "that many") //Example: "create *that many* treasure tokens", "draw twice *that many* cards"
-| valueterm "rounded"i ("up"i | "down"i)
-| valueterm "divided"i ("evenly"i | "as you choose")
-| valueterm "plus"i valueterm //Example: "the number of Elves you control *plus* the number of Elf cards in your graveyard."
-| valueterm "minus"i valueterm //Example: "the number of cards in your hand *minus* the number of cards in that player’s hand."
+| (valueterm | declaration) "rounded"i ("up"i | "down"i)
+| (valueterm | declaration) "divided"i ("evenly"i | "as you choose")
+| (valueterm | declaration) "plus"i (valueterm | declaration) //Example: "the number of Elves you control *plus* the number of Elf cards in your graveyard."
+| (valueterm | declaration) "minus"i (valueterm | declaration) //Example: "the number of cards in your hand *minus* the number of cards in that player’s hand."

@@ -17,17 +17,17 @@ modalstatement.5:  CHOOSEPRESENT expressionordeclaration DASH modalchoicestateme
 modalchoicestatement.5: MODALCHOICE abilityworddecorator? statementblock remindertextdecorator?
 
 compoundstatement.5: (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? PREPOSITION_THEN (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundthenstatement
-| (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "and"i (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundandstatement
-| (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? "or"i (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundorstatement
+| (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? CONJUNCTION_AND (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundandstatement
+| (statementwithouttrailingsubstatements | compoundconditionalstatement) ("," (statementwithouttrailingsubstatements | compoundconditionalstatement))* ","? CONJUNCTION_OR (statementwithouttrailingsubstatements | standaloneconditionalstatement) -> compoundorstatement
 
 compoundconditionalstatement.5: (condition statementexpression)+
 | statementexpression condition -> compoundconditionalinv
 | conditionalresult postfixexpression -> compoundconditionalresult
 
-standaloneconditionalstatement.5: PREPOSITION_THEN? (condition statementexpression)+ postfixexpression? "," PREPOSITION_THEN? (conditionalresult postfixexpression? | standaloneconditionalstatement)
-| PREPOSITION_THEN? statementexpression condition statementexpression postfixexpression?
+standaloneconditionalstatement.5: (PREPOSITION_THEN | PREPOSITION_INSTEAD)? (condition statementexpression)+ postfixexpression? "," (PREPOSITION_THEN | PREPOSITION_INSTEAD)? (conditionalresult postfixexpression? | standaloneconditionalstatement)
+| (PREPOSITION_THEN | PREPOSITION_INSTEAD)? statementexpression condition statementexpression postfixexpression?
 conditionalresult.5: statementwithouttrailingsubstatements
-postfixexpression.5: PREPOSITION_INSTEAD | PREPOSITION_RATHER statementwithouttrailingsubstatements | condition statementexpression | postfixexpression ("and"i | "or"i | "and/or"i) postfixexpression
+postfixexpression.5: PREPOSITION_INSTEAD | PREPOSITION_RATHER statementwithouttrailingsubstatements | condition statementexpression | postfixexpression (CONJUNCTION_AND | CONJUNCTION_OR | CONJUNCTION_ANDOR) postfixexpression
 
 condition.5: ONLY? (PREPOSITION_IF | PREPOSITION_WHENEVER | PREPOSITION_WHEN | PREPOSITION_AS
 | PREPOSITION_UNTIL | PREPOSITION_AFTER | PREPOSITION_OTHERWISE | PREPOSITION_UNLESS | PREPOSITION_WHILE
@@ -74,10 +74,10 @@ PREPOSITION_WITH.5: "with"i
 PREPOSITION_WITHOUT.10: "without"i
 
 CONJUNCTIONS.5: CONJUNCTION_AND | CONJUNCTION_OR | CONJUNCTION_ANDOR | CONJUNCTION_NOR | CONJUNCTION_NEITHER
-CONJUNCTION_AND.0: "and"i
-CONJUNCTION_OR.0: "or"i
+CONJUNCTION_AND.1: "and"i
+CONJUNCTION_OR.1: "or"i
 CONJUNCTION_ANDOR.5: "and/or"i
-CONJUNCTION_NOR.0: "nor"i
+CONJUNCTION_NOR.1: "nor"i
 CONJUNCTION_NEITHER.5: "neither"i
 
 
