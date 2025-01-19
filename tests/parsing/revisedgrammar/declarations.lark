@@ -3,10 +3,12 @@
 //A reference points to a declaration that was made earlier or that is already assumed to exist.
 //Example(s) : "draw a card if *that creature* had power 3 or greater" or "target creature blocks *this turn* if able"
 declaration.5: singledeclaration | compounddeclaration
-compounddeclaration.5:  singledeclaration ("," singledeclaration ",")* CONJUNCTION_OR singledeclaration -> orcompounddeclaration
-| singledeclaration ("," singledeclaration ",")* CONJUNCTION_AND singledeclaration -> andcompounddeclaration
-| singledeclaration ("," singledeclaration ",")* CONJUNCTION_ANDOR singledeclaration -> andorcompounddeclaration
-| CONJUNCTION_NEITHER singledeclaration CONJUNCTION_NOR singledeclaration -> neithernorcompounddeclaration
+compounddeclaration.5: declarationdecorator* compounddeclarationdefinition_arbitraryorder ("," compounddeclarationdefinition_arbitraryorder) -> singlecommacompounddeclaration //Example(s): "a nontoken, non-Angel creature you control"
+| declarationdecorator* compounddeclarationdefinition_arbitraryorder ("," compounddeclarationdefinition_arbitraryorder ",")* CONJUNCTION_OR compounddeclarationdefinition_arbitraryorder -> orcompounddeclaration //Example(s): "target green, white, or blue creature"
+| declarationdecorator* compounddeclarationdefinition_arbitraryorder ("," compounddeclarationdefinition_arbitraryorder ",")* CONJUNCTION_AND compounddeclarationdefinition_arbitraryorder -> andcompounddeclaration //Example(s): "a 1/1 black and green Pest creature token"
+| declarationdecorator* compounddeclarationdefinition_arbitraryorder ("," compounddeclarationdefinition_arbitraryorder ",")* CONJUNCTION_ANDOR compounddeclarationdefinition_arbitraryorder -> andorcompounddeclaration //Example(s): "you and/or one or more planeswalkers you control"
+| CONJUNCTION_NEITHER declarationdecorator* compounddeclarationdefinition_arbitraryorder CONJUNCTION_NOR compounddeclarationdefinition_arbitraryorder -> neithernorcompounddeclaration //Example(s): "neither day nor night"
+
 singledeclaration.5: decorateddeclaration | keywordabilitydeclaration | nakeddeclaration
 decorateddeclaration.5: regulardeclaration | referencedeclaration
 regulardeclaration.5: declarationdecorator+ declarationdefinition
@@ -67,6 +69,8 @@ targetasnoun.5: TARGETPRESENT //Example(s): "~ deals 2 damage divided as you cho
 declarationverbexpression: PRONOUN_THAT? (decorateddeclaration | nakedreferencedeclaration) (reservedverbverb | simpleverb) //TODO: This likely causes an ambiguity conflict with expressions. Who owns "destroy target creature *you control*", the destroy expression or the target creature declaration?
 | PRONOUN_THAT? (reservedverbverb | simpleverb) "not"? (decorateddeclaration | nakedreferencedeclaration)
 
+//This declaration definition rule is only used inside of compound declarations.
+compounddeclarationdefinition_arbitraryorder: (modifierterm | colorterm | damageterm | playerterm | typeterm | powertoughnessterm | loyaltycostterm | tapuntapsymbol | zoneterm | timeterm | valueterm | characteristicterm | qualifierterm | cointerm | diceterm | variableterm | quotedabilityterm | targetasnoun)+ (prepositionalattacheddeclaration | declarationverbexpression)*
 
 
 
