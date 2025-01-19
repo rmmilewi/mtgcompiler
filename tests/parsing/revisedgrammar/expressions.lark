@@ -4,9 +4,23 @@
 //if statement "if you control a modified creature, draw a card" is equivalent to (if the expression "you control a modified creature" evaluates
 //to true, make the expression "draw a card" happen.
 
-TEST.100: "TEST"
-expression.5: simpleverbexpression | reservedverbexpression
+expression.5: simpleverbexpression | reservedverbexpression | mathexpression
 expressionordeclaration.5: expression | declaration
+
+
+mathexpression.5: mathcomparisonexpression | mathoperationexpression
+mathcomparisonexpression.5: expressionordeclaration "equal"i PREPOSITION_TO expressionordeclaration // ==
+    | expressionordeclaration? "less"i "than"i (CONJUNCTION_OR "equal"i PREPOSITION_TO)? expressionordeclaration // < ; <=
+    | expressionordeclaration? ("greater"i | "more"i) "than" ("or equal"i PREPOSITION_TO)? expressionordeclaration // > ; >=
+    | expressionordeclaration? "up"i PREPOSITION_TO expressionordeclaration // <=
+    | expressionordeclaration CONJUNCTION_OR ("less"i | "fewer"i) // <=
+    | expressionordeclaration CONJUNCTION_OR ("greater"i | "more"i) // >=
+    | expressionordeclaration ("less"i | "more"i) //Example(s): "This costs *{1} less* to cast"
+mathoperationexpression.5: expressionordeclaration "rounded"i ("up"i | "down"i) //TODO: This is usually read as an adverb like "Heartless Hidetsugu deals damage to each player equal to half that player’s life total, *rounded down*."
+| expressionordeclaration MATHOPERATION_PLUS expressionordeclaration //Example: "the number of Elves you control *plus* the number of Elf cards in your graveyard."
+| expressionordeclaration MATHOPERATION_MINUS expressionordeclaration //Example: "the number of cards in your hand *minus* the number of cards in that player’s hand."
+MATHOPERATION_PLUS.5: "plus"i
+MATHOPERATION_MINUS.5: "minus"i
 
 simpleverbexpression.5: expressionordeclaration? ( ((BEPRESENT | BEPAST | BEFUTURESUBJUNCTIVE) ("not")? expressionordeclaration) | (("not")? (BEPARTICIPLEORGERUND | BEPLAIN) expressionordeclaration) ) -> beexpression
 | expressionordeclaration? verb_have ("not")? expressionordeclaration -> haveexpression
@@ -28,11 +42,13 @@ reservedverbadverb.5: "secretly" //Example(s): "*secretly* choose Human, Merfolk
 | "at random"i //Example(s): "Return a card at random from your graveyard to your hand" //TODO: this doesn't work with Ghoulraiser, adverbs can be placed elsewhere.
 | "still"i //Example(s): "It is *still* a land"
 | "so"i //Example(s): "While doing *so*, the player can activate mana abilities [...]"
-reservedverbobject.5: declaration
+| "evenly"i //Example(s): "Fireball deals X damage divided *evenly*, rounded down, among any number of targets."
+reservedverbobject.5: declaration | mathexpression
 reservedverbmodifiers.5: reservedverbprepositionmodifiers | reservedverbdeclarationmodifiers | reservedverbexpression //TODO: I put a 'reservedverbexpression' rule here to capture things like "exile target creature *you control*", but is that the right way to do this?
 reservedverbprepositionmodifiers.5: expressionpreposition expressionordeclaration //Example(s): "Return target creature card *from your graveyard* *to the battlefield*."
 reservedverbdeclarationmodifiers.5: decorateddeclaration //Example(s): "Up to two target creatures can’t block *this turn*."
-expressionpreposition.0: ONLY? (PREPOSITION_FROM //Example(s): "return target creature *from* your graveyard to the battlefield"
+expressionpreposition.0: ONLY? ( PREPOSITION_AMONG //Example(s): "Distribute two +1/+1 counters *among* one or two target creatures."
+| PREPOSITION_FROM //Example(s): "return target creature *from* your graveyard to the battlefield"
 | PREPOSITION_INTO //Example(s): "put that card *into* your graveyard"
 | PREPOSITION_ONTO //Example(s): "put that card *onto* the battlefield"
 | PREPOSITION_TO //Examples(s): "this spell costs {1} less *to* cast for each [...]", "~ deals 3 damage *to* target creature"
@@ -45,39 +61,39 @@ simpleverb.5: verb_be | verb_have | verb_can | verb_become | verb_may | verb_mus
 
 reservedverb.10: verb_abandon | verb_activate | verb_adapt | verb_add | verb_amass | verb_assign | verb_attach | verb_attack | verb_block | verb_bolster | verb_cast
 | verb_cause | verb_change | verb_choose | verb_clash | verb_cloak | verb_collect | verb_connive | verb_control | verb_copy | verb_counter | verb_create | verb_cycle
-| verb_deal | verb_declare | verb_destroy | verb_detain | verb_die | verb_discard | verb_discover | verb_double | verb_draw | verb_enter | verb_enchant
+| verb_deal | verb_declare | verb_destroy | verb_detain | verb_die | verb_discard | verb_discover | verb_divide | verb_double | verb_draw | verb_enter | verb_enchant
 | verb_equip | verb_exchange | verb_exert | verb_exile | verb_explore | verb_fateseal | verb_fight | verb_flip | verb_forage | verb_gain | verb_get | verb_gift
-| verb_goad | verb_incubate | verb_investigate | verb_kick | verb_learn | verb_leave | verb_look | verb_lose | verb_name | verb_manifest | verb_meld | verb_mill | verb_pay
+| verb_goad | verb_incubate | verb_investigate | verb_kick | verb_learn | verb_leave | verb_look | verb_lose | verb_name | verb_manifest | verb_meld | verb_mill | verb_multiply | verb_pay
 | verb_planeswalk | verb_play | verb_populate | verb_prevent | verb_proliferate | verb_put | verb_regenerate | verb_remain | verb_remove | verb_resolve | verb_return
 | verb_roll | verb_reveal | verb_sacrifice | verb_scry | verb_search | verb_setinmotion | verb_separate | verb_share | verb_shuffle | verb_skip | verb_spend | verb_support | verb_surveil
-| verb_suspect | verb_suspend | verb_switch | verb_take | verb_tap | verb_tempt | verb_timetravel | verb_transform | verb_trigger | verb_turn | verb_vote | verb_win
+| verb_subtract | verb_suspect | verb_suspend | verb_switch | verb_take | verb_tap | verb_target | verb_tempt | verb_timetravel | verb_transform | verb_trigger | verb_turn | verb_vote | verb_win
 
 reservedverb_presentonly.5: ABANDONPRESENT | ACTIVATEPRESENT | ADAPTPRESENT | ADDPRESENT | AMASSPRESENT | ASSIGNPRESENT | ATTACHPRESENT | ATTACKPRESENT | BLOCKPRESENT | BOLSTERPRESENT | CASTPRESENT
 | CAUSEPRESENT | CHANGEPRESENT | CHOOSEPRESENT | CLASHPRESENT | CLOAKPRESENT | COLLECTPRESENT | CONNIVEPRESENT | CONTROLPRESENT | COPYPRESENT | COUNTERPRESENT | CREATEPRESENT | CYCLEPRESENT
-| DEALPRESENT | DECLAREPRESENT | DESTROYPRESENT | DETAINPRESENT | DIEPRESENT | DISCARDPRESENT | DISCOVERPRESENT | DOUBLEPRESENT | DRAWPRESENT | ENTERPRESENT | ENCHANTPRESENT
+| DEALPRESENT | DECLAREPRESENT | DESTROYPRESENT | DETAINPRESENT | DIEPRESENT | DISCARDPRESENT | DISCOVERPRESENT | DIVIDEPRESENT | DOUBLEPRESENT | DRAWPRESENT | ENTERPRESENT | ENCHANTPRESENT
 | EQUIPPRESENT | EXCHANGEPRESENT | EXERTPRESENT | EXILEPRESENT | EXPLOREPRESENT | FATESEALPRESENT | FIGHTPRESENT | FLIPPRESENT | FORAGEPRESENT | GAINPRESENT | GETPRESENT | GIFTPRESENT
-| GOADPRESENT | INCUBATEPRESENT | INVESTIGATEPRESENT | KICKPRESENT | LEARNPRESENT | LEAVEPRESENT | LOOKPRESENT | LOSEPRESENT | NAMEPRESENT | MANIFESTPRESENT | MELDPRESENT | MILLPRESENT | PAYPRESENT
+| GOADPRESENT | INCUBATEPRESENT | INVESTIGATEPRESENT | KICKPRESENT | LEARNPRESENT | LEAVEPRESENT | LOOKPRESENT | LOSEPRESENT | NAMEPRESENT | MANIFESTPRESENT | MELDPRESENT | MILLPRESENT | MULTIPLYPRESENT | PAYPRESENT
 | PLANESWALKPRESENT | PLAYPRESENT | POPULATEPRESENT | PREVENTPRESENT | PROLIFERATEPRESENT | PUTPRESENT | REGENERATEPRESENT | REMAINPRESENT | REMOVEPRESENT | RESOLVEPRESENT | RETURNPRESENT
 | ROLLPRESENT | REVEALPRESENT | SACRIFICEPRESENT | SCRYPRESENT | SEARCHPRESENT | SETINMOTIONPRESENT | SEPARATEPRESENT | SHAREPRESENT | SHUFFLEPRESENT | SKIPPRESENT | SPENDPRESENT | SUPPORTPRESENT | SURVEILPRESENT
-| SUSPECTPRESENT | SUSPENDPRESENT | SWITCHPRESENT | TAKEPRESENT | TAPPRESENT | TEMPTPRESENT | TIMETRAVELPRESENT | TRANSFORMPRESENT | TRIGGERPRESENT | TURNPRESENT | VOTEPRESENT | WINPRESENT
+| SUBTRACTPRESENT | SUSPECTPRESENT | SUSPENDPRESENT | SWITCHPRESENT | TAKEPRESENT | TAPPRESENT | TARGETPRESENT | TEMPTPRESENT | TIMETRAVELPRESENT | TRANSFORMPRESENT | TRIGGERPRESENT | TURNPRESENT | VOTEPRESENT | WINPRESENT
 
 reservedverb_pastonly.5: ABANDONPAST | ACTIVATEPAST | ADAPTPAST | ADDPAST | AMASSPAST | ASSIGNPAST | ATTACHPAST | ATTACKPAST | BLOCKPAST | BOLSTERPAST | CASTPAST
 | CAUSEPAST | CHANGEPAST | CHOOSEPAST | CLASHPAST | CLOAKPAST | COLLECTPAST | CONNIVEPAST | CONTROLPAST | COPYPAST | COUNTERPAST | CREATEPAST | COSTPRESENT | CYCLEPAST
-| DEALPAST | DECLAREPAST | DESTROYPAST | DETAINPAST | DIEPAST | DISCARDPAST | DISCOVERPAST | DOUBLEPAST | DRAWPAST | ENTERPAST | ENCHANTPAST
+| DEALPAST | DECLAREPAST | DESTROYPAST | DETAINPAST | DIEPAST | DISCARDPAST | DISCOVERPAST | DIVIDEPAST | DOUBLEPAST | DRAWPAST | ENTERPAST | ENCHANTPAST
 | EQUIPPAST | EXCHANGEPAST | EXERTPAST | EXILEPAST | EXPLOREPAST | FATESEALPAST | FIGHTPAST | FLIPPAST | FORAGEPAST | GAINPAST | GETPAST | GIFTPAST
-| GOADPAST | INCUBATEPAST | INVESTIGATEPAST | KICKPAST | LEARNPAST | LEAVEPAST | LOOKPAST | LOSEPAST | NAMEPAST | MANIFESTPAST | MELDPAST | MILLPAST | PAYPAST
+| GOADPAST | INCUBATEPAST | INVESTIGATEPAST | KICKPAST | LEARNPAST | LEAVEPAST | LOOKPAST | LOSEPAST | NAMEPAST | MANIFESTPAST | MELDPAST | MILLPAST | MULTIPLYPAST | PAYPAST
 | PLANESWALKPAST | PLAYPAST | POPULATEPAST | PREVENTPAST | PROLIFERATEPAST | PUTPAST | REGENERATEPAST | REMAINPAST | REMOVEPAST | RESOLVEPAST | RETURNPAST
 | ROLLPAST | REVEALPAST | SACRIFICEPAST | SCRYPAST | SEARCHPAST | SEPARATEPAST | SHAREPAST | SHUFFLEPAST | SKIPPAST | SPENDPAST | SUPPORTPAST | SURVEILPAST
-| SUSPECTPAST | SUSPENDPAST | SWITCHPAST | TAKEPAST | TAPPAST | TEMPTPAST | TIMETRAVELPAST | TRANSFORMPAST | TRIGGERPAST | TURNPAST | VOTEPAST | WINPAST
+| SUBTRACTPAST | SUSPECTPAST | SUSPENDPAST | SWITCHPAST | TAKEPAST | TAPPAST | TARGETPAST | TEMPTPAST | TIMETRAVELPAST | TRANSFORMPAST | TRIGGERPAST | TURNPAST | VOTEPAST | WINPAST
 
 reservedverb_participleorgerundonly.5: ABANDONPARTICIPLEORGERUND | ACTIVATEPARTICIPLEORGERUND | ADAPTPARTICIPLEORGERUND | ADDPARTICIPLEORGERUND | AMASSPARTICIPLEORGERUND | ASSIGNPARTICIPLEORGERUND | ATTACHPARTICIPLEORGERUND | ATTACKPARTICIPLEORGERUND | BLOCKPARTICIPLEORGERUND | BOLSTERPARTICIPLEORGERUND | CASTPARTICIPLEORGERUND
 | CAUSEPARTICIPLEORGERUND | CHANGEPARTICIPLEORGERUND | CHOOSEPARTICIPLEORGERUND | CLASHPARTICIPLEORGERUND | CLOAKPARTICIPLEORGERUND | COLLECTPARTICIPLEORGERUND | CONNIVEPARTICIPLEORGERUND | CONTROLPARTICIPLEORGERUND | COPYPARTICIPLEORGERUND | COUNTERPARTICIPLEORGERUND | CREATEPARTICIPLEORGERUND | COSTPARTICIPLEORGERUND | CYCLEPARTICIPLEORGERUND
-| DEALPARTICIPLEORGERUND | DECLAREPARTICIPLEORGERUND | DESTROYPARTICIPLEORGERUND | DETAINPARTICIPLEORGERUND | DIEPARTICIPLEORGERUND | DISCARDPARTICIPLEORGERUND | DISCOVERPARTICIPLEORGERUND | DOUBLEPARTICIPLEORGERUND | DRAWPARTICIPLEORGERUND | ENTERPARTICIPLEORGERUND | ENCHANTPARTICIPLEORGERUND
+| DEALPARTICIPLEORGERUND | DECLAREPARTICIPLEORGERUND | DESTROYPARTICIPLEORGERUND | DETAINPARTICIPLEORGERUND | DIEPARTICIPLEORGERUND | DISCARDPARTICIPLEORGERUND | DISCOVERPARTICIPLEORGERUND | DIVIDEPARTICIPLEORGERUND | DOUBLEPARTICIPLEORGERUND | DRAWPARTICIPLEORGERUND | ENTERPARTICIPLEORGERUND | ENCHANTPARTICIPLEORGERUND
 | EQUIPPARTICIPLEORGERUND | EXCHANGEPARTICIPLEORGERUND | EXERTPARTICIPLEORGERUND | EXILEPARTICIPLEORGERUND | EXPLOREPARTICIPLEORGERUND | FATESEALPARTICIPLEORGERUND | FIGHTPARTICIPLEORGERUND | FLIPPARTICIPLEORGERUND | FORAGEPARTICIPLEORGERUND | GAINPARTICIPLEORGERUND | GETPARTICIPLEORGERUND | GIFTPARTICIPLEORGERUND
-| GOADPARTICIPLEORGERUND | INCUBATEPARTICIPLEORGERUND | INVESTIGATEPARTICIPLEORGERUND | KICKPARTICIPLEORGERUND | LEARNPARTICIPLEORGERUND | LEAVEPARTICIPLEORGERUND | LOOKPARTICIPLEORGERUND | LOSEPARTICIPLEORGERUND | NAMEPARTICIPLEORGERUND | MANIFESTPARTICIPLEORGERUND | MELDPARTICIPLEORGERUND | MILLPARTICIPLEORGERUND | PAYPARTICIPLEORGERUND
+| GOADPARTICIPLEORGERUND | INCUBATEPARTICIPLEORGERUND | INVESTIGATEPARTICIPLEORGERUND | KICKPARTICIPLEORGERUND | LEARNPARTICIPLEORGERUND | LEAVEPARTICIPLEORGERUND | LOOKPARTICIPLEORGERUND | LOSEPARTICIPLEORGERUND | NAMEPARTICIPLEORGERUND | MANIFESTPARTICIPLEORGERUND | MELDPARTICIPLEORGERUND | MILLPARTICIPLEORGERUND | MULTIPLYPARTICIPLEORGERUND | PAYPARTICIPLEORGERUND
 | PLANESWALKPARTICIPLEORGERUND | PLAYPARTICIPLEORGERUND | POPULATEPARTICIPLEORGERUND | PREVENTPARTICIPLEORGERUND | PROLIFERATEPARTICIPLEORGERUND | PUTPARTICIPLEORGERUND | REGENERATEPARTICIPLEORGERUND | REMAINPARTICIPLEORGERUND | REMOVEPARTICIPLEORGERUND | RESOLVEPARTICIPLEORGERUND | RETURNPARTICIPLEORGERUND
 | ROLLPARTICIPLEORGERUND | REVEALPARTICIPLEORGERUND | SACRIFICEPARTICIPLEORGERUND | SCRYPARTICIPLEORGERUND | SEARCHPARTICIPLEORGERUND | SEPARATEPARTICIPLEORGERUND | SHAREPARTICIPLEORGERUND | SHUFFLEPARTICIPLEORGERUND | SKIPPARTICIPLEORGERUND | SPENDPARTICIPLEORGERUND | SUPPORTPARTICIPLEORGERUND | SURVEILPARTICIPLEORGERUND
-| SUSPECTPARTICIPLEORGERUND | SUSPENDPARTICIPLEORGERUND | SWITCHPARTICIPLEORGERUND | TAKEPARTICIPLEORGERUND | TAPPARTICIPLEORGERUND | TEMPTPARTICIPLEORGERUND | TIMETRAVELPARTICIPLEORGERUND | TRANSFORMPARTICIPLEORGERUND | TRIGGERPARTICIPLEORGERUND | TURNPARTICIPLEORGERUND | VOTEPARTICIPLEORGERUND | WINPARTICIPLEORGERUND
+| SUBTRACTPARTICIPLEORGERUND | SUSPECTPARTICIPLEORGERUND | SUSPENDPARTICIPLEORGERUND | SWITCHPARTICIPLEORGERUND | TAKEPARTICIPLEORGERUND | TAPPARTICIPLEORGERUND | TARGETPARTICIPLEORGERUND | TEMPTPARTICIPLEORGERUND | TIMETRAVELPARTICIPLEORGERUND | TRANSFORMPARTICIPLEORGERUND | TRIGGERPARTICIPLEORGERUND | TURNPARTICIPLEORGERUND | VOTEPARTICIPLEORGERUND | WINPARTICIPLEORGERUND
 
 verb_be.5: BEPRESENT | BEPAST | BEPARTICIPLEORGERUND | BEFUTURESUBJUNCTIVE | BEPLAIN
 BEPRESENT.5: ("is"i | "are"i)
@@ -262,6 +278,12 @@ DISCOVERPRESENT.5: "discover"i["s"i]
 DISCOVERPAST.6: "discovered"i
 DISCOVERPARTICIPLEORGERUND.6: "discovering"i
 
+verb_divide.5: DIVIDEPRESENT | DIVIDEPAST | DIVIDEPARTICIPLEORGERUND
+DIVIDEPRESENT.5: "divide"i["s"i]
+DIVIDEPAST.6: "divided"i
+DIVIDEPARTICIPLEORGERUND.6: "dividing"i
+
+
 verb_double.5: DOUBLEPRESENT | DOUBLEPAST | DOUBLEPARTICIPLEORGERUND
 DOUBLEPRESENT.5: "double"i["s"i]
 DOUBLEPAST.6: "doubled"i
@@ -402,6 +424,11 @@ MILLPRESENT.5: "mill"i["s"i]
 MILLPAST.6: "milled"i
 MILLPARTICIPLEORGERUND.6: "milling"i
 
+verb_multiply.5: MULTIPLYPRESENT | MULTIPLYPAST | MULTIPLYPARTICIPLEORGERUND
+MULTIPLYPRESENT.5: "multiply"i | "multiplies"i
+MULTIPLYPAST.6: "multiplied"i
+MULTIPLYPARTICIPLEORGERUND.6: "multiplying"i
+
 verb_pay.5: PAYPRESENT | PAYPAST | PAYPARTICIPLEORGERUND
 PAYPRESENT.5: "pay"i["s"i]
 PAYPAST.6: "paid"i
@@ -530,6 +557,11 @@ SUSPECTPRESENT.5: "suspect"i["s"i]
 SUSPECTPAST.6: "suspected"i
 SUSPECTPARTICIPLEORGERUND.6: "suspecting"i
 
+verb_subtract.5: SUBTRACTPRESENT | SUBTRACTPAST | SUBTRACTPARTICIPLEORGERUND
+SUBTRACTPRESENT.5: "subtract"i["s"i]
+SUBTRACTPAST.6: "subtracted"i
+SUBTRACTPARTICIPLEORGERUND.6: "subtracting"i
+
 verb_suspend.5: SUSPENDPRESENT | SUSPENDPAST | SUSPENDPARTICIPLEORGERUND
 SUSPENDPRESENT.5: "suspend"i["s"i]
 SUSPENDPAST.6: "suspended"i
@@ -549,6 +581,11 @@ verb_tap.5: TAPPRESENT | TAPPAST | TAPPARTICIPLEORGERUND
 TAPPRESENT.5: "un"i? "tap"i["s"i]
 TAPPAST.6: "un"i? "tapped"i
 TAPPARTICIPLEORGERUND.6: "un"i? "tapping"i
+
+verb_target.5: TARGETPRESENT | TARGETPAST | TARGETPARTICIPLEORGERUND
+TARGETPRESENT.5: "target"i["s"i]
+TARGETPAST.6: "targeted"i
+TARGETPARTICIPLEORGERUND.6: "targeting"i
 
 verb_tempt.5: TEMPTPRESENT | TEMPTPAST | TEMPTPARTICIPLEORGERUND
 TEMPTPRESENT.5: "tempt"i["s"i]

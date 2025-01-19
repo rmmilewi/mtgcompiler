@@ -14,7 +14,7 @@ class TestGrammarAndParser(unittest.TestCase):
     def test_integratingChangesToGrammar(self):
         shouldOutputVerboseDetails = True #Enables printing of lexer results and parse trees.
         useRevisedGrammar = True #Set to False if you want to see how much progress we made over the original grammar
-        testAgainstFoundations = True #Set to True if you want to run against all the cards in the Foundations set, False for custom list of strings
+        testAgainstFoundations = False #Set to True if you want to run against all the cards in the Foundations set, False for custom list of strings
         lexerTypeToUse = "basic" #Note: If using the original grammar, lexing will always be done in dynamic mode.
         skipCardsThatPreviouslyPassed = True #When testing against Foundations cards, output a file with a list of cards that previously passed, and skip those that passed before.
 
@@ -49,7 +49,16 @@ class TestGrammarAndParser(unittest.TestCase):
         parser = compilerUsingIntegratedGrammar.getParser()
         preprocessor = compilerUsingIntegratedGrammar.getPreprocessor()
         cardsToTest = [
+            ("Bant Snippet", "Put a divinity counter on target green, white, or blue creature."),
+            ("Beledros Witherbloom Snippet", "Create a 1/1 black and green Pest creature token."),
             ("Joust Through Snippet", "~ deals 3 damage to target attacking or blocking creature."),
+            ("Luminous Rebuke Snippet ", "This spell costs {3} less to cast if it targets a tapped creature. Destroy target creature."),
+            ("Math expression test 6", "Draw up to two cards."),
+            ("Math expression test 5", "~ deals 2 damage divided as you choose among one or two targets."),
+            ("Math expression test 4", "Roll a d20 and subtract the number of cards in your hand."),
+            ("Math expression test 3", "It deals that much damage minus 1 to that permanent or player."),
+            ("Math expression test 2", "X is 1 plus the number of cards named ~ in your graveyard."),
+            ("Math expression test 1","You gain life equal to that creature's toughness."),
             ("Hare Apparent Snippet", "Create a number of 1/1 white Rabbit creature tokens equal to the number of other creatures you control named ~."),
             ("Divine Resilience Snippet","If this spell was kicked, instead any number of target creatures you control gain indestructible until end of turn."),
             ("Crystal Barricade Snippet","Prevent all noncombat damage that would be dealt to other creatures you control."),
