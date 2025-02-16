@@ -1,0 +1,8925 @@
+,name,duration,parsed,error,text
+0,Acclaimed Contender,24.320201651999923,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, if you control another Knight,
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, if you control another Knight, look at the top five cards of your library. You may reveal a Knight, Aura, Equipment, or legendary artifact card from among them and put it into your hand. Put the rest on the bottom of your library in a random order."
+1,Archon of Absolution,23.75615457299955,False,"No terminal matches '(' in the current parser context, at line 2 col 23
+
+Protection from white (This creature can not be blocked, targe
+                      ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+Protection from white (This creature can not be blocked, targeted, dealt damage, enchanted, or equipped by anything white.)
+Creatures can not attack you or planeswalkers you control unless their controller pays {1} for each of those creatures."
+2,Dizzying Swoop,24.06293290099984,False,"No terminal matches '.' in the current parser context, at line 1 col 31
+
+Tap up to two target creatures. (Then exile this card. You may cast th
+                              ^
+Expected one of: 
+	* WORD
+	* DASH
+",Tap up to two target creatures. (Then exile this card. You may cast the creature later from exile.)
+3,Ardenvale Tactician,24.438626137999563,False,"Unexpected end-of-input. Expected one of: 
+	* DASH
+	* WORD
+",Flying
+4,Beloved Princess,24.498864756999865,False,"No terminal matches '~' in the current parser context, at line 2 col 1
+
+~ can not be blocked by creatures with p
+^
+Expected one of: 
+	* WORD
+	* DASH
+","Lifelink
+~ can not be blocked by creatures with power 3 or greater."
+5,All That Glitters,24.728251102000286,False,"No terminal matches '+' in the current parser context, at line 2 col 25
+
+Enchanted creature gets +1/+1 for each artifact and/or enchantme
+                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Enchant creature
+Enchanted creature gets +1/+1 for each artifact and/or enchantment you control."
+6,Bartered Cow,24.890549083000224,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ dies or when you discard it, create a 
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ dies or when you discard it, create a Food token. (it is an artifact with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)"
+7,Ardenvale Paladin,45.43728338700021,False,"No terminal matches 'I' in the current parser context, at line 1 col 11
+
+Adamant — If at least three white mana was spent t
+          ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","Adamant — If at least three white mana was spent to cast this spell, ~ enters with a +1/+1 counter on it."
+8,Deafening Silence,22.30063160499958,False,"No terminal matches '.' in the current parser context, at line 1 col 67
+
+ore than one noncreature spell each turn.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+",Each player can not cast more than one noncreature spell each turn.
+9,Charming Prince,22.598943502999646,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, choose one —
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, choose one —
+• Scry 2.
+• You gain 3 life.
+• Exile another target creature you own. Return it to the battlefield under your control at the beginning of the next end step."
+10,The Circle of Loyalty,22.65052981899953,False,"No terminal matches '{' in the current parser context, at line 1 col 18
+
+This spell costs {1} less to cast for each Knight you con
+                 ^
+Expected one of: 
+	* WORD
+	* DASH
+","This spell costs {1} less to cast for each Knight you control.
+Creatures you control get +1/+1.
+Whenever you cast a legendary spell, create a 2/2 white Knight creature token with vigilance.
+{3}{W}, {T}: Create a 2/2 white Knight creature token with vigilance."
+11,Faerie Guidemother,22.240350895999654,False,"Unexpected end-of-input. Expected one of: 
+	* DASH
+	* WORD
+",Flying
+12,Flutterfox,22.103636171999824,False,"No terminal matches ',' in the current parser context, at line 1 col 50
+
+s you control an artifact or enchantment, ~ has flying.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","As long as you control an artifact or enchantment, ~ has flying."
+13,Gift of the Fae,22.656252370999937,False,"No terminal matches '+' in the current parser context, at line 1 col 22
+
+Target creature gets +2/+1 and gains flying until end of turn
+                     ^
+Expected one of: 
+	* WORD
+	* DASH
+",Target creature gets +2/+1 and gains flying until end of turn. (Then exile this card. You may cast the creature later from exile.)
+14,Knight of the Keep,3.0960000003688037e-06,False,'text',
+15,Fortifying Provisions,22.772570277999876,False,"No terminal matches '+' in the current parser context, at line 1 col 27
+
+Creatures you control get +0/+1.
+                          ^
+Expected one of: 
+	* WORD
+	* DASH
+","Creatures you control get +0/+1.
+When ~ enters, create a Food token. (it is an artifact with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)"
+16,Chop Down,23.902177295999536,False,"No terminal matches '4' in the current parser context, at line 1 col 36
+
+Destroy target creature with power 4 or greater. (Then exile this card. You
+                                   ^
+Expected one of: 
+	* WORD
+	* DASH
+",Destroy target creature with power 4 or greater. (Then exile this card. You may cast the creature later from exile.)
+17,Glass Casket,24.02500939299989,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, exile target creature an oppon
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, exile target creature an opponent controls with mana value 3 or less until ~ leaves the battlefield."
+18,Harmonious Archon,24.364270418999695,False,"No terminal matches '-' in the current parser context, at line 2 col 4
+
+Non-Archon creatures have base power and to
+   ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+Non-Archon creatures have base power and toughness 3/3.
+When ~ enters, create two 1/1 white Human creature tokens."
+19,Hushbringer,24.451704275999873,False,"No terminal matches ',' in the current parser context, at line 1 col 7
+
+Flying, lifelink
+      ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying, lifelink
+Creatures entering or dying do not cause abilities to trigger."
+20,Happily Ever After,24.798626341999807,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, each player gains 5 life and d
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, each player gains 5 life and draws a card.
+At the beginning of your upkeep, if there are five colors among permanents you control, there are six or more card types among permanents you control and/or cards in your graveyard, and your life total is greater than or equal to your starting life total, you win the game."
+21,Lonesome Unicorn,23.980497257000025,False,"Unexpected end-of-input. Expected one of: 
+	* DASH
+	* WORD
+",Vigilance
+22,"Linden, the Steadfast Queen",24.693233885000154,False,"No terminal matches ',' in the current parser context, at line 2 col 46
+
+ver a white creature you control attacks, you gain 1 life.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Vigilance
+Whenever a white creature you control attacks, you gain 1 life."
+23,Rider in Need,24.228479478000736,False,"No terminal matches '2' in the current parser context, at line 1 col 10
+
+Create a 2/2 white Knight creature token with vig
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+",Create a 2/2 white Knight creature token with vigilance. (Then exile this card. You may cast the creature later from exile.)
+24,Mysterious Pathlighter,24.493157656999756,False,"No terminal matches '+' in the current parser context, at line 2 col 75
+
+ an Adventure enters with an additional +1/+1 counter on it. (It does not need t
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+Each creature you control that has an Adventure enters with an additional +1/+1 counter on it. (It does not need to have gone on the adventure first.)"
+25,Shepherd of the Flock,3.105999894614797e-06,False,'text',
+26,Prized Griffin,23.99481443700006,False,"Unexpected end-of-input. Expected one of: 
+	* DASH
+	* WORD
+",Flying
+27,Rally for the Throne,24.269678439000018,False,"No terminal matches '1' in the current parser context, at line 1 col 12
+
+Create two 1/1 white Human creature tokens.
+           ^
+Expected one of: 
+	* WORD
+	* DASH
+","Create two 1/1 white Human creature tokens.
+Adamant — If at least three white mana was spent to cast this spell, you gain 1 life for each creature you control."
+28,Realm-Cloaked Giant,24.242257841000537,False,"Unexpected end-of-input. Expected one of: 
+	* DASH
+	* WORD
+",Vigilance
+29,Silverflame Squire,3.136000486847479e-06,False,'text',
+30,Cast Off,24.634325715999694,False,"No terminal matches '-' in the current parser context, at line 1 col 16
+
+Destroy all non-Giant creatures. (Then exile this card.
+               ^
+Expected one of: 
+	* WORD
+	* DASH
+",Destroy all non-Giant creatures. (Then exile this card. You may cast the creature later from exile.)
+31,Usher to Safety,22.1116996260007,False,"No terminal matches ''' in the current parser context, at line 1 col 49
+
+arget permanent you control to its owner's hand. (Then exile this card. You may 
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+",Return target permanent you control to its owner's hand. (Then exile this card. You may cast the creature later from exile.)
+32,Righteousness,24.296718558000066,False,"No terminal matches '+' in the current parser context, at line 1 col 31
+
+Target blocking creature gets +7/+7 until end of turn.
+                              ^
+Expected one of: 
+	* WORD
+	* DASH
+",Target blocking creature gets +7/+7 until end of turn.
+33,Shining Armor,24.499841525999727,False,"No terminal matches '~' in the current parser context, at line 2 col 6
+
+When ~ enters, attach it to target Knight you
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flash
+When ~ enters, attach it to target Knight you control.
+Equipped creature gets +0/+2 and has vigilance.
+Equip {3} ({3}: Attach to target creature you control. Equip only as a sorcery.)"
+34,Silverflame Ritual,24.536264981000386,False,"No terminal matches '+' in the current parser context, at line 1 col 7
+
+Put a +1/+1 counter on each creature you contr
+      ^
+Expected one of: 
+	* WORD
+	* DASH
+","Put a +1/+1 counter on each creature you control.
+Adamant — If at least three white mana was spent to cast this spell, creatures you control gain vigilance until end of turn."
+35,On Alert,24.311537286999737,False,"No terminal matches '+' in the current parser context, at line 1 col 22
+
+Target creature gets +2/+2 until end of turn. Untap it. (Then
+                     ^
+Expected one of: 
+	* WORD
+	* DASH
+",Target creature gets +2/+2 until end of turn. Untap it. (Then exile this card. You may cast the creature later from exile.)
+36,"Syr Alin, the Lion's Claw",24.542317446000197,False,"No terminal matches '~' in the current parser context, at line 2 col 10
+
+Whenever ~f attacks, other creatures you control 
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","First strike
+Whenever ~f attacks, other creatures you control get +1/+1 until end of turn."
+37,True Love's Kiss,22.62945228799981,False,"No terminal matches '.' in the current parser context, at line 1 col 37
+
+Exile target artifact or enchantment.
+                                    ^
+Expected one of: 
+	* WORD
+	* DASH
+","Exile target artifact or enchantment.
+Draw a card."
+38,Trapped in the Tower,24.820345406999877,False,"No terminal matches ',' in the current parser context, at line 2 col 43
+
+chanted creature can not attack or block, and its activated abilities can not be
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Enchant creature without flying
+Enchanted creature can not attack or block, and its activated abilities can not be activated."
+39,Venerable Knight,22.763723977000154,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ dies, put a +1/+1 counter on target Kn
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ dies, put a +1/+1 counter on target Knight you control."
+40,Worthy Knight,22.654308311999557,False,"No terminal matches ',' in the current parser context, at line 1 col 33
+
+Whenever you cast a Knight spell, create a 1/1 white Human creature toke
+                                ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever you cast a Knight spell, create a 1/1 white Human creature token."
+41,Youthful Knight,22.94762553199962,False,"Unexpected end-of-input. Expected one of: 
+	* DASH
+	* WORD
+",First strike
+42,Animating Faerie,22.842523991000235,False,"Unexpected end-of-input. Expected one of: 
+	* DASH
+	* WORD
+",Flying
+43,Giant Killer,102.17980538200027,False,"No terminal matches 'T' in the current parser context, at line 1 col 14
+
+{1}{W}, {T}: Tap target creature.
+             ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","{1}{W}, {T}: Tap target creature."
+44,Brazen Borrower,21.55992850199982,False,"No terminal matches '~' in the current parser context, at line 3 col 1
+
+~ can block only creatures with flying.
+^
+Expected one of: 
+	* WORD
+	* DASH
+","Flash
+Flying
+~ can block only creatures with flying."
+45,Bring to Life,24.64918609600045,False,"No terminal matches '0' in the current parser context, at line 1 col 51
+
+creature artifact you control becomes a 0/0 artifact creature. Put four +1/+1 co
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+",Target noncreature artifact you control becomes a 0/0 artifact creature. Put four +1/+1 counters on it.
+46,Petty Theft,24.622995018999973,False,"No terminal matches ''' in the current parser context, at line 1 col 66
+
+manent an opponent controls to its owner's hand.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+",Return target nonland permanent an opponent controls to its owner's hand.
+47,Charmed Sleep,24.568415612000535,False,"No terminal matches '~' in the current parser context, at line 2 col 6
+
+When ~ enters, tap enchanted creature.
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","Enchant creature
+When ~ enters, tap enchanted creature.
+Enchanted creature does not untap during its controller's untap step."
+48,Corridor Monitor,24.320398503999968,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, untap target artifact or creat
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, untap target artifact or creature you control."
+49,Didn't Say Please,24.546195005999834,False,"No terminal matches '.' in the current parser context, at line 1 col 21
+
+Counter target spell. Its controller mills three cards.
+                    ^
+Expected one of: 
+	* WORD
+	* DASH
+",Counter target spell. Its controller mills three cards.
+50,"Emry, Lurker of the Loch",24.2380613360001,False,"No terminal matches '{' in the current parser context, at line 1 col 18
+
+This spell costs {1} less to cast for each artifact you c
+                 ^
+Expected one of: 
+	* WORD
+	* DASH
+","This spell costs {1} less to cast for each artifact you control.
+When ~f enters, mill four cards.
+{T}: Choose target artifact card in your graveyard. You may cast that card this turn. (You still pay its costs. Timing rules still apply.)"
+51,Fae of Wishes,24.325256152999827,False,"No terminal matches '{' in the current parser context, at line 2 col 1
+
+{1}{U}, Discard two cards: Return ~ to i
+^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+{1}{U}, Discard two cards: Return ~ to its owner's hand."
+52,Granted,24.202145356000074,False,"No terminal matches '.' in the current parser context, at line 1 col 90
+
+tside the game and put it into your hand.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+",You may reveal a noncreature card you own from outside the game and put it into your hand.
+53,Faerie Vandal,24.335190658999636,False,"No terminal matches '(' in the current parser context, at line 1 col 7
+
+Flash (You may cast this spell any time you co
+      ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flash (You may cast this spell any time you could cast an instant.)
+Flying
+Whenever you draw your second card each turn, put a +1/+1 counter on ~."
+54,Folio of Fancies,24.6758871739994,False,"No terminal matches '.' in the current parser context, at line 1 col 34
+
+Players have no maximum hand size.
+                                 ^
+Expected one of: 
+	* WORD
+	* DASH
+","Players have no maximum hand size.
+{X}{X}, {T}: Each player draws X cards.
+{2}{U}, {T}: Each opponent mills cards equal to the number of cards in their hand."
+55,Frogify,24.763600586999928,False,"No terminal matches '1' in the current parser context, at line 2 col 98
+
+ creature with base power and toughness 1/1. (It loses all other card types and 
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Enchant creature
+Enchanted creature loses all abilities and is a blue Frog creature with base power and toughness 1/1. (It loses all other card types and creature types.)"
+56,Merfolk Secretkeeper,3.1560002753394656e-06,False,'text',
+57,"Gadwick, the Wizened",24.63894140100001,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~f enters, draw X cards.
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~f enters, draw X cards.
+Whenever you cast a blue spell, tap target nonland permanent an opponent controls."
+58,Hypnotic Sprite,24.469430550999277,False,"Unexpected end-of-input. Expected one of: 
+	* DASH
+	* WORD
+",Flying
+59,Mesmeric Glare,24.546195947000342,False,"No terminal matches '3' in the current parser context, at line 1 col 38
+
+Counter target spell with mana value 3 or less. (Then exile this card. You ma
+                                     ^
+Expected one of: 
+	* WORD
+	* DASH
+",Counter target spell with mana value 3 or less. (Then exile this card. You may cast the creature later from exile.)
+60,Into the Story,22.793666390999533,False,"No terminal matches '{' in the current parser context, at line 1 col 18
+
+This spell costs {3} less to cast if an opponent has seve
+                 ^
+Expected one of: 
+	* WORD
+	* DASH
+","This spell costs {3} less to cast if an opponent has seven or more cards in their graveyard.
+Draw four cards."
+61,Venture Deeper,22.448782928000583,False,"No terminal matches '.' in the current parser context, at line 1 col 31
+
+Target player mills four cards. (Then exile this card. You may cast th
+                              ^
+Expected one of: 
+	* WORD
+	* DASH
+",Target player mills four cards. (Then exile this card. You may cast the creature later from exile.)
+62,The Magic Mirror,24.422707804999845,False,"No terminal matches '{' in the current parser context, at line 1 col 18
+
+This spell costs {1} less to cast for each instant and so
+                 ^
+Expected one of: 
+	* WORD
+	* DASH
+","This spell costs {1} less to cast for each instant and sorcery card in your graveyard.
+You have no maximum hand size.
+At the beginning of your upkeep, put a knowledge counter on ~, then draw a card for each knowledge counter on ~."
+63,Mantle of Tides,24.456786151000415,False,"No terminal matches '+' in the current parser context, at line 1 col 24
+
+Equipped creature gets +1/+2.
+                       ^
+Expected one of: 
+	* WORD
+	* DASH
+","Equipped creature gets +1/+2.
+Whenever you draw your second card each turn, attach ~ to target creature you control.
+Equip {3} ({3}: Attach to target creature you control. Equip only as a sorcery.)"
+64,Mirrormade,24.035051862000728,False,"No terminal matches '~' in the current parser context, at line 1 col 14
+
+You may have ~ enter as a copy of any artifact or enc
+             ^
+Expected one of: 
+	* WORD
+	* DASH
+",You may have ~ enter as a copy of any artifact or enchantment on the battlefield.
+65,Mistford River Turtle,24.384323717999905,False,"No terminal matches '~' in the current parser context, at line 1 col 10
+
+Whenever ~ attacks, another target attacking non-
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever ~ attacks, another target attacking non-Human creature can not be blocked this turn."
+66,Moonlit Scavengers,24.831456215999424,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, if you control an artifact or 
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, if you control an artifact or enchantment, return target creature an opponent controls to its owner's hand."
+67,Opt,22.602470318000087,False,"No terminal matches '1' in the current parser context, at line 1 col 6
+
+Scry 1.
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","Scry 1.
+Draw a card."
+68,Overwhelmed Apprentice,22.205587184999786,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, each opponent mills two cards.
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, each opponent mills two cards. Then you scry 2. (Look at the top two cards of your library, then put any number of them on the bottom and the rest on top in any order.)"
+69,Mystical Dispute,24.434206561999417,False,"No terminal matches '{' in the current parser context, at line 1 col 18
+
+This spell costs {2} less to cast if it targets a blue sp
+                 ^
+Expected one of: 
+	* WORD
+	* DASH
+","This spell costs {2} less to cast if it targets a blue spell.
+Counter target spell unless its controller pays {3}."
+70,Midnight Clock,46.23815381900022,False,"No terminal matches 'A' in the current parser context, at line 1 col 6
+
+{T}: Add {U}.
+     ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","{T}: Add {U}.
+{2}{U}: Put an hour counter on ~.
+At the beginning of each upkeep, put an hour counter on ~.
+When the twelfth hour counter is put on ~, shuffle your hand and graveyard into your library, then draw seven cards. Exile ~."
+71,Queen of Ice,22.274644522000017,False,"No terminal matches '~' in the current parser context, at line 1 col 10
+
+Whenever ~ deals combat damage to a creature, tap
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever ~ deals combat damage to a creature, tap that creature. It does not untap during its controller's next untap step."
+72,Rage of Winter,22.65692115100046,False,"No terminal matches '.' in the current parser context, at line 1 col 20
+
+Tap target creature. It does not untap during its controlle
+                   ^
+Expected one of: 
+	* WORD
+	* DASH
+",Tap target creature. It does not untap during its controller's next untap step. (Then exile this card. You may cast the creature later from exile.)
+73,Run Away Together,22.165288912000506,False,"No terminal matches '.' in the current parser context, at line 1 col 60
+
+reatures controlled by different players. Return those creatures to their owners
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+",Choose two target creatures controlled by different players. Return those creatures to their owners' hands.
+74,Steelgaze Griffin,22.444462849000047,False,"No terminal matches ',' in the current parser context, at line 2 col 45
+
+ever you draw your second card each turn, ~ gets +2/+0 until end of turn.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+Whenever you draw your second card each turn, ~ gets +2/+0 until end of turn."
+75,Stolen by the Fae,22.643734894999398,False,"No terminal matches ''' in the current parser context, at line 1 col 54
+
+ creature with mana value X to its owner's hand. You create X 1/1 blue Faerie cr
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+",Return target creature with mana value X to its owner's hand. You create X 1/1 blue Faerie creature tokens with flying.
+76,Sage of the Falls,24.44857026400041,False,"No terminal matches '~' in the current parser context, at line 1 col 10
+
+Whenever ~ or another non-Human creature you cont
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever ~ or another non-Human creature you control enters, you may draw a card. If you do, discard a card."
+77,So Tiny,24.667413198999384,False,"No terminal matches '-' in the current parser context, at line 3 col 25
+
+Enchanted creature gets -2/-0. It gets -6/-0 instead as long as 
+                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flash
+Enchant creature
+Enchanted creature gets -2/-0. It gets -6/-0 instead as long as its controller has seven or more cards in their graveyard."
+78,Tome Raider,24.23971066499962,False,"No terminal matches '~' in the current parser context, at line 2 col 6
+
+When ~ enters, draw a card.
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+When ~ enters, draw a card."
+79,Turn into a Pumpkin,24.56219357000009,False,"No terminal matches ''' in the current parser context, at line 1 col 45
+
+rn target nonland permanent to its owner's hand. Draw a card.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Return target nonland permanent to its owner's hand. Draw a card.
+Adamant — If at least three blue mana was spent to cast this spell, create a Food token. (it is an artifact with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)"
+80,Unexplained Vision,24.728828538000016,False,"No terminal matches '.' in the current parser context, at line 1 col 17
+
+Draw three cards.
+                ^
+Expected one of: 
+	* WORD
+	* DASH
+","Draw three cards.
+Adamant — If at least three blue mana was spent to cast this spell, scry 3."
+81,Vantress Gargoyle,24.825085974999638,False,"No terminal matches '~' in the current parser context, at line 2 col 1
+
+~ can not attack unless defending player
+^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+~ can not attack unless defending player has seven or more cards in their graveyard.
+~ can not block unless you have four or more cards in hand.
+{T}: Each player mills a card."
+82,Wishful Merfolk,24.166579964999983,False,"No terminal matches '{' in the current parser context, at line 2 col 1
+
+{1}{U}: ~ loses defender and becomes a H
+^
+Expected one of: 
+	* WORD
+	* DASH
+","Defender
+{1}{U}: ~ loses defender and becomes a Human until end of turn."
+83,Witching Well,24.130070608000096,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, scry 2. (Look at the top two c
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, scry 2. (Look at the top two cards of your library, then put any number of them on the bottom and the rest on top in any order.)
+{3}{U}, Sacrifice ~: Draw two cards."
+84,"Ayara, First of Locthwain",24.754474231999666,False,"No terminal matches '~' in the current parser context, at line 1 col 10
+
+Whenever ~f or another black creature you control
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever ~f or another black creature you control enters, each opponent loses 1 life and you gain 1 life.
+{T}, Sacrifice another black creature: Draw a card."
+85,Vantress Paladin,46.72897083099997,False,"No terminal matches 'I' in the current parser context, at line 2 col 11
+
+Adamant — If at least three blue mana was spent to
+          ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","Flying
+Adamant — If at least three blue mana was spent to cast this spell, ~ enters with a +1/+1 counter on it."
+86,Bake into a Pie,24.30312994399992,False,"No terminal matches '.' in the current parser context, at line 1 col 24
+
+Destroy target creature. Create a Food token. (it is an artifac
+                       ^
+Expected one of: 
+	* WORD
+	* DASH
+","Destroy target creature. Create a Food token. (it is an artifact with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)"
+87,Barrow Witches,24.668155596999895,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, return target Knight card from
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, return target Knight card from your graveyard to your hand."
+88,Belle of the Brawl,24.712075500000537,False,"No terminal matches '(' in the current parser context, at line 1 col 8
+
+Menace (This creature can not be blocked except
+       ^
+Expected one of: 
+	* WORD
+	* DASH
+","Menace (This creature can not be blocked except by two or more creatures.)
+Whenever ~ attacks, other Knights you control get +1/+0 until end of turn."
+89,Blacklance Paragon,24.769713466999747,False,"No terminal matches '~' in the current parser context, at line 2 col 6
+
+When ~ enters, target Knight gains deathtouch
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flash
+When ~ enters, target Knight gains deathtouch and lifelink until end of turn."
+90,Bog Naughty,24.539774179000233,False,"No terminal matches '{' in the current parser context, at line 2 col 1
+
+{2}{B}, Sacrifice a Food: Target creatur
+^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+{2}{B}, Sacrifice a Food: Target creature gets -3/-3 until end of turn."
+91,Cauldron Familiar,24.352800951999598,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, each opponent loses 1 life and
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, each opponent loses 1 life and you gain 1 life.
+Sacrifice a Food: Return ~ from your graveyard to the battlefield."
+92,Clackbridge Troll,22.345772134999606,False,"No terminal matches ',' in the current parser context, at line 1 col 8
+
+Trample, haste
+       ^
+Expected one of: 
+	* WORD
+	* DASH
+","Trample, haste
+When ~ enters, target opponent creates three 0/1 white Goat creature tokens.
+At the beginning of combat on your turn, any opponent may sacrifice a creature of their choice. If a player does, tap ~, you gain 3 life, and you draw a card."
+93,The Cauldron of Eternity,23.90815124599976,False,"No terminal matches '{' in the current parser context, at line 1 col 18
+
+This spell costs {2} less to cast for each creature card 
+                 ^
+Expected one of: 
+	* WORD
+	* DASH
+","This spell costs {2} less to cast for each creature card in your graveyard.
+Whenever a creature you control dies, put it on the bottom of its owner's library.
+{2}{B}, {T}, Pay 2 life: Return target creature card from your graveyard to the battlefield. Activate only as a sorcery."
+94,Epic Downfall,22.28223313699982,False,"No terminal matches '3' in the current parser context, at line 1 col 39
+
+Exile target creature with mana value 3 or greater.
+                                      ^
+Expected one of: 
+	* WORD
+	* DASH
+",Exile target creature with mana value 3 or greater.
+95,Festive Funeral,22.414926092000314,False,"No terminal matches '-' in the current parser context, at line 1 col 22
+
+Target creature gets -X/-X until end of turn, where X is the 
+                     ^
+Expected one of: 
+	* WORD
+	* DASH
+","Target creature gets -X/-X until end of turn, where X is the number of cards in your graveyard."
+96,Eye Collector,22.88764439299939,False,"No terminal matches '~' in the current parser context, at line 2 col 10
+
+Whenever ~ deals combat damage to a player, each 
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+Whenever ~ deals combat damage to a player, each player mills a card. (Each player puts the top card of their library into their graveyard.)"
+97,Forever Young,22.61178882599961,False,"No terminal matches '.' in the current parser context, at line 1 col 83
+
+om your graveyard on top of your library.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Put any number of target creature cards from your graveyard on top of your library.
+Draw a card."
+98,Cauldron's Gift,46.81311850200018,False,"No terminal matches 'I' in the current parser context, at line 1 col 11
+
+Adamant — If at least three black mana was spent t
+          ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","Adamant — If at least three black mana was spent to cast this spell, mill four cards.
+You may choose a creature card in your graveyard. If you do, return it to the battlefield with an additional +1/+1 counter on it."
+99,Foreboding Fruit,24.89213057300003,False,"No terminal matches '2' in the current parser context, at line 1 col 41
+
+Target player draws two cards and loses 2 life.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Target player draws two cards and loses 2 life.
+Adamant — If at least three black mana was spent to cast this spell, create a Food token. (it is an artifact with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)"
+100,Foulmire Knight,24.3145479220002,False,"Unexpected end-of-input. Expected one of: 
+	* DASH
+	* WORD
+",Deathtouch
+101,Profane Insight,24.40662350799994,False,"No terminal matches '1' in the current parser context, at line 1 col 30
+
+You draw a card and you lose 1 life. (Then exile this card. You may c
+                             ^
+Expected one of: 
+	* WORD
+	* DASH
+",You draw a card and you lose 1 life. (Then exile this card. You may cast the creature later from exile.)
+102,Giant's Skewer,24.5373261499999,False,"No terminal matches '+' in the current parser context, at line 1 col 24
+
+Equipped creature gets +2/+1.
+                       ^
+Expected one of: 
+	* WORD
+	* DASH
+","Equipped creature gets +2/+1.
+Whenever equipped creature deals combat damage to a creature, create a Food token. (it is an artifact with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)
+Equip {3} ({3}: Attach to target creature you control. Equip only as a sorcery.)"
+103,Lash of Thorns,24.37395556299998,False,"No terminal matches '+' in the current parser context, at line 1 col 22
+
+Target creature gets +2/+1 and gains deathtouch until end of 
+                     ^
+Expected one of: 
+	* WORD
+	* DASH
+",Target creature gets +2/+1 and gains deathtouch until end of turn.
+104,Locthwain Paladin,24.631790108000132,False,"No terminal matches '(' in the current parser context, at line 1 col 8
+
+Menace (This creature can not be blocked except
+       ^
+Expected one of: 
+	* WORD
+	* DASH
+","Menace (This creature can not be blocked except by two or more creatures.)
+Adamant — If at least three black mana was spent to cast this spell, ~ enters with a +1/+1 counter on it."
+105,Lost Legion,24.172408735999852,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, scry 2. (Look at the top two c
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, scry 2. (Look at the top two cards of your library, then put any number of them on the bottom and the rest on top in any order.)"
+106,Memory Theft,24.45750821599995,False,"No terminal matches '.' in the current parser context, at line 1 col 35
+
+Target opponent reveals their hand. You choose a nonland card from it. Tha
+                                  ^
+Expected one of: 
+	* WORD
+	* DASH
+",Target opponent reveals their hand. You choose a nonland card from it. That player discards that card. You may put a card that has an Adventure that player owns from exile into that player's graveyard.
+107,Swift End,24.52480627099976,False,"No terminal matches '.' in the current parser context, at line 1 col 40
+
+Destroy target creature or planeswalker. You lose 2 life. (Then exile this card
+                                       ^
+Expected one of: 
+	* WORD
+	* DASH
+",Destroy target creature or planeswalker. You lose 2 life. (Then exile this card. You may cast the creature later from exile.)
+108,Murderous Rider,24.93958653200025,False,"No terminal matches '~' in the current parser context, at line 2 col 6
+
+When ~ dies, put it on the bottom of its owne
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","Lifelink
+When ~ dies, put it on the bottom of its owner's library."
+109,Order of Midnight,24.255970789999992,False,"No terminal matches '~' in the current parser context, at line 2 col 1
+
+~ can not block.
+^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+~ can not block."
+110,Alter Fate,24.603635851000035,False,"No terminal matches '.' in the current parser context, at line 1 col 61
+
+re card from your graveyard to your hand. (Then exile this card. You may cast th
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+",Return target creature card from your graveyard to your hand. (Then exile this card. You may cast the creature later from exile.)
+111,"Rankle, Master of Pranks",23.978605600000265,False,"No terminal matches ',' in the current parser context, at line 1 col 7
+
+Flying, haste
+      ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying, haste
+Whenever ~f deals combat damage to a player, choose any number —
+• Each player discards a card.
+• Each player loses 1 life and draws a card.
+• Each player sacrifices a creature of their choice."
+112,Piper of the Swarm,24.331026366000515,False,"No terminal matches '.' in the current parser context, at line 1 col 29
+
+Rats you control have menace.
+                            ^
+Expected one of: 
+	* WORD
+	* DASH
+","Rats you control have menace.
+{1}{B}, {T}: Create a 1/1 black Rat creature token.
+{2}{B}{B}, {T}, Sacrifice three Rats: Gain control of target creature."
+113,Reaper of Night,22.872169217999726,False,"No terminal matches '~' in the current parser context, at line 1 col 10
+
+Whenever ~ attacks, if defending player has two o
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever ~ attacks, if defending player has two or fewer cards in hand, it gains flying until end of turn."
+114,Malevolent Noble,62.34279784699993,False,"No terminal matches 'S' in the current parser context, at line 1 col 6
+
+{2}, Sacrifice an artifact or another creatur
+     ^
+Expected one of: 
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* TURN
+	* ITSELF
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* SEARCH
+	* ABANDON
+	* LSQB
+	* DREW
+	* THESE
+	* ONTO
+	* TAPPEDSTATUSMODIFIER
+	* __ANON_21
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* __ANON_20
+	* IT
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* OTHER
+	* ORDINAL
+	* THE
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* TRANSFORM
+	* DISCOVER
+	* GREATER
+	* ALL
+	* X
+	* SKIP
+	* SHUFFLED
+	* CONNIVE
+	* FORAGE
+	* THAT
+	* MONSTROSITY
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* CONVERT
+	* FIGHT
+	* FLIP
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","{2}, Sacrifice an artifact or another creature: Put a +1/+1 counter on ~."
+115,Harvest Fear,22.669099239999923,False,"No terminal matches '.' in the current parser context, at line 1 col 35
+
+Target opponent discards two cards. (Then exile this card. You may cast th
+                                  ^
+Expected one of: 
+	* WORD
+	* DASH
+",Target opponent discards two cards. (Then exile this card. You may cast the creature later from exile.)
+116,Reave Soul,22.471798331999707,False,"No terminal matches '3' in the current parser context, at line 1 col 36
+
+Destroy target creature with power 3 or less.
+                                   ^
+Expected one of: 
+	* WORD
+	* DASH
+",Destroy target creature with power 3 or less.
+117,Revenge of Ravens,22.395144369000263,False,"No terminal matches ',' in the current parser context, at line 1 col 62
+
+ttacks you or a planeswalker you control, that creature's controller loses 1 lif
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever a creature attacks you or a planeswalker you control, that creature's controller loses 1 life and you gain 1 life."
+118,Smitten Swordmaster,24.42361099200025,False,"Unexpected end-of-input. Expected one of: 
+	* DASH
+	* WORD
+",Lifelink
+119,Curry Favor,24.305473973000517,False,"No terminal matches ',' in the current parser context, at line 1 col 47
+
+in X life and each opponent loses X life, where X is the number of Knights you c
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","You gain X life and each opponent loses X life, where X is the number of Knights you control."
+120,Specter's Shriek,24.879806879999705,False,"No terminal matches '.' in the current parser context, at line 1 col 35
+
+Target opponent reveals their hand. You may choose a nonland card from it.
+                                  ^
+Expected one of: 
+	* WORD
+	* DASH
+","Target opponent reveals their hand. You may choose a nonland card from it. If you do, that player exiles that card. If a nonblack card is exiled this way, exile a card from your hand."
+121,"Syr Konrad, the Grim",24.891821371000333,False,"No terminal matches ',' in the current parser context, at line 1 col 31
+
+Whenever another creature dies, or a creature card is put into a grave
+                              ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever another creature dies, or a creature card is put into a graveyard from anywhere other than the battlefield, or a creature card leaves your graveyard, ~f deals 1 damage to each opponent.
+{1}{B}: Each player mills a card. (They each put the top card of their library into their graveyard.)"
+122,Tempting Witch,24.960395774999597,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, create a Food token. (it is an
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, create a Food token. (it is an artifact with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)
+{2}, {T}, Sacrifice a Food: Target player loses 3 life."
+123,Wicked Guardian,24.668732258999626,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, you may have it deal 2 damage 
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, you may have it deal 2 damage to another creature you control. If you do, draw a card."
+124,Barge In,24.352655350000532,False,"No terminal matches '+' in the current parser context, at line 1 col 32
+
+Target attacking creature gets +2/+2 until end of turn. Each attacking 
+                               ^
+Expected one of: 
+	* WORD
+	* DASH
+",Target attacking creature gets +2/+2 until end of turn. Each attacking non-Human creature gains trample until end of turn.
+125,Witch's Vengeance,24.77008959900013,False,"No terminal matches '-' in the current parser context, at line 1 col 51
+
+of the creature type of your choice get -3/-3 until end of turn.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+",Creatures of the creature type of your choice get -3/-3 until end of turn.
+126,Bloodhaze Wolverine,24.587559642000087,False,"No terminal matches ',' in the current parser context, at line 1 col 45
+
+ever you draw your second card each turn, ~ gets +1/+1 and gains first strike un
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever you draw your second card each turn, ~ gets +1/+1 and gains first strike until end of turn."
+127,Blow Your House Down,24.386286941000435,False,"No terminal matches '.' in the current parser context, at line 1 col 53
+
+target creatures can not block this turn. Destroy any of them that are Walls.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+",Up to three target creatures can not block this turn. Destroy any of them that are Walls.
+128,Bonecrusher Giant,24.808813065000322,False,"No terminal matches '~' in the current parser context, at line 1 col 10
+
+Whenever ~ becomes the target of a spell, ~ deals
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever ~ becomes the target of a spell, ~ deals 2 damage to that spell's controller."
+129,Burning-Yard Trainer,22.5030769519999,False,"No terminal matches ',' in the current parser context, at line 1 col 8
+
+Trample, haste
+       ^
+Expected one of: 
+	* WORD
+	* DASH
+","Trample, haste
+When ~ enters, another target Knight you control gets +2/+2 and gains trample and haste until end of turn."
+130,Brimstone Trebuchet,24.527506913999787,False,"No terminal matches ',' in the current parser context, at line 1 col 9
+
+Defender, reach
+        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Defender, reach
+{T}: ~ deals 1 damage to each opponent.
+Whenever a Knight you control enters, untap ~."
+131,Stomp,24.869208879000325,False,"No terminal matches '.' in the current parser context, at line 1 col 38
+
+Damage can not be prevented this turn. ~ deals 2 damage to any target.
+                                     ^
+Expected one of: 
+	* WORD
+	* DASH
+",Damage can not be prevented this turn. ~ deals 2 damage to any target.
+132,Embercleave,22.23034926499986,False,"No terminal matches '{' in the current parser context, at line 2 col 18
+
+This spell costs {1} less to cast for each attacking crea
+                 ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flash
+This spell costs {1} less to cast for each attacking creature you control.
+When ~ enters, attach it to target creature you control.
+Equipped creature gets +1/+1 and has double strike and trample.
+Equip {3}"
+133,Embereth Shieldbreaker,3.144999936921522e-06,False,'text',
+134,Claim the Firstborn,22.705886054000075,False,"No terminal matches '3' in the current parser context, at line 1 col 49
+
+trol of target creature with mana value 3 or less until end of turn. Untap that 
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+",Gain control of target creature with mana value 3 or less until end of turn. Untap that creature. It gains haste until end of turn.
+135,Crystal Slipper,24.5060220510004,False,"No terminal matches '+' in the current parser context, at line 1 col 24
+
+Equipped creature gets +1/+0 and has haste.
+                       ^
+Expected one of: 
+	* WORD
+	* DASH
+","Equipped creature gets +1/+0 and has haste.
+Equip {1} ({1}: Attach to target creature you control. Equip only as a sorcery.)"
+136,Outflank,487.91889840100066,True,,~ deals damage to target attacking or blocking creature equal to the number of creatures you control.
+137,"Syr Elenora, the Discerning",325.589840439,False,"No terminal matches '~' in the current parser context, at line 2 col 6
+
+When ~ enters, draw a card.
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","~f's power is equal to the number of cards in your hand.
+When ~ enters, draw a card.
+Spells your opponents cast that target ~ cost {2} more to cast."
+138,Battle Display,24.07032127599996,False,"No terminal matches '.' in the current parser context, at line 1 col 24
+
+Destroy target artifact. (Then exile this card. You may cast th
+                       ^
+Expected one of: 
+	* WORD
+	* DASH
+",Destroy target artifact. (Then exile this card. You may cast the creature later from exile.)
+139,Embereth Paladin,46.450046972000564,False,"No terminal matches 'I' in the current parser context, at line 2 col 11
+
+Adamant — If at least three red mana was spent to 
+          ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","Haste
+Adamant — If at least three red mana was spent to cast this spell, ~ enters with a +1/+1 counter on it."
+140,Ferocity of the Wilds,24.64683467299983,False,"No terminal matches '-' in the current parser context, at line 1 col 14
+
+Attacking non-Human creatures you control get +1/+0 a
+             ^
+Expected one of: 
+	* WORD
+	* DASH
+",Attacking non-Human creatures you control get +1/+0 and have trample.
+141,Fervent Champion,24.4508445499996,False,"No terminal matches ',' in the current parser context, at line 1 col 13
+
+First strike, haste
+            ^
+Expected one of: 
+	* WORD
+	* DASH
+","First strike, haste
+Whenever ~ attacks, another target attacking Knight you control gets +1/+0 until end of turn.
+Equip abilities you activate that target ~ cost {3} less to activate."
+142,Fires of Invention,22.738886584000284,False,"No terminal matches '.' in the current parser context, at line 1 col 93
+
+n cast no more than two spells each turn.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","You can cast spells only during your turn and you can cast no more than two spells each turn.
+You may cast spells with mana value less than or equal to the number of lands you control without paying their mana costs."
+143,Fling,22.620668241000203,False,"No terminal matches ',' in the current parser context, at line 1 col 41
+
+As an additional cost to cast this spell, sacrifice a creature.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","As an additional cost to cast this spell, sacrifice a creature.
+~ deals damage equal to the sacrificed creature's power to any target."
+144,Irencrag Feat,24.316134300000158,False,"No terminal matches '{' in the current parser context, at line 1 col 11
+
+Add seven {R}. You can cast only one more spell th
+          ^
+Expected one of: 
+	* WORD
+	* DASH
+",Add seven {R}. You can cast only one more spell this turn.
+145,Irencrag Pyromancer,24.640139037000154,False,"No terminal matches ',' in the current parser context, at line 1 col 45
+
+ever you draw your second card each turn, ~ deals 3 damage to any target.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever you draw your second card each turn, ~ deals 3 damage to any target."
+146,Joust,24.806442779999998,False,"No terminal matches '.' in the current parser context, at line 1 col 74
+
+l and target creature you do not control. The creature you control gets +2/+1 un
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+",Choose target creature you control and target creature you do not control. The creature you control gets +2/+1 until end of turn if it is a Knight. Then those creatures fight each other. (Each deals damage equal to its power to the other.)
+147,Mad Ratter,24.606106807999822,False,"No terminal matches ',' in the current parser context, at line 1 col 45
+
+ever you draw your second card each turn, create two 1/1 black Rat creature toke
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever you draw your second card each turn, create two 1/1 black Rat creature tokens."
+148,Haggle,24.58623230900048,False,"No terminal matches '.' in the current parser context, at line 1 col 23
+
+You may discard a card. If you do, draw a card. (Then exile th
+                      ^
+Expected one of: 
+	* WORD
+	* DASH
+","You may discard a card. If you do, draw a card. (Then exile this card. You may cast the creature later from exile.)"
+149,Opportunistic Dragon,22.617210129999876,False,"No terminal matches '~' in the current parser context, at line 2 col 6
+
+When ~ enters, choose target Human or artifac
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+When ~ enters, choose target Human or artifact an opponent controls. For as long as ~ remains on the battlefield, gain control of that permanent, it loses all abilities, and it can not attack or block."
+150,Raging Redcap,22.200597239999297,False,"Unexpected end-of-input. Expected one of: 
+	* DASH
+	* WORD
+",Double strike
+151,Ogre Errant,24.311155139999755,False,"No terminal matches '~' in the current parser context, at line 1 col 10
+
+Whenever ~ attacks, another target attacking Knig
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever ~ attacks, another target attacking Knight gains menace until end of turn. (It can not be blocked except by two or more creatures.)"
+152,Redcap Raiders,24.184344858999793,False,"No terminal matches '~' in the current parser context, at line 1 col 10
+
+Whenever ~ attacks, you may tap an untapped non-H
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever ~ attacks, you may tap an untapped non-Human creature you control. If you do, ~ gets +1/+1 and gains trample until end of turn."
+153,Robber of the Rich,22.182992689999992,False,"No terminal matches ',' in the current parser context, at line 1 col 6
+
+Reach, haste
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","Reach, haste
+Whenever ~ attacks, if defending player has more cards in hand than you, exile the top card of their library. During any turn you attacked with a Rogue, you may cast that card and you may spend mana as though it were mana of any color to cast that spell."
+154,Boulder Rush,24.830826497999624,False,"No terminal matches '+' in the current parser context, at line 1 col 22
+
+Target creature gets +2/+0 until end of turn. (Then exile thi
+                     ^
+Expected one of: 
+	* WORD
+	* DASH
+",Target creature gets +2/+0 until end of turn. (Then exile this card. You may cast the creature later from exile.)
+155,Merchant of the Vale,81.55690551099997,False,"No terminal matches 'D' in the current parser context, at line 1 col 9
+
+{2}{R}, Discard a card: Draw a card.
+        ^
+Expected one of: 
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* TURN
+	* ITSELF
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* SEARCH
+	* ABANDON
+	* LSQB
+	* DREW
+	* THESE
+	* ONTO
+	* TAPPEDSTATUSMODIFIER
+	* __ANON_21
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* __ANON_20
+	* IT
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* OTHER
+	* ORDINAL
+	* THE
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* TRANSFORM
+	* DISCOVER
+	* GREATER
+	* ALL
+	* X
+	* SKIP
+	* SHUFFLED
+	* CONNIVE
+	* FORAGE
+	* THAT
+	* MONSTROSITY
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* CONVERT
+	* FIGHT
+	* FLIP
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","{2}{R}, Discard a card: Draw a card."
+156,Skullknocker Ogre,24.703183978999732,False,"No terminal matches '~' in the current parser context, at line 1 col 10
+
+Whenever ~ deals damage to an opponent, that play
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever ~ deals damage to an opponent, that player discards a card at random. If the player does, they draw a card."
+157,Wishclaw Talisman,239.97420103900004,False,"No terminal matches 'R' in the current parser context, at line 2 col 11
+
+{1}, {T}, Remove a wish counter from ~: Search you
+          ^
+Expected one of: 
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* TURN
+	* ITSELF
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* SEARCH
+	* ABANDON
+	* LSQB
+	* DREW
+	* THESE
+	* ONTO
+	* TAPPEDSTATUSMODIFIER
+	* __ANON_21
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* __ANON_20
+	* IT
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* OTHER
+	* ORDINAL
+	* THE
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* TRANSFORM
+	* DISCOVER
+	* GREATER
+	* ALL
+	* X
+	* SKIP
+	* SHUFFLED
+	* CONNIVE
+	* FORAGE
+	* THAT
+	* MONSTROSITY
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* CONVERT
+	* FIGHT
+	* FLIP
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","~ enters with three wish counters on it.
+{1}, {T}, Remove a wish counter from ~: Search your library for a card, put it into your hand, then shuffle. An opponent gains control of ~. Activate only during your turn."
+158,Rimrock Knight,118.78387989100065,True,,~ can not block.
+159,"Syr Carah, the Bold",24.84099579999929,False,"No terminal matches '~' in the current parser context, at line 1 col 10
+
+Whenever ~f or an instant or sorcery spell you co
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever ~f or an instant or sorcery spell you control deals damage to a player, exile the top card of your library. You may play that card this turn.
+{T}: ~ deals 1 damage to any target."
+160,Thrill of Possibility,24.326504528999976,False,"No terminal matches ',' in the current parser context, at line 1 col 41
+
+As an additional cost to cast this spell, discard a card.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","As an additional cost to cast this spell, discard a card.
+Draw two cards."
+161,"Torbran, Thane of Red Fell",24.359962418000578,False,"No terminal matches ',' in the current parser context, at line 1 col 97
+
+nent or a permanent an opponent controls, it deals that much damage plus 2 inste
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","If a red source you control would deal damage to an opponent or a permanent an opponent controls, it deals that much damage plus 2 instead."
+162,Redcap Melee,243.18739490700045,False,"No terminal matches ',' in the current parser context, at line 1 col 100
+
+onred permanent is dealt damage this way, you sacrifice a land.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","~ deals 4 damage to target creature or planeswalker. If a nonred permanent is dealt damage this way, you sacrifice a land."
+163,Oathsworn Knight,472.98859381200054,False,"No terminal matches '~' in the current parser context, at line 3 col 29
+
+If damage would be dealt to ~ while it has a +1/+1 counter on it, pr
+                            ^
+Expected one of: 
+	* WORD
+	* DASH
+","~ enters with four +1/+1 counters on it.
+~ attacks each combat if able.
+If damage would be dealt to ~ while it has a +1/+1 counter on it, prevent that damage and remove a +1/+1 counter from it."
+164,Sundering Stroke,150.23053565699956,False,"No terminal matches ',' in the current parser context, at line 1 col 49
+
+7 damage divided as you choose among one, two, or three targets. If at least sev
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","~ deals 7 damage divided as you choose among one, two, or three targets. If at least seven red mana was spent to cast this spell, instead ~ deals 7 damage to each of those permanents and/or players."
+165,Curious Pair,3.315999492770061e-06,False,'text',
+166,Treats to Share,22.337796253000306,False,"No terminal matches '.' in the current parser context, at line 1 col 20
+
+Create a Food token. (Then exile this card. You may cast th
+                   ^
+Expected one of: 
+	* WORD
+	* DASH
+","Create a Food token. (Then exile this card. You may cast the creature later from exile. A Food token is an artifact with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)"
+167,Fertile Footsteps,22.964619723000396,False,"No terminal matches ',' in the current parser context, at line 1 col 42
+
+earch your library for a basic land card, put it onto the battlefield, then shuf
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Search your library for a basic land card, put it onto the battlefield, then shuffle. (Then exile this card. You may cast the creature later from exile.)"
+168,Scorching Dragonfire,242.95110709999972,False,"No terminal matches ',' in the current parser context, at line 1 col 106
+
+ture or planeswalker would die this turn, exile it instead.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","~ deals 3 damage to target creature or planeswalker. If that creature or planeswalker would die this turn, exile it instead."
+169,Searing Barrage,240.06368349700006,False,"No terminal matches 'I' in the current parser context, at line 2 col 11
+
+Adamant — If at least three red mana was spent to 
+          ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","~ deals 5 damage to target creature.
+Adamant — If at least three red mana was spent to cast this spell, ~ deals 3 damage to that creature's controller."
+170,Edgewall Innkeeper,22.33884169599969,False,"No terminal matches ',' in the current parser context, at line 1 col 57
+
+t a creature spell that has an Adventure, draw a card. (It does not need to have
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever you cast a creature spell that has an Adventure, draw a card. (It does not need to have gone on the adventure first.)"
+171,Seven Dwarves,256.62765702100023,False,"No terminal matches '~' in the current parser context, at line 2 col 41
+
+A deck can have up to seven cards named ~.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","~ gets +1/+1 for each other creature named ~ you control.
+A deck can have up to seven cards named ~."
+172,Feasting Troll King,24.931185803999142,False,"No terminal matches ',' in the current parser context, at line 1 col 10
+
+Vigilance, trample
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Vigilance, trample
+When ~ enters, if you cast it from your hand, create three Food tokens. (they are artifacts with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)
+Sacrifice three Foods: Return ~ from your graveyard to the battlefield. Activate only during your turn."
+173,Garenbrig Carver,3.316999936942011e-06,False,'text',
+174,Fierce Witchstalker,22.343204610000612,False,"No terminal matches '(' in the current parser context, at line 1 col 9
+
+Trample (This creature can deal excess combat da
+        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Trample (This creature can deal excess combat damage to the player or planeswalker it is attacking.)
+When ~ enters, create a Food token. (it is an artifact with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)"
+175,Flaxen Intruder,24.325371529999757,False,"No terminal matches '~' in the current parser context, at line 1 col 10
+
+Whenever ~ deals combat damage to a player, you m
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever ~ deals combat damage to a player, you may sacrifice it. When you do, destroy target artifact or enchantment."
+176,Welcome Home,24.199211015999936,False,"No terminal matches '2' in the current parser context, at line 1 col 14
+
+Create three 2/2 green Bear creature tokens. (Then ex
+             ^
+Expected one of: 
+	* WORD
+	* DASH
+",Create three 2/2 green Bear creature tokens. (Then exile this card. You may cast the creature later from exile.)
+177,Shield's Might,24.84923899899968,False,"No terminal matches '+' in the current parser context, at line 1 col 22
+
+Target creature gets +2/+2 until end of turn. (Then exile thi
+                     ^
+Expected one of: 
+	* WORD
+	* DASH
+",Target creature gets +2/+2 until end of turn. (Then exile this card. You may cast the creature later from exile.)
+178,Giant Opportunity,22.497306057999594,False,"No terminal matches '.' in the current parser context, at line 1 col 28
+
+You may sacrifice two Foods. If you do, create a 7/7 green Giant cr
+                           ^
+Expected one of: 
+	* WORD
+	* DASH
+","You may sacrifice two Foods. If you do, create a 7/7 green Giant creature token. Otherwise, create three Food tokens. (they are artifacts with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)"
+179,Garenbrig Squire,24.54746811699988,False,"No terminal matches ',' in the current parser context, at line 1 col 57
+
+t a creature spell that has an Adventure, ~ gets +1/+1 until end of turn. (It do
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever you cast a creature spell that has an Adventure, ~ gets +1/+1 until end of turn. (It does not need to have gone on the adventure first.)"
+180,Gilded Goose,24.578327793000426,False,"No terminal matches '~' in the current parser context, at line 2 col 6
+
+When ~ enters, create a Food token. (it is an
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+When ~ enters, create a Food token. (it is an artifact with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)
+{1}{G}, {T}: Create a Food token.
+{T}, Sacrifice a Food: Add one mana of any color."
+181,Garenbrig Paladin,46.820701815000575,False,"No terminal matches 'I' in the current parser context, at line 1 col 11
+
+Adamant — If at least three green mana was spent t
+          ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","Adamant — If at least three green mana was spent to cast this spell, ~ enters with a +1/+1 counter on it.
+~ can not be blocked by creatures with power 2 or less."
+182,Slaying Fire,274.6492055049994,False,"No terminal matches 'I' in the current parser context, at line 2 col 11
+
+Adamant — If at least three red mana was spent to 
+          ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","~ deals 3 damage to any target.
+Adamant — If at least three red mana was spent to cast this spell, it deals 4 damage instead."
+183,Insatiable Appetite,22.555337417000374,False,"No terminal matches '.' in the current parser context, at line 1 col 25
+
+You may sacrifice a Food. If you do, target creature gets +5/+5 
+                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","You may sacrifice a Food. If you do, target creature gets +5/+5 until end of turn. Otherwise, that creature gets +3/+3 until end of turn."
+184,The Great Henge,24.65999025399924,False,"No terminal matches '{' in the current parser context, at line 1 col 18
+
+This spell costs {X} less to cast, where X is the greates
+                 ^
+Expected one of: 
+	* WORD
+	* DASH
+","This spell costs {X} less to cast, where X is the greatest power among creatures you control.
+{T}: Add {G}{G}. You gain 2 life.
+Whenever a nontoken creature you control enters, put a +1/+1 counter on it and draw a card."
+185,Keeper of Fables,22.84460000099989,False,"No terminal matches '-' in the current parser context, at line 1 col 25
+
+Whenever one or more non-Human creatures you control deal combat
+                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever one or more non-Human creatures you control deal combat damage to a player, draw a card."
+186,Kenrith's Transformation,24.236093069000162,False,"No terminal matches '~' in the current parser context, at line 2 col 6
+
+When ~ enters, draw a card.
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","Enchant creature
+When ~ enters, draw a card.
+Enchanted creature loses all abilities and is a green Elk creature with base power and toughness 3/3. (It loses all other card types and creature types.)"
+187,Heart's Desire,24.362117730000136,False,"No terminal matches '1' in the current parser context, at line 1 col 10
+
+Create a 1/1 white Human creature token. (Then ex
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+",Create a 1/1 white Human creature token. (Then exile this card. You may cast the creature later from exile.)
+188,Maraleaf Rider,24.770002360000035,False,"No terminal matches ':' in the current parser context, at line 1 col 17
+
+Sacrifice a Food: Target creature blocks ~ this turn if 
+                ^
+Expected one of: 
+	* WORD
+	* DASH
+",Sacrifice a Food: Target creature blocks ~ this turn if able.
+189,Oakhame Adversary,24.770371509000142,False,"No terminal matches '{' in the current parser context, at line 1 col 18
+
+This spell costs {2} less to cast if an opponent controls
+                 ^
+Expected one of: 
+	* WORD
+	* DASH
+","This spell costs {2} less to cast if an opponent controls a green permanent.
+Deathtouch
+Whenever ~ deals combat damage to a player, draw a card."
+190,Once and Future,24.436563683000713,False,"No terminal matches '.' in the current parser context, at line 1 col 52
+
+et card from your graveyard to your hand. Put up to one other target card from y
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Return target card from your graveyard to your hand. Put up to one other target card from your graveyard on top of your library. Exile ~.
+Adamant — If at least three green mana was spent to cast this spell, instead return those cards to your hand and exile ~."
+191,Weaselback Redcap,194.14648313100042,True,,{1}{R}: ~ gets +2/+0 until end of turn.
+192,Once Upon a Time,24.73634144100015,False,"No terminal matches ',' in the current parser context, at line 1 col 57
+
+ the first spell you have cast this game, you may cast it without paying its man
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","If this spell is the first spell you have cast this game, you may cast it without paying its mana cost.
+Look at the top five cards of your library. You may reveal a creature or land card from among them and put it into your hand. Put the rest on the bottom of your library in a random order."
+193,Outmuscle,24.33907000599993,False,"No terminal matches '+' in the current parser context, at line 1 col 7
+
+Put a +1/+1 counter on target creature you con
+      ^
+Expected one of: 
+	* WORD
+	* DASH
+","Put a +1/+1 counter on target creature you control, then it fights target creature you do not control. (Each deals damage equal to its power to the other.)
+Adamant — If at least three green mana was spent to cast this spell, the creature you control gains indestructible until end of turn."
+194,Questing Beast,24.36915745599981,False,"No terminal matches ',' in the current parser context, at line 1 col 10
+
+Vigilance, deathtouch, haste
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Vigilance, deathtouch, haste
+~ can not be blocked by creatures with power 2 or less.
+Combat damage that would be dealt by creatures you control can not be prevented.
+Whenever ~ deals combat damage to an opponent, it deals that much damage to target planeswalker that player controls."
+195,Seasonal Ritual,22.41561294499934,False,"No terminal matches '.' in the current parser context, at line 1 col 26
+
+Add one mana of any color. (Then exile this card. You may cast th
+                         ^
+Expected one of: 
+	* WORD
+	* DASH
+",Add one mana of any color. (Then exile this card. You may cast the creature later from exile.)
+196,Return of the Wildspeaker,46.73312579100002,False,"No terminal matches '•' in the current parser context, at line 2 col 1
+
+• Draw cards equal to the greatest power
+^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","Choose one —
+• Draw cards equal to the greatest power among non-Human creatures you control.
+• Non-Human creatures you control get +3/+3 until end of turn."
+197,Rosethorn Halberd,24.81788952900024,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, attach it to target non-Human 
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, attach it to target non-Human creature you control.
+Equipped creature gets +2/+1.
+Equip {5} ({5}: Attach to target creature you control. Equip only as a sorcery.)"
+198,Return to Nature,48.73901845399996,False,"No terminal matches '•' in the current parser context, at line 2 col 1
+
+• Destroy target artifact.
+^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","Choose one —
+• Destroy target artifact.
+• Destroy target enchantment.
+• Exile target card from a graveyard."
+199,Rosethorn Acolyte,47.15458757499982,False,"No terminal matches 'A' in the current parser context, at line 1 col 6
+
+{T}: Add one mana of any color.
+     ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+",{T}: Add one mana of any color.
+200,Tuinvale Treefolk,3.0559995138901286e-06,False,'text',
+201,Sporecap Spider,23.850041620999946,False,"Unexpected end-of-input. Expected one of: 
+	* DASH
+	* WORD
+",Reach
+202,Tall as a Beanstalk,22.46389084600014,False,"No terminal matches '+' in the current parser context, at line 2 col 25
+
+Enchanted creature gets +3/+3, has reach, and is a Giant in addi
+                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Enchant creature
+Enchanted creature gets +3/+3, has reach, and is a Giant in addition to its other types."
+203,"Syr Faren, the Hengehammer",24.25803986700066,False,"No terminal matches '~' in the current parser context, at line 1 col 10
+
+Whenever ~f attacks, another target attacking cre
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever ~f attacks, another target attacking creature gets +X/+X until end of turn, where X is ~'s power."
+204,Trail of Crumbs,22.65152153500003,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, create a Food token. (it is an
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, create a Food token. (it is an artifact with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)
+Whenever you sacrifice a Food, you may pay {1}. If you do, look at the top two cards of your library. You may reveal a permanent card from among them and put it into your hand. Put the rest on the bottom of your library in any order."
+205,Oaken Boon,22.174925696000173,False,"No terminal matches '+' in the current parser context, at line 1 col 9
+
+Put two +1/+1 counters on target creature. (Then
+        ^
+Expected one of: 
+	* WORD
+	* DASH
+",Put two +1/+1 counters on target creature. (Then exile this card. You may cast the creature later from exile.)
+206,Wicked Wolf,24.153555502000017,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, it fights up to one target cre
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, it fights up to one target creature you do not control.
+Sacrifice a Food: Put a +1/+1 counter on ~. It gains indestructible until end of turn. Tap it."
+207,Wildwood Tracker,22.250382856000215,False,"No terminal matches '~' in the current parser context, at line 1 col 10
+
+Whenever ~ attacks or blocks, if you control anot
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever ~ attacks or blocks, if you control another non-Human creature, ~ gets +1/+1 until end of turn."
+208,Wildborn Preserver,24.58094223199987,False,"No terminal matches '-' in the current parser context, at line 3 col 21
+
+Whenever another non-Human creature you control enters, you 
+                    ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flash
+Reach
+Whenever another non-Human creature you control enters, you may pay {X}. When you do, put X +1/+1 counters on ~."
+209,Wolf's Quarry,24.665487126999324,False,"No terminal matches '1' in the current parser context, at line 1 col 14
+
+Create three 1/1 green Boar creature tokens with ""Whe
+             ^
+Expected one of: 
+	* WORD
+	* DASH
+","Create three 1/1 green Boar creature tokens with ""When this creature dies, create a Food token."". (A Food token is an artifact with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)"
+210,Fell the Pheasant,235.32192898300036,False,"No terminal matches '.' in the current parser context, at line 1 col 69
+
+reature with flying. Create a Food token. (it is an artifact with ""{2}, {T}, Sac
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","~ deals 5 damage to target creature with flying. Create a Food token. (it is an artifact with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)"
+211,Dance of the Manse,24.521051486000033,False,"No terminal matches '/' in the current parser context, at line 1 col 35
+
+Return up to X target artifact and/or non-Aura enchantment cards each with
+                                  ^
+Expected one of: 
+	* WORD
+	* DASH
+","Return up to X target artifact and/or non-Aura enchantment cards each with mana value X or less from your graveyard to the battlefield. If X is 6 or more, those permanents are 4/4 creatures in addition to their other types."
+212,Doom Foretold,25.152467076999528,False,"No terminal matches ''' in the current parser context, at line 1 col 32
+
+At the beginning of each player's upkeep, that player sacrifices a nonl
+                               ^
+Expected one of: 
+	* WORD
+	* DASH
+","At the beginning of each player's upkeep, that player sacrifices a nonland, nontoken permanent of their choice. If that player can not, they discard a card, they lose 2 life, you draw a card, you gain 2 life, you create a 2/2 white Knight creature token with vigilance, then you sacrifice ~."
+213,Escape to the Wilds,24.73522857699936,False,"No terminal matches '.' in the current parser context, at line 1 col 41
+
+Exile the top five cards of your library. You may play cards exiled this way unt
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Exile the top five cards of your library. You may play cards exiled this way until the end of your next turn.
+You may play an additional land this turn."
+214,Faeburrow Elder,24.321212025000023,False,"No terminal matches '~' in the current parser context, at line 2 col 1
+
+~ gets +1/+1 for each color among perman
+^
+Expected one of: 
+	* WORD
+	* DASH
+","Vigilance
+~ gets +1/+1 for each color among permanents you control.
+{T}: For each color among permanents you control, add one mana of that color."
+215,Drown in the Loch,47.05711095999959,False,"No terminal matches '•' in the current parser context, at line 2 col 1
+
+• Counter target spell with mana value l
+^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","Choose one —
+• Counter target spell with mana value less than or equal to the number of cards in its controller's graveyard.
+• Destroy target creature with mana value less than or equal to the number of cards in its controller's graveyard."
+216,"Grumgully, the Generous",24.472672065000552,False,"No terminal matches '-' in the current parser context, at line 1 col 15
+
+Each other non-Human creature you control enters with 
+              ^
+Expected one of: 
+	* WORD
+	* DASH
+",Each other non-Human creature you control enters with an additional +1/+1 counter on it.
+217,Improbable Alliance,24.39468100399972,False,"No terminal matches ',' in the current parser context, at line 1 col 45
+
+ever you draw your second card each turn, create a 1/1 blue Faerie creature toke
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever you draw your second card each turn, create a 1/1 blue Faerie creature token with flying.
+{4}{U}{R}: Draw a card, then discard a card."
+218,"Garruk, Cursed Huntsman",46.09044768700005,False,"No terminal matches 'C' in the current parser context, at line 1 col 6
+
+[0]: Create two 2/2 black and green Wolf crea
+     ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","[0]: Create two 2/2 black and green Wolf creature tokens with ""When this creature dies, put a loyalty counter on each ~ you control."".
+[−3]: Destroy target creature. Draw a card.
+[−6]: You get an emblem with ""Creatures you control get +3/+3 and have trample.""."
+219,Inspiring Veteran,24.679215946000113,False,"No terminal matches '+' in the current parser context, at line 1 col 31
+
+Other Knights you control get +1/+1.
+                              ^
+Expected one of: 
+	* WORD
+	* DASH
+",Other Knights you control get +1/+1.
+220,Lochmere Serpent,24.374196189999566,False,"No terminal matches '{' in the current parser context, at line 2 col 1
+
+{U}, Sacrifice an Island: ~ can not be b
+^
+Expected one of: 
+	* WORD
+	* DASH
+","Flash
+{U}, Sacrifice an Island: ~ can not be blocked this turn.
+{B}, Sacrifice a Swamp: You gain 1 life and draw a card.
+{U}{B}: Exile five target cards from an opponent's graveyard. Return ~ from your graveyard to your hand. Activate only as a sorcery."
+221,Maraleaf Pixie,24.1336726669997,False,"No terminal matches '{' in the current parser context, at line 2 col 1
+
+{T}: Add {G} or {U}.
+^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+{T}: Add {G} or {U}."
+222,Outlaws' Merriment,24.50768343799973,False,"No terminal matches ',' in the current parser context, at line 1 col 32
+
+At the beginning of your upkeep, choose one at random. Create a red and
+                               ^
+Expected one of: 
+	* WORD
+	* DASH
+","At the beginning of your upkeep, choose one at random. Create a red and white creature token with those characteristics.
+• 3/1 Human Warrior with trample and haste.
+• 2/1 Human Cleric with lifelink and haste.
+• 1/2 Human Rogue with haste and ""When this creature enters, it deals 1 damage to any target.""."
+223,Savvy Hunter,22.68698407699958,False,"No terminal matches '~' in the current parser context, at line 1 col 10
+
+Whenever ~ attacks or blocks, create a Food token
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever ~ attacks or blocks, create a Food token. (it is an artifact with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)
+Sacrifice two Foods: Draw a card."
+224,Shinechaser,22.710493642000074,False,"No terminal matches ',' in the current parser context, at line 1 col 7
+
+Flying, vigilance
+      ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying, vigilance
+~ gets +1/+1 as long as you control an artifact.
+~ gets +1/+1 as long as you control an enchantment."
+225,"Oko, Thief of Crowns",46.42595686899949,False,"No terminal matches 'C' in the current parser context, at line 1 col 7
+
+[+2]: Create a Food token. (it is an artifact 
+      ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","[+2]: Create a Food token. (it is an artifact with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)
+[+1]: Target artifact or creature loses all abilities and becomes a green Elk creature with base power and toughness 3/3.
+[−5]: Exchange control of target artifact or creature you control and target creature an opponent controls with power 3 or less."
+226,Steelclaw Lance,22.481356459999915,False,"No terminal matches '+' in the current parser context, at line 1 col 24
+
+Equipped creature gets +2/+2.
+                       ^
+Expected one of: 
+	* WORD
+	* DASH
+","Equipped creature gets +2/+2.
+Equip Knight {1}
+Equip {3}"
+227,The Royal Scions,46.700940142000036,False,"No terminal matches 'D' in the current parser context, at line 1 col 7
+
+[+1]: Draw a card, then discard a card.
+      ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","[+1]: Draw a card, then discard a card.
+[+1]: Target creature gets +2/+0 and gains first strike and trample until end of turn.
+[−8]: Draw four cards. When you do, ~ deals damage to any target equal to the number of cards in your hand."
+228,Stormfist Crusader,24.21733451900036,False,"No terminal matches ',' in the current parser context, at line 2 col 32
+
+At the beginning of your upkeep, each player draws a card and loses 1 l
+                               ^
+Expected one of: 
+	* WORD
+	* DASH
+","Menace
+At the beginning of your upkeep, each player draws a card and loses 1 life."
+229,Wandermare,24.61602367100022,False,"No terminal matches ',' in the current parser context, at line 1 col 57
+
+t a creature spell that has an Adventure, put a +1/+1 counter on ~. (It does not
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever you cast a creature spell that has an Adventure, put a +1/+1 counter on ~. (It does not need to have gone on the adventure first.)"
+230,Wintermoor Commander,24.49786789599966,False,"No terminal matches '~' in the current parser context, at line 2 col 1
+
+~'s toughness is equal to the number of 
+^
+Expected one of: 
+	* WORD
+	* DASH
+","Deathtouch
+~'s toughness is equal to the number of Knights you control.
+Whenever ~ attacks, another target Knight you control gains indestructible until end of turn. (Damage and effects that say ""destroy"" do not destroy it.)"
+231,Beanstalk Giant,380.27045805499984,True,,~'s power and toughness are each equal to the number of lands you control.
+232,Arcanist's Owl,24.048019542000475,False,"No terminal matches '~' in the current parser context, at line 2 col 6
+
+When ~ enters, look at the top four cards of 
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+When ~ enters, look at the top four cards of your library. You may reveal an artifact or enchantment card from among them and put it into your hand. Put the rest on the bottom of your library in a random order."
+233,Covetous Urge,24.512117989000217,False,"No terminal matches '.' in the current parser context, at line 1 col 35
+
+Target opponent reveals their hand. You choose a nonland card from that pl
+                                  ^
+Expected one of: 
+	* WORD
+	* DASH
+","Target opponent reveals their hand. You choose a nonland card from that player's graveyard or hand and exile it. You may cast that card for as long as it remains exiled, and you may spend mana as though it were mana of any color to cast that spell."
+234,Deathless Knight,24.513074974999654,False,"No terminal matches ',' in the current parser context, at line 2 col 48
+
+u gain life for the first time each turn, return ~ from your graveyard to your h
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Haste
+When you gain life for the first time each turn, return ~ from your graveyard to your hand."
+235,Elite Headhunter,24.796294431000206,False,"No terminal matches '(' in the current parser context, at line 1 col 8
+
+Menace (This creature can not be blocked except
+       ^
+Expected one of: 
+	* WORD
+	* DASH
+","Menace (This creature can not be blocked except by two or more creatures.)
+{B/R}{B/R}{B/R}, Sacrifice another creature or an artifact: ~ deals 2 damage to target creature or planeswalker."
+236,Fireborn Knight,22.750031638999644,False,"No terminal matches '{' in the current parser context, at line 2 col 1
+
+{R/W}{R/W}{R/W}{R/W}: ~ gets +1/+1 until
+^
+Expected one of: 
+	* WORD
+	* DASH
+","Double strike
+{R/W}{R/W}{R/W}{R/W}: ~ gets +1/+1 until end of turn."
+237,Loch Dragon,24.438329610999972,False,"No terminal matches '~' in the current parser context, at line 2 col 10
+
+Whenever ~ enters or attacks, you may discard a c
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+Whenever ~ enters or attacks, you may discard a card. If you do, draw a card."
+238,Bring Back,22.4077064840003,False,"No terminal matches '1' in the current parser context, at line 1 col 12
+
+Create two 1/1 white Human creature tokens. (Then e
+           ^
+Expected one of: 
+	* WORD
+	* DASH
+",Create two 1/1 white Human creature tokens. (Then exile this card. You may cast the creature later from exile.)
+239,Thunderous Snapper,24.52745398099978,False,"No terminal matches '5' in the current parser context, at line 1 col 43
+
+enever you cast a spell with mana value 5 or greater, draw a card.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever you cast a spell with mana value 5 or greater, draw a card."
+240,Lovestruck Beast,317.6268521770007,True,,~ can not attack unless you control a 1/1 creature.
+241,Oakhame Ranger,45.73742970500007,False,"No terminal matches 'C' in the current parser context, at line 1 col 6
+
+{T}: Creatures you control get +1/+1 until en
+     ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+",{T}: Creatures you control get +1/+1 until end of turn.
+242,Crashing Drawbridge,24.596146188000603,False,"No terminal matches '{' in the current parser context, at line 2 col 1
+
+{T}: Creatures you control gain haste un
+^
+Expected one of: 
+	* WORD
+	* DASH
+","Defender
+{T}: Creatures you control gain haste until end of turn."
+243,Clockwork Servant,46.61970324699996,False,"No terminal matches 'W' in the current parser context, at line 1 col 11
+
+Adamant — When ~ enters, if at least three mana of
+          ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","Adamant — When ~ enters, if at least three mana of the same color was spent to cast it, draw a card."
+244,Enchanted Carriage,24.27789659500013,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, create two 1/1 white Mouse cre
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, create two 1/1 white Mouse creature tokens.
+Crew 2 (Tap any number of creatures you control with total power 2 or more: This Vehicle becomes an artifact creature until end of turn.)"
+245,Gingerbrute,22.66503603199999,False,"No terminal matches '(' in the current parser context, at line 1 col 7
+
+Haste (This creature can attack and {T} as soo
+      ^
+Expected one of: 
+	* WORD
+	* DASH
+","Haste (This creature can attack and {T} as soon as it comes under your control.)
+{1}: ~ can not be blocked this turn except by creatures with haste.
+{2}, {T}, Sacrifice ~: You gain 3 life."
+246,Golden Egg,24.05982726900038,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, draw a card.
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, draw a card.
+{1}, {T}, Sacrifice ~: Add one mana of any color.
+{2}, {T}, Sacrifice ~: You gain 3 life."
+247,Inquisitive Puppet,24.40904258899991,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, scry 1.
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, scry 1.
+Exile ~: Create a 1/1 white Human creature token."
+248,Heraldic Banner,24.52768897199985,False,"No terminal matches '~' in the current parser context, at line 1 col 4
+
+As ~ enters, choose a color.
+   ^
+Expected one of: 
+	* WORD
+	* DASH
+","As ~ enters, choose a color.
+Creatures you control of the chosen color get +1/+0.
+{T}: Add one mana of the chosen color."
+249,Henge Walker,46.219599055999424,False,"No terminal matches 'I' in the current parser context, at line 1 col 11
+
+Adamant — If at least three mana of the same color
+          ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","Adamant — If at least three mana of the same color was spent to cast this spell, ~ enters with a +1/+1 counter on it."
+250,Prophet of the Peak,22.438725912000336,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, scry 2. (Look at the top two c
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, scry 2. (Look at the top two cards of your library, then put any number of them on the bottom and the rest on top in any order.)"
+251,Lucky Clover,22.699539541000377,False,"No terminal matches ',' in the current parser context, at line 1 col 56
+
+st an Adventure instant or sorcery spell, copy it. You may choose new targets fo
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever you cast an Adventure instant or sorcery spell, copy it. You may choose new targets for the copy."
+252,"Yorvo, Lord of Garenbrig",257.01911979300075,False,"No terminal matches ',' in the current parser context, at line 2 col 51
+
+nother green creature you control enters, put a +1/+1 counter on ~. Then if that
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","~f enters with four +1/+1 counters on it.
+Whenever another green creature you control enters, put a +1/+1 counter on ~. Then if that creature's power is greater than ~'s power, put another +1/+1 counter on ~."
+253,Rampart Smasher,114.21305593499983,False,"No terminal matches '.' in the current parser context, at line 1 col 41
+
+~ can not be blocked by Knights or Walls.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+",~ can not be blocked by Knights or Walls.
+254,Roving Keep,24.54578283199953,False,"No terminal matches '{' in the current parser context, at line 2 col 1
+
+{7}: ~ gets +2/+0 and gains trample unti
+^
+Expected one of: 
+	* WORD
+	* DASH
+","Defender
+{7}: ~ gets +2/+0 and gains trample until end of turn. It can attack this turn as though it didn't have defender."
+255,Signpost Scarecrow,24.456556473999626,False,"No terminal matches '{' in the current parser context, at line 2 col 1
+
+{2}: Add one mana of any color.
+^
+Expected one of: 
+	* WORD
+	* DASH
+","Vigilance
+{2}: Add one mana of any color."
+256,Sorcerer's Broom,24.39337407399944,False,"No terminal matches ',' in the current parser context, at line 1 col 41
+
+Whenever you sacrifice another permanent, you may pay {3}. If you do, create a t
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever you sacrifice another permanent, you may pay {3}. If you do, create a token that is a copy of ~."
+257,Sorcerous Spyglass,22.639750882000044,False,"No terminal matches '~' in the current parser context, at line 1 col 4
+
+As ~ enters, look at an opponent's hand, th
+   ^
+Expected one of: 
+	* WORD
+	* DASH
+","As ~ enters, look at an opponent's hand, then choose any card name.
+Activated abilities of sources with the chosen name can not be activated unless they are mana abilities."
+258,Stonecoil Serpent,24.44511558600061,False,"No terminal matches ',' in the current parser context, at line 1 col 6
+
+Reach, trample, protection from multicolored
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","Reach, trample, protection from multicolored
+~ enters with X +1/+1 counters on it."
+259,Spinning Wheel,45.854168723999464,False,"No terminal matches 'A' in the current parser context, at line 1 col 6
+
+{T}: Add one mana of any color.
+     ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","{T}: Add one mana of any color.
+{5}, {T}: Tap target creature."
+260,Scalding Cauldron,81.69953106600042,False,"No terminal matches 'S' in the current parser context, at line 1 col 11
+
+{3}, {T}, Sacrifice ~: It deals 3 damage to target
+          ^
+Expected one of: 
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* TURN
+	* ITSELF
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* SEARCH
+	* ABANDON
+	* LSQB
+	* DREW
+	* THESE
+	* ONTO
+	* TAPPEDSTATUSMODIFIER
+	* __ANON_21
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* __ANON_20
+	* IT
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* OTHER
+	* ORDINAL
+	* THE
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* TRANSFORM
+	* DISCOVER
+	* GREATER
+	* ALL
+	* X
+	* SKIP
+	* SHUFFLED
+	* CONNIVE
+	* FORAGE
+	* THAT
+	* MONSTROSITY
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* CONVERT
+	* FIGHT
+	* FLIP
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","{3}, {T}, Sacrifice ~: It deals 3 damage to target creature."
+261,Witch's Oven,42.00563411599978,False,"No terminal matches 'S' in the current parser context, at line 1 col 6
+
+{T}, Sacrifice a creature: Create a Food toke
+     ^
+Expected one of: 
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* TURN
+	* ITSELF
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* SEARCH
+	* ABANDON
+	* LSQB
+	* DREW
+	* THESE
+	* ONTO
+	* TAPPEDSTATUSMODIFIER
+	* __ANON_21
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* __ANON_20
+	* IT
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* OTHER
+	* ORDINAL
+	* THE
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* TRANSFORM
+	* DISCOVER
+	* GREATER
+	* ALL
+	* X
+	* SKIP
+	* SHUFFLED
+	* CONNIVE
+	* FORAGE
+	* THAT
+	* MONSTROSITY
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* CONVERT
+	* FIGHT
+	* FLIP
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","{T}, Sacrifice a creature: Create a Food token. If the sacrificed creature's toughness was 4 or greater, create two Food tokens instead. (they are artifacts with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)"
+262,Jousting Dummy,178.20266146099948,True,,{3}: ~ gets +1/+0 until end of turn.
+263,Castle Ardenvale,184.7620076330004,False,"No terminal matches '.' in the current parser context, at line 1 col 44
+
+nters tapped unless you control a Plains.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","~ enters tapped unless you control a Plains.
+{T}: Add {W}.
+{2}{W}{W}, {T}: Create a 1/1 white Human creature token."
+264,Locthwain Gargoyle,300.7781490030002,True,,{4}: ~ gets +2/+0 and gains flying until end of turn.
+265,Castle Embereth,186.36091216299974,False,"No terminal matches '.' in the current parser context, at line 1 col 46
+
+ers tapped unless you control a Mountain.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","~ enters tapped unless you control a Mountain.
+{T}: Add {R}.
+{1}{R}{R}, {T}: Creatures you control get +1/+0 until end of turn."
+266,Castle Garenbrig,185.51121261200024,False,"No terminal matches '.' in the current parser context, at line 1 col 44
+
+nters tapped unless you control a Forest.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","~ enters tapped unless you control a Forest.
+{T}: Add {G}.
+{2}{G}{G}, {T}: Add six {G}. Spend this mana only to cast creature spells or activate abilities of creatures."
+267,Fabled Passage,42.29942136699992,False,"No terminal matches 'S' in the current parser context, at line 1 col 6
+
+{T}, Sacrifice ~: Search your library for a b
+     ^
+Expected one of: 
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* TURN
+	* ITSELF
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* SEARCH
+	* ABANDON
+	* LSQB
+	* DREW
+	* THESE
+	* ONTO
+	* TAPPEDSTATUSMODIFIER
+	* __ANON_21
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* __ANON_20
+	* IT
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* OTHER
+	* ORDINAL
+	* THE
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* TRANSFORM
+	* DISCOVER
+	* GREATER
+	* ALL
+	* X
+	* SKIP
+	* SHUFFLED
+	* CONNIVE
+	* FORAGE
+	* THAT
+	* MONSTROSITY
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* CONVERT
+	* FIGHT
+	* FLIP
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","{T}, Sacrifice ~: Search your library for a basic land card, put it onto the battlefield tapped, then shuffle. Then if you control four or more lands, untap that land."
+268,Weapon Rack,282.935326414,False,"No terminal matches 'M' in the current parser context, at line 2 col 6
+
+{T}: Move a +1/+1 counter from ~ onto target 
+     ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","~ enters with three +1/+1 counters on it.
+{T}: Move a +1/+1 counter from ~ onto target creature. Activate only as a sorcery."
+269,Castle Locthwain,185.99988747299994,False,"No terminal matches '.' in the current parser context, at line 1 col 43
+
+enters tapped unless you control a Swamp.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","~ enters tapped unless you control a Swamp.
+{T}: Add {B}.
+{1}{B}{B}, {T}: Draw a card, then you lose life equal to the number of cards in your hand."
+270,Resolute Rider,435.9554198469996,True,,"{W/B}{W/B}: ~ gains lifelink until end of turn.
+{W/B}{W/B}{W/B}: ~ gains indestructible until end of turn. (Damage and effects that say ""destroy"" do not destroy it.)"
+271,Tournament Grounds,48.49052818100063,False,"No terminal matches 'A' in the current parser context, at line 1 col 6
+
+{T}: Add {C}.
+     ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","{T}: Add {C}.
+{T}: Add {R}, {W}, or {B}. Spend this mana only to cast a Knight or Equipment spell."
+272,Shambling Suit,406.6917018230006,True,,~'s power is equal to the number of artifacts and/or enchantments you control.
+273,Plains,46.90623630600021,True,,({T}: Add {W}.)
+274,Island,43.95729042200037,True,,({T}: Add {U}.)
+275,Castle Vantress,201.611883691,False,"No terminal matches '.' in the current parser context, at line 1 col 45
+
+ters tapped unless you control an Island.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","~ enters tapped unless you control an Island.
+{T}: Add {U}.
+{2}{U}{U}, {T}: Scry 2."
+276,Swamp,47.39580247399954,True,,({T}: Add {B}.)
+277,Mountain,48.39652348300024,True,,({T}: Add {R}.)
+278,Forest,47.93947484799992,True,,({T}: Add {G}.)
+279,Garrison Griffin,22.501554532000227,False,"No terminal matches '~' in the current parser context, at line 2 col 10
+
+Whenever ~ attacks, target Knight you control gai
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+Whenever ~ attacks, target Knight you control gains flying until end of turn."
+280,"Kenrith, the Returned King",64.96909518899975,False,"No terminal matches 'A' in the current parser context, at line 1 col 6
+
+{R}: All creatures gain trample and haste unt
+     ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","{R}: All creatures gain trample and haste until end of turn.
+{1}{G}: Put a +1/+1 counter on target creature.
+{2}{W}: Target player gains 5 life.
+{3}{U}: Target player draws a card.
+{4}{B}: Put target creature card from a graveyard onto the battlefield under its owner's control."
+281,"Rowan, Fearless Sparkmage",46.131690356000036,False,"No terminal matches 'U' in the current parser context, at line 1 col 7
+
+[+1]: Up to one target creature gets +3/+0 and
+      ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","[+1]: Up to one target creature gets +3/+0 and gains first strike until end of turn.
+[−2]: ~f deals 1 damage to each of up to two target creatures. Those creatures can not block this turn.
+[−9]: Gain control of all creatures until end of turn. Untap them. They gain haste until end of turn."
+282,Dwarven Mine,282.81719947700003,False,"No terminal matches '.' in the current parser context, at line 2 col 65
+
+ou control three or more other Mountains.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","({T}: Add {R}.)
+~ enters tapped unless you control three or more other Mountains.
+When ~ enters untapped, create a 1/1 red Dwarf creature token."
+283,Rowan's Battleguard,21.971259110000574,False,"No terminal matches ',' in the current parser context, at line 2 col 44
+
+long as you control a Rowan planeswalker, ~ gets +3/+0.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","First strike
+As long as you control a Rowan planeswalker, ~ gets +3/+0."
+284,Rowan's Stalwarts,24.43971621899982,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, you may search your library an
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, you may search your library and/or graveyard for a card named Rowan, Fearless Sparkmage, reveal it, and put it into your hand. If you search your library this way, shuffle."
+285,Gingerbread Cabin,287.1050472350007,False,"No terminal matches '.' in the current parser context, at line 2 col 63
+
+ you control three or more other Forests.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","({T}: Add {G}.)
+~ enters tapped unless you control three or more other Forests.
+When ~ enters untapped, create a Food token. (it is an artifact with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)"
+286,Oko's Accomplices,23.76306123300037,False,"Unexpected end-of-input. Expected one of: 
+	* DASH
+	* WORD
+",Flying
+287,"Oko, the Trickster",46.22027846800029,False,"No terminal matches 'P' in the current parser context, at line 1 col 7
+
+[+1]: Put two +1/+1 counters on up to one targ
+      ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+","[+1]: Put two +1/+1 counters on up to one target creature you control.
+[0]: Until end of turn, ~f becomes a copy of target creature you control. Prevent all damage that would be dealt to him this turn.
+[−7]: Until end of turn, each creature you control has base power and toughness 10/10 and gains trample."
+288,Idyllic Grange,286.9454464199998,False,"No terminal matches '.' in the current parser context, at line 2 col 62
+
+s you control three or more other Plains.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","({T}: Add {W}.)
+~ enters tapped unless you control three or more other Plains.
+When ~ enters untapped, put a +1/+1 counter on target creature you control."
+289,Oko's Hospitality,22.574467147000178,False,"No terminal matches '3' in the current parser context, at line 1 col 53
+
+u control have base power and toughness 3/3 until end of turn. You may search yo
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Creatures you control have base power and toughness 3/3 until end of turn. You may search your library and/or graveyard for a card named Oko, the Trickster, reveal it, and put it into your hand. If you search your library this way, shuffle."
+290,Mystic Sanctuary,286.58950369099966,False,"No terminal matches '.' in the current parser context, at line 2 col 63
+
+ you control three or more other Islands.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","({T}: Add {U}.)
+~ enters tapped unless you control three or more other Islands.
+When ~ enters untapped, you may put target instant or sorcery card from your graveyard on top of your library."
+291,Mace of the Valiant,24.865535450999232,False,"No terminal matches '+' in the current parser context, at line 1 col 24
+
+Equipped creature gets +1/+1 for each charge counter on ~ and h
+                       ^
+Expected one of: 
+	* WORD
+	* DASH
+","Equipped creature gets +1/+1 for each charge counter on ~ and has vigilance. (Attacking does not cause it to tap.)
+Whenever a creature you control enters, put a charge counter on ~.
+Equip {3}"
+292,Witch's Cottage,282.63663989900033,False,"No terminal matches '.' in the current parser context, at line 2 col 62
+
+s you control three or more other Swamps.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","({T}: Add {B}.)
+~ enters tapped unless you control three or more other Swamps.
+When ~ enters untapped, you may put target creature card from your graveyard on top of your library."
+293,Silverwing Squadron,22.65314930400018,False,"No terminal matches ',' in the current parser context, at line 1 col 7
+
+Flying, vigilance
+      ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying, vigilance
+~'s power and toughness are each equal to the number of creatures you control.
+Whenever ~ attacks, create a number of 2/2 white Knight creature tokens with vigilance equal to the number of opponents you have."
+294,Faerie Formation,24.59970203300054,False,"No terminal matches '{' in the current parser context, at line 2 col 1
+
+{3}{U}: Create a 1/1 blue Faerie creatur
+^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+{3}{U}: Create a 1/1 blue Faerie creature token with flying. Draw a card."
+295,Shimmer Dragon,22.435211953999897,False,"No terminal matches ',' in the current parser context, at line 2 col 46
+
+ng as you control four or more artifacts, ~ has hexproof. (It can not be the tar
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+As long as you control four or more artifacts, ~ has hexproof. (It can not be the target of spells or abilities your opponents control.)
+Tap two untapped artifacts you control: Draw a card."
+296,Chittering Witch,22.20367844700013,False,"No terminal matches '~' in the current parser context, at line 1 col 6
+
+When ~ enters, create a number of 1/1 black R
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","When ~ enters, create a number of 1/1 black Rat creature tokens equal to the number of opponents you have.
+{1}{B}, Sacrifice a creature: Target creature gets -2/-2 until end of turn."
+297,Workshop Elders,24.17693763599982,False,"No terminal matches '.' in the current parser context, at line 1 col 43
+
+tifact creatures you control have flying.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Artifact creatures you control have flying.
+At the beginning of combat on your turn, you may have target noncreature artifact you control become a 0/0 artifact creature. If you do, put four +1/+1 counters on it."
+298,Taste of Death,22.445587405999504,False,"No terminal matches '.' in the current parser context, at line 1 col 55
+
+crifices three creatures of their choice. You create three Food tokens. (they ar
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","Each player sacrifices three creatures of their choice. You create three Food tokens. (they are artifacts with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)"
+299,Embereth Skyblazer,24.432263241000328,False,"No terminal matches ',' in the current parser context, at line 1 col 17
+
+During your turn, ~ has flying.
+                ^
+Expected one of: 
+	* WORD
+	* DASH
+","During your turn, ~ has flying.
+Whenever ~ attacks, you may pay {2}{R}. If you do, creatures you control get +X/+0 until end of turn, where X is the number of opponents you have."
+300,Thorn Mammoth,24.232560856999953,False,"No terminal matches '~' in the current parser context, at line 2 col 10
+
+Whenever ~ or another creature you control enters
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Trample
+Whenever ~ or another creature you control enters, ~ fights up to one target creature you do not control."
+301,"Alela, Artful Provocateur",22.360513382000136,False,"No terminal matches ',' in the current parser context, at line 1 col 7
+
+Flying, deathtouch, lifelink
+      ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying, deathtouch, lifelink
+Other creatures you control with flying get +1/+0.
+Whenever you cast an artifact or enchantment spell, create a 1/1 blue Faerie creature token with flying."
+302,Banish into Fable,24.310116693000055,False,"No terminal matches ',' in the current parser context, at line 1 col 40
+
+When you cast this spell from your hand, copy it if you control an artifact, th
+                                       ^
+Expected one of: 
+	* WORD
+	* DASH
+","When you cast this spell from your hand, copy it if you control an artifact, then copy it if you control an enchantment. You may choose new targets for the copies.
+Return target nonland permanent to its owner's hand. You create a 2/2 white Knight creature token with vigilance."
+303,"Chulane, Teller of Tales",22.454515436000293,False,"No terminal matches ',' in the current parser context, at line 2 col 35
+
+Whenever you cast a creature spell, draw a card, then you may put a land c
+                                  ^
+Expected one of: 
+	* WORD
+	* DASH
+","Vigilance
+Whenever you cast a creature spell, draw a card, then you may put a land card from your hand onto the battlefield.
+{3}, {T}: Return target creature you control to its owner's hand."
+304,Knights' Charge,24.383852327000568,False,"No terminal matches ',' in the current parser context, at line 1 col 38
+
+Whenever a Knight you control attacks, each opponent loses 1 life and you gai
+                                     ^
+Expected one of: 
+	* WORD
+	* DASH
+","Whenever a Knight you control attacks, each opponent loses 1 life and you gain 1 life.
+{6}{W}{B}, Sacrifice ~: Return all Knight creature cards from your graveyard to the battlefield."
+305,Gluttonous Troll,24.530160867999257,False,"No terminal matches '~' in the current parser context, at line 2 col 6
+
+When ~ enters, create a number of Food tokens
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","Trample
+When ~ enters, create a number of Food tokens equal to the number of opponents you have. (Food tokens are artifacts with ""{2}, {T}, Sacrifice this artifact: You gain 3 life."".)
+{1}{G}, Sacrifice another nonland permanent: ~ gets +2/+2 until end of turn."
+306,"Korvold, Fae-Cursed King",24.617868014999658,False,"No terminal matches '~' in the current parser context, at line 2 col 10
+
+Whenever ~f enters or attacks, sacrifice another 
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Flying
+Whenever ~f enters or attacks, sacrifice another permanent.
+Whenever you sacrifice a permanent, put a +1/+1 counter on ~ and draw a card."
+307,"Syr Gwyn, Hero of Ashvale",23.891307089999827,False,"No terminal matches ',' in the current parser context, at line 1 col 10
+
+Vigilance, menace
+         ^
+Expected one of: 
+	* WORD
+	* DASH
+","Vigilance, menace
+Whenever an equipped creature you control attacks, you draw a card and you lose 1 life.
+Equipment you control have equip Knight {0}."
+308,Wind-Scarred Crag,169.79972725900006,False,"No terminal matches '~' in the current parser context, at line 2 col 6
+
+When ~ enters, you gain 1 life.
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","~ enters tapped.
+When ~ enters, you gain 1 life.
+{T}: Add {R} or {W}."
+309,Steelbane Hydra,90.88132729099925,False,"No terminal matches '+' in the current parser context, at line 1 col 17
+
+~ enters with X +1/+1 counters on it.
+                ^
+Expected one of: 
+	* WORD
+	* COUNTER
+	* DASH
+","~ enters with X +1/+1 counters on it.
+{2}{G}, Remove a +1/+1 counter from ~: Destroy target artifact or enchantment."
+310,Arcane Signet,37.13539780100018,False,"No terminal matches 'A' in the current parser context, at line 1 col 6
+
+{T}: Add one mana of any color in your comman
+     ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+",{T}: Add one mana of any color in your commander's color identity.
+311,Command Tower,36.06260900500001,False,"No terminal matches 'A' in the current parser context, at line 1 col 6
+
+{T}: Add one mana of any color in your comman
+     ^
+Expected one of: 
+	* MAY
+	* SUPERTYPE
+	* LESS
+	* UP
+	* CONTROL
+	* NUMBER
+	* SHUFFLE
+	* CAN
+	* OTHERWISE
+	* THEN
+	* ITSELF
+	* TURN
+	* AMASS
+	* EXCHANGE
+	* TYPE
+	* BOLSTER
+	* AFTER
+	* LSQB
+	* SEARCH
+	* ABANDON
+	* DREW
+	* THESE
+	* ONTO
+	* UNTIL
+	* __ANON_21
+	* TAPPEDSTATUSMODIFIER
+	* AT
+	* DOUBLE
+	* PLAYED
+	* PLAYERTERM
+	* IS
+	* TURNED
+	* COMBATSTATUSMODIFIER
+	* SUBTYPESPELL
+	* GAIN
+	* BECOME
+	* ADD
+	* DESTROY
+	* INCUBATE
+	* LEVEL
+	* ASSIGN
+	* BEEN
+	* HIMSELF
+	* LOOK
+	* CYCLE
+	* IT
+	* __ANON_20
+	* CYCLED
+	* DEAL
+	* SACRIFICE
+	* TAPSYMBOL
+	* FREQUENCY
+	* REMOVE
+	* SWITCH
+	* CONTROLLED
+	* UNATTACHED
+	* UNTAP
+	* CHOSE
+	* SAME
+	* WHEN
+	* CREATE
+	* LOOKED
+	* __ANON_19
+	* __ANON_15
+	* ADDITIONAL
+	* REMAIN
+	* SCRY
+	* ON
+	* ONLY
+	* EACH
+	* WHILE
+	* OTHER
+	* WOULD
+	* ORDINAL
+	* WHENEVER
+	* THE
+	* HAD
+	* MORE
+	* LOSE
+	* STAR
+	* __ANON_14
+	* CLOAK
+	* GAINED
+	* ATTACH
+	* PLAY
+	* THOSE
+	* CHOOSE
+	* ZONE
+	* DASH
+	* __ANON_18
+	* MILL
+	* COLORTERM
+	* ABLE
+	* SUBTYPEENCHANTMENT
+	* IF
+	* EFFECTSTATUSMODIFIER
+	* TAP
+	* NAMEREFSYMBOL
+	* AS
+	* CLASH
+	* EXILE
+	* DIE
+	* DETAIN
+	* SPEND
+	* A
+	* SUBTYPECREATUREA
+	* SUSPECT
+	* DAMAGETYPE
+	* LBRACE
+	* RETURN
+	* PUT
+	* SEARCHED
+	* FATESEAL
+	* SURVEIL
+	* ADAPT
+	* HAS
+	* THIS
+	* BLOCK
+	* BLOCKED
+	* ATTACKED
+	* QUALIFIER
+	* TARGET
+	* TAKE
+	* GREATER
+	* TRANSFORM
+	* DISCOVER
+	* ALL
+	* X
+	* SKIP
+	* THAT
+	* BE
+	* SHUFFLED
+	* CONNIVE
+	* MONSTROSITY
+	* FORAGE
+	* UNDER
+	* DISCARDED
+	* DRAW
+	* ATTACHED
+	* KEYWORDSTATUSMODIFIER
+	* EQUAL
+	* REVEALED
+	* PAY
+	* SUBTYPEPLANESWALKER
+	* GET
+	* IN
+	* EXPLORES
+	* CARDINAL
+	* COUNTER
+	* PREVENT
+	* ACTIVATE
+	* UNTAPSYMBOL
+	* TIMES
+	* GOAD
+	* EXERT
+	* HAVE
+	* CONVERT
+	* FLIP
+	* FIGHT
+	* THEM
+	* SUBTYPEARTIFACT
+	* THEIR
+	* ATTACK
+	* HERSELF
+	* ABILITYMODIFIER
+	* SUBTYPELAND
+	* PROLIFERATE
+	* MANIFEST
+	* MELD
+	* WIN
+	* UNATTACH
+	* INTO
+	* SUPPORT
+	* SUBTYPEPLANAR
+	* PLAYERCHARACTERISTIC
+	* YOUR
+	* WITHOUT
+	* REGENERATE
+	* CAST
+	* POPULATE
+	* SUBTYPECREATUREB
+	* FROM
+	* WITH
+	* ITS
+	* ANY
+	* LEARN
+	* SACRIFICED
+	* NON
+	* DO
+	* DOES
+	* FOR
+	* OBJECTCHARACTERISTIC
+	* __ANON_17
+	* NO
+	* REVEAL
+	* DISCARD
+	* AN
+	* WHO
+	* INVESTIGATE
+",{T}: Add one mana of any color in your commander's color identity.
+312,Thornwood Falls,154.38029870300034,False,"No terminal matches '~' in the current parser context, at line 2 col 6
+
+When ~ enters, you gain 1 life.
+     ^
+Expected one of: 
+	* WORD
+	* DASH
+","~ enters tapped.
+When ~ enters, you gain 1 life.
+{T}: Add {G} or {U}."
+313,Tome of Legends,78.44808326099974,False,"No terminal matches ',' in the current parser context, at line 2 col 42
+
+henever your commander enters or attacks, put a page counter on ~.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+","~ enters with a page counter on it.
+Whenever your commander enters or attacks, put a page counter on ~.
+{1}, {T}, Remove a page counter from ~: Draw a card."
+314,Bramblefort Fink,219.396146262,False,"No terminal matches '.' in the current parser context, at line 1 col 110
+
+ only if you control an Oko planeswalker.
+                                        ^
+Expected one of: 
+	* WORD
+	* DASH
+",{8}: ~ has base power and toughness 10/10 until end of turn. Activate only if you control an Oko planeswalker.
